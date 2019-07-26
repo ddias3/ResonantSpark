@@ -16,9 +16,9 @@ TagManager:
   - UI
   - 
   - 
-  - staticLevelGeometry
-  - player0
-  - player1
+  - StaticLevelGeometry
+  - Player0
+  - Player1
   - 
   - 
   - 
