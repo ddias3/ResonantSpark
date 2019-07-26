@@ -6,14 +6,15 @@ public class FightingGameCharacter : MonoBehaviour {
 
     private GameObject otherChar;
 
-    public CharacterMovement charMovement;
+    private CharacterMovement charMovement;
+
     public GameObject opponentCharacter {
         set { otherChar = value; }
     }
 
     // Start is called before the first frame update
     void Start() {
-        charMovement = gameObject.GetComponentInChildren<CharacterMovement>();
+        charMovement = gameObject.GetComponent<CharacterMovement>();
     }
 
     void Update() {
