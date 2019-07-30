@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InputBuffer : MonoBehaviour {
+namespace ResonantSpark {
 
-    public FightingGameCharacter character;
-
+    [System.Serializable]
     public enum FightingGameInputCodeDir : int {
         // [7,8,9]       [A] [B] [S]
         // [4,5,6]       [D] [C]
         // [1,2,3]
-        
+
         None = 0,
 
         DownLeft,
@@ -24,6 +23,7 @@ public class InputBuffer : MonoBehaviour {
         UpRight,
     };
 
+    [System.Serializable]
     public enum FightingGameInputCodeBut : int {
         // [7,8,9]       [A] [B] [S]
         // [4,5,6]       [D] [C]
@@ -38,74 +38,98 @@ public class InputBuffer : MonoBehaviour {
         S
     };
 
-    [System.Serializable]
-    public struct CharMoveStruct {
-        public FightingGameInputCodeDir direction;
-        public FightingGameInputCodeBut[] buttons;
-    };
+    public class InputBuffer : MonoBehaviour {
 
-    public int inputDelay;
-    public int inputBufferSize;
+        [System.Serializable]
+        public struct InputStruct {
+            public FightingGameInputCodeDir direction;
+            public FightingGameInputCodeBut[] buttons;
+        };
 
-    public int bufferLength;
-
-    private CharMoveStruct[] inputBuffer;
-    private int inputIndex = 0;
-
-    // Start is called before the first frame update
-    void Start() {
-        inputBuffer = new CharMoveStruct[bufferLength];
-
-        for (int n = 0; n < inputBuffer.Length; ++n) {
-            inputBuffer[n].buttons = new FightingGameInputCodeBut[5];
-        }
-    }
-
-    private float frameTime = 1f / 60.0f; // 1 sec over 60 frames
-    private float elapsedTime = 0f;
-
-    void Update() {
-        while (elapsedTime > frameTime) {
-            ServeInput();
-            StepFrame();
+        public FightingGameCharacter character {
+            set { controlChar = value; }
         }
 
-        elapsedTime += Time.deltaTime;
-    }
+        public bool breakPoint = false;
 
-    private void StepFrame() {
-        inputIndex = (inputIndex + 1) % bufferLength;
-        elapsedTime -= frameTime;
-    }
+        public int inputDelay;
+        public int inputBufferSize;
 
-    private void ServeInput() {
-        int curIndex;
+        public int bufferLength;
 
-        for (int n = 0; n <= inputBufferSize; ++n) {
-            curIndex = (inputIndex - inputDelay - n + bufferLength) % bufferLength;
+        private FightingGameCharacter controlChar;
 
-            if (inputBuffer[(curIndex == 0) ? bufferLength - 1 : curIndex - 1].direction == FightingGameInputCodeDir.Neutral &&
-                inputBuffer[curIndex].direction != FightingGameInputCodeDir.Neutral) {
-                switch (inputBuffer[curIndex].direction) {
-                    case FightingGameInputCodeDir.Down:
-                        character.PerformAction("stepSpine");
-                        break;
-                    case FightingGameInputCodeDir.Left:
-                        character.PerformAction("stepBackward");
-                        break;
-                    case FightingGameInputCodeDir.Right:
-                        character.PerformAction("stepForward");
-                        break;
-                    case FightingGameInputCodeDir.Up:
-                        character.PerformAction("stepChest");
-                        break;
+        private InputStruct[] inputBuffer;
+        private int inputIndex = 0;
+
+        private Input.Factory inputFactory;
+
+        private FightingGameInputCodeDir[] findCombinationsBuffer;
+
+        [SerializeField]
+        private List<Input.Combinations.Combination> inputCombinations;
+
+        public void Start() {
+            inputFactory = new Input.Factory();
+            inputBuffer = new InputStruct[bufferLength];
+
+            for (int n = 0; n < inputBuffer.Length; ++n) {
+                inputBuffer[n].buttons = new FightingGameInputCodeBut[5];
+            }
+
+            findCombinationsBuffer = new FightingGameInputCodeDir[inputBufferSize + 1];
+            inputCombinations = new List<Input.Combinations.Combination>();
+
+            Debug.Break();
+        }
+
+        private float frameTime = 1f / 60.0f; // 1 sec over 60 frames
+        private float elapsedTime = 0f;
+
+        void Update() {
+                // TODO: Change StepFrame to step when the next frame is closer, not only after a certain amount of time has passed.
+            while (elapsedTime > frameTime) {
+                FindCombinations();
+                ServeInput();
+                StepFrame();
+            }
+
+            elapsedTime += Time.deltaTime;
+        }
+
+        private void StepFrame() {
+            inputIndex = (inputIndex + 1) % bufferLength;
+            elapsedTime -= frameTime;
+        }
+
+        private void FindCombinations() {
+            int currIndex;
+
+            for (int n = 0; n <= inputBufferSize; ++n) {
+                currIndex = (inputIndex - inputDelay - n + bufferLength) % bufferLength;
+                if (inputBuffer[currIndex].direction != FightingGameInputCodeDir.None) {
+                    findCombinationsBuffer[n] = inputBuffer[currIndex].direction;
+                }
+                else {
+                    findCombinationsBuffer[n] = FightingGameInputCodeDir.Neutral;
                 }
             }
-        }
-    }
 
-    public void AddInput(FightingGameInputCodeDir dirInputCode = FightingGameInputCodeDir.Neutral, FightingGameInputCodeBut buttonInputCode = FightingGameInputCodeBut.None, int layer = 0) {
-        inputBuffer[inputIndex].direction = dirInputCode;
-        inputBuffer[inputIndex].buttons[0] = buttonInputCode;
+            if (breakPoint) {
+                Debug.Log("Manual Pause");
+                breakPoint = false;
+            }
+
+            Input.Service.FindCombinations(findCombinationsBuffer, inputFactory, inputCombinations);
+        }
+
+        private void ServeInput() {
+            controlChar.ServeInput(in inputCombinations);
+        }
+
+        public void AddInput(FightingGameInputCodeDir dirInputCode = FightingGameInputCodeDir.Neutral, FightingGameInputCodeBut buttonInputCode = FightingGameInputCodeBut.None, int layer = 0) {
+            inputBuffer[inputIndex].direction = dirInputCode;
+            inputBuffer[inputIndex].buttons[0] = buttonInputCode;
+        }
     }
 }
