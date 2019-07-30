@@ -28,29 +28,47 @@ namespace ResonantSpark {
             }
             
             private Empty empty;
-            private MemPools memPools;
-            private Indices ind;
+            private Dictionary<System.Type, List<Combination>> memPools;
+            private Dictionary<System.Type, int> ind;
+            private Dictionary<System.Type, Action<List<Combination>>> expandCallbacks;
 
             public Factory() {
-                memPools = new MemPools {
-                    neutRet = new List<Combination>(INIT_POOL_SIZE),
-                    dirPress = new List<Combination>(INIT_POOL_SIZE),
-                    doubleTap = new List<Combination>(INIT_POOL_SIZE),
-                };
-                ind = new Indices {
-                    doubleTap = 0,
-                    dirPress = 0
-                };
+                memPools = new Dictionary<System.Type, List<Combination>>();
+                memPools.Add(typeof(DoubleTap), new List<Combination>(INIT_POOL_SIZE));
+                memPools.Add(typeof(DirectionPress), new List<Combination>(INIT_POOL_SIZE));
+                memPools.Add(typeof(NeutralReturn), new List<Combination>(INIT_POOL_SIZE));
+
+                ind = new Dictionary<System.Type, int>();
+                ind.Add(typeof(DoubleTap), 0);
+                ind.Add(typeof(DirectionPress), 0);
+                ind.Add(typeof(NeutralReturn), 0);
+
+                expandCallbacks = new Dictionary<System.Type, Action<List<Combination>>>();
+                expandCallbacks.Add(typeof(DoubleTap), (memPool) => {
+                    memPool.Add(new DoubleTap(-1, -1));
+                });
+                expandCallbacks.Add(typeof(DirectionPress), (memPool) => {
+                    memPool.Add(new DirectionPress(-1, FightingGameInputCodeDir.None));
+                });
+                expandCallbacks.Add(typeof(NeutralReturn), (memPool) => {
+                    memPool.Add(new NeutralReturn(-1));
+                });
+
+                var neutRet = memPools[typeof(NeutralReturn)];
+                var dirPress = memPools[typeof(DirectionPress)];
+                var doubleTap = memPools[typeof(DoubleTap)];
 
                 for (int n = 0; n < INIT_POOL_SIZE; ++n) {
-                    memPools.neutRet.Add(new NeutralReturn(-1));
-                    memPools.dirPress.Add(new DirectionPress(-1, FightingGameInputCodeDir.None));
-                    memPools.doubleTap.Add(new DoubleTap(-1, -1));
+                    neutRet.Add(new NeutralReturn(-1));
+                    dirPress.Add(new DirectionPress(-1, FightingGameInputCodeDir.None));
+                    doubleTap.Add(new DoubleTap(-1, -1));
                 }
+
                 empty = new Empty();
             }
 
-            private void IncreasePoolSize(ref List<Combination> oldMemPool, Action<List<Combination>> callback) {
+            private void IncreasePoolSize(Type type, Action<List<Combination>> callback) {
+                List<Combination> oldMemPool = memPools[type];
                 List<Combination> newMemPool = new List<Combination>(oldMemPool.Count * 2);
                 int n;
                 for (n = 0; n < oldMemPool.Count; ++n) {
@@ -59,15 +77,18 @@ namespace ResonantSpark {
                 for (; n < oldMemPool.Count * 2; ++n) {
                     callback.Invoke(newMemPool);
                 }
-                oldMemPool = newMemPool;
+                memPools[type] = newMemPool;
             }
 
             public Combination EmptyInput() {
                 return empty;
             }
 
-            public Combination FindNextAvailable(List<Combination> memPool, ref int index) {
+            public Combination FindNextAvailable(Type type) {
                 Combination retValue = null;
+                int index = ind[type];
+                List<Combination> memPool = memPools[type];
+
                 int stopIndex = index;
                 if (memPool[index].Stale(60)) {
                     retValue = memPool[index];
@@ -77,43 +98,16 @@ namespace ResonantSpark {
                         retValue = memPool[index];
                     }
                 }
+                ind[type] = index;
                 return retValue;
             }
 
-            public DoubleTap CreateDoubleTap(int frameGapStart, int frameGatEnd) {
-                DoubleTap combo = null;
+            public T_Combo CreateCombination<T_Combo>(int frameTrigger) where T_Combo : Combination {
+                T_Combo combo = null;
                 do {
-                    combo = (DoubleTap) FindNextAvailable(memPools.doubleTap, ref ind.doubleTap);
+                    combo = (T_Combo) FindNextAvailable(typeof(T_Combo));
                     if (combo == null) {
-                        IncreasePoolSize(ref memPools.doubleTap, (memPool) => {
-                            memPool.Add(new DoubleTap(-1, -1));
-                        });
-                    }
-                } while (combo == null);
-                return combo;
-            }
-
-            public DirectionPress CreateDirectionPress(int frameTrigger) {
-                DirectionPress combo = null;
-                do {
-                    combo = (DirectionPress) FindNextAvailable(memPools.dirPress, ref ind.dirPress);
-                    if (combo == null) {
-                        IncreasePoolSize(ref memPools.dirPress, (memPool) => {
-                            memPool.Add(new DirectionPress(-1, FightingGameInputCodeDir.None));
-                        });
-                    }
-                } while (combo == null);
-                return combo;
-            }
-
-            public NeutralReturn CreateNeutralReturn(int frameTrigger) {
-                NeutralReturn combo = null;
-                do {
-                    combo = (NeutralReturn) FindNextAvailable(memPools.neutRet, ref ind.neutRet);
-                    if (combo == null) {
-                        IncreasePoolSize(ref memPools.neutRet, (memPool) => {
-                            memPool.Add(new NeutralReturn(-1));
-                        });
+                        IncreasePoolSize(typeof(T_Combo), expandCallbacks[typeof(T_Combo)]);
                     }
                 } while (combo == null);
                 return combo;
