@@ -13,24 +13,9 @@ namespace ResonantSpark {
             //    DirectionPress,
             //}
 
-            [System.Serializable]
-            private struct Indices {
-                public int neutRet;
-                public int doubleTap;
-                public int dirPress;
-            }
-
-            [System.Serializable]
-            private struct MemPools {
-                public List<Combination> neutRet;
-                public List<Combination> dirPress;
-                public List<Combination> doubleTap;
-            }
-            
             private Empty empty;
             private Dictionary<System.Type, List<Combination>> memPools;
             private Dictionary<System.Type, int> ind;
-            private Dictionary<System.Type, Action<List<Combination>>> expandCallbacks;
 
             public Factory() {
                 memPools = new Dictionary<System.Type, List<Combination>>();
@@ -42,17 +27,6 @@ namespace ResonantSpark {
                 ind.Add(typeof(DoubleTap), 0);
                 ind.Add(typeof(DirectionPress), 0);
                 ind.Add(typeof(NeutralReturn), 0);
-
-                expandCallbacks = new Dictionary<System.Type, Action<List<Combination>>>();
-                expandCallbacks.Add(typeof(DoubleTap), (memPool) => {
-                    memPool.Add(new DoubleTap(-1, -1));
-                });
-                expandCallbacks.Add(typeof(DirectionPress), (memPool) => {
-                    memPool.Add(new DirectionPress(-1, FightingGameInputCodeDir.None));
-                });
-                expandCallbacks.Add(typeof(NeutralReturn), (memPool) => {
-                    memPool.Add(new NeutralReturn(-1));
-                });
 
                 var neutRet = memPools[typeof(NeutralReturn)];
                 var dirPress = memPools[typeof(DirectionPress)];
@@ -102,12 +76,14 @@ namespace ResonantSpark {
                 return retValue;
             }
 
-            public T_Combo CreateCombination<T_Combo>(int frameTrigger) where T_Combo : Combination {
+            public T_Combo CreateCombination<T_Combo>(int frameTrigger) where T_Combo : Combination, new() {
                 T_Combo combo = null;
                 do {
                     combo = (T_Combo) FindNextAvailable(typeof(T_Combo));
                     if (combo == null) {
-                        IncreasePoolSize(typeof(T_Combo), expandCallbacks[typeof(T_Combo)]);
+                        IncreasePoolSize(typeof(T_Combo), (memPool) => {
+                            memPool.Add(new T_Combo());
+                        });
                     }
                 } while (combo == null);
                 return combo;
