@@ -11,7 +11,12 @@ namespace ResonantSpark {
 
                 public Combination(int frameTrigger) {
                     this.frameTrigger = frameTrigger;
+                }
+
+                public virtual Combination Init(int frameTrigger) {
+                    this.frameTrigger = frameTrigger;
                     dirty = false;
+                    return this;
                 }
 
                 public void Refresh() {
@@ -44,8 +49,10 @@ namespace ResonantSpark {
                     this.direction = FightingGameInputCodeDir.None;
                 }
 
-                public DirectionPress(int frameTrigger, FightingGameInputCodeDir direction) : base(frameTrigger) {
+                public virtual DirectionPress Init(int frameTrigger, FightingGameInputCodeDir direction) {
+                    base.Init(frameTrigger);
                     this.direction = direction;
+                    return this;
                 }
 
                 public override bool Stale(int frameCurrent) {
@@ -54,6 +61,24 @@ namespace ResonantSpark {
 
                 public override int CompareTo(Combination other) {
                         // TODO: Proper Compare To Priority Order
+                    if (other.GetType() == typeof(DoubleTap)) return 1;
+                    else if (other.GetType() == typeof(DirectionPress)) return 0;
+                    return -1;
+                }
+            }
+
+            public class DirectionHold : DirectionPress {
+                public int holdLength;
+
+                public DirectionHold() : base() { }
+                public DirectionHold Init(int frameTrigger, FightingGameInputCodeDir direction, int holdLength) {
+                    base.Init(frameTrigger, direction);
+                    this.holdLength = holdLength;
+                    return this;
+                }
+
+                public override int CompareTo(Combination other) {
+                    // TODO: Proper Compare To Priority Order
                     if (other.GetType() == typeof(DoubleTap)) return 1;
                     else if (other.GetType() == typeof(DirectionPress)) return 0;
                     return -1;
@@ -69,9 +94,11 @@ namespace ResonantSpark {
                     this.frameEnd = -1;
                 }
 
-                public DoubleTap(int frameStart, int frameEnd) : base(frameEnd) {
+                public DoubleTap Init(int frameStart, int frameEnd) {
+                    base.Init(frameEnd);
                     this.frameStart = frameStart;
                     this.frameEnd = frameEnd;
+                    return this;
                 }
 
                 public override bool Stale(int frameCurrent) {
@@ -91,8 +118,9 @@ namespace ResonantSpark {
                     // do nothing
                 }
 
-                public NeutralReturn(int frameTrigger) : base(frameTrigger) {
-                    // do nothing
+                public new NeutralReturn Init(int frameTrigger) {
+                    base.Init(frameTrigger);
+                    return this;
                 }
 
                 public override bool Stale(int frameCurrent) {

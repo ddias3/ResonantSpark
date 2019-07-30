@@ -22,20 +22,24 @@ namespace ResonantSpark {
                 memPools.Add(typeof(DoubleTap), new List<Combination>(INIT_POOL_SIZE));
                 memPools.Add(typeof(DirectionPress), new List<Combination>(INIT_POOL_SIZE));
                 memPools.Add(typeof(NeutralReturn), new List<Combination>(INIT_POOL_SIZE));
+                memPools.Add(typeof(DirectionHold), new List<Combination>(INIT_POOL_SIZE));
 
                 ind = new Dictionary<System.Type, int>();
                 ind.Add(typeof(DoubleTap), 0);
                 ind.Add(typeof(DirectionPress), 0);
                 ind.Add(typeof(NeutralReturn), 0);
+                ind.Add(typeof(DirectionHold), 0);
 
                 var neutRet = memPools[typeof(NeutralReturn)];
                 var dirPress = memPools[typeof(DirectionPress)];
                 var doubleTap = memPools[typeof(DoubleTap)];
+                var dirHold = memPools[typeof(DirectionHold)];
 
                 for (int n = 0; n < INIT_POOL_SIZE; ++n) {
-                    neutRet.Add(new NeutralReturn(-1));
-                    dirPress.Add(new DirectionPress(-1, FightingGameInputCodeDir.None));
-                    doubleTap.Add(new DoubleTap(-1, -1));
+                    neutRet.Add(new NeutralReturn());
+                    dirPress.Add(new DirectionPress());
+                    doubleTap.Add(new DoubleTap());
+                    dirHold.Add(new DirectionHold());
                 }
 
                 empty = new Empty();
@@ -67,7 +71,7 @@ namespace ResonantSpark {
                 if (memPool[index].Stale(60)) {
                     retValue = memPool[index];
                 }
-                for (index = stopIndex + 1; index != stopIndex && retValue == null; index = (index + 1) % memPool.Count) {
+                for (index = (stopIndex + 1) % memPool.Count; index != stopIndex && retValue == null; index = (index + 1) % memPool.Count) {
                     if (memPool[index].Stale(60)) {
                         retValue = memPool[index];
                     }
