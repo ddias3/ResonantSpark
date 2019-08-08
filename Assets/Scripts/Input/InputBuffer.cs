@@ -38,6 +38,7 @@ namespace ResonantSpark {
         S
     };
 
+    [RequireComponent(typeof(FrameEnforcer))]
     public class InputBuffer : MonoBehaviour {
 
         [System.Serializable]
@@ -57,6 +58,8 @@ namespace ResonantSpark {
 
         public int bufferLength;
 
+        private FrameEnforcer frame;
+
         private FightingGameCharacter controlChar;
 
         private InputStruct[] inputBuffer;
@@ -70,6 +73,9 @@ namespace ResonantSpark {
         private List<Input.Combinations.Combination> inputCombinations;
 
         public void Start() {
+            frame = gameObject.GetComponent<FrameEnforcer>();
+            frame.SetUpdate(new System.Action<int>(ServeBuffer));
+
             inputFactory = new Input.Factory();
             inputBuffer = new InputStruct[bufferLength];
 
@@ -79,30 +85,29 @@ namespace ResonantSpark {
 
             findCombinationsBuffer = new FightingGameInputCodeDir[inputBufferSize + 1];
             inputCombinations = new List<Input.Combinations.Combination>();
-
-            Debug.Break();
         }
 
-        private float frameTime = 1f / 60.0f; // 1 sec over 60 frames
-        private float elapsedTime = 0f;
+        //void Update() {
+        //        // TODO: Change StepFrame to step when the next frame is closer, not only after a certain amount of time has passed.
+        //    while (elapsedTime > frameTime) {
+        //        FindCombinations();
+        //        ServeInput();
+        //        StepFrame();
+        //    }
+        //    elapsedTime += Time.deltaTime;
+        //}
 
-        void Update() {
-                // TODO: Change StepFrame to step when the next frame is closer, not only after a certain amount of time has passed.
-            while (elapsedTime > frameTime) {
-                FindCombinations();
-                ServeInput();
-                StepFrame();
-            }
-
-            elapsedTime += Time.deltaTime;
+        public void ServeBuffer(int frameIndex) {
+            FindCombinations(frameIndex);
+            ServeInput();
+            StepFrame();
         }
 
         private void StepFrame() {
             inputIndex = (inputIndex + 1) % bufferLength;
-            elapsedTime -= frameTime;
         }
 
-        private void FindCombinations() {
+        private void FindCombinations(int frameIndex) {
             int currIndex;
 
             for (int n = 0; n <= inputBufferSize; ++n) {
@@ -120,7 +125,7 @@ namespace ResonantSpark {
                 breakPoint = false;
             }
 
-            Input.Service.FindCombinations(findCombinationsBuffer, inputFactory, inputCombinations);
+            Input.Service.FindCombinations(findCombinationsBuffer, inputFactory, frameIndex, inputCombinations);
         }
 
         private void ServeInput() {
