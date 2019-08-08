@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,23 +7,37 @@ using ResonantSpark.Input.Combinations;
 namespace ResonantSpark {
     namespace Input {
         public class Service {
-            public static void FindCombinations(FightingGameInputCodeDir[] buffer, Factory inputFactory, List<Combination> result) {
-                int test0 = FindDoubleDirectionTaps(buffer, inputFactory, result);
-                int test1 = FindDirectionPresses(buffer, inputFactory, result);
-                int test2 = FindNeutralReturns(buffer, inputFactory, result);
+            public static void FindCombinations(FightingGameInputCodeDir[] buffer, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
+                int test0 = FindDoubleDirectionTaps(buffer, inputFactory, frameIndex, activeInputs);
+                int test1 = FindDirectionPresses(buffer, inputFactory, frameIndex, activeInputs);
+                int test2 = FindNeutralReturns(buffer, inputFactory, frameIndex, activeInputs);
 
                 int x = test0 + test1 + test2;
-                result.Sort();
+                activeInputs.Sort();
             }
 
-            public static int FindNeutralReturns(FightingGameInputCodeDir[] buffer, Factory inputFactory, List<Combination> result) {
+            private static T_Combo AddToActiveInputs<T_Combo>(List<Combination> activeInputs, Factory inputFactory, int frameTrigger, int frameCurrent, Action<T_Combo> initCallback) where T_Combo : Combination, new() {
+                foreach (var cmb in activeInputs) {
+                    if (cmb.GetType() == typeof(T_Combo) && cmb.GetFrame() == frameTrigger) {// && !cmb.Stale(frameCurrent)) {
+                        return (T_Combo) cmb;
+                    }
+                }
+                T_Combo newInput = inputFactory.CreateCombination<T_Combo>(frameCurrent);
+                initCallback.Invoke(newInput);
+                activeInputs.Add(newInput);
+                return newInput;
+            }
+
+            public static int FindNeutralReturns(FightingGameInputCodeDir[] buffer, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
                 int numFound = 0;
                 for (int n = 0; n < buffer.Length; ++n) {
                     FightingGameInputCodeDir currDir = buffer[n];
                     if (currDir == FightingGameInputCodeDir.Neutral) {
                         for (; n < buffer.Length; ++n) {
                             if (buffer[n] != FightingGameInputCodeDir.Neutral) {
-                                result.Add(inputFactory.CreateCombination<NeutralReturn>(n));
+                                NeutralReturn input = AddToActiveInputs<NeutralReturn>(activeInputs, inputFactory, frameIndex - n, frameIndex, (newInput) => {
+                                    newInput.Init(frameIndex - n);
+                                });
                                 numFound++;
                                 break;
                             }
@@ -33,14 +47,17 @@ namespace ResonantSpark {
                 return numFound;
             }
 
-            public static int FindDirectionPresses(FightingGameInputCodeDir[] buffer, Factory inputFactory, List<Combination> result) {
+            public static int FindDirectionPresses(FightingGameInputCodeDir[] buffer, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
                 int numFound = 0;
                 for (int n = 0; n < buffer.Length; ++n) {
                     FightingGameInputCodeDir currDir = buffer[n];
                     if (currDir != FightingGameInputCodeDir.Neutral) {
                         for (; n < buffer.Length; ++n) {
                             if (buffer[n] != currDir) {
-                                result.Add(inputFactory.CreateCombination<DirectionPress>(n));
+                                DirectionPress input = AddToActiveInputs<DirectionPress>(activeInputs, inputFactory, frameIndex - n, frameIndex, (newInput) => {
+                                    newInput.Init(frameIndex - n, buffer[n]);
+                                });
+
                                 numFound++;
                                 break;
                             }
@@ -50,7 +67,7 @@ namespace ResonantSpark {
                 return numFound;
             }
 
-            public static int FindDirectionHolds(FightingGameInputCodeDir[] buffer, Factory inputFactory, List<Combination> result) {
+            public static int FindDirectionHolds(FightingGameInputCodeDir[] buffer, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
                     // TODO: This is entirely wrong.
                 //int numFound = 0;
                 //for (int n = 0; n < buffer.Length; ++n) {
@@ -78,12 +95,12 @@ namespace ResonantSpark {
                 return 0;
             }
 
-            public static int FindDoubleDirectionTaps(FightingGameInputCodeDir[] buffer, Factory inputFactory, List<Combination> result) {
+            public static int FindDoubleDirectionTaps(FightingGameInputCodeDir[] buffer, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
                 int numFound = 0;
                 for (int n = 0; n < buffer.Length; ++n) {
                     FightingGameInputCodeDir currDir = FightingGameInputCodeDir.None;
-                    int frameGapStart = -1;
-                    int frameGapEnd = -1;
+                    int relativeFrameGapStart = -1;
+                    int relativeFrameGapEnd = -1;
                     for (; n < buffer.Length; ++n) {
                         if (buffer[n] == FightingGameInputCodeDir.Right
                                 || buffer[n] == FightingGameInputCodeDir.Down
@@ -105,7 +122,7 @@ namespace ResonantSpark {
                         case FightingGameInputCodeDir.Up:
                             for (; n < buffer.Length; ++n) {
                                 if (buffer[n] == FightingGameInputCodeDir.Neutral) {
-                                    frameGapStart = n;
+                                    relativeFrameGapEnd = n;
                                     break;
                                 }
                             }
@@ -118,13 +135,18 @@ namespace ResonantSpark {
                         }
                     }
 
+                        // The gap between double taps can't be too large
+                    if (n - relativeFrameGapEnd > 5) {
+                        break;
+                    }
+
                     switch (currDir) {
                         case FightingGameInputCodeDir.Right:
                             for (; n < buffer.Length; ++n) {
                                 if (buffer[n] == FightingGameInputCodeDir.Right
                                     /*|| buffer[n] == FightingGameInputCodeDir.DownRight || buffer[n] == FightingGameInputCodeDir.UpRight*/) {
-                                    frameGapEnd = n;
-                                    result.Add(inputFactory.CreateCombination<DoubleTap>(frameGapEnd));
+                                    relativeFrameGapStart = n;
+                                    AddDoubleTap(activeInputs, inputFactory, frameIndex - relativeFrameGapEnd, frameIndex, FightingGameInputCodeDir.Right, frameIndex - relativeFrameGapStart, frameIndex - relativeFrameGapEnd);
                                     numFound++;
                                     break;
                                 }
@@ -134,8 +156,8 @@ namespace ResonantSpark {
                             for (; n < buffer.Length; ++n) {
                                 if (buffer[n] == FightingGameInputCodeDir.Down
                                     /*|| buffer[n] == FightingGameInputCodeDir.DownLeft || buffer[n] == FightingGameInputCodeDir.DownRight*/) {
-                                    frameGapEnd = n;
-                                    result.Add(inputFactory.CreateCombination<DoubleTap>(frameGapEnd));
+                                    relativeFrameGapStart = n;
+                                    AddDoubleTap(activeInputs, inputFactory, frameIndex - relativeFrameGapEnd, frameIndex, FightingGameInputCodeDir.Down, frameIndex - relativeFrameGapStart, frameIndex - relativeFrameGapEnd);
                                     numFound++;
                                     break;
                                 }
@@ -145,8 +167,8 @@ namespace ResonantSpark {
                             for (; n < buffer.Length; ++n) {
                                 if (buffer[n] == FightingGameInputCodeDir.Left
                                     /*|| buffer[n] == FightingGameInputCodeDir.UpLeft || buffer[n] == FightingGameInputCodeDir.DownLeft*/) {
-                                    frameGapEnd = n;
-                                    result.Add(inputFactory.CreateCombination<DoubleTap>(frameGapEnd));
+                                    relativeFrameGapStart = n;
+                                    AddDoubleTap(activeInputs, inputFactory, frameIndex - relativeFrameGapEnd, frameIndex, FightingGameInputCodeDir.Left, frameIndex - relativeFrameGapStart, frameIndex - relativeFrameGapEnd);
                                     numFound++;
                                     break;
                                 }
@@ -156,8 +178,8 @@ namespace ResonantSpark {
                             for (; n < buffer.Length; ++n) {
                                 if (buffer[n] == FightingGameInputCodeDir.Up
                                     /*|| buffer[n] == FightingGameInputCodeDir.UpRight || buffer[n] == FightingGameInputCodeDir.UpLeft*/) {
-                                    frameGapEnd = n;
-                                    result.Add(inputFactory.CreateCombination<DoubleTap>(frameGapEnd));
+                                    relativeFrameGapStart = n;
+                                    AddDoubleTap(activeInputs, inputFactory, frameIndex - relativeFrameGapEnd, frameIndex, FightingGameInputCodeDir.Up, frameIndex - relativeFrameGapStart, frameIndex - relativeFrameGapEnd);
                                     numFound++;
                                     break;
                                 }
@@ -166,6 +188,12 @@ namespace ResonantSpark {
                     }
                 }
                 return numFound;
+            }
+
+            private static void AddDoubleTap(List<Combination> activeInputs, Factory inputFactory, int frameTrigger, int frameCurrent, FightingGameInputCodeDir direction, int frameGapStart, int frameGapEnd) {
+                AddToActiveInputs<DoubleTap>(activeInputs, inputFactory, frameTrigger, frameCurrent, (newInput) => {
+                    newInput.Init(frameGapEnd, frameGapStart, direction);
+                });
             }
         }
     }

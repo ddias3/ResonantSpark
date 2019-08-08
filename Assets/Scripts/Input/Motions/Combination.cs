@@ -23,6 +23,10 @@ namespace ResonantSpark {
                     dirty = false;
                 }
 
+                public int GetFrame() {
+                    return frameTrigger;
+                }
+
                 public abstract bool Stale(int frameCurrent);
                 public abstract int CompareTo(Combination other);
             }
@@ -38,7 +42,7 @@ namespace ResonantSpark {
 
                 public override int CompareTo(Combination other) {
                     if (other.GetType() == typeof(Empty)) return 0;
-                    else return -1;
+                    else return 1;
                 }
             }
 
@@ -62,8 +66,8 @@ namespace ResonantSpark {
                 public override int CompareTo(Combination other) {
                         // TODO: Proper Compare To Priority Order
                     if (other.GetType() == typeof(DoubleTap)) return 1;
-                    else if (other.GetType() == typeof(DirectionPress)) return 0;
-                    return -1;
+                    else if (other.GetType() == typeof(DirectionPress)) return other.GetFrame() - this.GetFrame();
+                    else return -1;
                 }
             }
 
@@ -80,22 +84,24 @@ namespace ResonantSpark {
                 public override int CompareTo(Combination other) {
                     // TODO: Proper Compare To Priority Order
                     if (other.GetType() == typeof(DoubleTap)) return 1;
-                    else if (other.GetType() == typeof(DirectionPress)) return 0;
-                    return -1;
+                    else if (other.GetType() == typeof(DirectionPress)) return other.GetFrame() - this.GetFrame();
+                    else return -1;
                 }
             }
 
             public class DoubleTap : Combination {
                 public int frameStart;
                 public int frameEnd;
+                public FightingGameInputCodeDir direction;
 
                 public DoubleTap() : base(-1) {
                     this.frameStart = -1;
                     this.frameEnd = -1;
                 }
 
-                public DoubleTap Init(int frameStart, int frameEnd) {
+                public DoubleTap Init(int frameEnd, int frameStart, FightingGameInputCodeDir direction) {
                     base.Init(frameEnd);
+                    this.direction = direction;
                     this.frameStart = frameStart;
                     this.frameEnd = frameEnd;
                     return this;
@@ -107,9 +113,8 @@ namespace ResonantSpark {
 
                 public override int CompareTo(Combination other) {
                         // TODO: Proper Compare To Priority Order
-                    if (other.GetType() == typeof(DoubleTap)) return -1;
-                    else if (other.GetType() == typeof(DirectionPress)) return 0;
-                    return 1;
+                    if (other.GetType() == typeof(DoubleTap)) return other.GetFrame() - this.GetFrame();
+                    else return -1;
                 }
             }
 
@@ -129,8 +134,8 @@ namespace ResonantSpark {
 
                 public override int CompareTo(Combination other) {
                     // TODO: Proper Compare To Priority Order
-                    if (other.GetType() == typeof(NeutralReturn)) return 0;
-                    else return -1;
+                    if (other.GetType() == typeof(NeutralReturn)) return other.GetFrame() - this.GetFrame();
+                    else return 1;
                 }
             }
         }

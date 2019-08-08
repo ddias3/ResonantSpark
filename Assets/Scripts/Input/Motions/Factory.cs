@@ -18,17 +18,19 @@ namespace ResonantSpark {
             private Dictionary<System.Type, int> ind;
 
             public Factory() {
-                memPools = new Dictionary<System.Type, List<Combination>>();
-                memPools.Add(typeof(DoubleTap), new List<Combination>(INIT_POOL_SIZE));
-                memPools.Add(typeof(DirectionPress), new List<Combination>(INIT_POOL_SIZE));
-                memPools.Add(typeof(NeutralReturn), new List<Combination>(INIT_POOL_SIZE));
-                memPools.Add(typeof(DirectionHold), new List<Combination>(INIT_POOL_SIZE));
+                memPools = new Dictionary<System.Type, List<Combination>> {
+                    { typeof(DoubleTap), new List<Combination>(INIT_POOL_SIZE) },
+                    { typeof(DirectionPress), new List<Combination>(INIT_POOL_SIZE) },
+                    { typeof(NeutralReturn), new List<Combination>(INIT_POOL_SIZE) },
+                    { typeof(DirectionHold), new List<Combination>(INIT_POOL_SIZE) }
+                };
 
-                ind = new Dictionary<System.Type, int>();
-                ind.Add(typeof(DoubleTap), 0);
-                ind.Add(typeof(DirectionPress), 0);
-                ind.Add(typeof(NeutralReturn), 0);
-                ind.Add(typeof(DirectionHold), 0);
+                ind = new Dictionary<System.Type, int> {
+                    { typeof(DoubleTap), 0 },
+                    { typeof(DirectionPress), 0 },
+                    { typeof(NeutralReturn), 0 },
+                    { typeof(DirectionHold), 0 }
+                };
 
                 var neutRet = memPools[typeof(NeutralReturn)];
                 var dirPress = memPools[typeof(DirectionPress)];
@@ -62,17 +64,17 @@ namespace ResonantSpark {
                 return empty;
             }
 
-            public Combination FindNextAvailable(Type type) {
+            public Combination FindNextAvailable(Type type, int frameCurrent) {
                 Combination retValue = null;
                 int index = ind[type];
                 List<Combination> memPool = memPools[type];
 
                 int stopIndex = index;
-                if (memPool[index].Stale(60)) {
+                if (memPool[index].Stale(frameCurrent)) {
                     retValue = memPool[index];
                 }
                 for (index = (stopIndex + 1) % memPool.Count; index != stopIndex && retValue == null; index = (index + 1) % memPool.Count) {
-                    if (memPool[index].Stale(60)) {
+                    if (memPool[index].Stale(frameCurrent)) {
                         retValue = memPool[index];
                     }
                 }
@@ -80,10 +82,10 @@ namespace ResonantSpark {
                 return retValue;
             }
 
-            public T_Combo CreateCombination<T_Combo>(int frameTrigger) where T_Combo : Combination, new() {
+            public T_Combo CreateCombination<T_Combo>(int frameCurrent) where T_Combo : Combination, new() {
                 T_Combo combo = null;
                 do {
-                    combo = (T_Combo) FindNextAvailable(typeof(T_Combo));
+                    combo = (T_Combo) FindNextAvailable(typeof(T_Combo), frameCurrent);
                     if (combo == null) {
                         IncreasePoolSize(typeof(T_Combo), (memPool) => {
                             memPool.Add(new T_Combo());

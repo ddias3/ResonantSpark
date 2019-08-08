@@ -26,7 +26,7 @@ namespace ResonantSpark {
             }
             public override void ServeInput(in List<Combination> inputCombinations) {
                     // TODO: Actual input use
-                inputCombinations.RemoveAll(x => true);
+                //inputCombinations.RemoveAll(x => true);
             }
         }
     }
