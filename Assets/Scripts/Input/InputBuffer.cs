@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System.Text;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -67,7 +67,7 @@ namespace ResonantSpark {
 
         private Input.Factory inputFactory;
 
-        private FightingGameInputCodeDir[] findCombinationsBuffer;
+        private StringBuilder findCombinationsBuffer;
 
         [SerializeField]
         private List<Input.Combinations.Combination> inputCombinations;
@@ -83,19 +83,9 @@ namespace ResonantSpark {
                 inputBuffer[n].buttons = new FightingGameInputCodeBut[5];
             }
 
-            findCombinationsBuffer = new FightingGameInputCodeDir[inputBufferSize + 1];
+            findCombinationsBuffer = new StringBuilder(inputBufferSize + 1);
             inputCombinations = new List<Input.Combinations.Combination>();
         }
-
-        //void Update() {
-        //        // TODO: Change StepFrame to step when the next frame is closer, not only after a certain amount of time has passed.
-        //    while (elapsedTime > frameTime) {
-        //        FindCombinations();
-        //        ServeInput();
-        //        StepFrame();
-        //    }
-        //    elapsedTime += Time.deltaTime;
-        //}
 
         public void ServeBuffer(int frameIndex) {
             FindCombinations(frameIndex);
@@ -119,14 +109,15 @@ namespace ResonantSpark {
 
         private void FindCombinations(int frameIndex) {
             int currIndex;
+            findCombinationsBuffer.Clear();
 
             for (int n = 0; n <= inputBufferSize; ++n) {
                 currIndex = (inputIndex - inputDelay - n + bufferLength) % bufferLength;
                 if (inputBuffer[currIndex].direction != FightingGameInputCodeDir.None) {
-                    findCombinationsBuffer[n] = inputBuffer[currIndex].direction;
+                    findCombinationsBuffer.Append((int) inputBuffer[currIndex].direction);
                 }
                 else {
-                    findCombinationsBuffer[n] = FightingGameInputCodeDir.Neutral;
+                    findCombinationsBuffer.Append(5);
                 }
             }
 
@@ -135,7 +126,7 @@ namespace ResonantSpark {
                 breakPoint = false;
             }
 
-            Input.Service.FindCombinations(findCombinationsBuffer, inputFactory, frameIndex, inputCombinations);
+            Input.Service.FindCombinations(findCombinationsBuffer.ToString(), inputFactory, frameIndex, inputCombinations);
         }
 
         private void ServeInput() {

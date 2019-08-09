@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ using ResonantSpark.Input.Combinations;
 namespace ResonantSpark {
     namespace Input {
         public class Service {
-            public static void FindCombinations(FightingGameInputCodeDir[] buffer, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
+            public static void FindCombinations(string buffer, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
                 int test0 = FindDoubleDirectionTaps(buffer, inputFactory, frameIndex, activeInputs);
                 int test1 = FindDirectionPresses(buffer, inputFactory, frameIndex, activeInputs);
                 int test2 = FindNeutralReturns(buffer, inputFactory, frameIndex, activeInputs);
@@ -28,172 +29,53 @@ namespace ResonantSpark {
                 return newInput;
             }
 
-            public static int FindNeutralReturns(FightingGameInputCodeDir[] buffer, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
+            private static readonly Regex rgxNeutralReturn = new Regex(@"[^5]+(5)", RegexOptions.Compiled | RegexOptions.RightToLeft);
+            public static int FindNeutralReturns(string buffer, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
                 int numFound = 0;
-                for (int n = 0; n < buffer.Length; ++n) {
-                    FightingGameInputCodeDir currDir = buffer[n];
-                    if (currDir == FightingGameInputCodeDir.Neutral) {
-                        for (; n < buffer.Length; ++n) {
-                            if (buffer[n] != FightingGameInputCodeDir.Neutral) {
-                                NeutralReturn input = AddToActiveInputs<NeutralReturn>(activeInputs, inputFactory, frameIndex - n, frameIndex, (newInput) => {
-                                    newInput.Init(frameIndex - n);
-                                });
-                                numFound++;
-                                break;
-                            }
-                        }
-                    }
+                foreach (Match match in rgxNeutralReturn.Matches(buffer)) {
+                    NeutralReturn input = AddToActiveInputs<NeutralReturn>(activeInputs, inputFactory, frameIndex - match.Groups[0].Index, frameIndex, (newInput) => {
+                        newInput.Init(frameIndex - match.Groups[0].Index);
+                    });
+                    numFound++;
                 }
                 return numFound;
             }
 
-            public static int FindDirectionPresses(FightingGameInputCodeDir[] buffer, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
+            private static readonly Regex rgxDirectionPresses = new Regex(@"([^5])\1*(?=[^\1])", RegexOptions.Compiled | RegexOptions.RightToLeft);
+            public static int FindDirectionPresses(string buffer, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
                 int numFound = 0;
-                for (int n = 0; n < buffer.Length; ++n) {
-                    FightingGameInputCodeDir currDir = buffer[n];
-                    if (currDir != FightingGameInputCodeDir.Neutral) {
-                        for (; n < buffer.Length; ++n) {
-                            if (buffer[n] != currDir) {
-                                DirectionPress input = AddToActiveInputs<DirectionPress>(activeInputs, inputFactory, frameIndex - n, frameIndex, (newInput) => {
-                                    newInput.Init(frameIndex - n, buffer[n]);
-                                });
-
-                                numFound++;
-                                break;
-                            }
-                        }
-                    }
+                foreach (Match match in rgxDirectionPresses.Matches(buffer)) {
+                    DirectionPress input = AddToActiveInputs<DirectionPress>(activeInputs, inputFactory, frameIndex - match.Index, frameIndex, (newInput) => {
+                        newInput.Init(frameIndex - match.Index, (FightingGameInputCodeDir) int.Parse(match.Groups[0].Value));
+                    });
                 }
                 return numFound;
             }
 
-            public static int FindDirectionHolds(FightingGameInputCodeDir[] buffer, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
-                    // TODO: This is entirely wrong.
-                //int numFound = 0;
-                //for (int n = 0; n < buffer.Length; ++n) {
-                //    FightingGameInputCodeDir currDir = buffer[n];
-                //    int start = n;
-                //    bool valid = false;
-                //    for (; n < buffer.Length; ++n) {
-                //        if (currDir == buffer[n] && n >= start + 12) {
-                //            valid = true;
-                //            break;
-                //        }
-                //    }
-                //    if (valid) {
-                //        for (; n < buffer.Length; ++n) {
-
-                //        }
-                //    }
-                //    if (buffer[n] != currDir) {
-                //            result.Add(inputFactory.CreateCombination<DirectionPress>(n));
-                //            numFound++;
-                //        break;
-                //    }
-                //}
-                //return numFound;
-                return 0;
-            }
-
-            public static int FindDoubleDirectionTaps(FightingGameInputCodeDir[] buffer, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
+            private static readonly Regex rgxDirectionHolds = new Regex(@"([^5])\1{19,}", RegexOptions.Compiled | RegexOptions.RightToLeft);
+            public static int FindDirectionHolds(string buffer, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
                 int numFound = 0;
-                for (int n = 0; n < buffer.Length; ++n) {
-                    FightingGameInputCodeDir currDir = FightingGameInputCodeDir.None;
-                    int relativeFrameGapStart = -1;
-                    int relativeFrameGapEnd = -1;
-                    for (; n < buffer.Length; ++n) {
-                        if (buffer[n] == FightingGameInputCodeDir.Right
-                                || buffer[n] == FightingGameInputCodeDir.Down
-                                || buffer[n] == FightingGameInputCodeDir.Left
-                                || buffer[n] == FightingGameInputCodeDir.Up) {
-                            currDir = buffer[n];
-                            break;
-                        }
-                    }
-
-                    if (currDir == FightingGameInputCodeDir.None) {
-                        return 0;
-                    }
-
-                    switch (currDir) {
-                        case FightingGameInputCodeDir.Right:
-                        case FightingGameInputCodeDir.Down:
-                        case FightingGameInputCodeDir.Left:
-                        case FightingGameInputCodeDir.Up:
-                            for (; n < buffer.Length; ++n) {
-                                if (buffer[n] == FightingGameInputCodeDir.Neutral) {
-                                    relativeFrameGapEnd = n;
-                                    break;
-                                }
-                            }
-                            break;
-                    }
-
-                    for (; n < buffer.Length; ++n) {
-                        if (buffer[n] != FightingGameInputCodeDir.Neutral) {
-                            break;
-                        }
-                    }
-
-                        // The gap between double taps can't be too large
-                    if (n - relativeFrameGapEnd > 5) {
-                        break;
-                    }
-
-                    switch (currDir) {
-                        case FightingGameInputCodeDir.Right:
-                            for (; n < buffer.Length; ++n) {
-                                if (buffer[n] == FightingGameInputCodeDir.Right
-                                    /*|| buffer[n] == FightingGameInputCodeDir.DownRight || buffer[n] == FightingGameInputCodeDir.UpRight*/) {
-                                    relativeFrameGapStart = n;
-                                    AddDoubleTap(activeInputs, inputFactory, frameIndex - relativeFrameGapEnd, frameIndex, FightingGameInputCodeDir.Right, frameIndex - relativeFrameGapStart, frameIndex - relativeFrameGapEnd);
-                                    numFound++;
-                                    break;
-                                }
-                            }
-                            break;
-                        case FightingGameInputCodeDir.Down:
-                            for (; n < buffer.Length; ++n) {
-                                if (buffer[n] == FightingGameInputCodeDir.Down
-                                    /*|| buffer[n] == FightingGameInputCodeDir.DownLeft || buffer[n] == FightingGameInputCodeDir.DownRight*/) {
-                                    relativeFrameGapStart = n;
-                                    AddDoubleTap(activeInputs, inputFactory, frameIndex - relativeFrameGapEnd, frameIndex, FightingGameInputCodeDir.Down, frameIndex - relativeFrameGapStart, frameIndex - relativeFrameGapEnd);
-                                    numFound++;
-                                    break;
-                                }
-                            }
-                            break;
-                        case FightingGameInputCodeDir.Left:
-                            for (; n < buffer.Length; ++n) {
-                                if (buffer[n] == FightingGameInputCodeDir.Left
-                                    /*|| buffer[n] == FightingGameInputCodeDir.UpLeft || buffer[n] == FightingGameInputCodeDir.DownLeft*/) {
-                                    relativeFrameGapStart = n;
-                                    AddDoubleTap(activeInputs, inputFactory, frameIndex - relativeFrameGapEnd, frameIndex, FightingGameInputCodeDir.Left, frameIndex - relativeFrameGapStart, frameIndex - relativeFrameGapEnd);
-                                    numFound++;
-                                    break;
-                                }
-                            }
-                            break;
-                        case FightingGameInputCodeDir.Up:
-                            for (; n < buffer.Length; ++n) {
-                                if (buffer[n] == FightingGameInputCodeDir.Up
-                                    /*|| buffer[n] == FightingGameInputCodeDir.UpRight || buffer[n] == FightingGameInputCodeDir.UpLeft*/) {
-                                    relativeFrameGapStart = n;
-                                    AddDoubleTap(activeInputs, inputFactory, frameIndex - relativeFrameGapEnd, frameIndex, FightingGameInputCodeDir.Up, frameIndex - relativeFrameGapStart, frameIndex - relativeFrameGapEnd);
-                                    numFound++;
-                                    break;
-                                }
-                            }
-                            break;
-                    }
+                foreach (Match match in rgxDirectionHolds.Matches(buffer)) {
+                    FightingGameInputCodeDir direction = (FightingGameInputCodeDir) int.Parse(match.Groups[0].Value);
+                    DirectionHold input = AddToActiveInputs<DirectionHold>(activeInputs, inputFactory, match.Index, frameIndex, (newInput) => {
+                        newInput.Init(frameIndex - match.Index + 19, direction, match.Value.Length);
+                    });
                 }
                 return numFound;
             }
 
-            private static void AddDoubleTap(List<Combination> activeInputs, Factory inputFactory, int frameTrigger, int frameCurrent, FightingGameInputCodeDir direction, int frameGapStart, int frameGapEnd) {
-                AddToActiveInputs<DoubleTap>(activeInputs, inputFactory, frameTrigger, frameCurrent, (newInput) => {
-                    newInput.Init(frameGapEnd, frameGapStart, direction);
-                });
+            private static readonly Regex rgxDoubleDirectionTaps = new Regex(@"(([^5])\2*[^5\2]*)(5{1,6})(\2+)(?=[^\1])", RegexOptions.Compiled | RegexOptions.RightToLeft);
+            public static int FindDoubleDirectionTaps(string buffer, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
+                int numFound = 0;
+                foreach (Match match in rgxDoubleDirectionTaps.Matches(buffer)) {
+                    int relativeFrameGapStart = match.Groups[2].Index;
+                    int relativeFrameGapEnd = match.Groups[3].Index;
+                    FightingGameInputCodeDir direction = (FightingGameInputCodeDir) int.Parse(match.Groups[1].Value);
+                    DoubleTap input = AddToActiveInputs<DoubleTap>(activeInputs, inputFactory, frameIndex - relativeFrameGapEnd, frameIndex, (newInput) => {
+                        newInput.Init(frameIndex - relativeFrameGapEnd, frameIndex - relativeFrameGapStart, direction);
+                    });
+                }
+                return numFound;
             }
         }
     }
