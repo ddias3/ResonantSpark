@@ -65,7 +65,7 @@ namespace ResonantSpark {
 
                 public override int CompareTo(Combination other) {
                         // TODO: Proper Compare To Priority Order
-                    if (other.GetType() == typeof(DoubleTap)) return 1;
+                    if (other.GetType() == typeof(DoubleTap) || other.GetType() == typeof(DirectionHold)) return 1;
                     else if (other.GetType() == typeof(DirectionPress)) return other.GetFrame() - this.GetFrame();
                     else return -1;
                 }
@@ -82,9 +82,9 @@ namespace ResonantSpark {
                 }
 
                 public override int CompareTo(Combination other) {
-                    // TODO: Proper Compare To Priority Order
+                        // TODO: Proper Compare To Priority Order
                     if (other.GetType() == typeof(DoubleTap)) return 1;
-                    else if (other.GetType() == typeof(DirectionPress)) return other.GetFrame() - this.GetFrame();
+                    else if (other.GetType() == typeof(DirectionHold)) return other.GetFrame() - this.GetFrame();
                     else return -1;
                 }
             }
