@@ -108,11 +108,16 @@ namespace ResonantSpark {
         }
 
         private void FindCombinations(int frameIndex) {
+            if (breakPoint) {
+                Debug.Log("Manual Pause");
+                breakPoint = true;
+            }
+
             int currIndex;
             findCombinationsBuffer.Clear();
 
-            for (int n = 0; n <= inputBufferSize; ++n) {
-                currIndex = (inputIndex - inputDelay - n + bufferLength) % bufferLength;
+            for (int n = inputBufferSize; n >= 0; --n) {
+                currIndex = (inputIndex - (inputDelay + n) + bufferLength) % bufferLength;
                 if (inputBuffer[currIndex].direction != FightingGameInputCodeDir.None) {
                     findCombinationsBuffer.Append((int) inputBuffer[currIndex].direction);
                 }
