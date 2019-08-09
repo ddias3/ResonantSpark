@@ -102,6 +102,16 @@ namespace ResonantSpark {
             ServeInput();
             StepFrame();
         }
+        
+        public FightingGameInputCodeDir GetLatestInput() {
+            int currIndex = (inputIndex - inputDelay + bufferLength) % bufferLength;
+            if (inputBuffer[currIndex].direction != FightingGameInputCodeDir.None) {
+                return inputBuffer[currIndex].direction;
+            }
+            else {
+                return FightingGameInputCodeDir.Neutral;
+            }
+        }
 
         private void StepFrame() {
             inputIndex = (inputIndex + 1) % bufferLength;
