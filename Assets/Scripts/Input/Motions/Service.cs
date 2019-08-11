@@ -64,7 +64,7 @@ namespace ResonantSpark {
             }
 
                 // This requires a hold of 20 frames
-            private static readonly Regex rgxDirectionHolds = new Regex(@"(?<=([1-9]))(?=([^5])\2{19,})(?!\1)", RegexOptions.ECMAScript | RegexOptions.Compiled);
+            private static readonly Regex rgxDirectionHolds = new Regex(@"(?<=([1-9]))(?=([^5])\2{19,})(?!\1)|^([^5])\3+$", RegexOptions.ECMAScript | RegexOptions.Compiled);
             public static int FindDirectionHolds(string buffer, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
                 int numFound = 0;
                 foreach (Match match in rgxDirectionHolds.Matches(buffer)) {
