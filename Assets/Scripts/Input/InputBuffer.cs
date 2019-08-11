@@ -69,7 +69,7 @@ namespace ResonantSpark {
 
         private StringBuilder findCombinationsBuffer;
 
-        [SerializeField]
+        //[SerializeField]
         private List<Input.Combinations.Combination> inputCombinations;
 
         public void Start() {
