@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -47,10 +48,6 @@ namespace ResonantSpark {
             public FightingGameInputCodeBut[] buttons;
         };
 
-        public FightingGameCharacter character {
-            set { controlChar = value; }
-        }
-
         public bool breakPoint = false;
 
         public int inputDelay;
@@ -59,8 +56,6 @@ namespace ResonantSpark {
         public int bufferLength;
 
         private FrameEnforcer frame;
-
-        private FightingGameCharacter controlChar;
 
         private InputStruct[] inputBuffer;
         private int inputIndex = 0;
@@ -74,7 +69,7 @@ namespace ResonantSpark {
 
         public void Start() {
             frame = gameObject.GetComponent<FrameEnforcer>();
-            frame.SetUpdate(new System.Action<int>(ServeBuffer));
+            frame.SetUpdate(new Action<int>(ServeBuffer));
 
             inputFactory = new Input.Factory();
             inputBuffer = new InputStruct[bufferLength];
@@ -89,7 +84,6 @@ namespace ResonantSpark {
 
         public void ServeBuffer(int frameIndex) {
             FindCombinations(frameIndex);
-            ServeInput();
             StepFrame();
         }
         
@@ -134,8 +128,8 @@ namespace ResonantSpark {
             Input.Service.FindCombinations(findCombinationsBuffer.ToString(), inputFactory, frameIndex, inputCombinations);
         }
 
-        private void ServeInput() {
-            controlChar.ServeInput(in inputCombinations);
+        public List<Input.Combinations.Combination> GetFoundCombinations() {
+            return inputCombinations;
         }
 
         public void AddInput(FightingGameInputCodeDir dirInputCode = FightingGameInputCodeDir.Neutral, FightingGameInputCodeBut buttonInputCode = FightingGameInputCodeBut.None, int layer = 0) {

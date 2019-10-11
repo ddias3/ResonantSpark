@@ -17,7 +17,7 @@ public class TestInput : MonoBehaviour {
     private int verticalInput = 0;
 
     public void Start() {
-        inputBuffer.character = playerChar;
+        playerChar.input = inputBuffer;
     }
 
     public void Update() {

@@ -3,34 +3,52 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class FrameEnforcer : MonoBehaviour {
+namespace ResonantSpark {
+    [RequireComponent(typeof(GameTimeManager))]
+    public class FrameEnforcer : MonoBehaviour {
 
-    public Action<int> updateAction = null;
+        private Action<int> updateAction = null;
+        private GameTimeManager gameTime;
 
-    private float frameTime = 1f / 60.0f; // 1 sec over 60 frames
-    private float elapsedTime = 0f;
+        private const float FRAME_TIME = 1f / 60.0f; // 1 sec over 60 frames
+        private float elapsedTime = 0f;
 
-    private int frameIndex = 0;
+        private int frameIndex = 0;
 
-    public void Start() {
-        elapsedTime = 0.0f;
-        frameIndex = 0;
-    }
-
-    public void Update() {
-        while (elapsedTime > frameTime) {
-            updateAction.Invoke(frameIndex);
-
-            frameIndex++;
-            elapsedTime -= frameTime;
+        public void Start() {
+            gameTime = gameObject.GetComponent<GameTimeManager>();
+            elapsedTime = 0.0f;
+            frameIndex = 0;
         }
 
-        elapsedTime += Time.deltaTime;
-    }
+        public int index {
+            get {
+                if (this.enabled) return frameIndex;
+                else return -1;
+            }
+        }
 
-    public void SetUpdate(Action<int> updateAction) {
-        Debug.Log("fnadkfdn");
-        this.updateAction = updateAction;
-        this.enabled = true;
+        public void Update() {
+            while (elapsedTime > FRAME_TIME) {
+                updateAction.Invoke(frameIndex);
+
+                frameIndex++;
+                elapsedTime -= FRAME_TIME;
+            }
+
+            elapsedTime += gameTime.Layer(0);
+        }
+
+        public void SetUpdate(Action<int> updateAction) {
+            this.updateAction = updateAction;
+            this.enabled = true;
+
+            StartCoroutine(TriggerEndOfFrame());
+        }
+
+        private IEnumerator TriggerEndOfFrame() {
+            yield return new WaitForEndOfFrame();
+            EventManager.TriggerEvent<Events.FrameEnforcerReady>();
+        }
     }
 }

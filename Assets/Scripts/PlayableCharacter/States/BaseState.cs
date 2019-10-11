@@ -7,18 +7,21 @@ namespace ResonantSpark {
     namespace CharacterStates {
         public abstract class BaseState : MonoBehaviour, State {
 
-            protected Controller ctrl;
+            protected StateDict states;
+            protected GameTimeManager gameTime;
+
+            protected FightingGameCharacter fgChar;
+            protected FrameEnforcer frame;
 
             public void Start() {
-                ctrl = GetComponentInParent<Controller>();
+                states = gameObject.GetComponentInParent<StateDict>();
+                fgChar = gameObject.GetComponentInParent<FightingGameCharacter>();
+                frame = GameObject.FindGameObjectWithTag("rspGamemode").GetComponent<FrameEnforcer>();
             }
 
             public abstract void Enter(State previousState);
             public abstract void Execute(Action<State> changeState);
             public abstract void Exit();
-
-            public abstract void ServeInput(FightingGameInputCodeDir direction);
-            public abstract void ServeInput(in List<Input.Combinations.Combination> inputCombinations);
         }
     }
 }

@@ -9,24 +9,39 @@ namespace ResonantSpark {
     namespace CharacterStates {
         public class Idle : BaseState {
 
+            public new void Start() {
+                base.Start();
+                states.Register(this, "idle");
+            }
+
             public override void Enter(State previousState) {
-                ctrl.Play("idle", 0, 0.0f);
+                fgChar.Play("idle", 0, 0.0f);
             }
 
             public override void Execute(Action<State> changeState) {
-                // TODO: Create callback
+                var inputCombos = fgChar.GetFoundCombinations();
+                for (int n = 0; n < inputCombos.Count; ++n) {
+                    Combination combo = inputCombos[n];
+
+                    if (combo.GetType() == typeof(DirectionPress)) OnInput((DirectionPress) combo, changeState);
+                    else if (combo.GetType() == typeof(DoubleTap)) OnInput((DoubleTap) combo, changeState);
+                }
             }
 
             public override void Exit() {
                 // do nothing
             }
 
-            public override void ServeInput(FightingGameInputCodeDir direction) {
-                throw new NotImplementedException();
+            private void OnInput(DirectionPress dirPress, Action<State> changeState) {
+                if (!dirPress.Stale(frame.index)) {
+                    changeState(states.Get("idle"));
+                }
             }
-            public override void ServeInput(in List<Combination> inputCombinations) {
-                    // TODO: Actual input use
-                //inputCombinations.RemoveAll(x => true);
+
+            private void OnInput(DoubleTap doubleTap, Action<State> changeState) {
+                if (!doubleTap.Stale(frame.index)) {
+                    changeState(states.Get("run"));
+                }
             }
         }
     }
