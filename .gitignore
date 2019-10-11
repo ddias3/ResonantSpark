@@ -59,4 +59,4 @@ sysinfo.txt
 crashlytics-build.properties
 
 # Asset Store Packages
-/[Aa]ssets/[Ee]xternal/
+# /[Aa]ssets/[Ee]xternal/
