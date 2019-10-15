@@ -7,6 +7,7 @@ namespace ResonantSpark {
         namespace Combinations {
             public abstract class Combination : ScriptableObject, IComparable<Combination> {
                 protected int frameTrigger;
+                public bool inUse;
                 public bool dirty;
 
                 public Combination(int frameTrigger) {
@@ -16,6 +17,7 @@ namespace ResonantSpark {
                 public virtual Combination Init(int frameTrigger) {
                     this.frameTrigger = frameTrigger;
                     dirty = false;
+                    inUse = false;
                     return this;
                 }
 

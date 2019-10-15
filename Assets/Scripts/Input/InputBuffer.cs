@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -83,6 +84,7 @@ namespace ResonantSpark {
         }
 
         public void ServeBuffer(int frameIndex) {
+            ClearInputCombinations(frameIndex);
             FindCombinations(frameIndex);
             StepFrame();
         }
@@ -130,6 +132,10 @@ namespace ResonantSpark {
 
         public List<Input.Combinations.Combination> GetFoundCombinations() {
             return inputCombinations;
+        }
+
+        public void ClearInputCombinations(int frameIndex) {
+            inputCombinations = inputCombinations.Where(combo => combo.inUse && !combo.Stale(frameIndex)).ToList();
         }
 
         public void AddInput(FightingGameInputCodeDir dirInputCode = FightingGameInputCodeDir.Neutral, FightingGameInputCodeBut buttonInputCode = FightingGameInputCodeBut.None, int layer = 0) {

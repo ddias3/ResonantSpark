@@ -14,13 +14,14 @@ namespace ResonantSpark {
                 states.Register(this, "run");
             }
 
-            public override void Enter(State previousState) {
-                fgChar.Play("idle", 0, 0.0f);
+            public override void Enter(int frameIndex, State previousState) {
+                continueInputSearch = true;
+                fgChar.Play("run_forward", 0, 0.0f);
             }
 
-            public override void Execute(Action<State> changeState) {
+            public override void Execute(int frameIndex, Action<State> changeState) {
                 var inputCombos = fgChar.GetFoundCombinations();
-                for (int n = 0; n < inputCombos.Count; ++n) {
+                for (int n = 0; n < inputCombos.Count && continueInputSearch; ++n) {
                     Combination combo = inputCombos[n];
 
                     if (combo.GetType() == typeof(DirectionPress)) OnInput((DirectionPress)combo);
@@ -29,7 +30,7 @@ namespace ResonantSpark {
                 }
             }
 
-            public override void Exit() {
+            public override void Exit(int frameIndex) {
                 // do nothing
             }
 

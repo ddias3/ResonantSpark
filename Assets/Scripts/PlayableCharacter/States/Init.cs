@@ -7,8 +7,8 @@ namespace ResonantSpark {
             public BaseState initState;
             public StateMachine stateMachine;
 
-            public void StartStateMachine() {
-                stateMachine.Enable(initState);
+            public void StartStateMachine(FrameEnforcer frame) {
+                stateMachine.Enable(initState, frame);
             }
         }
     }

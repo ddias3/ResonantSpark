@@ -6,6 +6,7 @@ namespace ResonantSpark {
     public class FightingGameCharacter : MonoBehaviour {
 
         public Animator animator;
+        public StateMachine stateMachine;
 
         private InputBuffer inputBuffer;
 
