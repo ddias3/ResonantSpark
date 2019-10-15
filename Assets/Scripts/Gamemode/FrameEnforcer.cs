@@ -7,7 +7,7 @@ namespace ResonantSpark {
     [RequireComponent(typeof(GameTimeManager))]
     public class FrameEnforcer : MonoBehaviour {
 
-        private Action<int> updateAction = null;
+        private List<Action<int>> updateActions = new List<Action<int>>();
         private GameTimeManager gameTime;
 
         private const float FRAME_TIME = 1f / 60.0f; // 1 sec over 60 frames
@@ -29,8 +29,11 @@ namespace ResonantSpark {
         }
 
         public void Update() {
+                // TODO: This may be incorrect. I may need to pull this while loop out into an async call
             while (elapsedTime > FRAME_TIME) {
-                updateAction.Invoke(frameIndex);
+                foreach (Action<int> action in updateActions) {
+                    action.Invoke(frameIndex);
+                }
 
                 frameIndex++;
                 elapsedTime -= FRAME_TIME;
@@ -40,10 +43,13 @@ namespace ResonantSpark {
         }
 
         public void SetUpdate(Action<int> updateAction) {
-            this.updateAction = updateAction;
-            this.enabled = true;
+            this.updateActions.Add(updateAction);
 
-            StartCoroutine(TriggerEndOfFrame());
+            if (!this.enabled) {
+                StartCoroutine(TriggerEndOfFrame());
+            }
+
+            this.enabled = true;
         }
 
         private IEnumerator TriggerEndOfFrame() {

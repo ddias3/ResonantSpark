@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace ResonantSpark {
     public interface State {
-        void Enter(State previousState);
-        void Execute(Action<State> changeState);
-        void Exit();
+        void Enter(int frameIndex, State previousState);
+        void Execute(int frameIndex, Action<State> changeState);
+        void Exit(int frameIndex);
     }
 }

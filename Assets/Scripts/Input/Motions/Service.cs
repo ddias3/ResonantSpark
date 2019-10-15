@@ -40,6 +40,7 @@ namespace ResonantSpark {
                     //Debug.Log("Neutral Return: " + local + " @ (lcl: " + match.Index + ", gbl: " + (frameIndex - (buffer.Length - match.Index)) + ") with " + groups.Count + " groups");
                     //Debug.Log(groups[1].Value + " @ " + groups[1].Index);
                     NeutralReturn input = AddToActiveInputs<NeutralReturn>(activeInputs, inputFactory, inputFrameIndex, frameIndex, (newInput) => {
+                        numFound++;
                         newInput.Init(inputFrameIndex);
                     });
                     numFound++;
@@ -57,6 +58,7 @@ namespace ResonantSpark {
                     //Debug.Log("Direction Press: " + local + " @ (lcl: " + match.Index + ", gbl: " + (frameIndex - (buffer.Length - match.Index)) + ") with " + groups.Count + " groups");
                     //Debug.Log(groups[2].Value + " @ " + groups[2].Index);
                     DirectionPress input = AddToActiveInputs<DirectionPress>(activeInputs, inputFactory, inputFrameIndex, frameIndex, (newInput) => {
+                        numFound++;
                         newInput.Init(inputFrameIndex, (FightingGameInputCodeDir) int.Parse(match.Groups[2].Value));
                     });
                 }
@@ -75,6 +77,7 @@ namespace ResonantSpark {
                     //Debug.Log(groups[1].Value + " @ " + groups[1].Index);
                     FightingGameInputCodeDir direction = (FightingGameInputCodeDir) int.Parse(match.Groups[1].Value);
                     DirectionHold input = AddToActiveInputs<DirectionHold>(activeInputs, inputFactory, inputFrameIndex + 19, frameIndex, (newInput) => {
+                        numFound++;
                         newInput.Init(inputFrameIndex + 19, direction, match.Value.Length);
                     });
                 }
@@ -95,6 +98,7 @@ namespace ResonantSpark {
                     //Debug.Log(groups[2].Value + " @ " + groups[2].Index);
                     FightingGameInputCodeDir direction = (FightingGameInputCodeDir) int.Parse(match.Groups[1].Value);
                     DoubleTap input = AddToActiveInputs<DoubleTap>(activeInputs, inputFactory, frameIndex - (buffer.Length - relativeFrameGapEnd), frameIndex, (newInput) => {
+                        numFound++;
                         newInput.Init(frameIndex - (buffer.Length - relativeFrameGapEnd), frameIndex - (buffer.Length - relativeFrameGapStart), direction);
                     });
                 }

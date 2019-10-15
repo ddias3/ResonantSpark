@@ -6,6 +6,9 @@ using ResonantSpark;
 
 public class TestInput : MonoBehaviour {
 
+    public bool autoInput = false;
+    public FightingGameInputCodeDir[] inputString;
+
     public FightingGameCharacter playerChar;
 
     public InputBuffer inputBuffer;
@@ -19,6 +22,8 @@ public class TestInput : MonoBehaviour {
     public void Start() {
         playerChar.input = inputBuffer;
     }
+
+    public int frameCounter = 0;
 
     public void Update() {
         horizontalInput = 0;
@@ -54,6 +59,15 @@ public class TestInput : MonoBehaviour {
             bufferArrow.GetComponent<Transform>().rotation = Quaternion.Euler(0.0f, 0.0f, Mathf.Atan2((((int) inputBuffer.GetLatestInput()) - 1) / 3 - 1, (((int) inputBuffer.GetLatestInput()) - 1) % 3 - 1) * Mathf.Rad2Deg - 90.0f);
         }
 
-        inputBuffer.AddInput((FightingGameInputCodeDir) ((verticalInput + 1) * 3 + (horizontalInput + 1) + 1));
+        if (frameCounter == 11 || frameCounter == 39 || frameCounter == 61) Debug.Break();
+
+        if (autoInput && frameCounter < inputString.Length) {
+            inputBuffer.AddInput(inputString[frameCounter]);
+        }
+        else {
+            inputBuffer.AddInput((FightingGameInputCodeDir) ((verticalInput + 1) * 3 + (horizontalInput + 1) + 1));
+        }
+
+        frameCounter++;
     }
 }
