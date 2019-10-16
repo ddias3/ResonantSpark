@@ -10,47 +10,73 @@ namespace ResonantSpark {
         public class Walk : BaseState {
 
             private Vector3 movementForce = Vector3.zero;
+            private FightingGameInputCodeDir dirPress = FightingGameInputCodeDir.None;
 
             public new void Start() {
                 base.Start();
                 states.Register(this, "walk");
+
+                RegisterInputCallbacks()
+                    .On<DirectionPress>(OnDirectionPress)
+                    .On<DoubleTap>(OnDoubleTap)
+                    .On<NeutralReturn>(OnNeutralReturn)
+                    .On<DirectionCurrent>(OnDirectionCurrent);
             }
 
             public override void Enter(int frameIndex, State previousState) {
-                continueInputSearch = true;
+                DirectionPress dirPress = (DirectionPress) messages.Dequeue();
+                this.dirPress = dirPress.direction;
+
+                dirPress.inUse = false;
+
                 fgChar.Play("walk_forward", 0, 0.0f);
             }
 
-            public override void Execute(int frameIndex, Action<State> changeState) {
-                var inputCombos = fgChar.GetFoundCombinations();
-                for (int n = 0; n < inputCombos.Count && continueInputSearch; ++n) {
-                    Combination combo = inputCombos[n];
-
-                    if (combo.GetType() == typeof(DirectionPress)) OnInput((DirectionPress) combo);
-                    else if (combo.GetType() == typeof(DoubleTap)) OnInput((DoubleTap) combo, changeState);
-                    else if (combo.GetType() == typeof(NeutralReturn)) OnInput((NeutralReturn) combo, changeState);
-                }
+            public override void Execute(int frameIndex) {
+                FindInput(fgChar.GetFoundCombinations());
+                WalkCharacter();
             }
 
             public override void Exit(int frameIndex) {
                 // do nothing
             }
 
-            private void OnInput(DirectionPress dirPress) {
-
-            }
-
-            private void OnInput(DoubleTap doubleTap, Action<State> changeState) {
-                if (!doubleTap.Stale(frame.index)) {
-                    continueInputSearch = false;
-                    changeState(states.Get("run"));
+            private void WalkCharacter() {
+                if (dirPress == FightingGameInputCodeDir.Right) {
+                    //TODO: Move character
+                    Debug.Log("Would move character to the right");
                 }
             }
 
-            private void OnInput(NeutralReturn doubleTap, Action<State> changeState) {
+            private void OnNeutralReturn(Action stop, Combination combo) {
+                var neutRet = (NeutralReturn) combo;
+                if (!neutRet.Stale(frame.index)) {
+                    neutRet.inUse = true;
+                    stop.Invoke();
+                    changeState(states.Get("idle").Message(combo));
+                }
+            }
+
+            private void OnDirectionPress(Action stop, Combination combo) {
+                var dirPress = (DirectionPress) combo;
+                if (!dirPress.Stale(frame.index)) {
+                    //stop.Invoke();
+                    this.dirPress = dirPress.direction;
+                }
+            }
+
+            private void OnDoubleTap(Action stop, Combination combo) {
+                var doubleTap = (DoubleTap) combo;
                 if (!doubleTap.Stale(frame.index)) {
-                    continueInputSearch = false;
-                    changeState(states.Get("idle"));
+                    doubleTap.inUse = true;
+                    stop.Invoke();
+                    changeState(states.Get("run").Message(combo));
+                }
+            }
+
+            private void OnDirectionCurrent(Action stop, Combination combo) {
+                if (dirPress != ((DirectionCurrent) combo).direction) {
+                    this.dirPress = ((DirectionCurrent)combo).direction;
                 }
             }
         }

@@ -34,7 +34,7 @@ namespace ResonantSpark {
             }
 
             public class Empty : Combination {
-                public Empty() : base(-1) {
+                public Empty() : base(-0xFFFF) {
                     //do nothing
                 }
 
@@ -51,7 +51,7 @@ namespace ResonantSpark {
             public class DirectionPress : Combination {
                 public FightingGameInputCodeDir direction;
 
-                public DirectionPress() : base(-1) {
+                public DirectionPress() : base(-0xFFFF) {
                     this.direction = FightingGameInputCodeDir.None;
                 }
 
@@ -67,17 +67,41 @@ namespace ResonantSpark {
 
                 public override int CompareTo(Combination other) {
                         // TODO: Proper Compare To Priority Order
-                    if (other.GetType() == typeof(DoubleTap) || other.GetType() == typeof(DirectionHold)) return 1;
+                    if (other.GetType() == typeof(DoubleTap) || other.GetType() == typeof(DirectionLongHold)) return 1;
                     else if (other.GetType() == typeof(DirectionPress)) return other.GetFrame() - this.GetFrame();
                     else return -1;
                 }
             }
 
-            public class DirectionHold : DirectionPress {
+            public class DirectionCurrent : Combination {
+                public FightingGameInputCodeDir direction;
+
+                public DirectionCurrent() : base(-0xFFFF) {
+                    this.direction = FightingGameInputCodeDir.None;
+                }
+
+                public virtual DirectionCurrent Init(int frameTrigger, FightingGameInputCodeDir direction) {
+                    base.Init(frameTrigger);
+                    this.direction = direction;
+                    return this;
+                }
+
+                public override bool Stale(int frameCurrent) {
+                    return true;
+                }
+
+                public override int CompareTo(Combination other) {
+                        // TODO: Proper Compare To Priority Order
+                    if (other.GetType() == typeof(DirectionCurrent)) return other.GetFrame() - this.GetFrame();
+                    else return 1;
+                }
+            }
+
+            public class DirectionLongHold : DirectionPress {
                 public int holdLength;
 
-                public DirectionHold() : base() { }
-                public DirectionHold Init(int frameTrigger, FightingGameInputCodeDir direction, int holdLength) {
+                public DirectionLongHold() : base() { }
+                public DirectionLongHold Init(int frameTrigger, FightingGameInputCodeDir direction, int holdLength) {
                     base.Init(frameTrigger, direction);
                     this.holdLength = holdLength;
                     return this;
@@ -86,7 +110,7 @@ namespace ResonantSpark {
                 public override int CompareTo(Combination other) {
                         // TODO: Proper Compare To Priority Order
                     if (other.GetType() == typeof(DoubleTap)) return 1;
-                    else if (other.GetType() == typeof(DirectionHold)) return other.GetFrame() - this.GetFrame();
+                    else if (other.GetType() == typeof(DirectionLongHold)) return other.GetFrame() - this.GetFrame();
                     else return -1;
                 }
             }
@@ -96,7 +120,7 @@ namespace ResonantSpark {
                 public int frameEnd;
                 public FightingGameInputCodeDir direction;
 
-                public DoubleTap() : base(-1) {
+                public DoubleTap() : base(-0xFFFF) {
                     this.frameStart = -1;
                     this.frameEnd = -1;
                 }
@@ -121,7 +145,7 @@ namespace ResonantSpark {
             }
 
             public class NeutralReturn : Combination {
-                public NeutralReturn() : base(-1) {
+                public NeutralReturn() : base(-0xFFFF) {
                     // do nothing
                 }
 
@@ -136,7 +160,8 @@ namespace ResonantSpark {
 
                 public override int CompareTo(Combination other) {
                     // TODO: Proper Compare To Priority Order
-                    if (other.GetType() == typeof(NeutralReturn)) return other.GetFrame() - this.GetFrame();
+                    if (other.GetType() == typeof(DirectionCurrent)) return -1;
+                    else if (other.GetType() == typeof(NeutralReturn)) return other.GetFrame() - this.GetFrame();
                     else return 1;
                 }
             }

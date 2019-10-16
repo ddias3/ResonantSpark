@@ -34,8 +34,8 @@ namespace ResonantSpark {
 
         public float Layer(int layerId) {
             if (!valid) {
-                CalculateDeltaTime(1.0f / 60.0f);
-                //CalculateDeltaTime(Time.deltaTime);
+                //CalculateDeltaTime(1.0f / 60.0f);
+                CalculateDeltaTime(Time.deltaTime);
             }
             return cachedValues[layerId];
         }

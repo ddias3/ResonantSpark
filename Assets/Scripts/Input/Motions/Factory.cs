@@ -6,12 +6,7 @@ namespace ResonantSpark {
     namespace Input {
         public class Factory {
             private const int INIT_POOL_SIZE = 16;
-
-            //private enum MemoryPool : int {
-            //    None = 0,
-            //    DoubleTap,
-            //    DirectionPress,
-            //}
+            private const int INIT_CURR_DIR_POOL_SIZE = 64;
 
             private Empty empty;
             private Dictionary<System.Type, List<Combination>> memPools;
@@ -19,29 +14,36 @@ namespace ResonantSpark {
 
             public Factory() {
                 memPools = new Dictionary<System.Type, List<Combination>> {
+                    { typeof(DirectionCurrent), new List<Combination>(INIT_CURR_DIR_POOL_SIZE) },
                     { typeof(DoubleTap), new List<Combination>(INIT_POOL_SIZE) },
                     { typeof(DirectionPress), new List<Combination>(INIT_POOL_SIZE) },
                     { typeof(NeutralReturn), new List<Combination>(INIT_POOL_SIZE) },
-                    { typeof(DirectionHold), new List<Combination>(INIT_POOL_SIZE) }
+                    { typeof(DirectionLongHold), new List<Combination>(INIT_POOL_SIZE) }
                 };
 
                 ind = new Dictionary<System.Type, int> {
+                    { typeof(DirectionCurrent), 0 },
                     { typeof(DoubleTap), 0 },
                     { typeof(DirectionPress), 0 },
                     { typeof(NeutralReturn), 0 },
-                    { typeof(DirectionHold), 0 }
+                    { typeof(DirectionLongHold), 0 }
                 };
 
+                var dirCurr = memPools[typeof(DirectionCurrent)];
                 var neutRet = memPools[typeof(NeutralReturn)];
                 var dirPress = memPools[typeof(DirectionPress)];
                 var doubleTap = memPools[typeof(DoubleTap)];
-                var dirHold = memPools[typeof(DirectionHold)];
+                var dirHold = memPools[typeof(DirectionLongHold)];
+
+                for (int n = 0; n < INIT_CURR_DIR_POOL_SIZE; ++n) {
+                    dirCurr.Add(new DirectionCurrent());
+                }
 
                 for (int n = 0; n < INIT_POOL_SIZE; ++n) {
                     neutRet.Add(new NeutralReturn());
                     dirPress.Add(new DirectionPress());
                     doubleTap.Add(new DoubleTap());
-                    dirHold.Add(new DirectionHold());
+                    dirHold.Add(new DirectionLongHold());
                 }
 
                 empty = new Empty();
@@ -70,11 +72,11 @@ namespace ResonantSpark {
                 List<Combination> memPool = memPools[type];
 
                 int stopIndex = index;
-                if (memPool[index].Stale(frameCurrent)) {
+                if (!memPool[index].inUse && memPool[index].Stale(frameCurrent)) {
                     retValue = memPool[index];
                 }
                 for (index = (stopIndex + 1) % memPool.Count; index != stopIndex && retValue == null; index = (index + 1) % memPool.Count) {
-                    if (memPool[index].Stale(frameCurrent)) {
+                    if (!memPool[index].inUse && memPool[index].Stale(frameCurrent)) {
                         retValue = memPool[index];
                     }
                 }
@@ -91,6 +93,8 @@ namespace ResonantSpark {
                             memPool.Add(new T_Combo());
                         });
                     }
+
+                    // TODO: Create a way to get out of this infinite loop if next available is ALWAYS null.
                 } while (combo == null);
                 return combo;
             }
