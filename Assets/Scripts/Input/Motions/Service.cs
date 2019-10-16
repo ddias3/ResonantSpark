@@ -12,9 +12,9 @@ namespace ResonantSpark {
                 int test0 = FindDoubleDirectionTaps(buffer, inputFactory, frameIndex, activeInputs);
                 int test1 = FindDirectionPresses(buffer, inputFactory, frameIndex, activeInputs);
                 int test2 = FindNeutralReturns(buffer, inputFactory, frameIndex, activeInputs);
-                int test3 = FindDirectionHolds(buffer, inputFactory, frameIndex, activeInputs);
+                int test3 = FindDirectionCurrent(buffer, inputFactory, frameIndex, activeInputs);
 
-                int x = test0 + test1 + test2; // + test3;
+                int x = test0 + test1 + test2 + test3;
                 activeInputs.Sort();
             }
 
@@ -67,7 +67,7 @@ namespace ResonantSpark {
 
                 // This requires a hold of 20 frames
             private static readonly Regex rgxDirectionHolds = new Regex(@"(?<=([1-9]))(?=([^5])\2{19,})(?!\1)|^([^5])\3+$", RegexOptions.ECMAScript | RegexOptions.Compiled);
-            public static int FindDirectionHolds(string buffer, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
+            public static int FindDirectionLongHolds(string buffer, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
                 int numFound = 0;
                 foreach (Match match in rgxDirectionHolds.Matches(buffer)) {
                     int inputFrameIndex = frameIndex - (buffer.Length - match.Index);
@@ -76,11 +76,21 @@ namespace ResonantSpark {
                     //Debug.Log("Direction Hold: " + local + " @ (lcl: " + match.Index + ", gbl: " + inputFrameIndex + ") with " + groups.Count + " groups");
                     //Debug.Log(groups[1].Value + " @ " + groups[1].Index);
                     FightingGameInputCodeDir direction = (FightingGameInputCodeDir) int.Parse(match.Groups[1].Value);
-                    DirectionHold input = AddToActiveInputs<DirectionHold>(activeInputs, inputFactory, inputFrameIndex + 19, frameIndex, (newInput) => {
+                    DirectionLongHold input = AddToActiveInputs<DirectionLongHold>(activeInputs, inputFactory, inputFrameIndex + 19, frameIndex, (newInput) => {
                         numFound++;
                         newInput.Init(inputFrameIndex + 19, direction, match.Value.Length);
                     });
                 }
+                return numFound;
+            }
+
+            public static int FindDirectionCurrent(string buffer, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
+                int numFound = 0;
+                FightingGameInputCodeDir direction = (FightingGameInputCodeDir) int.Parse(buffer[buffer.Length - 1].ToString());
+                DirectionCurrent input = AddToActiveInputs<DirectionCurrent>(activeInputs, inputFactory, frameIndex, frameIndex, (newInput) => {
+                    numFound++;
+                    newInput.Init(frameIndex, direction);
+                });
                 return numFound;
             }
 

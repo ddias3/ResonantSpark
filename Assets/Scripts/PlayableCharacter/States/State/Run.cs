@@ -12,39 +12,53 @@ namespace ResonantSpark {
             public new void Start() {
                 base.Start();
                 states.Register(this, "run");
+
+                RegisterInputCallbacks()
+                    .On<DirectionPress>(OnDirectionPress)
+                    //.On<DoubleTap>(OnDoubleTap)
+                    .On<NeutralReturn>(OnNeutralReturn);
             }
 
             public override void Enter(int frameIndex, State previousState) {
-                continueInputSearch = true;
+                Combination combo = messages.Dequeue();
+                combo.inUse = false;
+
                 fgChar.Play("run_forward", 0, 0.0f);
             }
 
-            public override void Execute(int frameIndex, Action<State> changeState) {
-                var inputCombos = fgChar.GetFoundCombinations();
-                for (int n = 0; n < inputCombos.Count && continueInputSearch; ++n) {
-                    Combination combo = inputCombos[n];
-
-                    if (combo.GetType() == typeof(DirectionPress)) OnInput((DirectionPress)combo);
-                    else if (combo.GetType() == typeof(DoubleTap)) OnInput((DoubleTap)combo);
-                    else if (combo.GetType() == typeof(NeutralReturn)) OnInput((NeutralReturn)combo);
-                }
+            public override void Execute(int frameIndex) {
+                FindInput(fgChar.GetFoundCombinations());
             }
 
             public override void Exit(int frameIndex) {
                 // do nothing
             }
 
-            private void OnInput(DirectionPress dirPress) {
-
+            private void OnNeutralReturn(Action stop, Combination combo) {
+                if (!combo.Stale(frame.index)) {
+                    combo.inUse = true;
+                    stop.Invoke();
+                    changeState(states.Get("idle").Message(combo));
+                }
             }
 
-            private void OnInput(DoubleTap doubleTap) {
-
+            private void OnDirectionPress(Action stop, Combination combo) {
+                var dirPress = (DirectionPress) combo;
+                if (!dirPress.Stale(frame.index)) {
+                    dirPress.inUse = true;
+                    stop.Invoke();
+                    changeState(states.Get("walk").Message(combo));
+                }
             }
 
-            private void OnInput(NeutralReturn doubleTap) {
-
-            }
+            //private void OnDoubleTap(Action stop, Combination combo) {
+            //    var doubleTap = (DoubleTap) combo;
+            //    if (!doubleTap.Stale(frame.index)) {
+            //        doubleTap.inUse = true;
+            //        stop.Invoke();
+            //        changeState(states.Get("run").Message(combo));
+            //    }
+            //}
         }
     }
 }

@@ -12,40 +12,42 @@ namespace ResonantSpark {
             public new void Start() {
                 base.Start();
                 states.Register(this, "idle");
+
+                RegisterInputCallbacks()
+                    .On<DirectionPress>(OnDirectionPress)
+                    .On<DoubleTap>(OnDoubleTap);
             }
 
             public override void Enter(int frameIndex, State previousState) {
-                continueInputSearch = true;
+                Combination combo = messages.Dequeue();
+                combo.inUse = false;
+
                 fgChar.Play("idle", 0, 0.0f);
             }
 
-            public override void Execute(int frameIndex, Action<State> changeState) {
-                var inputCombos = fgChar.GetFoundCombinations();
-                for (int n = 0; n < inputCombos.Count && continueInputSearch; ++n) {
-                    Combination combo = inputCombos[n];
-
-                    if (combo.GetType() == typeof(DirectionPress)) OnInput((DirectionPress)combo, changeState);
-                    else if (combo.GetType() == typeof(DoubleTap)) OnInput((DoubleTap)combo, changeState);
-                }
+            public override void Execute(int frameIndex) {
+                FindInput(fgChar.GetFoundCombinations());
             }
 
             public override void Exit(int frameIndex) {
                 // do nothing
             }
 
-            private void OnInput(DirectionPress dirPress, Action<State> changeState) {
+            private void OnDirectionPress(Action stop, Combination combo) {
+                var dirPress = (DirectionPress) combo;
                 if (!dirPress.Stale(frame.index)) {
                     dirPress.inUse = true;
-                    continueInputSearch = false;
-                    changeState(states.Get("walk"));
+                    stop.Invoke();
+                    changeState(states.Get("walk").Message(dirPress));
                 }
             }
 
-            private void OnInput(DoubleTap doubleTap, Action<State> changeState) {
+            private void OnDoubleTap(Action stop, Combination combo) {
+                var doubleTap = (DoubleTap) combo;
                 if (!doubleTap.Stale(frame.index)) {
                     doubleTap.inUse = true;
-                    continueInputSearch = false;
-                    changeState(states.Get("run"));
+                    stop.Invoke();
+                    changeState(states.Get("run").Message(doubleTap));
                 }
             }
         }

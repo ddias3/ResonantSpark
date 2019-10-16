@@ -5,6 +5,8 @@ using UnityEngine;
 namespace ResonantSpark {
     public class StateMachine : MonoBehaviour {
 
+        public CharacterStates.StateDict stateDict;
+
         private State curr;
         private List<State> nextStates;
         private Action<State> changeStateCallback;
@@ -12,7 +14,7 @@ namespace ResonantSpark {
 
         public void Execute(int frameIndex) {
             try {
-                curr.Execute(frameIndex, changeStateCallback);
+                curr.Execute(frameIndex);
                 if (changeState) {
                     ChangeState(frameIndex);
                 }
@@ -47,6 +49,10 @@ namespace ResonantSpark {
 
             frame.SetUpdate(new Action<int>(Execute));
             curr = startState;
+
+            stateDict.Each(state => {
+                state.OnStateMachineEnable(changeStateCallback);
+            });
         }
 
         private void ChangeState(int frameIndex) {

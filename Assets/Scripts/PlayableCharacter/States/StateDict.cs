@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,6 +14,13 @@ namespace ResonantSpark {
 
             public BaseState Get(string id) {
                 return dict[id];
+            }
+
+            public StateDict Each(Action<BaseState> action) {
+                foreach (KeyValuePair<string, BaseState> entry in dict) {
+                    action(entry.Value);
+                }
+                return this;
             }
         }
     }
