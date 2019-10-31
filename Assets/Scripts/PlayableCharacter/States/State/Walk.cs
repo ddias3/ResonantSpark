@@ -9,8 +9,21 @@ namespace ResonantSpark {
     namespace CharacterStates {
         public class Walk : BaseState {
 
+            public Vector3 forceScalar;
+            public AnimationCurve forwardAccel;
+            public AnimationCurve horizontalAccel;
+            public float maxForwardSpeed;
+            public float maxBackwardSpeed;
+            public float maxHorizontalSpeed;
+
+            private Vector3 charAccel;
             private Vector3 movementForce = Vector3.zero;
             private FightingGameInputCodeDir dirPress = FightingGameInputCodeDir.None;
+
+            private float charRotation;
+
+            [Tooltip("in degrees per frame (1/60 s)")]
+            public float maxRotation;
 
             public new void Start() {
                 base.Start();
@@ -28,13 +41,16 @@ namespace ResonantSpark {
                 this.dirPress = dirPress.direction;
 
                 dirPress.inUse = false;
+                charAccel = Vector3.zero;
 
-                fgChar.Play("walk_forward", 0, 0.0f);
+                fgChar.Play("walk", 0, 0.0f);
             }
 
             public override void Execute(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
+
                 WalkCharacter();
+                TurnCharacter();
             }
 
             public override void Exit(int frameIndex) {
@@ -42,9 +58,41 @@ namespace ResonantSpark {
             }
 
             private void WalkCharacter() {
-                if (dirPress == FightingGameInputCodeDir.Right) {
-                    //TODO: Move character
-                    Debug.Log("Would move character to the right");
+                //...((FightingGameInputCodeDir)((verticalInput + 1) * 3 + (horizontalInput + 1) + 1));
+
+                int cameraX = (((int) dirPress) - 1) % 3 - 1;
+                int cameraZ = (((int) dirPress) - 1) / 3 - 1;
+
+                //Debug.Log("FGInput = " + dirPress + " (" + ((int) dirPress) + ") | Char X = " + charX + ", Char Z = " + charZ);
+
+                Vector3 localVelocity = Quaternion.Inverse(fgChar.rigidbody.rotation) * fgChar.rigidbody.velocity;
+
+                Vector3 localInput = fgChar.CameraToChar(new Vector3(cameraX, 0, cameraZ));
+
+                fgChar.SetLocalMoveDirection(localInput.x, localInput.z);
+
+                movementForce = localInput;
+                movementForce.Scale(forceScalar);
+                movementForce.Scale(new Vector3(
+                    horizontalAccel.Evaluate(localVelocity.x / maxHorizontalSpeed),
+                    1.0f,
+                    forwardAccel.Evaluate(localVelocity.z / (localVelocity.z > 0 ? maxForwardSpeed : maxBackwardSpeed))
+                ));
+
+                fgChar.rigidbody.AddRelativeForce(movementForce);
+            }
+
+            private void TurnCharacter() {
+                charRotation = 0.0f;
+
+                if (fgChar.Grounded()) {
+                    charRotation = fgChar.LookToMoveAngle() / fgChar.gameTime;
+                    if (charRotation != 0.0f) {
+                        fgChar.rigidbody.MoveRotation(Quaternion.AngleAxis(Mathf.Clamp(charRotation, -maxRotation, maxRotation) * fgChar.realTime, Vector3.up) * fgChar.rigidbody.rotation);
+                    }
+                }
+                else {
+                    //TODO: don't turn character while in mid air
                 }
             }
 

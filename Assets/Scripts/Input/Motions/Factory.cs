@@ -6,7 +6,6 @@ namespace ResonantSpark {
     namespace Input {
         public class Factory {
             private const int INIT_POOL_SIZE = 16;
-            private const int INIT_CURR_DIR_POOL_SIZE = 64;
 
             private Empty empty;
             private Dictionary<System.Type, List<Combination>> memPools;
@@ -14,7 +13,7 @@ namespace ResonantSpark {
 
             public Factory() {
                 memPools = new Dictionary<System.Type, List<Combination>> {
-                    { typeof(DirectionCurrent), new List<Combination>(INIT_CURR_DIR_POOL_SIZE) },
+                    { typeof(DirectionCurrent), new List<Combination>(INIT_POOL_SIZE) },
                     { typeof(DoubleTap), new List<Combination>(INIT_POOL_SIZE) },
                     { typeof(DirectionPress), new List<Combination>(INIT_POOL_SIZE) },
                     { typeof(NeutralReturn), new List<Combination>(INIT_POOL_SIZE) },
@@ -35,11 +34,8 @@ namespace ResonantSpark {
                 var doubleTap = memPools[typeof(DoubleTap)];
                 var dirHold = memPools[typeof(DirectionLongHold)];
 
-                for (int n = 0; n < INIT_CURR_DIR_POOL_SIZE; ++n) {
-                    dirCurr.Add(new DirectionCurrent());
-                }
-
                 for (int n = 0; n < INIT_POOL_SIZE; ++n) {
+                    dirCurr.Add(new DirectionCurrent());
                     neutRet.Add(new NeutralReturn());
                     dirPress.Add(new DirectionPress());
                     doubleTap.Add(new DoubleTap());

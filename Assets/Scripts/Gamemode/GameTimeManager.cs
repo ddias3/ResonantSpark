@@ -7,6 +7,7 @@ namespace ResonantSpark {
 
             // TODO: Remake this to be a tree structure instead of always linear
         private List<Func<float, float>> callbacks;
+        private Dictionary<string, int> layerNames;
         private List<float> cachedValues;
         private bool valid = false;
 
@@ -17,10 +18,12 @@ namespace ResonantSpark {
         private void Start() {
             callbacks = new List<Func<float, float>>();
             cachedValues = new List<float>();
+            layerNames = new Dictionary<string, int>();
 
-                // This call is skipped
-            callbacks.Add(new Func<float, float>(x => x));
-            cachedValues.Add(Time.deltaTime);
+            // This call is skipped in CalculateDeltaTime
+            //callbacks.Add(new Func<float, float>(x => x));
+            //cachedValues.Add(Time.deltaTime);
+            AddLayer(new Func<float, float>(x => x), "realTime");
         }
 
         private void CalculateDeltaTime(float deltaTime) {
@@ -40,9 +43,17 @@ namespace ResonantSpark {
             return cachedValues[layerId];
         }
 
-        public int AddLayer(Func<float, float> callback) {
+        public float Layer(string layerName) {
+            return Layer(layerNames[layerName]);
+        }
+
+        public int AddLayer(Func<float, float> callback, string name = null) {
             callbacks.Add(callback);
             cachedValues.Add(0.0f);
+
+            if (name != null) {
+                layerNames.Add(name, callbacks.Count - 1);
+            }
 
             return callbacks.Count - 1;
         }

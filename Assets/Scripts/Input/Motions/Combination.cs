@@ -5,7 +5,7 @@ using UnityEngine;
 namespace ResonantSpark {
     namespace Input {
         namespace Combinations {
-            public abstract class Combination : ScriptableObject, IComparable<Combination> {
+            public abstract class Combination : /*ScriptableObject,*/ IComparable<Combination> {
                 protected int frameTrigger;
                 public bool inUse;
                 public bool dirty;
@@ -87,7 +87,7 @@ namespace ResonantSpark {
                 }
 
                 public override bool Stale(int frameCurrent) {
-                    return true;
+                    return (frameCurrent - frameTrigger) > 0;
                 }
 
                 public override int CompareTo(Combination other) {

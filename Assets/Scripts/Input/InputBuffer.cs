@@ -58,6 +58,7 @@ namespace ResonantSpark {
 
         private FrameEnforcer frame;
 
+        private InputStruct currState;
         private InputStruct[] inputBuffer;
         private int inputIndex = 0;
 
@@ -74,6 +75,8 @@ namespace ResonantSpark {
 
             inputFactory = new Input.Factory();
             inputBuffer = new InputStruct[bufferLength];
+            currState = new InputStruct();
+            currState.buttons = new FightingGameInputCodeBut[5];
 
             for (int n = 0; n < inputBuffer.Length; ++n) {
                 inputBuffer[n].buttons = new FightingGameInputCodeBut[5];
@@ -83,7 +86,13 @@ namespace ResonantSpark {
             inputCombinations = new List<Input.Combinations.Combination>();
         }
 
+        public void SetCurrentInputState(FightingGameInputCodeDir dirInputCode = FightingGameInputCodeDir.Neutral, FightingGameInputCodeBut buttonInputCode = FightingGameInputCodeBut.None, int layer = 0) {
+            currState.direction = dirInputCode;
+            currState.buttons[0] = buttonInputCode;
+        }
+
         public void ServeBuffer(int frameIndex) {
+            ServeInput();
             ClearInputCombinations(frameIndex);
             FindCombinations(frameIndex);
             StepFrame();
@@ -138,9 +147,9 @@ namespace ResonantSpark {
             inputCombinations = inputCombinations.Where(combo => combo.inUse || !combo.Stale(frameIndex)).ToList();
         }
 
-        public void AddInput(FightingGameInputCodeDir dirInputCode = FightingGameInputCodeDir.Neutral, FightingGameInputCodeBut buttonInputCode = FightingGameInputCodeBut.None, int layer = 0) {
-            inputBuffer[inputIndex].direction = dirInputCode;
-            inputBuffer[inputIndex].buttons[0] = buttonInputCode;
+        public void ServeInput() {
+            inputBuffer[inputIndex].direction = currState.direction;
+            inputBuffer[inputIndex].buttons[0] = currState.buttons[0];
         }
     }
 }
