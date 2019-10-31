@@ -23,7 +23,7 @@ namespace ResonantSpark {
                 Combination combo = messages.Dequeue();
                 combo.inUse = false;
 
-                fgChar.Play("run_forward", 0, 0.0f);
+                //fgChar.Play("run_forward", 0, 0.0f);
             }
 
             public override void Execute(int frameIndex) {

@@ -20,7 +20,7 @@ public class TestInput : MonoBehaviour {
     private int verticalInput = 0;
 
     public void Start() {
-        playerChar.input = inputBuffer;
+        playerChar.SetInputBuffer(inputBuffer);
     }
 
     public int frameCounter = 0;
@@ -59,13 +59,11 @@ public class TestInput : MonoBehaviour {
             bufferArrow.GetComponent<Transform>().rotation = Quaternion.Euler(0.0f, 0.0f, Mathf.Atan2((((int) inputBuffer.GetLatestInput()) - 1) / 3 - 1, (((int) inputBuffer.GetLatestInput()) - 1) % 3 - 1) * Mathf.Rad2Deg - 90.0f);
         }
 
-        if (frameCounter == 11 || frameCounter == 39 || frameCounter == 61) Debug.Break();
-
         if (autoInput && frameCounter < inputString.Length) {
-            inputBuffer.AddInput(inputString[frameCounter]);
+            inputBuffer.SetCurrentInputState(inputString[frameCounter]);
         }
         else {
-            inputBuffer.AddInput((FightingGameInputCodeDir) ((verticalInput + 1) * 3 + (horizontalInput + 1) + 1));
+            inputBuffer.SetCurrentInputState((FightingGameInputCodeDir) ((verticalInput + 1) * 3 + (horizontalInput + 1) + 1));
         }
 
         frameCounter++;

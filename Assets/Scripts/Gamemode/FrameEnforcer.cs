@@ -39,7 +39,7 @@ namespace ResonantSpark {
                 elapsedTime -= FRAME_TIME;
             }
 
-            elapsedTime += gameTime.Layer(0);
+            elapsedTime += gameTime.Layer("realTime");
         }
 
         public void SetUpdate(Action<int> updateAction) {

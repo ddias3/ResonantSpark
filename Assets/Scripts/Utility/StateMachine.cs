@@ -7,6 +7,10 @@ namespace ResonantSpark {
 
         public CharacterStates.StateDict stateDict;
 
+#if UNITY_EDITOR
+        public string currStateName;
+#endif
+
         private State curr;
         private List<State> nextStates;
         private Action<State> changeStateCallback;
@@ -14,6 +18,9 @@ namespace ResonantSpark {
 
         public void Execute(int frameIndex) {
             try {
+#if UNITY_EDITOR
+                currStateName = curr.GetType().Name;
+#endif
                 curr.Execute(frameIndex);
                 if (changeState) {
                     ChangeState(frameIndex);
