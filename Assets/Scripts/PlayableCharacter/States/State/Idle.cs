@@ -18,7 +18,7 @@ namespace ResonantSpark {
                     .On<DoubleTap>(OnDoubleTap);
             }
 
-            public override void Enter(int frameIndex, State previousState) {
+            public override void Enter(int frameIndex, IState previousState) {
                 Combination combo = messages.Dequeue();
                 combo.inUse = false;
 

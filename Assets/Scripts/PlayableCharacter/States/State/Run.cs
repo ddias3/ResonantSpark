@@ -19,7 +19,7 @@ namespace ResonantSpark {
                     .On<NeutralReturn>(OnNeutralReturn);
             }
 
-            public override void Enter(int frameIndex, State previousState) {
+            public override void Enter(int frameIndex, IState previousState) {
                 Combination combo = messages.Dequeue();
                 combo.inUse = false;
 

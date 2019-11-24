@@ -36,7 +36,7 @@ namespace ResonantSpark {
                     .On<DirectionCurrent>(OnDirectionCurrent);
             }
 
-            public override void Enter(int frameIndex, State previousState) {
+            public override void Enter(int frameIndex, IState previousState) {
                 DirectionPress dirPress = (DirectionPress) messages.Dequeue();
                 this.dirPress = dirPress.direction;
 

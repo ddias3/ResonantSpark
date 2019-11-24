@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace ResonantSpark {
-    public interface State {
-        void OnStateMachineEnable(Action<State> changeState);
-        void Enter(int frameIndex, State previousState);
+    public interface IState {
+        void OnStateMachineEnable(Action<IState> changeState);
+        void Enter(int frameIndex, IState previousState);
         void Execute(int frameIndex);
         void Exit(int frameIndex);
     }

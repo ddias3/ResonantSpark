@@ -6,7 +6,7 @@ using ResonantSpark.Input.Combinations;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public abstract class BaseState : MonoBehaviour, State {
+        public abstract class BaseState : MonoBehaviour, IState {
 
             protected StateDict states;
             protected GameTimeManager gameTime;
@@ -14,7 +14,7 @@ namespace ResonantSpark {
             protected FightingGameCharacter fgChar;
             protected FrameEnforcer frame;
 
-            protected Action<State> changeState;
+            protected Action<IState> changeState;
 
             protected Queue<Combination> messages;
 
@@ -56,7 +56,7 @@ namespace ResonantSpark {
                 }
             }
 
-            public void OnStateMachineEnable(Action<State> changeState) {
+            public void OnStateMachineEnable(Action<IState> changeState) {
                 this.changeState = changeState;
             }
 
@@ -65,7 +65,7 @@ namespace ResonantSpark {
                 return this;
             }
 
-            public abstract void Enter(int frameIndex, State previousState);
+            public abstract void Enter(int frameIndex, IState previousState);
             public abstract void Execute(int frameIndex);
             public abstract void Exit(int frameIndex);
 
