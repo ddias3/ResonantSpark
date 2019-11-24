@@ -11,9 +11,9 @@ namespace ResonantSpark {
         public string currStateName;
 #endif
 
-        private State curr;
-        private List<State> nextStates;
-        private Action<State> changeStateCallback;
+        private IState curr;
+        private List<IState> nextStates;
+        private Action<IState> changeStateCallback;
         private bool changeState = false;
 
         public void Execute(int frameIndex) {
@@ -42,13 +42,13 @@ namespace ResonantSpark {
             }
         }
 
-        public State GetCurrentState() {
+        public IState GetCurrentState() {
             return curr;
         }
 
-        public void Enable(State startState, FrameEnforcer frame) {
-            nextStates = new List<State>();
-            changeStateCallback = (State nextState) => {
+        public void Enable(IState startState, FrameEnforcer frame) {
+            nextStates = new List<IState>();
+            changeStateCallback = (IState nextState) => {
                 changeState = true;
                 nextStates.Add(nextState);
             };
@@ -60,15 +60,18 @@ namespace ResonantSpark {
             stateDict.Each(state => {
                 state.OnStateMachineEnable(changeStateCallback);
             });
+
+            startState.Enter(-1, null);
         }
 
         private void ChangeState(int frameIndex) {
-            State nextState = nextStates[0];
+            IState nextState = nextStates[0];
             nextStates.RemoveAt(0);
-            curr = nextState;
 
             curr.Exit(frameIndex);
             nextState.Enter(frameIndex, curr);
+
+            curr = nextState;
 
             if (nextStates.Count == 0) {
                 changeState = false;
