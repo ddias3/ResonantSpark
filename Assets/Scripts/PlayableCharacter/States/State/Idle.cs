@@ -19,8 +19,10 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
-                Combination combo = messages.Dequeue();
-                combo.inUse = false;
+                if (messages.Count > 0) {
+                    Combination combo = messages.Dequeue();
+                    combo.inUse = false;
+                }
 
                 fgChar.Play("idle", 0, 0.0f);
             }

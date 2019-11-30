@@ -43,7 +43,7 @@ namespace ResonantSpark {
                 dirPress.inUse = false;
                 charAccel = Vector3.zero;
 
-                fgChar.Play("walk", 0, 0.0f);
+                fgChar.Play("walk_start", 0, 0.0f);
             }
 
             public override void Execute(int frameIndex) {
