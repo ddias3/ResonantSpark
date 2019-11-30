@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using ResonantSpark;
+using ResonantSpark.Gameplay;
 
 public class TestInput : MonoBehaviour {
 

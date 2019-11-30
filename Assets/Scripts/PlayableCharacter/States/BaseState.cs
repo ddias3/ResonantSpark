@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Input.Combinations;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterStates {
