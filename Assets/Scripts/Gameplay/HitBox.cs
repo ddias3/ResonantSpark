@@ -5,6 +5,7 @@ using UnityEngine;
 namespace ResonantSpark {
     namespace Character {
         public class HitBox : ScriptableObject {
+
             public Vector3 relativeLocation { get; private set; }
             public Collider collider { get; private set; } // maybe make all of them capsule colliders
 
@@ -13,8 +14,6 @@ namespace ResonantSpark {
                 this.collider = col;
                 return this;
             }
-
-
         }
     }
 }

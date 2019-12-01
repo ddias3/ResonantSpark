@@ -2,17 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Movement : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+using ResonantSpark.Builder;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+namespace ResonantSpark {
+    namespace CharacterProperties {
+        namespace Male0 {
+            public class Movement : ScriptableObject {
+                public void Init(ICharacterPropertiesBuilder charBuilder) {
+                    charBuilder
+                        .WalkSpeed(1.0f)
+                        .RunSpeed(charState => {
+                            return 2.0f;
+                        })
+                        .MaxJumpHeight(1.0f);
+                }
+            }
+        }
     }
 }

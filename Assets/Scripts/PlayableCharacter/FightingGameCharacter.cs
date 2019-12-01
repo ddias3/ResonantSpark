@@ -12,7 +12,7 @@ namespace ResonantSpark {
 
             public Text charVelocity;
 
-            private InputBuffer inputBuffer;
+            private Input.InputBuffer inputBuffer;
 
             private GameObject opponentChar;
             private GameTimeManager gameTimeManager;
@@ -30,7 +30,7 @@ namespace ResonantSpark {
                 return this;
             }
 
-            public FightingGameCharacter SetInputBuffer(InputBuffer inputBuffer) {
+            public FightingGameCharacter SetInputBuffer(Input.InputBuffer inputBuffer) {
                 this.inputBuffer = inputBuffer;
                 return this;
             }

@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using ResonantSpark;
+
 using ResonantSpark.Gameplay;
+using ResonantSpark.Input;
 
 public class TestInput : MonoBehaviour {
 

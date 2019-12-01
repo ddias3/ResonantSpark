@@ -18,7 +18,7 @@ namespace ResonantSpark {
 
             private Vector3 charAccel;
             private Vector3 movementForce = Vector3.zero;
-            private FightingGameInputCodeDir dirPress = FightingGameInputCodeDir.None;
+            private Input.FightingGameInputCodeDir dirPress = Input.FightingGameInputCodeDir.None;
 
             private float charRotation;
 

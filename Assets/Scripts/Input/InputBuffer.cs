@@ -5,151 +5,166 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace ResonantSpark {
-
-    [System.Serializable]
-    public enum FightingGameInputCodeDir : int {
-        // [7,8,9]       [A] [B] [S]
-        // [4,5,6]       [D] [C]
-        // [1,2,3]
-
-        None = 0,
-
-        DownLeft,
-        Down,
-        DownRight,
-        Left,
-        Neutral,
-        Right,
-        UpLeft,
-        Up,
-        UpRight,
-    };
-
-    [System.Serializable]
-    public enum FightingGameInputCodeBut : int {
-        // [7,8,9]       [A] [B] [S]
-        // [4,5,6]       [D] [C]
-        // [1,2,3]
-
-        None = 0,
-
-        A,
-        B,
-        C,
-        D,
-        S
-    };
-
-    [RequireComponent(typeof(FrameEnforcer))]
-    public class InputBuffer : MonoBehaviour {
+    namespace Input {
 
         [System.Serializable]
-        public struct InputStruct {
-            public FightingGameInputCodeDir direction;
-            public FightingGameInputCodeBut[] buttons;
+        public enum FightingGameInputCodeDir : int {
+            // [7,8,9]       [A] [B] [S]
+            // [4,5,6]       [D] [C]
+            // [1,2,3]
+
+            None = 0,
+
+            DownLeft,
+            Down,
+            DownRight,
+            Left,
+            Neutral,
+            Right,
+            UpLeft,
+            Up,
+            UpRight,
         };
 
-        public bool breakPoint = false;
+        [System.Serializable]
+        public enum FightingGameInputCodeBut : int {
+            // [7,8,9]       [A] [B] [S]
+            // [4,5,6]       [D] [C]
+            // [1,2,3]
 
-        public int inputDelay;
-        public int inputBufferSize;
+            None = 0,
 
-        public int bufferLength;
+            A,
+            B,
+            C,
+            D,
+            S
+        };
 
-        private FrameEnforcer frame;
+        [Serializable]
+        public enum InputNotation : int {
+            _5A,
+            _5AA,
+            _5AhA,
+            _5AAA,
+            _5AAhA,
+            _5AAAA,
+            _5AAAhA,
+            _2A,
+            _2AA
+        }
 
-        private InputStruct currState;
-        private InputStruct[] inputBuffer;
-        private int inputIndex = 0;
+        [RequireComponent(typeof(FrameEnforcer))]
+        public class InputBuffer : MonoBehaviour {
 
-        private Input.Factory inputFactory;
+            [System.Serializable]
+            public struct InputStruct {
+                public FightingGameInputCodeDir direction;
+                public FightingGameInputCodeBut[] buttons;
+            };
 
-        private StringBuilder findCombinationsBuffer;
+            public bool breakPoint = false;
 
-        //[SerializeField]
-        private List<Input.Combinations.Combination> inputCombinations;
+            public int inputDelay;
+            public int inputBufferSize;
 
-        public void Start() {
-            frame = gameObject.GetComponent<FrameEnforcer>();
-            frame.SetUpdate(new Action<int>(ServeBuffer));
+            public int bufferLength;
 
-            inputFactory = new Input.Factory();
-            inputBuffer = new InputStruct[bufferLength];
-            currState = new InputStruct();
-            currState.buttons = new FightingGameInputCodeBut[5];
+            private FrameEnforcer frame;
 
-            for (int n = 0; n < inputBuffer.Length; ++n) {
-                inputBuffer[n].buttons = new FightingGameInputCodeBut[5];
+            private InputStruct currState;
+            private InputStruct[] inputBuffer;
+            private int inputIndex = 0;
+
+            private Input.Factory inputFactory;
+
+            private StringBuilder findCombinationsBuffer;
+
+            //[SerializeField]
+            private List<Input.Combinations.Combination> inputCombinations;
+
+            public void Start() {
+                frame = gameObject.GetComponent<FrameEnforcer>();
+                frame.SetUpdate(new Action<int>(ServeBuffer));
+
+                inputFactory = new Input.Factory();
+                inputBuffer = new InputStruct[bufferLength];
+                currState = new InputStruct();
+                currState.buttons = new FightingGameInputCodeBut[5];
+
+                for (int n = 0; n < inputBuffer.Length; ++n) {
+                    inputBuffer[n].buttons = new FightingGameInputCodeBut[5];
+                }
+
+                findCombinationsBuffer = new StringBuilder(inputBufferSize + 1);
+                inputCombinations = new List<Input.Combinations.Combination>();
             }
 
-            findCombinationsBuffer = new StringBuilder(inputBufferSize + 1);
-            inputCombinations = new List<Input.Combinations.Combination>();
-        }
-
-        public void SetCurrentInputState(FightingGameInputCodeDir dirInputCode = FightingGameInputCodeDir.Neutral, FightingGameInputCodeBut buttonInputCode = FightingGameInputCodeBut.None, int layer = 0) {
-            currState.direction = dirInputCode;
-            currState.buttons[0] = buttonInputCode;
-        }
-
-        public void ServeBuffer(int frameIndex) {
-            ServeInput();
-            ClearInputCombinations(frameIndex);
-            FindCombinations(frameIndex);
-            StepFrame();
-        }
-        
-        public FightingGameInputCodeDir GetLatestInput() {
-            int currIndex = (inputIndex - inputDelay + bufferLength) % bufferLength;
-            if (inputBuffer[currIndex].direction != FightingGameInputCodeDir.None) {
-                return inputBuffer[currIndex].direction;
-            }
-            else {
-                return FightingGameInputCodeDir.Neutral;
-            }
-        }
-
-        private void StepFrame() {
-            inputIndex = (inputIndex + 1) % bufferLength;
-        }
-
-        private void FindCombinations(int frameIndex) {
-            if (breakPoint) {
-                Debug.Log("Manual Pause");
-                breakPoint = true;
+            public void SetCurrentInputState(FightingGameInputCodeDir dirInputCode = FightingGameInputCodeDir.Neutral, FightingGameInputCodeBut buttonInputCode = FightingGameInputCodeBut.None, int layer = 0) {
+                currState.direction = dirInputCode;
+                currState.buttons[0] = buttonInputCode;
             }
 
-            int currIndex;
-            findCombinationsBuffer.Clear();
+            public void ServeBuffer(int frameIndex) {
+                ServeInput();
+                ClearInputCombinations(frameIndex);
+                FindCombinations(frameIndex);
+                StepFrame();
+            }
 
-            for (int n = inputBufferSize; n >= 0; --n) {
-                currIndex = (inputIndex - (inputDelay + n) + bufferLength) % bufferLength;
+            public FightingGameInputCodeDir GetLatestInput() {
+                int currIndex = (inputIndex - inputDelay + bufferLength) % bufferLength;
                 if (inputBuffer[currIndex].direction != FightingGameInputCodeDir.None) {
-                    findCombinationsBuffer.Append((int) inputBuffer[currIndex].direction);
+                    return inputBuffer[currIndex].direction;
                 }
                 else {
-                    findCombinationsBuffer.Append(5);
+                    return FightingGameInputCodeDir.Neutral;
                 }
             }
 
-            if (breakPoint) {
-                Debug.Log("Manual Pause");
-                breakPoint = false;
+            private void StepFrame() {
+                inputIndex = (inputIndex + 1) % bufferLength;
             }
 
-            Input.Service.FindCombinations(findCombinationsBuffer.ToString(), inputFactory, frameIndex, inputCombinations);
-        }
+            private void FindCombinations(int frameIndex) {
+                if (breakPoint) {
+                    Debug.Log("Manual Pause");
+                    breakPoint = true;
+                }
 
-        public List<Input.Combinations.Combination> GetFoundCombinations() {
-            return inputCombinations;
-        }
+                int currIndex;
+                findCombinationsBuffer.Clear();
 
-        public void ClearInputCombinations(int frameIndex) {
-            inputCombinations = inputCombinations.Where(combo => combo.inUse || !combo.Stale(frameIndex)).ToList();
-        }
+                for (int n = inputBufferSize; n >= 0; --n) {
+                    currIndex = (inputIndex - (inputDelay + n) + bufferLength) % bufferLength;
+                    if (inputBuffer[currIndex].direction != FightingGameInputCodeDir.None) {
+                        findCombinationsBuffer.Append((int)inputBuffer[currIndex].direction);
+                    }
+                    else {
+                        findCombinationsBuffer.Append(5);
+                    }
+                }
 
-        public void ServeInput() {
-            inputBuffer[inputIndex].direction = currState.direction;
-            inputBuffer[inputIndex].buttons[0] = currState.buttons[0];
+                if (breakPoint) {
+                    Debug.Log("Manual Pause");
+                    breakPoint = false;
+                }
+
+                Input.Service.FindCombinations(findCombinationsBuffer.ToString(), inputFactory, frameIndex, inputCombinations);
+            }
+
+            public List<Input.Combinations.Combination> GetFoundCombinations() {
+                return inputCombinations;
+            }
+
+            public void ClearInputCombinations(int frameIndex) {
+                inputCombinations = inputCombinations.Where(combo => combo.inUse || !combo.Stale(frameIndex)).ToList();
+            }
+
+            public void ServeInput() {
+                inputBuffer[inputIndex].direction = currState.direction;
+                inputBuffer[inputIndex].buttons[0] = currState.buttons[0];
+            }
         }
     }
 }
