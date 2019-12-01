@@ -8,7 +8,7 @@ namespace ResonantSpark {
             public HitBox[] hitBoxes { get; private set; }
             public AnimationClip animationClip { get; private set; }
 
-            public FrameState Init(HitBox[] hitsBoxes, AnimationClip anim) {
+            public FrameState Init(HitBox[] hitBoxes, AnimationClip anim) {
                 this.hitBoxes = hitBoxes;
                 this.animationClip = anim;
                 return this;
