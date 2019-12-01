@@ -9,12 +9,13 @@ using ResonantSpark.Gameplay;
 namespace ResonantSpark {
     namespace CharacterProperties {
         namespace Male0 {
-            public class CharacterBuilder : MonoBehaviour {
+            public class CharacterBuilder : MonoBehaviour, ICharacterBuilder {
 
                 public GameObject modelAnimatorPrefab;
+                public RuntimeAnimatorController animatorController;
                 public GameObject charStateMachine;
 
-                private CharacterPropertiesBuilder charBuilder;
+                private Male0Builder charBuilder;
 
                 public void Init() {
                     charBuilder = new Male0Builder();
@@ -27,13 +28,23 @@ namespace ResonantSpark {
                     movement.Init(charBuilder);
                 }
 
-                public FightingGameCharacter CreateCharacter() {
-                    return charBuilder.CreateCharacter();
+                public GameObject CreateCharacter() {
+                    FightingGameCharacter fgChar = charBuilder.CreateCharacter(gameObject);
+                    GameObject stateMachine = Instantiate<GameObject>(charStateMachine, gameObject.transform, false);
+                    GameObject mesh = Instantiate<GameObject>(modelAnimatorPrefab, gameObject.transform, false);
+                    mesh.GetComponent<Animator>().runtimeAnimatorController = animatorController;
+
+                    Rigidbody rigidbody = gameObject.AddComponent<Rigidbody>();
+                    CapsuleCollider positionCollider = gameObject.AddComponent<CapsuleCollider>();
+                    CharacterStates.Init stmInit = gameObject.AddComponent<CharacterStates.Init>();
+                    Destroy(this);
+                    return gameObject;
                 }
 
                 private class Male0Builder : CharacterPropertiesBuilder {
-                    public new ICharacterPropertiesBuilder Attack(Attack attack) {
-                        return this;
+
+                    public FightingGameCharacter CreateCharacter(GameObject gameObject) {
+                        return gameObject.AddComponent<FightingGameCharacter>();
                     }
                 }
             }

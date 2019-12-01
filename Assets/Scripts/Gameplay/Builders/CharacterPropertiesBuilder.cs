@@ -10,14 +10,10 @@ namespace ResonantSpark {
     namespace CharacterProperties {
         public class CharacterPropertiesBuilder : ICharacterPropertiesBuilder {
             protected int tempNumber;
-            protected List<Attack> attacks;
+            protected List<Attack> attacks { get; private set; }
 
             public CharacterPropertiesBuilder() {
                 attacks = new List<Attack>();
-            }
-
-            public FightingGameCharacter CreateCharacter() {
-                return null;
             }
 
             public ICharacterPropertiesBuilder Attack(Attack attack) {
