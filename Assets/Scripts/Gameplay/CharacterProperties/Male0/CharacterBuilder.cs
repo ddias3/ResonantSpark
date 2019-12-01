@@ -11,9 +11,7 @@ namespace ResonantSpark {
         namespace Male0 {
             public class CharacterBuilder : MonoBehaviour, ICharacterBuilder {
 
-                public GameObject modelAnimatorPrefab;
-                public RuntimeAnimatorController animatorController;
-                public GameObject charStateMachine;
+                public GameObject male0Prefab;
 
                 private Male0Builder charBuilder;
 
@@ -29,16 +27,13 @@ namespace ResonantSpark {
                 }
 
                 public GameObject CreateCharacter() {
-                    FightingGameCharacter fgChar = charBuilder.CreateCharacter(gameObject);
-                    GameObject stateMachine = Instantiate<GameObject>(charStateMachine, gameObject.transform, false);
-                    GameObject mesh = Instantiate<GameObject>(modelAnimatorPrefab, gameObject.transform, false);
-                    mesh.GetComponent<Animator>().runtimeAnimatorController = animatorController;
+                    GameObject character = Instantiate<GameObject>(male0Prefab, transform.position, transform.rotation);
 
-                    Rigidbody rigidbody = gameObject.AddComponent<Rigidbody>();
-                    CapsuleCollider positionCollider = gameObject.AddComponent<CapsuleCollider>();
-                    CharacterStates.Init stmInit = gameObject.AddComponent<CharacterStates.Init>();
-                    Destroy(this);
-                    return gameObject;
+                    //FightingGameCharacter fgChar = charBuilder.CreateCharacter(character);
+
+                    Destroy(gameObject);
+
+                    return character;
                 }
 
                 private class Male0Builder : CharacterPropertiesBuilder {
