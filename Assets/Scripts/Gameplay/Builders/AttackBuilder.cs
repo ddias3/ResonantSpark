@@ -7,7 +7,7 @@ using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace CharacterProperties {
-        public class AttackBuilder : IAttackBuilder {
+        public class AttackBuilder : IAttackCallbackObj {
             public string name { get; private set; }
             public Orientation orientation { get; private set; }
             public Input.InputNotation input { get; private set; }
@@ -18,23 +18,23 @@ namespace ResonantSpark {
                 return frameBuilder.GetFrames();
             }
 
-            public IAttackBuilder Name(string name) {
+            public IAttackCallbackObj Name(string name) {
                 this.name = name;
                 return this;
             }
-            public IAttackBuilder Orientation(Orientation orientation) {
+            public IAttackCallbackObj Orientation(Orientation orientation) {
                 this.orientation = orientation;
                 return this;
             }
-            public IAttackBuilder Input(Input.InputNotation input) {
+            public IAttackCallbackObj Input(Input.InputNotation input) {
                 this.input = input;
                 return this;
             }
-            public IAttackBuilder AnimationState(string animStateName) {
+            public IAttackCallbackObj AnimationState(string animStateName) {
                 this.animStateName = animStateName;
                 return this;
             }
-            public IAttackBuilder Frames(Action<IFrameBuilder> callback) {
+            public IAttackCallbackObj Frames(Action<IFrameCallbackObject> callback) {
                 FrameBuilder frameBuilder = new FrameBuilder();
                 callback(frameBuilder);
                 this.frameBuilder = frameBuilder;

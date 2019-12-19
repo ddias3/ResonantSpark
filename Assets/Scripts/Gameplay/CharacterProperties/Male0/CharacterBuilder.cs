@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Builder;
-using ResonantSpark.Character;
 using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {

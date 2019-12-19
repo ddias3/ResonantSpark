@@ -7,14 +7,14 @@ using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace CharacterProperties {
-        public class FrameBuilder : IFrameBuilder {
+        public class FrameBuilder : IFrameCallbackObject {
             public List<FrameState> frames { get; private set; }
 
             public FrameBuilder() {
                 frames = new List<FrameState>();
             }
 
-            public IFrameBuilder AddFrames(List<FrameState> frameList) {
+            public IFrameCallbackObject AddFrames(List<FrameState> frameList) {
                 frames.AddRange(frameList);
                 return this;
             }

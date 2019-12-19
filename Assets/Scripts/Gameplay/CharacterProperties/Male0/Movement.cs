@@ -8,7 +8,7 @@ namespace ResonantSpark {
     namespace CharacterProperties {
         namespace Male0 {
             public class Movement : ScriptableObject {
-                public void Init(ICharacterPropertiesBuilder charBuilder) {
+                public void Init(ICharacterPropertiesCallbackObj charBuilder) {
                     charBuilder
                         .WalkSpeed(1.0f)
                         .RunSpeed(charState => {

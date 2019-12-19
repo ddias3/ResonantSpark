@@ -10,7 +10,7 @@ namespace ResonantSpark {
             private new string name;
             private FrameState[] frames;
 
-            public Attack(Action<Builder.IAttackBuilder> builderCallback) {
+            public Attack(Action<Builder.IAttackCallbackObj> builderCallback) {
                 AttackBuilder atkBuilder = new AttackBuilder();
                 builderCallback(atkBuilder);
 
