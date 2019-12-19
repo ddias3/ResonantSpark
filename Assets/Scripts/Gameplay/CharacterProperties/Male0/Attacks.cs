@@ -77,7 +77,8 @@ namespace ResonantSpark {
                                                 Debug.Log("Regular 5A Hit");
                                             });
                                         })
-                                        .Damage(800)
+                                        .HitDamage(800)
+                                        .BlockDamage(0)
                                         .HitStun(20.0f)
                                         .BlockStun(10.0f)
                                     .To(10)
@@ -143,7 +144,8 @@ namespace ResonantSpark {
                                                 Debug.Log("Goofy 5A Hit");
                                             });
                                         })
-                                        .Damage(800)
+                                        .HitDamage(800)
+                                        .BlockDamage(50)
                                         .HitStun(20.0f)
                                         .BlockStun(10.0f)
                                     .To(10)

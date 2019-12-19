@@ -47,7 +47,7 @@ namespace ResonantSpark {
                 this.facingRight = right;
             }
 
-            public void Start() {
+            public void Init() {
                 rigidbody = gameObject.GetComponent<Rigidbody>();
                 SetDirectionFacing(true);
             }

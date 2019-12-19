@@ -9,28 +9,61 @@ using ResonantSpark.CharacterProperties;
 namespace ResonantSpark {
     public static class FrameUtil {
 
-        public static List<FrameState> CreateList(Action<Builder.IFrameListBuilder> callback) {
+        public static List<FrameState> CreateList(Action<IFrameListBuilder> callback) {
             FrameListBuilder builder = new FrameListBuilder();
             callback(builder);
-            return builder.frameList;
+            return builder.CreateFrameList();
         }
 
         private class FrameListBuilder : IFrameListBuilder {
-            public List<FrameState> frameList { get; private set; }
+
+            private class FrameUtilMapObject {
+                public string option { get; set; }
+                public object content { get; set; }
+            }
+
+            private List<FrameState> frameList;
+            private List<FrameUtilMapObject> inputs;
 
             public FrameListBuilder() {
+                inputs = new List<FrameUtilMapObject>();
+            }
+
+            public List<FrameState> CreateFrameList() {
                 frameList = new List<FrameState>();
+
+                return frameList;
             }
 
             public IFrameListBuilder BlockStun(float frame) {
+                inputs.Add(new FrameUtilMapObject {
+                    option = "blockStun",
+                    content = frame
+                });
                 return this;
             }
 
             public IFrameListBuilder ChainCancellable(bool chainCancellable) {
+                inputs.Add(new FrameUtilMapObject {
+                    option = "chainCancellable",
+                    content = chainCancellable
+                });
                 return this;
             }
 
-            public IFrameListBuilder Damage(int damage) {
+            public IFrameListBuilder HitDamage(int damage) {
+                inputs.Add(new FrameUtilMapObject {
+                    option = "hitDamage",
+                    content = damage
+                });
+                return this;
+            }
+
+            public IFrameListBuilder BlockDamage(int damage) {
+                inputs.Add(new FrameUtilMapObject {
+                    option = "blockDamage",
+                    content = damage
+                });
                 return this;
             }
 

@@ -39,7 +39,11 @@ namespace ResonantSpark {
                 private class Male0Builder : CharacterPropertiesBuilder {
 
                     public FightingGameCharacter CreateCharacter(GameObject gameObject) {
-                        return gameObject.AddComponent<FightingGameCharacter>();
+                        FightingGameCharacter fgChar = gameObject.AddComponent<FightingGameCharacter>();
+
+                        fgChar.Init();
+
+                        return fgChar;
                     }
                 }
             }

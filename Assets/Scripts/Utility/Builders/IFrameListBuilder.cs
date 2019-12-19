@@ -12,7 +12,8 @@ namespace ResonantSpark {
             IFrameListBuilder HitBox(Action<IHitBoxBuilder> callback);
             IFrameListBuilder HitBox(Character.HitBox hitBox);
             IFrameListBuilder HitBox();
-            IFrameListBuilder Damage(int damage);
+            IFrameListBuilder HitDamage(int damage);
+            IFrameListBuilder BlockDamage(int damage);
             IFrameListBuilder HitStun(float frames);
             IFrameListBuilder BlockStun(float frame);
         }
