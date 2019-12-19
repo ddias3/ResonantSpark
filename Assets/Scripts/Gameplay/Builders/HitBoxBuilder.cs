@@ -7,20 +7,29 @@ using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace CharacterProperties {
-        public class HitBoxBuilder : IHitBoxBuilder {
+        public class HitBoxBuilder : IHitBoxCallbackObject {
             private List<HitBox> hitBoxes;
             private Dictionary<string, Action> callbacks;
+
+            public List<Vector3> vecs {
+                private set;
+                get;
+            }
 
             public HitBoxBuilder() {
                 hitBoxes = new List<HitBox>();
                 callbacks = new Dictionary<string, Action>();
+
+                // Temporary
+                vecs = new List<Vector3>();
             }
 
-            public IHitBoxBuilder Add(Vector3 v0) {
+            public IHitBoxCallbackObject Add(Vector3 v0) {
+                vecs.Add(v0);
                 return this;
             }
 
-            public IHitBoxBuilder Event(string eventName, Action callback) {
+            public IHitBoxCallbackObject Event(string eventName, Action callback) {
                 callbacks.Add(eventName, callback);
                 return this;
             }

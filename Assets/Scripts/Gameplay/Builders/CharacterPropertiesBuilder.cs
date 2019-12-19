@@ -4,11 +4,10 @@ using UnityEngine;
 
 using ResonantSpark.Builder;
 using ResonantSpark.Character;
-using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterProperties {
-        public class CharacterPropertiesBuilder : ICharacterPropertiesBuilder {
+        public class CharacterPropertiesBuilder : ICharacterPropertiesCallbackObj {
             protected int tempNumber;
             protected List<Attack> attacks { get; private set; }
 
@@ -16,36 +15,36 @@ namespace ResonantSpark {
                 attacks = new List<Attack>();
             }
 
-            public ICharacterPropertiesBuilder Attack(Attack attack) {
+            public ICharacterPropertiesCallbackObj Attack(Attack attack) {
                 attacks.Add(attack);
                 return this;
             }
 
-            public ICharacterPropertiesBuilder MaxJumpHeight(float maxJumpHeight) {
+            public ICharacterPropertiesCallbackObj MaxJumpHeight(float maxJumpHeight) {
                 return this;
             }
 
-            public ICharacterPropertiesBuilder MaxJumpHeight(Func<CharacterState, float> callback) {
+            public ICharacterPropertiesCallbackObj MaxJumpHeight(Func<CharacterState, float> callback) {
                 return this;
             }
 
-            public ICharacterPropertiesBuilder RunSpeed(float speed) {
+            public ICharacterPropertiesCallbackObj RunSpeed(float speed) {
                 return this;
             }
 
-            public ICharacterPropertiesBuilder RunSpeed(Func<CharacterState, float> callback) {
+            public ICharacterPropertiesCallbackObj RunSpeed(Func<CharacterState, float> callback) {
                 return this;
             }
 
-            public ICharacterPropertiesBuilder Version(string version) {
+            public ICharacterPropertiesCallbackObj Version(string version) {
                 return this;
             }
 
-            public ICharacterPropertiesBuilder WalkSpeed(float speed) {
+            public ICharacterPropertiesCallbackObj WalkSpeed(float speed) {
                 return this;
             }
 
-            public ICharacterPropertiesBuilder WalkSpeed(Func<CharacterState, float> callback) {
+            public ICharacterPropertiesCallbackObj WalkSpeed(Func<CharacterState, float> callback) {
                 return this;
             }
         }

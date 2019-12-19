@@ -9,13 +9,13 @@ using ResonantSpark.CharacterProperties;
 namespace ResonantSpark {
     public static class FrameUtil {
 
-        public static List<FrameState> CreateList(Action<IFrameListBuilder> callback) {
+        public static List<FrameState> CreateList(Action<IFrameListCallbackObj> callback) {
             FrameListBuilder builder = new FrameListBuilder();
             callback(builder);
             return builder.CreateFrameList();
         }
 
-        private class FrameListBuilder : IFrameListBuilder {
+        private class FrameListBuilder : IFrameListCallbackObj {
 
             private class FrameUtilMapObject {
                 public string option { get; set; }
@@ -31,11 +31,11 @@ namespace ResonantSpark {
 
             public List<FrameState> CreateFrameList() {
                 frameList = new List<FrameState>();
-
+                
                 return frameList;
             }
 
-            public IFrameListBuilder BlockStun(float frame) {
+            public IFrameListCallbackObj BlockStun(float frame) {
                 inputs.Add(new FrameUtilMapObject {
                     option = "blockStun",
                     content = frame
@@ -43,7 +43,7 @@ namespace ResonantSpark {
                 return this;
             }
 
-            public IFrameListBuilder ChainCancellable(bool chainCancellable) {
+            public IFrameListCallbackObj ChainCancellable(bool chainCancellable) {
                 inputs.Add(new FrameUtilMapObject {
                     option = "chainCancellable",
                     content = chainCancellable
@@ -51,7 +51,7 @@ namespace ResonantSpark {
                 return this;
             }
 
-            public IFrameListBuilder HitDamage(int damage) {
+            public IFrameListCallbackObj HitDamage(int damage) {
                 inputs.Add(new FrameUtilMapObject {
                     option = "hitDamage",
                     content = damage
@@ -59,7 +59,7 @@ namespace ResonantSpark {
                 return this;
             }
 
-            public IFrameListBuilder BlockDamage(int damage) {
+            public IFrameListCallbackObj BlockDamage(int damage) {
                 inputs.Add(new FrameUtilMapObject {
                     option = "blockDamage",
                     content = damage
@@ -67,37 +67,68 @@ namespace ResonantSpark {
                 return this;
             }
 
-            public IFrameListBuilder From(int startFrame) {
+            public IFrameListCallbackObj From(int startFrame) {
+                inputs.Add(new FrameUtilMapObject {
+                    option = "startFrame",
+                    content = startFrame
+                });
                 return this;
             }
 
-            public IFrameListBuilder HitBox(Action<IHitBoxBuilder> callback) {
+            public IFrameListCallbackObj HitBox(Action<IHitBoxCallbackObject> callback) {
                 HitBoxBuilder builder = new HitBoxBuilder();
                 callback(builder);
 
                 // TODO: Create the hitboxes and put them in the correct frames
                 // TODO: Pass along the events
 
+                List<HitBox> hitBoxes = builder.CreateHitBoxes();
+
+                inputs.Add(new FrameUtilMapObject {
+                    option = "hitBox",
+                    content = hitBoxes
+                });
                 return this;
             }
 
-            public IFrameListBuilder HitBox(HitBox hitBox) {
+            public IFrameListCallbackObj HitBox(HitBox hitBox) {
+                HitBox[] hitBoxes = { hitBox };
+                inputs.Add(new FrameUtilMapObject {
+                    option = "hitBox",
+                    content = new List<HitBox>(hitBoxes)
+                });
                 return this;
             }
 
-            public IFrameListBuilder HitBox() {
+            public IFrameListCallbackObj HitBox() {
+                inputs.Add(new FrameUtilMapObject {
+                    option = "hitBox",
+                    content = new List<HitBox>(0)
+                });
                 return this;
             }
 
-            public IFrameListBuilder HitStun(float frames) {
+            public IFrameListCallbackObj HitStun(float frames) {
+                inputs.Add(new FrameUtilMapObject {
+                    option = "hitStun",
+                    content = frames
+                });
                 return this;
             }
 
-            public IFrameListBuilder SpecialCancellable(bool specialCancellable) {
+            public IFrameListCallbackObj SpecialCancellable(bool specialCancellable) {
+                inputs.Add(new FrameUtilMapObject {
+                    option = "specialCancellable",
+                    content = specialCancellable
+                });
                 return this;
             }
 
-            public IFrameListBuilder To(int endFrame) {
+            public IFrameListCallbackObj To(int endFrame) {
+                inputs.Add(new FrameUtilMapObject {
+                    option = "endFrame",
+                    content = endFrame
+                });
                 return this;
             }
         }

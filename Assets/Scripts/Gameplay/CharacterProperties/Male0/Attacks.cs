@@ -30,7 +30,7 @@ namespace ResonantSpark {
 
                 public Attack atkGfy2B;
 
-                public void Init(ICharacterPropertiesBuilder charBuilder) {
+                public void Init(ICharacterPropertiesCallbackObj charBuilder) {
                     //atkReg5AAA = new Attack(Attack.Orientation.REGULAR, Attack.Input._5AAA);
                     //atkReg5AAAA = new Attack(Attack.Orientation.REGULAR, Attack.Input._5AAAA);
 
