@@ -16,6 +16,8 @@ namespace ResonantSpark {
             public static float hitStun = 20.0f;
             public static float blockStun = 10.0f;
             public static int startFrame = 0;
+
+            public static int counter = 0;
         }
 
         public static List<FrameState> CreateList(Action<IFrameListCallbackObj> callback) {
@@ -31,7 +33,7 @@ namespace ResonantSpark {
                 public object content;
             }
 
-            private struct ListStackFrame {
+            private class ListStackFrame : IComparable<ListStackFrame> {
                 public int startFrame;
                 public int endFrame;
 
@@ -41,59 +43,43 @@ namespace ResonantSpark {
                 public int blockDamage;
                 public float hitStun;
                 public float blockStun;
+
+                public int _counter = Default.counter++;
+
+                public int CompareTo(ListStackFrame other) {
+                    if (this.startFrame < other.startFrame) {
+                        return -1;
+                    }
+                    else if (this.startFrame == other.startFrame) {
+                        if (this.endFrame < other.endFrame) {
+                            return -1;
+                        }
+                        else if (this.endFrame == other.endFrame) {
+                            return 0;
+                        }
+                        else {
+                            return 1;
+                        }
+                    }
+                    else {
+                        return 1;
+                    }
+                }
             }
 
-            private List<FrameState> frameList;
             private List<FrameUtilMapObject> entries;
 
             public FrameListBuilder() {
                 entries = new List<FrameUtilMapObject>();
             }
 
-            private void HelperFunc(List<FrameState> frameList, int startFrame) {
-                bool chainCancellable = Default.chainCancellable;
-                bool specialCancellable = Default.specialCancellable;
-                int hitDamage = Default.hitDamage;
-                int blockDamage = Default.blockDamage;
-                float hitStun = Default.hitStun;
-                float blockStun = Default.blockStun;
-                int endFrame = -1;
-                List<HitBox> hitBoxes = null;
-
-                foreach (FrameUtilMapObject entry in entries) {
-                    switch (entry.option) {
-                        case "chainCancellable":
-                            chainCancellable = (bool) entry.content;
-                            break;
-                        case "specialCancellable":
-                            specialCancellable = (bool) entry.content;
-                            break;
-                        case "hitDamage":
-                            hitDamage = (int) entry.content;
-                            break;
-                        case "blockDamage":
-                            blockDamage = (int) entry.content;
-                            break;
-                        case "startFrame":
-                            startFrame = (int) entry.content;
-                            break;
-                        case "endFrame":
-                            endFrame = (int) entry.content;
-                            break;
-                        case "hitBox":
-                            hitBoxes = (List<HitBox>) entry.content;
-                            break;
-                        case "hitStun":
-                            hitStun = (float) entry.content;
-                            break;
-                        case "blockStun":
-                            blockStun = (float) entry.content;
-                            break;
-                    }
-                }
+            public List<FrameState> CreateFrameList() {
+                List<ListStackFrame> completeStackFrames = ReadInput(this.entries);
+                List<FrameState> frameList = CreateFromCompleteStackFrames(completeStackFrames);
+                return frameList;
             }
 
-            public List<FrameState> CreateFrameList() {
+            private List<ListStackFrame> ReadInput(List<FrameUtilMapObject> entries) {
                 bool chainCancellable = Default.chainCancellable;
                 bool specialCancellable = Default.specialCancellable;
                 int hitDamage = Default.hitDamage;
@@ -103,7 +89,8 @@ namespace ResonantSpark {
 
                 List<ListStackFrame> completeStackFrames = new List<ListStackFrame>();
                 Stack<ListStackFrame> stack = new Stack<ListStackFrame>();
-                ListStackFrame topStackFrame = new ListStackFrame {
+                ListStackFrame topStackFrame, baseStackFrame;
+                baseStackFrame = topStackFrame = new ListStackFrame {
                     startFrame = 0,
                     endFrame = -1,
                     chainCancellable = chainCancellable,
@@ -113,24 +100,13 @@ namespace ResonantSpark {
                     hitStun = hitStun,
                     blockStun = blockStun
                 };
+                stack.Push(baseStackFrame);
 
                 foreach (FrameUtilMapObject entry in entries) {
                     switch (entry.option) {
-                        case "chainCancellable":
-                            topStackFrame.chainCancellable = chainCancellable = (bool)entry.content;
-                            break;
-                        case "specialCancellable":
-                            topStackFrame.specialCancellable = specialCancellable = (bool)entry.content;
-                            break;
-                        case "hitDamage":
-                            topStackFrame.hitDamage = hitDamage = (int)entry.content;
-                            break;
-                        case "blockDamage":
-                            topStackFrame.blockDamage = blockDamage = (int) entry.content;
-                            break;
                         case "startFrame":
-                            stack.Push(topStackFrame = new ListStackFrame {
-                                startFrame = (int)entry.content,
+                            topStackFrame = new ListStackFrame {
+                                startFrame = ((int) entry.content) - 1,
                                 endFrame = -1,
                                 chainCancellable = chainCancellable,
                                 specialCancellable = specialCancellable,
@@ -138,24 +114,82 @@ namespace ResonantSpark {
                                 blockDamage = blockDamage,
                                 hitStun = hitStun,
                                 blockStun = blockStun
-                            });
+                            };
+                            stack.Push(topStackFrame);
                             break;
                         case "endFrame":
-                            endFrame = (int)entry.content;
+                            do {
+                                topStackFrame.endFrame = ((int) entry.content) - 1;
+                                completeStackFrames.Add(stack.Pop());
+                                topStackFrame = stack.Peek();
+                            } while (!Object.ReferenceEquals(topStackFrame, baseStackFrame));
                             break;
-                        case "hitBox":
-                            hitBoxes = (List<HitBox>)entry.content;
+                        case "chainCancellable":
+                            topStackFrame.chainCancellable = chainCancellable = (bool) entry.content;
+                            break;
+                        case "specialCancellable":
+                            topStackFrame.specialCancellable = specialCancellable = (bool) entry.content;
+                            break;
+                        case "hitDamage":
+                            topStackFrame.hitDamage = hitDamage = (int) entry.content;
+                            break;
+                        case "blockDamage":
+                            topStackFrame.blockDamage = blockDamage = (int) entry.content;
                             break;
                         case "hitStun":
-                            hitStun = (float)entry.content;
+                            topStackFrame.hitStun = hitStun = (float) entry.content;
                             break;
                         case "blockStun":
-                            blockStun = (float)entry.content;
+                            topStackFrame.blockStun = blockStun = (float) entry.content;
                             break;
                     }
                 }
 
-                frameList = new List<FrameState>();
+                if (!Object.ReferenceEquals(stack.Peek(), baseStackFrame)) {
+                    throw new InvalidProgramException("Frame List inputs are missing an end frame for list creation");
+                }
+
+                baseStackFrame.endFrame = completeStackFrames[completeStackFrames.Count - 1].endFrame;
+                completeStackFrames.Add(baseStackFrame);
+
+                completeStackFrames.Sort(new Comparison<ListStackFrame>((ListStackFrame x, ListStackFrame y) => {
+                    if (x.startFrame < y.startFrame) {
+                        return -1;
+                    }
+                    else if (x.startFrame == y.startFrame) {
+                        if (x.endFrame < y.endFrame) {
+                            return -1;
+                        }
+                        else if (x.endFrame == y.endFrame) {
+                            return 0;
+                        }
+                        else {
+                            return 1;
+                        }
+                    }
+                    else {
+                        return 1;
+                    }
+                }));
+
+                return completeStackFrames;
+            }
+
+            private List<FrameState> CreateFromCompleteStackFrames(List<ListStackFrame> completeStackFrames) {
+                int numFrames = completeStackFrames[completeStackFrames.Count - 1].endFrame;
+
+                List<FrameState> frameList = new List<FrameState>(numFrames);
+                for (int n = 0; n < numFrames; ++n) {
+                    frameList.Add(new FrameState());
+                }
+
+                foreach (ListStackFrame stackFrame in completeStackFrames) {
+                    for (int frame = stackFrame.startFrame; frame < stackFrame.endFrame; ++frame) {
+                        FrameState curr = frameList[frame];
+
+                        // TODO: fill frame state with correct information
+                    }
+                }
 
                 return frameList;
             }
