@@ -20,7 +20,7 @@ namespace ResonantSpark {
                     Attacks attacks = new Attacks();
                     Movement movement = new Movement();
 
-                    charBuilder.Version("1.0");
+                    charBuilder.Version("0.1");
                     attacks.Init(charBuilder);
                     movement.Init(charBuilder);
                 }
@@ -28,7 +28,7 @@ namespace ResonantSpark {
                 public GameObject CreateCharacter() {
                     GameObject character = Instantiate<GameObject>(male0Prefab, transform.position, transform.rotation);
 
-                    //FightingGameCharacter fgChar = charBuilder.CreateCharacter(character);
+                    FightingGameCharacter fgChar = charBuilder.SetUpCharacter(character);
 
                     Destroy(gameObject);
 
@@ -37,8 +37,8 @@ namespace ResonantSpark {
 
                 private class Male0Builder : CharacterPropertiesBuilder {
 
-                    public FightingGameCharacter CreateCharacter(GameObject gameObject) {
-                        FightingGameCharacter fgChar = gameObject.AddComponent<FightingGameCharacter>();
+                    public FightingGameCharacter SetUpCharacter(GameObject gameObject) {
+                        FightingGameCharacter fgChar = gameObject.GetComponent<FightingGameCharacter>();
 
                         fgChar.Init();
 

@@ -18,7 +18,11 @@ namespace ResonantSpark {
             private GameTimeManager gameTimeManager;
             public new Rigidbody rigidbody { get; private set; }
 
-            private bool facingRight;
+            private bool facingRight = true;
+
+            public void Init() {
+                rigidbody = gameObject.GetComponent<Rigidbody>();
+            }
 
             public FightingGameCharacter SetOpponentCharacter(GameObject opponentChar) {
                 this.opponentChar = opponentChar;
@@ -47,13 +51,13 @@ namespace ResonantSpark {
                 this.facingRight = right;
             }
 
-            public void Init() {
-                rigidbody = gameObject.GetComponent<Rigidbody>();
-                SetDirectionFacing(true);
-            }
-
             public void FixedUpdate() {
-                charVelocity.text = "Vel = " + (Quaternion.Inverse(rigidbody.rotation) * rigidbody.velocity).ToString("F3");
+                try {
+                    charVelocity.text = "Vel = " + (Quaternion.Inverse(rigidbody.rotation) * rigidbody.velocity).ToString("F3");
+                }
+                catch (System.NullReferenceException e) {
+                    // do nothing
+                }
             }
 
             public bool Grounded() {

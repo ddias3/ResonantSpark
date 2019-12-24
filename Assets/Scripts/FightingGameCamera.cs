@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace ResonantSpark {
     public class FightingGameCamera : MonoBehaviour {
@@ -30,7 +31,11 @@ namespace ResonantSpark {
         private GameObject testTransform1;
         private GameObject testTransform2;
 
-        void Start() {
+        public void Start() {
+            EventManager.StartListening<Events.FightingGameCharsReady>(new UnityAction(ConnectFightingGameCharacters));
+        }
+
+        public void ConnectFightingGameCharacters() {
             camera = gameObject.GetComponent<Camera>();
             camera.fieldOfView = cameraFov;
 
@@ -39,6 +44,9 @@ namespace ResonantSpark {
             if (chars != null && chars.Length == 2) {
                 char0 = chars[0].transform;
                 char1 = chars[1].transform;
+            }
+            else {
+                Debug.LogError("Too many 'rspCharacters.' Number of chars = " + chars?.Length);
             }
 
             //testTransform = new GameObject("testTransform");

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace ResonantSpark {
     namespace Gameplay {
@@ -25,14 +26,19 @@ namespace ResonantSpark {
 
                 gameTimeManager.AddLayer(new Func<float, float>(GameTime), "gameTime");
 
+                EventManager.StartListening<Events.FightingGameCharsReady>(new UnityAction(ConnectFightingGameCharacters));
+                EventManager.StartListening<Events.FrameEnforcerReady>(new UnityAction(EnablePlayers));
+            }
+
+            public void ConnectFightingGameCharacters() {
+                Debug.Log("ConnectFightingGameCharacters");
+
                 char0.GetComponent<FightingGameCharacter>()
                     .SetOpponentCharacter(char1)
                     .SetGameTimeManager(gameTimeManager);
                 //char1.GetComponent<FightingGameCharacter>()
                 //    .SetOpponentCharacter(char0)
-                //    .SetGameTimeManager(gameTimeManager);                
-
-                EventManager.StartListening<Events.FrameEnforcerReady>(new UnityEngine.Events.UnityAction(EnablePlayers));
+                //    .SetGameTimeManager(gameTimeManager);
             }
 
             private void EnablePlayers() {
