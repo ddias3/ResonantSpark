@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ResonantSpark {
     namespace Character {
-        public class FrameState : ScriptableObject {
+        public class FrameState {
             public HitBox[] hitBoxes { get; private set; }
             public AnimationClip animationClip { get; private set; }
 
