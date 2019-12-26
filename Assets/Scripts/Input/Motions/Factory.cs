@@ -17,7 +17,13 @@ namespace ResonantSpark {
                     { typeof(DoubleTap), new List<Combination>(INIT_POOL_SIZE) },
                     { typeof(DirectionPress), new List<Combination>(INIT_POOL_SIZE) },
                     { typeof(NeutralReturn), new List<Combination>(INIT_POOL_SIZE) },
-                    { typeof(DirectionLongHold), new List<Combination>(INIT_POOL_SIZE) }
+                    { typeof(DirectionLongHold), new List<Combination>(INIT_POOL_SIZE) },
+                    { typeof(ButtonPress), new List<Combination>(INIT_POOL_SIZE) },
+                    { typeof(Button2Press), new List<Combination>(INIT_POOL_SIZE) },
+                    { typeof(Button3Press), new List<Combination>(INIT_POOL_SIZE) },
+                    { typeof(DirectionPlusButton), new List<Combination>(INIT_POOL_SIZE) },
+                    { typeof(QuarterCircle), new List<Combination>(INIT_POOL_SIZE) },
+                    { typeof(QuarterCircleButtonPress), new List<Combination>(INIT_POOL_SIZE) },
                 };
 
                 ind = new Dictionary<System.Type, int> {
@@ -25,7 +31,13 @@ namespace ResonantSpark {
                     { typeof(DoubleTap), 0 },
                     { typeof(DirectionPress), 0 },
                     { typeof(NeutralReturn), 0 },
-                    { typeof(DirectionLongHold), 0 }
+                    { typeof(DirectionLongHold), 0 },
+                    { typeof(ButtonPress), 0 },
+                    { typeof(Button2Press), 0 },
+                    { typeof(Button3Press), 0 },
+                    { typeof(DirectionPlusButton), 0 },
+                    { typeof(QuarterCircle), 0 },
+                    { typeof(QuarterCircleButtonPress), 0 },
                 };
 
                 var dirCurr = memPools[typeof(DirectionCurrent)];
@@ -33,6 +45,12 @@ namespace ResonantSpark {
                 var dirPress = memPools[typeof(DirectionPress)];
                 var doubleTap = memPools[typeof(DoubleTap)];
                 var dirHold = memPools[typeof(DirectionLongHold)];
+                var butPress = memPools[typeof(ButtonPress)];
+                var but2Press = memPools[typeof(Button2Press)];
+                var but3Press = memPools[typeof(Button3Press)];
+                var dirPlusBut = memPools[typeof(DirectionPlusButton)];
+                var quartCir = memPools[typeof(QuarterCircle)];
+                var quartCirPlusBut = memPools[typeof(QuarterCircleButtonPress)];
 
                 for (int n = 0; n < INIT_POOL_SIZE; ++n) {
                     dirCurr.Add(new DirectionCurrent());
@@ -40,6 +58,12 @@ namespace ResonantSpark {
                     dirPress.Add(new DirectionPress());
                     doubleTap.Add(new DoubleTap());
                     dirHold.Add(new DirectionLongHold());
+                    butPress.Add(new ButtonPress());
+                    but2Press.Add(new Button2Press());
+                    but3Press.Add(new Button3Press());
+                    dirPlusBut.Add(new DirectionPlusButton());
+                    quartCir.Add(new QuarterCircle());
+                    quartCirPlusBut.Add(new QuarterCircleButtonPress());
                 }
 
                 empty = new Empty();

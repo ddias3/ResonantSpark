@@ -11,8 +11,6 @@ public class TestInput : MonoBehaviour {
     public bool autoInput = false;
     public FightingGameInputCodeDir[] inputString;
 
-    public FightingGameCharacter playerChar;
-
     public InputBuffer inputBuffer;
 
     public Image immediateArrow;
@@ -20,10 +18,6 @@ public class TestInput : MonoBehaviour {
 
     private int horizontalInput = 0;
     private int verticalInput = 0;
-
-    public void Start() {
-        playerChar.SetInputBuffer(inputBuffer);
-    }
 
     public int frameCounter = 0;
 
