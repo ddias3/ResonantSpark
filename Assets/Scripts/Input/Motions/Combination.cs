@@ -5,7 +5,7 @@ using UnityEngine;
 namespace ResonantSpark {
     namespace Input {
         namespace Combinations {
-            public class Combination : IComparable<Combination> {
+            public class Combination : ScriptableObject, IComparable<Combination> {
                 protected int frameTrigger;
                 protected int staleTime; // in frames
                 protected int priorityValue; // instead of comparisons in the compareTo

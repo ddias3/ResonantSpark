@@ -8,13 +8,21 @@ using ResonantSpark.Input.Combinations;
 namespace ResonantSpark {
     namespace Input {
         public class Service {
-            public static void FindCombinations(string buffer, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
-                int test0 = FindDoubleDirectionTaps(buffer, inputFactory, frameIndex, activeInputs);
-                int test1 = FindDirectionPresses(buffer, inputFactory, frameIndex, activeInputs);
-                int test2 = FindNeutralReturns(buffer, inputFactory, frameIndex, activeInputs);
-                int test3 = FindDirectionCurrent(buffer, inputFactory, frameIndex, activeInputs);
+            public static void FindCombinations(InputBufferReader reader, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
+                int test0 = FindDoubleDirectionTaps(reader, inputFactory, frameIndex, activeInputs);
+                int test1 = FindDirectionPresses(reader, inputFactory, frameIndex, activeInputs);
+                int test2 = FindNeutralReturns(reader, inputFactory, frameIndex, activeInputs);
+                int test3 = FindDirectionCurrent(reader, inputFactory, frameIndex, activeInputs);
+                int test4 = FindDirectionLongHolds(reader, inputFactory, frameIndex, activeInputs);
+                int test5 = FindDoubleTaps(reader, inputFactory, frameIndex, activeInputs);
+                int test6 = FindButtonPresses(reader, inputFactory, frameIndex, activeInputs);
+                int test7 = FindButton2Presses(reader, inputFactory, frameIndex, activeInputs);
+                int test8 = FindButton3Presses(reader, inputFactory, frameIndex, activeInputs);
+                int test9 = FindDirectionPlusButtons(reader, inputFactory, frameIndex, activeInputs);
+                int testA = FindQuarterCircles(reader, inputFactory, frameIndex, activeInputs);
+                int testB = FindQuarterCircleButtonPresses(reader, inputFactory, frameIndex, activeInputs);
 
-                int x = test0 + test1 + test2 + test3;
+                int x = test0 + test1 + test2 + test3 + test4 + test5 + test6 + test7 + test8 + test9 + testA + testB;
                 activeInputs.Sort();
             }
 
@@ -30,90 +38,103 @@ namespace ResonantSpark {
                 return newInput;
             }
 
-            private static readonly Regex rgxNeutralReturn = new Regex(@"(?<=([^5]))(?=[5])", RegexOptions.ECMAScript | RegexOptions.Compiled);
-            public static int FindNeutralReturns(string buffer, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
+            public static int FindNeutralReturns(InputBufferReader reader, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
                 int numFound = 0;
-                foreach (Match match in rgxNeutralReturn.Matches(buffer)) {
-                    int inputFrameIndex = frameIndex - (buffer.Length - match.Index);
-                    //Match local = match;
-                    //GroupCollection groups = match.Groups;
-                    //Debug.Log("Neutral Return: " + local + " @ (lcl: " + match.Index + ", gbl: " + (frameIndex - (buffer.Length - match.Index)) + ") with " + groups.Count + " groups");
-                    //Debug.Log(groups[1].Value + " @ " + groups[1].Index);
-                    NeutralReturn input = AddToActiveInputs<NeutralReturn>(activeInputs, inputFactory, inputFrameIndex, frameIndex, (newInput) => {
-                        numFound++;
-                        newInput.Init(inputFrameIndex);
-                    });
-                    numFound++;
+                reader.ResetCurrIndex();
+
+                bool notNeutral = false;
+                while (reader.IsReadable()) {
+                    int inputFrameIndex = reader.ReadBuffer(out GameInputStruct curr);
+
+                    if (curr.direction != FightingGameInputCodeDir.Neutral) {
+                        notNeutral = true;
+                    }
+                    else if (notNeutral) {
+                        AddToActiveInputs<NeutralReturn>(activeInputs, inputFactory, inputFrameIndex, frameIndex, newInput => {
+                            numFound++;
+                            newInput.Init(inputFrameIndex);
+                        });
+                        notNeutral = false;
+                    }
                 }
+
                 return numFound;
             }
 
-            private static readonly Regex rgxDirectionPresses = new Regex(@"(?<=([1-9]))(?=([^5]))(?!\1)", RegexOptions.ECMAScript | RegexOptions.Compiled);
-            public static int FindDirectionPresses(string buffer, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
+            public static int FindDirectionPresses(InputBufferReader reader, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
                 int numFound = 0;
-                foreach (Match match in rgxDirectionPresses.Matches(buffer)) {
-                    int inputFrameIndex = frameIndex - (buffer.Length - match.Index);
-                    //Match local = match;
-                    //GroupCollection groups = match.Groups;
-                    //Debug.Log("Direction Press: " + local + " @ (lcl: " + match.Index + ", gbl: " + (frameIndex - (buffer.Length - match.Index)) + ") with " + groups.Count + " groups");
-                    //Debug.Log(groups[2].Value + " @ " + groups[2].Index);
-                    DirectionPress input = AddToActiveInputs<DirectionPress>(activeInputs, inputFactory, inputFrameIndex, frameIndex, (newInput) => {
-                        numFound++;
-                        newInput.Init(inputFrameIndex, (FightingGameInputCodeDir) int.Parse(match.Groups[2].Value));
-                    });
-                }
+                //foreach (Match match in rgxDirectionPresses.Matches(buffer)) {
+                //    int inputFrameIndex = frameIndex - (buffer.Length - match.Index);
+                //    //Match local = match;
+                //    //GroupCollection groups = match.Groups;
+                //    //Debug.Log("Direction Press: " + local + " @ (lcl: " + match.Index + ", gbl: " + (frameIndex - (buffer.Length - match.Index)) + ") with " + groups.Count + " groups");
+                //    //Debug.Log(groups[2].Value + " @ " + groups[2].Index);
+                //    DirectionPress input = AddToActiveInputs<DirectionPress>(activeInputs, inputFactory, inputFrameIndex, frameIndex, (newInput) => {
+                //        numFound++;
+                //        newInput.Init(inputFrameIndex, (FightingGameInputCodeDir) int.Parse(match.Groups[2].Value));
+                //    });
+                //}
                 return numFound;
             }
 
                 // This requires a hold of 20 frames
-            private static readonly Regex rgxDirectionHolds = new Regex(@"(?<=([1-9]))(?=([^5])\2{19,})(?!\1)|^([^5])\3+$", RegexOptions.ECMAScript | RegexOptions.Compiled);
-            public static int FindDirectionLongHolds(string buffer, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
+            public static int FindDirectionLongHolds(InputBufferReader reader, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
                 int numFound = 0;
-                foreach (Match match in rgxDirectionHolds.Matches(buffer)) {
-                    int inputFrameIndex = frameIndex - (buffer.Length - match.Index);
-                    //Match local = match;
-                    //GroupCollection groups = match.Groups;
-                    //Debug.Log("Direction Hold: " + local + " @ (lcl: " + match.Index + ", gbl: " + inputFrameIndex + ") with " + groups.Count + " groups");
-                    //Debug.Log(groups[1].Value + " @ " + groups[1].Index);
-                    FightingGameInputCodeDir direction = (FightingGameInputCodeDir) int.Parse(match.Groups[1].Value);
-                    DirectionLongHold input = AddToActiveInputs<DirectionLongHold>(activeInputs, inputFactory, inputFrameIndex + 19, frameIndex, (newInput) => {
-                        numFound++;
-                        newInput.Init(inputFrameIndex + 19, direction, match.Value.Length);
-                    });
-                }
+                //foreach (Match match in rgxDirectionHolds.Matches(buffer)) {
+                //    int inputFrameIndex = frameIndex - (buffer.Length - match.Index);
+                //    //Match local = match;
+                //    //GroupCollection groups = match.Groups;
+                //    //Debug.Log("Direction Hold: " + local + " @ (lcl: " + match.Index + ", gbl: " + inputFrameIndex + ") with " + groups.Count + " groups");
+                //    //Debug.Log(groups[1].Value + " @ " + groups[1].Index);
+                //    FightingGameInputCodeDir direction = (FightingGameInputCodeDir) int.Parse(match.Groups[1].Value);
+                //    DirectionLongHold input = AddToActiveInputs<DirectionLongHold>(activeInputs, inputFactory, inputFrameIndex + 19, frameIndex, (newInput) => {
+                //        numFound++;
+                //        newInput.Init(inputFrameIndex + 19, direction, match.Value.Length);
+                //    });
+                //}
                 return numFound;
             }
 
-            public static int FindDirectionCurrent(string buffer, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
+            public static int FindDirectionCurrent(InputBufferReader reader, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
                 int numFound = 0;
-                FightingGameInputCodeDir direction = (FightingGameInputCodeDir) int.Parse(buffer[buffer.Length - 1].ToString());
-                DirectionCurrent input = AddToActiveInputs<DirectionCurrent>(activeInputs, inputFactory, frameIndex, frameIndex, (newInput) => {
-                    numFound++;
-                    newInput.Init(frameIndex, direction);
-                });
+                //FightingGameInputCodeDir direction = (FightingGameInputCodeDir) int.Parse(buffer[buffer.Length - 1].ToString());
+                //DirectionCurrent input = AddToActiveInputs<DirectionCurrent>(activeInputs, inputFactory, frameIndex, frameIndex, (newInput) => {
+                //    numFound++;
+                //    newInput.Init(frameIndex, direction);
+                //});
                 return numFound;
             }
 
-            private static readonly Regex rgxDoubleDirectionTaps = new Regex(@"(?<=([^5])[^5\1]{0,4}5{1,7})(?=[^5\1]{0,3}\1)", RegexOptions.ECMAScript | RegexOptions.Compiled);
-            public static int FindDoubleDirectionTaps(string buffer, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
+            public static int FindDoubleDirectionTaps(InputBufferReader reader, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
                 int numFound = 0;
-                foreach (Match match in rgxDoubleDirectionTaps.Matches(buffer)) {
-                    int relativeFrameGapStart = match.Groups[2].Index;
-                    int relativeFrameGapEnd = match.Index;
-                    //Match local = match;
-                    //GroupCollection groups = match.Groups;
-                    //Debug.Log("Double Tap Direction: " + local + " @ (lcl: " + match.Index + ", gbl: " + (frameIndex - (buffer.Length - relativeFrameGapEnd)) + ") with " + groups.Count + " groups");
-                    //Debug.Log(groups[0].Value + " @ " + groups[0].Index);
-                    //Debug.Log(groups[1].Value + " @ " + groups[1].Index);
-                    //Debug.Log(groups[2].Value + " @ " + groups[2].Index);
-                    FightingGameInputCodeDir direction = (FightingGameInputCodeDir) int.Parse(match.Groups[1].Value);
-                    DoubleTap input = AddToActiveInputs<DoubleTap>(activeInputs, inputFactory, frameIndex - (buffer.Length - relativeFrameGapEnd), frameIndex, (newInput) => {
-                        numFound++;
-                        newInput.Init(frameIndex - (buffer.Length - relativeFrameGapEnd), frameIndex - (buffer.Length - relativeFrameGapStart), direction);
-                    });
-                }
+                //foreach (Match match in rgxDoubleDirectionTaps.Matches(buffer)) {
+                //    int relativeFrameGapStart = match.Groups[2].Index;
+                //    int relativeFrameGapEnd = match.Index;
+                //    //Match local = match;
+                //    //GroupCollection groups = match.Groups;
+                //    //Debug.Log("Double Tap Direction: " + local + " @ (lcl: " + match.Index + ", gbl: " + (frameIndex - (buffer.Length - relativeFrameGapEnd)) + ") with " + groups.Count + " groups");
+                //    //Debug.Log(groups[0].Value + " @ " + groups[0].Index);
+                //    //Debug.Log(groups[1].Value + " @ " + groups[1].Index);
+                //    //Debug.Log(groups[2].Value + " @ " + groups[2].Index);
+                //    FightingGameInputCodeDir direction = (FightingGameInputCodeDir) int.Parse(match.Groups[1].Value);
+                //    DoubleTap input = AddToActiveInputs<DoubleTap>(activeInputs, inputFactory, frameIndex - (buffer.Length - relativeFrameGapEnd), frameIndex, (newInput) => {
+                //        numFound++;
+                //        newInput.Init(frameIndex - (buffer.Length - relativeFrameGapEnd), frameIndex - (buffer.Length - relativeFrameGapStart), direction);
+                //    });
+                //}
                 return numFound;
             }
+
+            public static int FindDoubleTaps(InputBufferReader reader, Factory inputFactory, int frameIndex, List<Combination> activeInputs) {
+                return 0;
+            }
+
+            public static int FindButtonPresses(InputBufferReader reader, Factory inputFactory, int frameIndex, List<Combination> activeInputs) { return 0; }
+            public static int FindButton2Presses(InputBufferReader reader, Factory inputFactory, int frameIndex, List<Combination> activeInputs) { return 0; }
+            public static int FindButton3Presses(InputBufferReader reader, Factory inputFactory, int frameIndex, List<Combination> activeInputs) { return 0; }
+            public static int FindDirectionPlusButtons(InputBufferReader reader, Factory inputFactory, int frameIndex, List<Combination> activeInputs) { return 0; }
+            public static int FindQuarterCircles(InputBufferReader reader, Factory inputFactory, int frameIndex, List<Combination> activeInputs) { return 0; }
+            public static int FindQuarterCircleButtonPresses(InputBufferReader reader, Factory inputFactory, int frameIndex, List<Combination> activeInputs) { return 0; }
         }
     }
 }
