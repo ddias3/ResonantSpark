@@ -35,6 +35,46 @@ namespace ResonantSpark
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Button A"",
+                    ""type"": ""Button"",
+                    ""id"": ""698c8bc6-bad4-4347-91be-d19beca706cc"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Button B"",
+                    ""type"": ""Button"",
+                    ""id"": ""f16c23f9-9ac7-44d3-ba9e-feebc2ee32db"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Button C"",
+                    ""type"": ""Button"",
+                    ""id"": ""07a234c5-b325-442b-9e1a-e663dbf5979a"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Button D"",
+                    ""type"": ""Button"",
+                    ""id"": ""654ebbee-5600-4e78-b57b-588a35a2880d"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Button S"",
+                    ""type"": ""Button"",
+                    ""id"": ""b8ec316a-815f-4511-817e-da94e33002c9"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -52,7 +92,7 @@ namespace ResonantSpark
                 {
                     ""name"": ""WASD"",
                     ""id"": ""cdc23752-97e4-4788-acaa-4b8caee1fb6d"",
-                    ""path"": ""2DVector"",
+                    ""path"": ""2DVector(normalize=false)"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -169,6 +209,116 @@ namespace ResonantSpark
                     ""action"": ""Fire"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4a3a76ce-014c-4afc-bc37-68b02eae4922"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Button A"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""aa1781ad-7e57-422c-831c-e51e45e50542"",
+                    ""path"": ""<Keyboard>/u"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Button A"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""869974e3-95e8-4fbc-870a-3ef3af892418"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Button B"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e60bf4a4-1c07-4d6b-80a7-8a5a12c6cc53"",
+                    ""path"": ""<Keyboard>/i"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Button B"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""04c5fc1b-080e-4152-90d4-902ec487a6b6"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Button C"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""88b002d2-e190-4980-8dd8-cee3f52d7875"",
+                    ""path"": ""<Keyboard>/k"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Button C"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1d7899df-35aa-4f2f-b146-20b9c6e337b1"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Button D"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7fdbc3b5-d050-4224-83cc-7723d7f8c918"",
+                    ""path"": ""<Keyboard>/j"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Button D"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cb1f2230-8648-4c84-a748-60097ab73f7e"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Button S"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""59f6c8fa-7a45-49e4-84a8-95ddb9085b36"",
+                    ""path"": ""<Keyboard>/p"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Button S"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -202,6 +352,11 @@ namespace ResonantSpark
             m_GamePlay = asset.FindActionMap("GamePlay", throwIfNotFound: true);
             m_GamePlay_Move = m_GamePlay.FindAction("Move", throwIfNotFound: true);
             m_GamePlay_Fire = m_GamePlay.FindAction("Fire", throwIfNotFound: true);
+            m_GamePlay_ButtonA = m_GamePlay.FindAction("Button A", throwIfNotFound: true);
+            m_GamePlay_ButtonB = m_GamePlay.FindAction("Button B", throwIfNotFound: true);
+            m_GamePlay_ButtonC = m_GamePlay.FindAction("Button C", throwIfNotFound: true);
+            m_GamePlay_ButtonD = m_GamePlay.FindAction("Button D", throwIfNotFound: true);
+            m_GamePlay_ButtonS = m_GamePlay.FindAction("Button S", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -253,12 +408,22 @@ namespace ResonantSpark
         private IGamePlayActions m_GamePlayActionsCallbackInterface;
         private readonly InputAction m_GamePlay_Move;
         private readonly InputAction m_GamePlay_Fire;
+        private readonly InputAction m_GamePlay_ButtonA;
+        private readonly InputAction m_GamePlay_ButtonB;
+        private readonly InputAction m_GamePlay_ButtonC;
+        private readonly InputAction m_GamePlay_ButtonD;
+        private readonly InputAction m_GamePlay_ButtonS;
         public struct GamePlayActions
         {
             private @BasicActions m_Wrapper;
             public GamePlayActions(@BasicActions wrapper) { m_Wrapper = wrapper; }
             public InputAction @Move => m_Wrapper.m_GamePlay_Move;
             public InputAction @Fire => m_Wrapper.m_GamePlay_Fire;
+            public InputAction @ButtonA => m_Wrapper.m_GamePlay_ButtonA;
+            public InputAction @ButtonB => m_Wrapper.m_GamePlay_ButtonB;
+            public InputAction @ButtonC => m_Wrapper.m_GamePlay_ButtonC;
+            public InputAction @ButtonD => m_Wrapper.m_GamePlay_ButtonD;
+            public InputAction @ButtonS => m_Wrapper.m_GamePlay_ButtonS;
             public InputActionMap Get() { return m_Wrapper.m_GamePlay; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -274,6 +439,21 @@ namespace ResonantSpark
                     @Fire.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnFire;
                     @Fire.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnFire;
                     @Fire.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnFire;
+                    @ButtonA.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnButtonA;
+                    @ButtonA.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnButtonA;
+                    @ButtonA.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnButtonA;
+                    @ButtonB.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnButtonB;
+                    @ButtonB.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnButtonB;
+                    @ButtonB.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnButtonB;
+                    @ButtonC.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnButtonC;
+                    @ButtonC.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnButtonC;
+                    @ButtonC.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnButtonC;
+                    @ButtonD.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnButtonD;
+                    @ButtonD.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnButtonD;
+                    @ButtonD.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnButtonD;
+                    @ButtonS.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnButtonS;
+                    @ButtonS.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnButtonS;
+                    @ButtonS.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnButtonS;
                 }
                 m_Wrapper.m_GamePlayActionsCallbackInterface = instance;
                 if (instance != null)
@@ -284,6 +464,21 @@ namespace ResonantSpark
                     @Fire.started += instance.OnFire;
                     @Fire.performed += instance.OnFire;
                     @Fire.canceled += instance.OnFire;
+                    @ButtonA.started += instance.OnButtonA;
+                    @ButtonA.performed += instance.OnButtonA;
+                    @ButtonA.canceled += instance.OnButtonA;
+                    @ButtonB.started += instance.OnButtonB;
+                    @ButtonB.performed += instance.OnButtonB;
+                    @ButtonB.canceled += instance.OnButtonB;
+                    @ButtonC.started += instance.OnButtonC;
+                    @ButtonC.performed += instance.OnButtonC;
+                    @ButtonC.canceled += instance.OnButtonC;
+                    @ButtonD.started += instance.OnButtonD;
+                    @ButtonD.performed += instance.OnButtonD;
+                    @ButtonD.canceled += instance.OnButtonD;
+                    @ButtonS.started += instance.OnButtonS;
+                    @ButtonS.performed += instance.OnButtonS;
+                    @ButtonS.canceled += instance.OnButtonS;
                 }
             }
         }
@@ -310,6 +505,11 @@ namespace ResonantSpark
         {
             void OnMove(InputAction.CallbackContext context);
             void OnFire(InputAction.CallbackContext context);
+            void OnButtonA(InputAction.CallbackContext context);
+            void OnButtonB(InputAction.CallbackContext context);
+            void OnButtonC(InputAction.CallbackContext context);
+            void OnButtonD(InputAction.CallbackContext context);
+            void OnButtonS(InputAction.CallbackContext context);
         }
     }
 }

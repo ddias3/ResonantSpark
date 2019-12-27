@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
+
 using ResonantSpark.Input.Combinations;
 
 namespace ResonantSpark {
@@ -53,17 +55,28 @@ namespace ResonantSpark {
                 var quartCirPlusBut = memPools[typeof(QuarterCircleButtonPress)];
 
                 for (int n = 0; n < INIT_POOL_SIZE; ++n) {
-                    dirCurr.Add(new DirectionCurrent());
-                    neutRet.Add(new NeutralReturn());
-                    dirPress.Add(new DirectionPress());
-                    doubleTap.Add(new DoubleTap());
-                    dirHold.Add(new DirectionLongHold());
-                    butPress.Add(new ButtonPress());
-                    but2Press.Add(new Button2Press());
-                    but3Press.Add(new Button3Press());
-                    dirPlusBut.Add(new DirectionPlusButton());
-                    quartCir.Add(new QuarterCircle());
-                    quartCirPlusBut.Add(new QuarterCircleButtonPress());
+                    //dirCurr.Add(new DirectionCurrent());
+                    //neutRet.Add(new NeutralReturn());
+                    //dirPress.Add(new DirectionPress());
+                    //doubleTap.Add(new DoubleTap());
+                    //dirHold.Add(new DirectionLongHold());
+                    //butPress.Add(new ButtonPress());
+                    //but2Press.Add(new Button2Press());
+                    //but3Press.Add(new Button3Press());
+                    //dirPlusBut.Add(new DirectionPlusButton());
+                    //quartCir.Add(new QuarterCircle());
+                    //quartCirPlusBut.Add(new QuarterCircleButtonPress());
+                    dirCurr.Add(ScriptableObject.CreateInstance<DirectionCurrent>());
+                    neutRet.Add(ScriptableObject.CreateInstance<NeutralReturn>());
+                    dirPress.Add(ScriptableObject.CreateInstance<DirectionPress>());
+                    doubleTap.Add(ScriptableObject.CreateInstance<DoubleTap>());
+                    dirHold.Add(ScriptableObject.CreateInstance<DirectionLongHold>());
+                    butPress.Add(ScriptableObject.CreateInstance<ButtonPress>());
+                    but2Press.Add(ScriptableObject.CreateInstance<Button2Press>());
+                    but3Press.Add(ScriptableObject.CreateInstance<Button3Press>());
+                    dirPlusBut.Add(ScriptableObject.CreateInstance<DirectionPlusButton>());
+                    quartCir.Add(ScriptableObject.CreateInstance<QuarterCircle>());
+                    quartCirPlusBut.Add(ScriptableObject.CreateInstance<QuarterCircleButtonPress>());
                 }
 
                 empty = new Empty();
