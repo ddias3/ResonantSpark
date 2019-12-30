@@ -29,15 +29,23 @@ namespace ResonantSpark {
         }
 
         public void Update() {
+            int stepsInFrame = 0;
+
                 // TODO: This may be incorrect. I may need to pull this while loop out into an async call
             while (elapsedTime > FRAME_TIME) {
                 foreach (Action<int> action in updateActions) {
                     action.Invoke(frameIndex);
                 }
 
+                stepsInFrame++;
+
                 frameIndex++;
                 elapsedTime -= FRAME_TIME;
             }
+
+            //if (stepsInFrame > 1) {
+            //    Debug.LogWarning("Frame Skip at frame(" + frameIndex + "). Stepped " + stepsInFrame + " times in single frame");
+            //}
 
             elapsedTime += gameTime.Layer("realTime");
         }

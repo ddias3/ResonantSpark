@@ -58,6 +58,44 @@ namespace ResonantSpark {
             public bool butC;
             public bool butD;
             public bool butS;
+
+            public new string ToString() {
+                string dir = "";
+                switch (direction) {
+                    case FightingGameInputCodeDir.None:
+                        dir += " ";
+                        break;
+                    case FightingGameInputCodeDir.DownLeft:
+                        dir += "↙";
+                        break;
+                    case FightingGameInputCodeDir.Down:
+                        dir += "↓";
+                        break;
+                    case FightingGameInputCodeDir.DownRight:
+                        dir += "↘";
+                        break;
+                    case FightingGameInputCodeDir.Left:
+                        dir += "←";
+                        break;
+                    case FightingGameInputCodeDir.Neutral:
+                        dir += "⋅";
+                        break;
+                    case FightingGameInputCodeDir.Right:
+                        dir += "→";
+                        break;
+                    case FightingGameInputCodeDir.UpLeft:
+                        dir += "↖";
+                        break;
+                    case FightingGameInputCodeDir.Up:
+                        dir += "↑";
+                        break;
+                    case FightingGameInputCodeDir.UpRight:
+                        dir += "↗";
+                        break;
+                }
+
+                return "(" + dir + "," + (butA ? "A," : "_,") + (butB ? "B," : "_,") + (butC ? "C," : "_,") + (butD ? "D," : "_,") + (butS ? "S," : "_,") + ")";
+            }
         };
     }
 }
