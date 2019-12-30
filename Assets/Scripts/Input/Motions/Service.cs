@@ -9,10 +9,10 @@ namespace ResonantSpark {
     namespace Input {
         public class Service {
             public static void FindCombinations(InputBufferReader reader, Factory inputFactory, List<Combination> activeInputs) {
-                //int test0 = FindDirectionPresses(reader, inputFactory, activeInputs);
-                //int test1 = FindNeutralReturns(reader, inputFactory, activeInputs);
-                //int test2 = FindDoubleTaps(reader, inputFactory, activeInputs);
-                //int test3 = FindDirectionCurrent(reader, inputFactory, activeInputs);
+                int test0 = FindDirectionPresses(reader, inputFactory, activeInputs);
+                int test1 = FindNeutralReturns(reader, inputFactory, activeInputs);
+                int test2 = FindDoubleTaps(reader, inputFactory, activeInputs);
+                int test3 = FindDirectionCurrent(reader, inputFactory, activeInputs);
                 //int test4 = FindDirectionLongHolds(reader, inputFactory, activeInputs);    // TODO: Fix this, but the feature may not even exist.
                 //int test6 = FindButtonPresses(reader, inputFactory, activeInputs);
                 //int test7 = FindButton2Presses(reader, inputFactory, activeInputs);
@@ -447,20 +447,25 @@ namespace ResonantSpark {
 
             private static FightingGameInputCodeDir[] qcLeft = { FightingGameInputCodeDir.Down, FightingGameInputCodeDir.DownLeft, FightingGameInputCodeDir.Left };
             private static FightingGameInputCodeDir[] qcRight = { FightingGameInputCodeDir.Down, FightingGameInputCodeDir.DownRight, FightingGameInputCodeDir.Right };
+            private static int[] qcSearchLength = { 5, 4 };
 
-            private static int FindMotion(InputBufferReader reader, FightingGameInputCodeDir[] motion, int[] searchLength) {
-                for (int motionIndex = 0; motionIndex < motion.Length - 1; ++motionIndex) {
-                    for (int n = 0; reader.ReadyNextLookAhead() && n < searchLength[motionIndex]; ++n) {
-                        int lookAheadFrameIndex = reader.LookAhead(out GameInputStruct la);
-                        if (la.direction == motion[motionIndex]) {
-                            continue;
+            private static int FindMotion(GameInputStruct curr, InputBufferReader reader, FightingGameInputCodeDir[] motion, int[] searchLength) {
+                if (curr.direction == motion[0]) {
+                    for (int motionIndex = 1; motionIndex < motion.Length; ++motionIndex) {
+                        bool stopSearch = true;
+                        for (int n = 0; reader.ReadyNextLookAhead() && n < searchLength[motionIndex - 1]; ++n) {
+                            int lookAheadFrameIndex = reader.LookAhead(out GameInputStruct la);
+                            if (la.direction == motion[motionIndex]) {
+                                if (motionIndex == motion.Length - 1) {
+                                    return lookAheadFrameIndex;
+                                }
+                                else {
+                                    stopSearch = false;
+                                    break;
+                                }
+                            }
                         }
-                    }
-                }
-                for (int n = 0; reader.ReadyNextLookAhead() && n < searchLength[searchLength.Length - 1]; ++n) {
-                    int lookAheadFrameIndex = reader.LookAhead(out GameInputStruct la);
-                    if (la.direction == motion[motion.Length - 1]) {
-                        return lookAheadFrameIndex;
+                        if (stopSearch) return -1;
                     }
                 }
                 return -1;
@@ -478,7 +483,7 @@ namespace ResonantSpark {
                         int lookAheadFrameIndex;
 
                         reader.ResetLookAhead();
-                        if ((lookAheadFrameIndex = FindMotion(reader, qcLeft, new[] { 5, 4 })) >= 0) {
+                        if ((lookAheadFrameIndex = FindMotion(curr, reader, qcLeft, qcSearchLength)) >= 0) {
                             QuarterCircle input = AddToActiveInputs<QuarterCircle>(activeInputs, inputFactory, lookAheadFrameIndex, reader.GetCurrentFrame(), newInput => {
                                 numFound++;
                                 newInput.Init(lookAheadFrameIndex, FightingGameInputCodeDir.Left);
@@ -486,7 +491,7 @@ namespace ResonantSpark {
                         }
 
                         reader.ResetLookAhead();
-                        if ((lookAheadFrameIndex = FindMotion(reader, qcRight, new[] { 5, 4 })) >= 0) {
+                        if ((lookAheadFrameIndex = FindMotion(curr, reader, qcRight, qcSearchLength)) >= 0) {
                             QuarterCircle input = AddToActiveInputs<QuarterCircle>(activeInputs, inputFactory, lookAheadFrameIndex, reader.GetCurrentFrame(), newInput => {
                                 numFound++;
                                 newInput.Init(lookAheadFrameIndex, FightingGameInputCodeDir.Right);
