@@ -201,7 +201,7 @@ namespace ResonantSpark {
                 public FightingGameInputCodeDir endDirection;
 
                 public QuarterCircle() {
-                    SetInfo(staleTime: 6, priorityValue: 5000);
+                    SetInfo(staleTime: 12, priorityValue: 5000);
 
                     endDirection = FightingGameInputCodeDir.None;
                 }
