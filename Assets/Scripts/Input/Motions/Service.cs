@@ -473,68 +473,24 @@ namespace ResonantSpark {
                 while (reader.ReadyNext()) {
                     int inputFrameIndex = reader.ReadBuffer(out GameInputStruct curr);
 
-                    //if (currDir != curr.direction) {
-                    //    currDir = curr.direction;
-                    //    int lookAheadFrameIndex;
-
-                    //    reader.ResetLookAhead();
-                    //    if ((lookAheadFrameIndex = FindMotion(reader, qcLeft, new[] { 5, 4 })) >= 0) {
-                    //        QuarterCircle input = AddToActiveInputs<QuarterCircle>(activeInputs, inputFactory, lookAheadFrameIndex, reader.GetCurrentFrame(), newInput => {
-                    //            numFound++;
-                    //            newInput.Init(lookAheadFrameIndex, FightingGameInputCodeDir.Left);
-                    //        });
-                    //    }
-
-                    //    reader.ResetLookAhead();
-                    //    if ((lookAheadFrameIndex = FindMotion(reader, qcRight, new[] { 5, 4 })) >= 0) {
-                    //        QuarterCircle input = AddToActiveInputs<QuarterCircle>(activeInputs, inputFactory, lookAheadFrameIndex, reader.GetCurrentFrame(), newInput => {
-                    //            numFound++;
-                    //            newInput.Init(lookAheadFrameIndex, FightingGameInputCodeDir.Right);
-                    //        });
-                    //    }
-                    //}
-
                     if (currDir != curr.direction) {
                         currDir = curr.direction;
+                        int lookAheadFrameIndex;
 
-                        if (curr.direction == qcLeft[0]) {
+                        reader.ResetLookAhead();
+                        if ((lookAheadFrameIndex = FindMotion(reader, qcLeft, new[] { 5, 4 })) >= 0) {
+                            QuarterCircle input = AddToActiveInputs<QuarterCircle>(activeInputs, inputFactory, lookAheadFrameIndex, reader.GetCurrentFrame(), newInput => {
+                                numFound++;
+                                newInput.Init(lookAheadFrameIndex, FightingGameInputCodeDir.Left);
+                            });
+                        }
 
-                            bool continueSearch = true;
-                            int n = 0;
-
-                            n = 0;
-                            while (continueSearch && reader.ReadyNextLookAhead()) {
-                                if (n < 5) {
-                                    int lookAheadFrameIndex = reader.LookAhead(out GameInputStruct la);
-
-                                    if (la.direction == qcLeft[1]) break;
-                                    ++n;
-                                }
-                                else {
-                                    continueSearch = false;
-                                    break;
-                                }
-                            }
-
-                            n = 0;
-                            while (continueSearch && reader.ReadyNextLookAhead()) {
-                                if (n < 4) {
-                                    int lookAheadFrameIndex = reader.LookAhead(out GameInputStruct la);
-
-                                    if (la.direction == qcLeft[2]) {
-                                        QuarterCircle input = AddToActiveInputs<QuarterCircle>(activeInputs, inputFactory, lookAheadFrameIndex, reader.GetCurrentFrame(), newInput => {
-                                            numFound++;
-                                            newInput.Init(lookAheadFrameIndex, la.direction);
-                                        });
-                                        break;
-                                    }
-                                    ++n;
-                                }
-                                else {
-                                    continueSearch = false;
-                                    break;
-                                }
-                            }
+                        reader.ResetLookAhead();
+                        if ((lookAheadFrameIndex = FindMotion(reader, qcRight, new[] { 5, 4 })) >= 0) {
+                            QuarterCircle input = AddToActiveInputs<QuarterCircle>(activeInputs, inputFactory, lookAheadFrameIndex, reader.GetCurrentFrame(), newInput => {
+                                numFound++;
+                                newInput.Init(lookAheadFrameIndex, FightingGameInputCodeDir.Right);
+                            });
                         }
                     }
                 }
