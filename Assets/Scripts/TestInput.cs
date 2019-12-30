@@ -33,6 +33,12 @@ public class TestInput : MonoBehaviour {
     public Image immediateArrow;
     public Image bufferArrow;
 
+    public Image buttonA;
+    public Image buttonB;
+    public Image buttonC;
+    public Image buttonD;
+    public Image buttonS;
+
     public bool initAutoInput = false;
     public int selectedInputString = 0;
 
@@ -136,21 +142,9 @@ public class TestInput : MonoBehaviour {
             ResetFrameCounter();
         }
 
-        if (horizontalInput == 0 && verticalInput == 0) {
-            immediateArrow.enabled = false;
-        }
-        else {
-            immediateArrow.enabled = true;
-            //immediateArrow.GetComponent<Transform>().rotation = Quaternion.Euler(0.0f, 0.0f, Mathf.Atan2(verticalInput, horizontalInput) * Mathf.Rad2Deg - 90.0f);
-            immediateArrow.GetComponent<Transform>().rotation = Quaternion.Euler(0.0f, 0.0f, Mathf.Atan2(-horizontalInput, verticalInput) * Mathf.Rad2Deg);
-        }
-
-        if (inputBuffer.GetLatestInput() == FightingGameInputCodeDir.Neutral || inputBuffer.GetLatestInput() == FightingGameInputCodeDir.None) {
-            bufferArrow.enabled = false;
-        }
-        else {
-            bufferArrow.enabled = true;
-            bufferArrow.GetComponent<Transform>().rotation = Quaternion.Euler(0.0f, 0.0f, Mathf.Atan2((((int) inputBuffer.GetLatestInput()) - 1) / 3 - 1, (((int) inputBuffer.GetLatestInput()) - 1) % 3 - 1) * Mathf.Rad2Deg - 90.0f);
+        if (Keyboard.current.backspaceKey.wasPressedThisFrame) {
+            Debug.Log("BreakPoint");
+            inputBuffer.breakPoint = true;
         }
 
         FightingGameInputCodeDir fgInputCodeDir;
@@ -176,6 +170,29 @@ public class TestInput : MonoBehaviour {
         if (initAutoInput && frameCounter < selectableStrings[selectedInputString].buttonS.Length) {
             buttonInputCode += selectableStrings[selectedInputString].buttonS[frameCounter] ? (int)FightingGameInputCodeBut.S : 0;
         }
+
+        if (horizontalInput == 0 && verticalInput == 0) {
+            immediateArrow.enabled = false;
+        }
+        else {
+            immediateArrow.enabled = true;
+            //immediateArrow.GetComponent<Transform>().rotation = Quaternion.Euler(0.0f, 0.0f, Mathf.Atan2(verticalInput, horizontalInput) * Mathf.Rad2Deg - 90.0f);
+            immediateArrow.GetComponent<Transform>().rotation = Quaternion.Euler(0.0f, 0.0f, Mathf.Atan2(-horizontalInput, verticalInput) * Mathf.Rad2Deg);
+        }
+
+        if (inputBuffer.GetLatestInput() == FightingGameInputCodeDir.Neutral || inputBuffer.GetLatestInput() == FightingGameInputCodeDir.None) {
+            bufferArrow.enabled = false;
+        }
+        else {
+            bufferArrow.enabled = true;
+            bufferArrow.GetComponent<Transform>().rotation = Quaternion.Euler(0.0f, 0.0f, Mathf.Atan2((((int)inputBuffer.GetLatestInput()) - 1) / 3 - 1, (((int)inputBuffer.GetLatestInput()) - 1) % 3 - 1) * Mathf.Rad2Deg - 90.0f);
+        }
+
+        buttonA.enabled = (buttonInputCode & (int)FightingGameInputCodeBut.A) > 0;
+        buttonB.enabled = (buttonInputCode & (int)FightingGameInputCodeBut.B) > 0;
+        buttonC.enabled = (buttonInputCode & (int)FightingGameInputCodeBut.C) > 0;
+        buttonD.enabled = (buttonInputCode & (int)FightingGameInputCodeBut.D) > 0;
+        buttonS.enabled = (buttonInputCode & (int)FightingGameInputCodeBut.S) > 0;
 
         inputBuffer.SetCurrentInputState(fgInputCodeDir, buttonInputCode);
 

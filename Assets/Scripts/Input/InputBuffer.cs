@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
@@ -72,7 +71,7 @@ namespace ResonantSpark {
             }
 
             public FightingGameInputCodeDir GetLatestInput() {
-                int currIndex = (inputIndex - inputDelay + bufferLength) % bufferLength;
+                int currIndex = (bufferLength + inputIndex - inputDelay) % bufferLength;
                 if (inputBuffer[currIndex].direction == FightingGameInputCodeDir.None) Debug.Break();
                 return inputBuffer[currIndex].direction;
             }
@@ -82,14 +81,14 @@ namespace ResonantSpark {
             }
 
             private void FindCombinations(int frameIndex) {
+                InputBufferReader reader = new InputBufferReader(inputBuffer, frameIndex, inputBufferSize, inputIndex, inputDelay, bufferLength);
                 if (breakPoint) {
                     Debug.Log("Manual Pause");
+                    Debug.Log(reader.ToDirectionText());
+                    Debug.Log(reader.ToString());
                     breakPoint = false;
                 }
-
-                InputBufferReader reader = new InputBufferReader(inputBuffer, inputBufferSize, inputIndex, inputDelay, bufferLength);
-
-                Input.Service.FindCombinations(reader, inputFactory, frameIndex, inputCombinations);
+                Input.Service.FindCombinations(reader, inputFactory, inputCombinations);
             }
 
             public List<Input.Combinations.Combination> GetFoundCombinations() {
@@ -97,7 +96,7 @@ namespace ResonantSpark {
             }
 
             public void ClearInputCombinations(int frameIndex) {
-                inputCombinations = inputCombinations.Where(combo => combo.inUse || !combo.Stale(frameIndex)).ToList();
+                inputCombinations = inputCombinations.Where(combo => combo.inUse || !combo.Stale(frameIndex - inputDelay)).ToList();
             }
 
             public void ServeInput() {

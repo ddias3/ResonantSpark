@@ -59,7 +59,7 @@ namespace ResonantSpark {
                 public FightingGameInputCodeDir direction;
 
                 public DirectionCurrent() {
-                    SetInfo(staleTime: 0, priorityValue: 1);
+                    SetInfo(staleTime: -0xFFFF, priorityValue: 1);
                     this.direction = FightingGameInputCodeDir.None;
                 }
 
