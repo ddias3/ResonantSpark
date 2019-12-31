@@ -15,7 +15,7 @@ namespace ResonantSpark {
                 int test3 = FindDirectionCurrent(reader, inputFactory, activeInputs);
                 //int test4 = FindDirectionLongHolds(reader, inputFactory, activeInputs);    // TODO: Fix this, but the feature may not even exist.
                 //int test6 = FindButtonPresses(reader, inputFactory, activeInputs);
-                //int test7 = FindButton2Presses(reader, inputFactory, activeInputs);
+                int test7 = FindButton2Presses(reader, inputFactory, activeInputs);
                 //int test8 = FindButton3Presses(reader, inputFactory, activeInputs);
                 //int test9 = FindDirectionPlusButtons(reader, inputFactory, activeInputs);
                 int testA = FindQuarterCircles(reader, inputFactory, activeInputs);
@@ -225,39 +225,51 @@ namespace ResonantSpark {
                 int numFound = 0;
                 reader.ResetCurrIndex();
 
+                bool butAPrev = false;
+                bool butBPrev = false;
+                bool butCPrev = false;
+                bool butDPrev = false;
+                bool butSPrev = false;
+
                 while (reader.ReadyNext()) {
                     int inputFrameIndex = reader.ReadBuffer(out GameInputStruct curr);
 
-                    if (curr.butA) {
+                    if (!butAPrev && curr.butA) {
                         ButtonPress input = AddToActiveInputs<ButtonPress>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
                             numFound++;
                             newInput.Init(inputFrameIndex, FightingGameInputCodeBut.A);
                         });
                     }
-                    if (curr.butB) {
+                    if (!butBPrev && curr.butB) {
                         ButtonPress input = AddToActiveInputs<ButtonPress>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
                             numFound++;
                             newInput.Init(inputFrameIndex, FightingGameInputCodeBut.B);
                         });
                     }
-                    if (curr.butC) {
+                    if (!butCPrev && curr.butC) {
                         ButtonPress input = AddToActiveInputs<ButtonPress>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
                             numFound++;
                             newInput.Init(inputFrameIndex, FightingGameInputCodeBut.C);
                         });
                     }
-                    if (curr.butD) {
+                    if (!butDPrev && curr.butD) {
                         ButtonPress input = AddToActiveInputs<ButtonPress>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
                             numFound++;
                             newInput.Init(inputFrameIndex, FightingGameInputCodeBut.D);
                         });
                     }
-                    if (curr.butS) {
+                    if (!butSPrev && curr.butS) {
                         ButtonPress input = AddToActiveInputs<ButtonPress>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
                             numFound++;
                             newInput.Init(inputFrameIndex, FightingGameInputCodeBut.S);
                         });
                     }
+
+                    butAPrev = curr.butA;
+                    butBPrev = curr.butB;
+                    butCPrev = curr.butC;
+                    butDPrev = curr.butD;
+                    butSPrev = curr.butS;
                 }
 
                 return numFound;
@@ -267,10 +279,36 @@ namespace ResonantSpark {
                 int numFound = 0;
                 reader.ResetCurrIndex();
 
+                bool butAPrev = false;
+                bool butBPrev = false;
+                bool butCPrev = false;
+                bool butDPrev = false;
+                bool butSPrev = false;
+
                 while (reader.ReadyNext()) {
                     int inputFrameIndex = reader.ReadBuffer(out GameInputStruct curr);
 
-                    if (curr.butA) {
+                    if (!butAPrev && curr.butA) {
+                        if (curr.butB) AddToActiveInputs<Button2Press>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
+                            numFound++;
+                            newInput.Init(inputFrameIndex, FightingGameInputCodeBut.A, FightingGameInputCodeBut.B);
+                        });
+
+                        if (curr.butC) AddToActiveInputs<Button2Press>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
+                            numFound++;
+                            newInput.Init(inputFrameIndex, FightingGameInputCodeBut.A, FightingGameInputCodeBut.C);
+                        });
+
+                        if (curr.butD) AddToActiveInputs<Button2Press>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
+                            numFound++;
+                            newInput.Init(inputFrameIndex, FightingGameInputCodeBut.A, FightingGameInputCodeBut.D);
+                        });
+
+                        if (curr.butS) AddToActiveInputs<Button2Press>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
+                            numFound++;
+                            newInput.Init(inputFrameIndex, FightingGameInputCodeBut.A, FightingGameInputCodeBut.S);
+                        });
+
                         for (int n = 0; reader.ReadyNextLookBehind() && n < 2; ++n) {
                             int lookBehindFrameIndex = reader.LookBehind(out GameInputStruct lb);
 
@@ -295,7 +333,28 @@ namespace ResonantSpark {
                             });
                         }
                     }
-                    if (curr.butB) {
+
+                    if (!butBPrev && curr.butB) {
+                        if (curr.butA) AddToActiveInputs<Button2Press>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
+                            numFound++;
+                            newInput.Init(inputFrameIndex, FightingGameInputCodeBut.A, FightingGameInputCodeBut.B);
+                        });
+
+                        if (curr.butC) AddToActiveInputs<Button2Press>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
+                            numFound++;
+                            newInput.Init(inputFrameIndex, FightingGameInputCodeBut.B, FightingGameInputCodeBut.C);
+                        });
+
+                        if (curr.butD) AddToActiveInputs<Button2Press>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
+                            numFound++;
+                            newInput.Init(inputFrameIndex, FightingGameInputCodeBut.B, FightingGameInputCodeBut.D);
+                        });
+
+                        if (curr.butS) AddToActiveInputs<Button2Press>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
+                            numFound++;
+                            newInput.Init(inputFrameIndex, FightingGameInputCodeBut.B, FightingGameInputCodeBut.S);
+                        });
+
                         for (int n = 0; reader.ReadyNextLookBehind() && n < 2; ++n) {
                             int lookBehindFrameIndex = reader.LookBehind(out GameInputStruct lb);
 
@@ -321,7 +380,27 @@ namespace ResonantSpark {
                         }
                     }
 
-                    if (curr.butC) {
+                    if (!butCPrev && curr.butC) {
+                        if (curr.butA) AddToActiveInputs<Button2Press>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
+                            numFound++;
+                            newInput.Init(inputFrameIndex, FightingGameInputCodeBut.A, FightingGameInputCodeBut.C);
+                        });
+
+                        if (curr.butB) AddToActiveInputs<Button2Press>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
+                            numFound++;
+                            newInput.Init(inputFrameIndex, FightingGameInputCodeBut.B, FightingGameInputCodeBut.C);
+                        });
+
+                        if (curr.butD) AddToActiveInputs<Button2Press>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
+                            numFound++;
+                            newInput.Init(inputFrameIndex, FightingGameInputCodeBut.C, FightingGameInputCodeBut.D);
+                        });
+
+                        if (curr.butS) AddToActiveInputs<Button2Press>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
+                            numFound++;
+                            newInput.Init(inputFrameIndex, FightingGameInputCodeBut.C, FightingGameInputCodeBut.S);
+                        });
+
                         for (int n = 0; reader.ReadyNextLookBehind() && n < 2; ++n) {
                             int lookBehindFrameIndex = reader.LookBehind(out GameInputStruct lb);
 
@@ -346,7 +425,28 @@ namespace ResonantSpark {
                             });
                         }
                     }
-                    if (curr.butD) {
+
+                    if (!butDPrev && curr.butD) {
+                        if (curr.butA) AddToActiveInputs<Button2Press>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
+                            numFound++;
+                            newInput.Init(inputFrameIndex, FightingGameInputCodeBut.A, FightingGameInputCodeBut.D);
+                        });
+
+                        if (curr.butB) AddToActiveInputs<Button2Press>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
+                            numFound++;
+                            newInput.Init(inputFrameIndex, FightingGameInputCodeBut.B, FightingGameInputCodeBut.D);
+                        });
+
+                        if (curr.butC) AddToActiveInputs<Button2Press>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
+                            numFound++;
+                            newInput.Init(inputFrameIndex, FightingGameInputCodeBut.C, FightingGameInputCodeBut.D);
+                        });
+
+                        if (curr.butS) AddToActiveInputs<Button2Press>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
+                            numFound++;
+                            newInput.Init(inputFrameIndex, FightingGameInputCodeBut.D, FightingGameInputCodeBut.S);
+                        });
+
                         for (int n = 0; reader.ReadyNextLookBehind() && n < 2; ++n) {
                             int lookBehindFrameIndex = reader.LookBehind(out GameInputStruct lb);
 
@@ -371,7 +471,28 @@ namespace ResonantSpark {
                             });
                         }
                     }
-                    if (curr.butS) {
+
+                    if (!butSPrev && curr.butS) {
+                        if (curr.butA) AddToActiveInputs<Button2Press>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
+                            numFound++;
+                            newInput.Init(inputFrameIndex, FightingGameInputCodeBut.A, FightingGameInputCodeBut.S);
+                        });
+
+                        if (curr.butB) AddToActiveInputs<Button2Press>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
+                            numFound++;
+                            newInput.Init(inputFrameIndex, FightingGameInputCodeBut.B, FightingGameInputCodeBut.S);
+                        });
+
+                        if (curr.butC) AddToActiveInputs<Button2Press>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
+                            numFound++;
+                            newInput.Init(inputFrameIndex, FightingGameInputCodeBut.C, FightingGameInputCodeBut.S);
+                        });
+
+                        if (curr.butD) AddToActiveInputs<Button2Press>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
+                            numFound++;
+                            newInput.Init(inputFrameIndex, FightingGameInputCodeBut.D, FightingGameInputCodeBut.S);
+                        });
+
                         for (int n = 0; reader.ReadyNextLookBehind() && n < 2; ++n) {
                             int lookBehindFrameIndex = reader.LookBehind(out GameInputStruct lb);
 
@@ -396,6 +517,12 @@ namespace ResonantSpark {
                             });
                         }
                     }
+
+                    butAPrev = curr.butA;
+                    butBPrev = curr.butB;
+                    butCPrev = curr.butC;
+                    butDPrev = curr.butD;
+                    butSPrev = curr.butS;
                 }
 
                 return numFound;
