@@ -26,6 +26,10 @@ namespace ResonantSpark {
                 ResetCurrIndex();
             }
 
+            public int currentFrame {
+                get { return frameIndex - inputDelay; }
+            }
+
             public void ResetCurrIndex() {
                 readerIndex = -1;
                 lookAheadIndex = 0;
@@ -40,20 +44,16 @@ namespace ResonantSpark {
                 lookBehindIndex = 0;
             }
 
-            public void SetReadIndex(int val, bool delayOffset = false) {
+            public void SetReadIndex(int val) {
                 if (val < 0) {
                     readerIndex = inputBufferSize + val;
                 }
                 else {
                     readerIndex = val;
                 }
-
-                if (delayOffset) {
-                    readerIndex += inputDelay;
-                }
             }
 
-            public int GetCurrentFrame() {
+            public int GetAbsoluteCurrentFrame() {
                 return frameIndex;
             }
 
