@@ -40,12 +40,16 @@ namespace ResonantSpark {
                 lookBehindIndex = 0;
             }
 
-            public void SetReadIndex(int val) {
+            public void SetReadIndex(int val, bool delayOffset = false) {
                 if (val < 0) {
                     readerIndex = inputBufferSize + val;
                 }
                 else {
                     readerIndex = val;
+                }
+
+                if (delayOffset) {
+                    readerIndex += inputDelay;
                 }
             }
 
@@ -87,7 +91,7 @@ namespace ResonantSpark {
                     // (inputDelay + inputBufferSize) is the relative start of the read point. Subtract the starting from the init.
                     int currIndex = (bufferLength + inputIndex - (inputDelay + inputBufferSize) + 1 + readerIndex) % bufferLength;
                     curr = inputBuffer[currIndex];
-                    return frameIndex - (inputDelay + inputBufferSize) + readerIndex;
+                    return frameIndex - (inputDelay + inputBufferSize) + 1 + readerIndex;
                 }
                 else {
                     curr = new GameInputStruct {
@@ -106,7 +110,7 @@ namespace ResonantSpark {
                 if (IsLookAheadReadable()) {
                     int currIndex = (bufferLength + inputIndex - (inputDelay + inputBufferSize) + 1 + readerIndex + lookAheadIndex) % bufferLength;
                     ahead = inputBuffer[currIndex];
-                    return frameIndex - (inputDelay + inputBufferSize) + readerIndex + lookAheadIndex;
+                    return frameIndex - (inputDelay + inputBufferSize) + 1 + readerIndex + lookAheadIndex;
                 }
                 else {
                     ahead = new GameInputStruct {
@@ -125,7 +129,7 @@ namespace ResonantSpark {
                 if (IsLookBehindReadable()) {
                     int currIndex = (bufferLength + inputIndex - (inputDelay + inputBufferSize) + 1 + readerIndex + lookBehindIndex) % bufferLength;
                     behind = inputBuffer[currIndex];
-                    return frameIndex - (inputDelay + inputBufferSize) + readerIndex + lookBehindIndex;
+                    return frameIndex - (inputDelay + inputBufferSize) + 1 + readerIndex + lookBehindIndex;
                 }
                 else {
                     behind = new GameInputStruct {

@@ -221,6 +221,20 @@ namespace ResonantSpark {
                 return numFound;
             }
 
+            private static void FindSingleButtonPress(ref bool butAPrev, ref bool butBPrev, ref bool butCPrev, ref bool butDPrev, ref bool butSPrev, GameInputStruct curr, Action<FightingGameInputCodeBut> callback) {
+                if (!butAPrev && curr.butA) callback(FightingGameInputCodeBut.A);
+                if (!butBPrev && curr.butB) callback(FightingGameInputCodeBut.B);
+                if (!butCPrev && curr.butC) callback(FightingGameInputCodeBut.C);
+                if (!butDPrev && curr.butD) callback(FightingGameInputCodeBut.D);
+                if (!butSPrev && curr.butS) callback(FightingGameInputCodeBut.S);
+
+                butAPrev = curr.butA;
+                butBPrev = curr.butB;
+                butCPrev = curr.butC;
+                butDPrev = curr.butD;
+                butSPrev = curr.butS;
+            }
+
             public static int FindButtonPresses(InputBufferReader reader, Factory inputFactory, List<Combination> activeInputs) {
                 int numFound = 0;
                 reader.ResetCurrIndex();
@@ -234,42 +248,12 @@ namespace ResonantSpark {
                 while (reader.ReadyNext()) {
                     int inputFrameIndex = reader.ReadBuffer(out GameInputStruct curr);
 
-                    if (!butAPrev && curr.butA) {
-                        ButtonPress input = AddToActiveInputs<ButtonPress>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
+                    FindSingleButtonPress(ref butAPrev, ref butBPrev, ref butCPrev, ref butDPrev, ref butSPrev, curr, buttonCode => {
+                        AddToActiveInputs<ButtonPress>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
                             numFound++;
-                            newInput.Init(inputFrameIndex, FightingGameInputCodeBut.A);
+                            newInput.Init(inputFrameIndex, buttonCode);
                         });
-                    }
-                    if (!butBPrev && curr.butB) {
-                        ButtonPress input = AddToActiveInputs<ButtonPress>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
-                            numFound++;
-                            newInput.Init(inputFrameIndex, FightingGameInputCodeBut.B);
-                        });
-                    }
-                    if (!butCPrev && curr.butC) {
-                        ButtonPress input = AddToActiveInputs<ButtonPress>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
-                            numFound++;
-                            newInput.Init(inputFrameIndex, FightingGameInputCodeBut.C);
-                        });
-                    }
-                    if (!butDPrev && curr.butD) {
-                        ButtonPress input = AddToActiveInputs<ButtonPress>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
-                            numFound++;
-                            newInput.Init(inputFrameIndex, FightingGameInputCodeBut.D);
-                        });
-                    }
-                    if (!butSPrev && curr.butS) {
-                        ButtonPress input = AddToActiveInputs<ButtonPress>(activeInputs, inputFactory, inputFrameIndex, reader.GetCurrentFrame(), newInput => {
-                            numFound++;
-                            newInput.Init(inputFrameIndex, FightingGameInputCodeBut.S);
-                        });
-                    }
-
-                    butAPrev = curr.butA;
-                    butBPrev = curr.butB;
-                    butCPrev = curr.butC;
-                    butDPrev = curr.butD;
-                    butSPrev = curr.butS;
+                    });
                 }
 
                 return numFound;
