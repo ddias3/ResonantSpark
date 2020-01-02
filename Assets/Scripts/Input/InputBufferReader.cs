@@ -45,6 +45,7 @@ namespace ResonantSpark {
             }
 
             public void SetReadIndex(int val) {
+                ResetCurrIndex();
                 if (val < 0) {
                     readerIndex = inputBufferSize + val;
                 }

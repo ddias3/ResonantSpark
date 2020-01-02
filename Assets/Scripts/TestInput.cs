@@ -156,19 +156,19 @@ public class TestInput : MonoBehaviour {
         }
 
         if (initAutoInput && frameCounter < selectableStrings[selectedInputString].buttonA.Length) {
-            buttonInputCode += selectableStrings[selectedInputString].buttonA[frameCounter] ? (int) FightingGameInputCodeBut.A : 0;
+            buttonInputCode = buttonInputCode & ~(int) FightingGameInputCodeBut.A | (selectableStrings[selectedInputString].buttonA[frameCounter] ? (int) FightingGameInputCodeBut.A : 0);
         }
         if (initAutoInput && frameCounter < selectableStrings[selectedInputString].buttonB.Length) {
-            buttonInputCode += selectableStrings[selectedInputString].buttonB[frameCounter] ? (int)FightingGameInputCodeBut.B : 0;
+            buttonInputCode = buttonInputCode & ~(int) FightingGameInputCodeBut.B | (selectableStrings[selectedInputString].buttonB[frameCounter] ? (int) FightingGameInputCodeBut.B : 0);
         }
         if (initAutoInput && frameCounter < selectableStrings[selectedInputString].buttonC.Length) {
-            buttonInputCode += selectableStrings[selectedInputString].buttonC[frameCounter] ? (int)FightingGameInputCodeBut.C : 0;
+            buttonInputCode = buttonInputCode & ~(int) FightingGameInputCodeBut.C | (selectableStrings[selectedInputString].buttonC[frameCounter] ? (int) FightingGameInputCodeBut.C : 0);
         }
         if (initAutoInput && frameCounter < selectableStrings[selectedInputString].buttonD.Length) {
-            buttonInputCode += selectableStrings[selectedInputString].buttonD[frameCounter] ? (int)FightingGameInputCodeBut.D : 0;
+            buttonInputCode = buttonInputCode & ~(int) FightingGameInputCodeBut.D | (selectableStrings[selectedInputString].buttonD[frameCounter] ? (int) FightingGameInputCodeBut.D : 0);
         }
         if (initAutoInput && frameCounter < selectableStrings[selectedInputString].buttonS.Length) {
-            buttonInputCode += selectableStrings[selectedInputString].buttonS[frameCounter] ? (int)FightingGameInputCodeBut.S : 0;
+            buttonInputCode = buttonInputCode & ~(int) FightingGameInputCodeBut.S | (selectableStrings[selectedInputString].buttonS[frameCounter] ? (int) FightingGameInputCodeBut.S : 0);
         }
 
         if (horizontalInput == 0 && verticalInput == 0) {

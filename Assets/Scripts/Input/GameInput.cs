@@ -59,6 +59,17 @@ namespace ResonantSpark {
             public bool butD;
             public bool butS;
 
+            public static GameInputStruct operator! (GameInputStruct inputStruct) {
+                return new GameInputStruct {
+                    butA = !inputStruct.butA,
+                    butB = !inputStruct.butB,
+                    butC = !inputStruct.butC,
+                    butD = !inputStruct.butD,
+                    butS = !inputStruct.butS,
+                    direction = inputStruct.direction,
+                };
+            }
+
             public new string ToString() {
                 string dir = "";
                 switch (direction) {

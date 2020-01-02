@@ -23,6 +23,7 @@ namespace ResonantSpark {
                     { typeof(ButtonPress), new List<Combination>(INIT_POOL_SIZE) },
                     { typeof(Button2Press), new List<Combination>(INIT_POOL_SIZE) },
                     { typeof(Button3Press), new List<Combination>(INIT_POOL_SIZE) },
+                    { typeof(ButtonRelease), new List<Combination>(INIT_POOL_SIZE) },
                     { typeof(DirectionPlusButton), new List<Combination>(INIT_POOL_SIZE) },
                     { typeof(QuarterCircle), new List<Combination>(INIT_POOL_SIZE) },
                     { typeof(QuarterCircleButtonPress), new List<Combination>(INIT_POOL_SIZE) },
@@ -37,6 +38,7 @@ namespace ResonantSpark {
                     { typeof(ButtonPress), 0 },
                     { typeof(Button2Press), 0 },
                     { typeof(Button3Press), 0 },
+                    { typeof(ButtonRelease), 0 },
                     { typeof(DirectionPlusButton), 0 },
                     { typeof(QuarterCircle), 0 },
                     { typeof(QuarterCircleButtonPress), 0 },
@@ -50,6 +52,7 @@ namespace ResonantSpark {
                 var butPress = memPools[typeof(ButtonPress)];
                 var but2Press = memPools[typeof(Button2Press)];
                 var but3Press = memPools[typeof(Button3Press)];
+                var butRelse = memPools[typeof(ButtonRelease)];
                 var dirPlusBut = memPools[typeof(DirectionPlusButton)];
                 var quartCir = memPools[typeof(QuarterCircle)];
                 var quartCirPlusBut = memPools[typeof(QuarterCircleButtonPress)];
@@ -63,6 +66,7 @@ namespace ResonantSpark {
                     //butPress.Add(new ButtonPress());
                     //but2Press.Add(new Button2Press());
                     //but3Press.Add(new Button3Press());
+                    //butRelse.Add(new ButtonRelease());
                     //dirPlusBut.Add(new DirectionPlusButton());
                     //quartCir.Add(new QuarterCircle());
                     //quartCirPlusBut.Add(new QuarterCircleButtonPress());
@@ -74,6 +78,7 @@ namespace ResonantSpark {
                     butPress.Add(ScriptableObject.CreateInstance<ButtonPress>());
                     but2Press.Add(ScriptableObject.CreateInstance<Button2Press>());
                     but3Press.Add(ScriptableObject.CreateInstance<Button3Press>());
+                    butRelse.Add(ScriptableObject.CreateInstance<ButtonRelease>());
                     dirPlusBut.Add(ScriptableObject.CreateInstance<DirectionPlusButton>());
                     quartCir.Add(ScriptableObject.CreateInstance<QuarterCircle>());
                     quartCirPlusBut.Add(ScriptableObject.CreateInstance<QuarterCircleButtonPress>());
@@ -123,7 +128,8 @@ namespace ResonantSpark {
                     combo = (T_Combo) FindNextAvailable(typeof(T_Combo), frameCurrent);
                     if (combo == null) {
                         IncreasePoolSize(typeof(T_Combo), (memPool) => {
-                            memPool.Add(new T_Combo());
+                            //memPool.Add(new T_Combo());
+                            memPool.Add(ScriptableObject.CreateInstance<T_Combo>());
                         });
                     }
 
