@@ -173,6 +173,33 @@ namespace ResonantSpark {
                 }
             }
 
+            public class ButtonRelease : Combination {
+                public FightingGameInputCodeBut button0 { get; private set; }
+
+                public ButtonRelease() {
+                    SetInfo(staleTime: 3, priorityValue: 200);
+                    button0 = FightingGameInputCodeBut.None;
+                }
+
+                public ButtonRelease Init(int frameTrigger, FightingGameInputCodeBut button0) {
+                    base.Init(frameTrigger);
+                    this.button0 = button0;
+                    return this;
+                }
+
+                public override int CompareTo(Combination other) {
+                    int baseCompareTo = base.CompareTo(other);
+                    if (baseCompareTo == 0) return (int) ((ButtonRelease) other).button0 - (int) this.button0;
+                    else return baseCompareTo;
+                }
+
+                public override bool Equals(Combination other) {
+                    return other.GetType() == typeof(ButtonRelease)
+                        && other.GetFrame() == this.frameTrigger
+                        && ((ButtonRelease) other).button0 == this.button0;
+                }
+            }
+
             public class ButtonPress : Combination {
                 public FightingGameInputCodeBut button0 { get; private set; }
 
@@ -209,8 +236,14 @@ namespace ResonantSpark {
                 }
 
                 public Button2Press Init(int frameTrigger, FightingGameInputCodeBut button0, FightingGameInputCodeBut button1) {
-                    base.Init(frameTrigger, button0);
-                    this.button1 = button1;
+                    if (button0 > button1) {
+                        base.Init(frameTrigger, button0);
+                        this.button1 = button1;
+                    }
+                    else {
+                        base.Init(frameTrigger, button1);
+                        this.button1 = button0;
+                    }
                     return this;
                 }
 
@@ -237,8 +270,30 @@ namespace ResonantSpark {
                 }
 
                 public Button3Press Init(int frameTrigger, FightingGameInputCodeBut button0, FightingGameInputCodeBut button1, FightingGameInputCodeBut button2) {
-                    base.Init(frameTrigger, button0);
-                    this.button2 = button2;
+                    if (button0 > button1) {
+                        if (button1 > button2) {
+                            // 0 > 1 > 2
+                            base.Init(frameTrigger, button0, button1);
+                            this.button2 = button2;
+                        }
+                        else {
+                            // 0|2 > 1
+                            base.Init(frameTrigger, button0, button2);
+                            this.button2 = button1;
+                        }
+                    }
+                    else {
+                        if (button0 > button2) {
+                            // 1 > 0 > 2
+                            base.Init(frameTrigger, button0, button1);
+                            this.button2 = button2;
+                        }
+                        else {
+                            // 1|2 > 0
+                            base.Init(frameTrigger, button1, button2);
+                            this.button2 = button0;
+                        }
+                    }
                     return this;
                 }
 
