@@ -4,10 +4,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Input.Combinations;
+using ResonantSpark.Input;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class Walk : BaseState {
+        public class Stand : BaseState {
+
+            public Walk walk;
+            public WalkSlow walkSlow;
+            public Still still;
 
             public Vector3 forceScalar;
             public AnimationCurve forwardAccel;
@@ -16,8 +21,9 @@ namespace ResonantSpark {
             public float maxBackwardSpeed;
             public float maxHorizontalSpeed;
 
-            private Vector3 charAccel;
+            //private Vector3 charVel = Quaternion.Inverse(fgChar.rigidbody.rotation) * fgChar.rigidbody.velocity;
             private Vector3 movementForce = Vector3.zero;
+            private Vector3 inputVec = Vector3.zero;
             private Input.FightingGameInputCodeDir dirPress = Input.FightingGameInputCodeDir.None;
 
             private float charRotation;
@@ -27,23 +33,27 @@ namespace ResonantSpark {
 
             public new void Start() {
                 base.Start();
-                states.Register(this, "walk");
+                states.Register(this, "stand");
 
                 RegisterInputCallbacks()
                     .On<DirectionPress>(OnDirectionPress)
                     .On<DoubleTap>(OnDoubleTap)
                     .On<NeutralReturn>(OnNeutralReturn)
                     .On<DirectionCurrent>(OnDirectionCurrent);
+
+                RegisterEnterCallbacks()
+                    .On<DirectionPress>(GivenDirectionPress)
+                    .On<DirectionCurrent>(GivenDirectionCurrent)
+                    .On<NeutralReturn>(GivenNeutralReturn)
+                    .On<Empty>(GivenNothing);
             }
 
             public override void Enter(int frameIndex, IState previousState) {
-                DirectionPress dirPress = (DirectionPress) messages.Dequeue();
-                this.dirPress = dirPress.direction;
+                    // Start OnEnter with this
+                GivenInput(fgChar.GivenCombinations());
 
-                dirPress.inUse = false;
-                charAccel = Vector3.zero;
-
-                fgChar.Play("walk_start", 0, 0.0f);
+                fgChar.SetLocalMoveDirection(0.0f, 0.0f);
+                fgChar.Play("stand", 0, 0.0f);
             }
 
             public override void Execute(int frameIndex) {
@@ -69,7 +79,7 @@ namespace ResonantSpark {
 
                 Vector3 localInput = fgChar.CameraToChar(new Vector3(cameraX, 0, cameraZ));
 
-                fgChar.SetLocalMoveDirection(localInput.x, localInput.z);
+                //fgChar.SetLocalMoveDirection(localInput.x, localInput.z);
 
                 movementForce = localInput;
                 movementForce.Scale(forceScalar);
@@ -84,8 +94,7 @@ namespace ResonantSpark {
 
             private void TurnCharacter() {
                 charRotation = 0.0f;
-
-                if (fgChar.Grounded()) {
+                if (fgChar.Grounded(out Vector3 currStandingPoint)) {
                     charRotation = fgChar.LookToMoveAngle() / fgChar.gameTime;
                     if (charRotation != 0.0f) {
                         fgChar.rigidbody.MoveRotation(Quaternion.AngleAxis(Mathf.Clamp(charRotation, -maxRotation, maxRotation) * fgChar.realTime, Vector3.up) * fgChar.rigidbody.rotation);
@@ -99,9 +108,9 @@ namespace ResonantSpark {
             private void OnNeutralReturn(Action stop, Combination combo) {
                 var neutRet = (NeutralReturn) combo;
                 if (!neutRet.Stale(frame.index)) {
-                    neutRet.inUse = true;
-                    stop.Invoke();
-                    changeState(states.Get("idle").Message(combo));
+                    //neutRet.inUse = true;
+                    //stop.Invoke();
+                    //changeState(states.Get("idle").Message(combo));
                 }
             }
 
@@ -116,16 +125,58 @@ namespace ResonantSpark {
             private void OnDoubleTap(Action stop, Combination combo) {
                 var doubleTap = (DoubleTap) combo;
                 if (!doubleTap.Stale(frame.index)) {
-                    doubleTap.inUse = true;
-                    stop.Invoke();
-                    changeState(states.Get("run").Message(combo));
+                    //doubleTap.inUse = true;
+                    //stop.Invoke();
+                    //changeState(states.Get("run").Message(combo));
                 }
             }
 
+            //private void OnDirectionCurrent(Action stop, Combination combo) {
+            //    if (dirPress != ((DirectionCurrent) combo).direction) {
+            //        this.dirPress = ((DirectionCurrent) combo).direction;
+            //    }
+            //}
+
             private void OnDirectionCurrent(Action stop, Combination combo) {
-                if (dirPress != ((DirectionCurrent) combo).direction) {
-                    this.dirPress = ((DirectionCurrent)combo).direction;
+                var dirPress = (DirectionCurrent)combo;
+                switch (dirPress.direction) {
+                    case FightingGameInputCodeDir.UpLeft:
+                    case FightingGameInputCodeDir.Up:
+                    case FightingGameInputCodeDir.UpRight:
+                        fgChar.UseCombination(dirPress);
+                        stop();
+                        changeState(states.Get("jump"));
+                        break;
+                    case FightingGameInputCodeDir.Left:
+                    case FightingGameInputCodeDir.Right:
+                        fgChar.UseCombination(dirPress);
+                        stop();
+                        changeState(states.Get("walk"));
+                        break;
+                    case FightingGameInputCodeDir.DownLeft:
+                    case FightingGameInputCodeDir.Down:
+                    case FightingGameInputCodeDir.DownRight:
+                        fgChar.UseCombination(dirPress);
+                        stop();
+                        changeState(states.Get("crouch"));
+                        break;
                 }
+            }
+
+            private void GivenDirectionPress(Action stop, Combination combo) {
+                dirPress = ((DirectionPress) combo).direction;
+            }
+
+            private void GivenDirectionCurrent(Action stop, Combination combo) {
+                dirPress = ((DirectionCurrent) combo).direction;
+            }
+
+            private void GivenNeutralReturn(Action stop, Combination combo) {
+                dirPress = Input.FightingGameInputCodeDir.Neutral;
+            }
+
+            private void GivenNothing(Action stop, Combination combo) {
+                dirPress = Input.FightingGameInputCodeDir.Neutral;
             }
         }
     }

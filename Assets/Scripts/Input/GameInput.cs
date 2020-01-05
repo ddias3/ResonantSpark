@@ -66,7 +66,7 @@ namespace ResonantSpark {
                     butC = !inputStruct.butC,
                     butD = !inputStruct.butD,
                     butS = !inputStruct.butS,
-                    direction = inputStruct.direction,
+                    direction = (FightingGameInputCodeDir)(10 - (int) inputStruct.direction),
                 };
             }
 

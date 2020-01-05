@@ -16,10 +16,10 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
-                if (messages.Count > 0) {
-                    Combination combo = messages.Dequeue();
-                    combo.inUse = false;
-                }
+                //if (messages.Count > 0) {
+                //    Combination combo = messages.Dequeue();
+                //    combo.inUse = false;
+                //}
 
                 fgChar.Play("idle", 0, 0.0f);
             }
@@ -37,7 +37,7 @@ namespace ResonantSpark {
                 if (!dirPress.Stale(frame.index)) {
                     dirPress.inUse = true;
                     stop.Invoke();
-                    changeState(states.Get("walk").Message(dirPress));
+                    changeState(states.Get("walk"));//.Message(dirPress));
                 }
             }
 
@@ -46,7 +46,7 @@ namespace ResonantSpark {
                 if (!doubleTap.Stale(frame.index)) {
                     doubleTap.inUse = true;
                     stop.Invoke();
-                    changeState(states.Get("run").Message(doubleTap));
+                    changeState(states.Get("run"));//.Message(doubleTap));
                 }
             }
         }

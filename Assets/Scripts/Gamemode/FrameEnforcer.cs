@@ -17,7 +17,7 @@ namespace ResonantSpark {
 
         public void Start() {
             gameTime = gameObject.GetComponent<GameTimeManager>();
-            elapsedTime = 0.0f;
+            elapsedTime = FRAME_TIME;
             frameIndex = 0;
         }
 
@@ -28,7 +28,7 @@ namespace ResonantSpark {
             }
         }
 
-        public void Update() {
+        public void FixedUpdate() {
             int stepsInFrame = 0;
 
                 // TODO: This may be incorrect. I may need to pull this while loop out into an async call

@@ -9,47 +9,74 @@ namespace ResonantSpark {
     namespace CharacterStates {
         public class Jump : BaseState {
 
+            public Vector3 jumpImpulse;
+            public Vector3 gravityExtra;
+
+            private int startFrame;
+            private int frameCount;
+
+            private bool leavingGround;
+
             public new void Start() {
                 base.Start();
                 states.Register(this, "jump");
 
                 RegisterInputCallbacks()
-                    .On<DirectionPress>(OnDirectionPress)
-                    .On<DoubleTap>(OnDoubleTap);
+                    .On<ButtonPress>(OnButtonPress)
+                    .On<Button2Press>(OnButton2Press);
             }
 
             public override void Enter(int frameIndex, IState previousState) {
-                if (messages.Count > 0) {
-                    Combination combo = messages.Dequeue();
-                    combo.inUse = false;
-                }
-
-                fgChar.Play("idle", 0, 0.0f);
+                fgChar.Play("jump_start", 0, 0.0f);
+                startFrame = frameIndex;
+                frameCount = 0;
+                leavingGround = true;
             }
 
             public override void Execute(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
+
+                if (frameCount == 4) {
+                    fgChar.rigidbody.AddForce(jumpImpulse, ForceMode.Impulse);
+                    fgChar.Play("jump", 0, 0.0f);
+                }
+                else if (frameCount > 4) {
+                    fgChar.rigidbody.AddForce(gravityExtra, ForceMode.Acceleration);
+                }
+
+                if (leavingGround) {
+                    if (!fgChar.Grounded(out Vector3 standPoint)) {
+                        leavingGround = false;
+                    }
+                }
+                else {
+                    if (fgChar.Grounded(out Vector3 landPoint)) {
+                        changeState(states.Get("land"));
+                    }
+
+                    if (fgChar.CheckAboutToLand()) {
+                        changeState(states.Get("land"));
+                    }
+                }
+
+                ++frameCount;
             }
 
             public override void Exit(int frameIndex) {
                 // do nothing
             }
 
-            private void OnDirectionPress(Action stop, Combination combo) {
-                var dirPress = (DirectionPress)combo;
-                if (!dirPress.Stale(frame.index)) {
-                    dirPress.inUse = true;
-                    stop.Invoke();
-                    changeState(states.Get("walk").Message(dirPress));
+            private void OnButtonPress(Action stop, Combination combo) {
+                var butPress = (ButtonPress)combo;
+                if (!butPress.Stale(frame.index)) {
+                    Debug.Log("Jump received 1 button press: " + butPress.button0);
                 }
             }
 
-            private void OnDoubleTap(Action stop, Combination combo) {
-                var doubleTap = (DoubleTap)combo;
-                if (!doubleTap.Stale(frame.index)) {
-                    doubleTap.inUse = true;
-                    stop.Invoke();
-                    changeState(states.Get("run").Message(doubleTap));
+            private void OnButton2Press(Action stop, Combination combo) {
+                var but2Press = (Button2Press)combo;
+                if (!but2Press.Stale(frame.index)) {
+                    Debug.Log("Jump received 2 button press: " + but2Press.button0 + ", " + but2Press.button1);
                 }
             }
         }

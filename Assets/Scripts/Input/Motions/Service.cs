@@ -13,6 +13,7 @@ namespace ResonantSpark {
                 int test1 = FindNeutralReturns(reader, inputFactory, activeInputs);
                 int test2 = FindDoubleTaps(reader, inputFactory, activeInputs);
                 int test3 = FindDirectionCurrent(reader, inputFactory, activeInputs);
+                int testD = FindButtonsCurrent(reader, inputFactory, activeInputs);
                 //int test4 = FindDirectionLongHolds(reader, inputFactory, activeInputs);   // TODO: Fix this, but the feature may not even exist.
                 int test6 = FindButtonPresses(reader, inputFactory, activeInputs);
                 int test7 = FindButton2Presses(reader, inputFactory, activeInputs);
@@ -154,6 +155,19 @@ namespace ResonantSpark {
                 DirectionCurrent input = AddToActiveInputs<DirectionCurrent>(activeInputs, inputFactory, reader.currentFrame, newInput => {
                     numFound++;
                     newInput.Init(reader.currentFrame, direction);
+                });
+                //FightingGameInputCodeDir direction = (FightingGameInputCodeDir) int.Parse(buffer[buffer.Length - 1].ToString());
+                return numFound;
+            }
+
+            public static int FindButtonsCurrent(InputBufferReader reader, Factory inputFactory, List<Combination> activeInputs) {
+                int numFound = 0;
+                reader.ResetCurrIndex();
+                reader.SetReadIndex(-1);
+                reader.ReadBuffer(out GameInputStruct curr);
+                AddToActiveInputs<ButtonsCurrent>(activeInputs, inputFactory, reader.currentFrame, newInput => {
+                    numFound++;
+                    newInput.Init(reader.currentFrame, curr.butA, curr.butB, curr.butC, curr.butD, curr.butS);
                 });
                 //FightingGameInputCodeDir direction = (FightingGameInputCodeDir) int.Parse(buffer[buffer.Length - 1].ToString());
                 return numFound;
