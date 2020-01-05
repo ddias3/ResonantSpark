@@ -27,6 +27,9 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
+                    // Start OnEnter with this
+                GivenInput(fgChar.GivenCombinations());
+
                 fgChar.Play("idle_crouch", 0, 0.0f);
             }
 
@@ -40,54 +43,48 @@ namespace ResonantSpark {
 
             private void OnDirectionPress(Action stop, Combination combo) {
                 var dirPress = combo as DirectionPress;
-                if (!dirPress.Stale(frame.index)) {
-                    switch (dirPress.direction) {
-                        //case FightingGameInputCodeDir.UpLeft:
-                        case FightingGameInputCodeDir.Up:
-                        //case FightingGameInputCodeDir.UpRight:
-                            //fgChar.Use(dirPress);
-                            stop();
-                            changeState(states.Get("jump"));
-                            break;
-                        //case FightingGameInputCodeDir.DownLeft:
-                        case FightingGameInputCodeDir.Down:
-                        //case FightingGameInputCodeDir.DownRight:
-                            //fgChar.Use(dirPress);
-                            stop();
-                            changeState(states.Get("crouch"));
-                            break;
-                    }
+                switch (dirPress.direction) {
+                    //case FightingGameInputCodeDir.UpLeft:
+                    case FightingGameInputCodeDir.Up:
+                    //case FightingGameInputCodeDir.UpRight:
+                        //fgChar.Use(dirPress);
+                        stop();
+                        changeState(states.Get("jump"));
+                        break;
+                    //case FightingGameInputCodeDir.DownLeft:
+                    case FightingGameInputCodeDir.Down:
+                    //case FightingGameInputCodeDir.DownRight:
+                        //fgChar.Use(dirPress);
+                        stop();
+                        changeState(states.Get("crouch"));
+                        break;
                 }
             }
 
             private void OnButtonPress(Action stop, Combination combo) {
                 var butPress = (ButtonPress) combo;
-                if (!butPress.Stale(frame.index)) {
-                    switch (butPress.button0) {
-                        case FightingGameInputCodeBut.A:
-                            Debug.Log("Crouch pressed A");
-                            break;
-                        case FightingGameInputCodeBut.B:
-                            Debug.Log("Crouch pressed B");
-                            break;
-                        case FightingGameInputCodeBut.C:
-                            Debug.Log("Crouch pressed C");
-                            break;
-                        case FightingGameInputCodeBut.D:
-                            Debug.Log("Crouch pressed D");
-                            break;
-                        case FightingGameInputCodeBut.S:
-                            Debug.Log("Crouch pressed S");
-                            break;
-                    }
+                switch (butPress.button0) {
+                    case FightingGameInputCodeBut.A:
+                        Debug.Log("Crouch pressed A");
+                        break;
+                    case FightingGameInputCodeBut.B:
+                        Debug.Log("Crouch pressed B");
+                        break;
+                    case FightingGameInputCodeBut.C:
+                        Debug.Log("Crouch pressed C");
+                        break;
+                    case FightingGameInputCodeBut.D:
+                        Debug.Log("Crouch pressed D");
+                        break;
+                    case FightingGameInputCodeBut.S:
+                        Debug.Log("Crouch pressed S");
+                        break;
                 }
             }
 
             private void OnButton2Press(Action stop, Combination combo) {
                 var but2Press = (Button2Press) combo;
-                if (!but2Press.Stale(frame.index)) {
-                    Debug.Log("Crouch received 2 button press");
-                }
+                Debug.Log("Crouch received 2 button press");
             }
 
             private void OnDirectionCurrent(Action stop, Combination combo) {

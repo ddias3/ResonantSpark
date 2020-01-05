@@ -150,6 +150,9 @@ namespace ResonantSpark {
             }
 
             public List<Combination> GivenCombinations() {
+                for (int n = 0; n < inUseCombinations.Count; ++n) {
+                    inUseCombinations[n].inUse = false;
+                }
                 return inUseCombinations;
             }
 

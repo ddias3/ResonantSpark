@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Input.Combinations;
+using ResonantSpark.Input;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -17,6 +18,8 @@ namespace ResonantSpark {
 
             private bool leavingGround;
 
+            private FightingGameInputCodeDir jumpDir;
+
             public new void Start() {
                 base.Start();
                 states.Register(this, "jump");
@@ -24,9 +27,15 @@ namespace ResonantSpark {
                 RegisterInputCallbacks()
                     .On<ButtonPress>(OnButtonPress)
                     .On<Button2Press>(OnButton2Press);
+
+                RegisterEnterCallbacks()
+                    .On<DirectionPress>(GivenDirectionPress)
+                    .On<DirectionCurrent>(GivenDirectionCurrent);
             }
 
             public override void Enter(int frameIndex, IState previousState) {
+                GivenInput(fgChar.GivenCombinations());
+
                 fgChar.Play("jump_start", 0, 0.0f);
                 startFrame = frameIndex;
                 frameCount = 0;
@@ -78,6 +87,14 @@ namespace ResonantSpark {
                 if (!but2Press.Stale(frame.index)) {
                     Debug.Log("Jump received 2 button press: " + but2Press.button0 + ", " + but2Press.button1);
                 }
+            }
+
+            private void GivenDirectionPress(Action stop, Combination combo) {
+                jumpDir = ((DirectionPress) combo).direction;
+            }
+
+            private void GivenDirectionCurrent(Action stop, Combination combo) {
+                jumpDir = ((DirectionCurrent) combo).direction;
             }
         }
     }

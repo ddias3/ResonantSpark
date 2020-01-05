@@ -105,62 +105,54 @@ namespace ResonantSpark {
                 }
             }
 
-            private void OnNeutralReturn(Action stop, Combination combo) {
-                var neutRet = (NeutralReturn) combo;
-                if (!neutRet.Stale(frame.index)) {
-                    //neutRet.inUse = true;
-                    //stop.Invoke();
-                    //changeState(states.Get("idle").Message(combo));
-                }
-            }
-
-            private void OnDirectionPress(Action stop, Combination combo) {
-                var dirPress = (DirectionPress) combo;
-                if (!dirPress.Stale(frame.index)) {
-                    //stop.Invoke();
-                    this.dirPress = dirPress.direction;
-                }
-            }
-
-            private void OnDoubleTap(Action stop, Combination combo) {
-                var doubleTap = (DoubleTap) combo;
-                if (!doubleTap.Stale(frame.index)) {
-                    //doubleTap.inUse = true;
-                    //stop.Invoke();
-                    //changeState(states.Get("run").Message(combo));
-                }
-            }
-
-            //private void OnDirectionCurrent(Action stop, Combination combo) {
-            //    if (dirPress != ((DirectionCurrent) combo).direction) {
-            //        this.dirPress = ((DirectionCurrent) combo).direction;
-            //    }
-            //}
-
-            private void OnDirectionCurrent(Action stop, Combination combo) {
-                var dirPress = (DirectionCurrent)combo;
-                switch (dirPress.direction) {
+            private void DirectionSelect(Action stop, Combination combo) {
+                switch (this.dirPress) {
                     case FightingGameInputCodeDir.UpLeft:
                     case FightingGameInputCodeDir.Up:
                     case FightingGameInputCodeDir.UpRight:
-                        fgChar.UseCombination(dirPress);
+                        fgChar.UseCombination(combo);
                         stop();
                         changeState(states.Get("jump"));
                         break;
                     case FightingGameInputCodeDir.Left:
                     case FightingGameInputCodeDir.Right:
-                        fgChar.UseCombination(dirPress);
+                        //fgChar.UseCombination(combo);
                         stop();
-                        changeState(states.Get("walk"));
+                        //changeState(states.Get("walk"));
                         break;
                     case FightingGameInputCodeDir.DownLeft:
                     case FightingGameInputCodeDir.Down:
                     case FightingGameInputCodeDir.DownRight:
-                        fgChar.UseCombination(dirPress);
+                        fgChar.UseCombination(combo);
                         stop();
                         changeState(states.Get("crouch"));
                         break;
                 }
+            }
+
+            private void OnNeutralReturn(Action stop, Combination combo) {
+                var neutRet = (NeutralReturn) combo;
+                //neutRet.inUse = true;
+                //stop.Invoke();
+                //changeState(states.Get("idle").Message(combo));
+            }
+
+            private void OnDirectionPress(Action stop, Combination combo) {
+                stop();
+                this.dirPress = ((DirectionPress) combo).direction;
+                DirectionSelect(stop, combo);
+            }
+
+            private void OnDoubleTap(Action stop, Combination combo) {
+                var doubleTap = (DoubleTap) combo;
+                //doubleTap.inUse = true;
+                //stop.Invoke();
+                //changeState(states.Get("run").Message(combo));
+            }
+
+            private void OnDirectionCurrent(Action stop, Combination combo) {
+                this.dirPress = ((DirectionCurrent) combo).direction;
+                DirectionSelect(stop, combo);
             }
 
             private void GivenDirectionPress(Action stop, Combination combo) {
