@@ -89,6 +89,17 @@ namespace ResonantSpark {
                     breakPoint = false;
                 }
                 Input.Service.FindCombinations(reader, inputFactory, inputCombinations);
+
+                //int counter = 0;
+                //inputCombinations.ForEach(combo => {
+                //    if (combo.Stale(reader.currentFrame)) {
+                //        ++counter;
+                //        Debug.LogWarning("Frame(" + frameIndex + ") of type " + combo.GetType() + " at index " + combo.GetFrame());
+                //    }
+                //});
+                //if (counter > 0) {
+                //    Debug.LogWarning("FindCombinations added " + counter + " stale inputs");
+                //}
             }
 
             public List<Input.Combinations.Combination> GetFoundCombinations() {

@@ -22,6 +22,7 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
+                fgChar.GivenCombinations();
                 fgChar.Play("jump_land", 0, 0.0f);
 
                 startFrame = frameIndex;
@@ -43,19 +44,15 @@ namespace ResonantSpark {
             }
 
             private void OnDirectionPress(Action stop, Combination combo) {
-                var dirPress = (DirectionPress)combo;
-                if (!dirPress.Stale(frame.index)) {
-                    stop.Invoke();
-                    changeState(states.Get("stand"));//.Message(dirPress));
-                }
+                var dirPress = (DirectionPress) combo;
+                stop();
+                changeState(states.Get("stand"));//.Message(dirPress));
             }
 
             private void OnDoubleTap(Action stop, Combination combo) {
-                var doubleTap = (DoubleTap)combo;
-                if (!doubleTap.Stale(frame.index)) {
-                    stop.Invoke();
-                    changeState(states.Get("run"));//.Message(doubleTap));
-                }
+                var doubleTap = (DoubleTap) combo;
+                stop();
+                changeState(states.Get("run"));//.Message(doubleTap));
             }
         }
     }

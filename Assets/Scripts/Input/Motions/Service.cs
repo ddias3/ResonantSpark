@@ -33,7 +33,9 @@ namespace ResonantSpark {
                 foreach (var cmb in activeInputs) {
                     if (cmb.Equals(newInput)) return (T_Combo) cmb;
                 }
-                activeInputs.Add(newInput);
+                if (!newInput.Stale(frameCurrent)) {
+                    activeInputs.Add(newInput);
+                }
                 return newInput;
             }
 
