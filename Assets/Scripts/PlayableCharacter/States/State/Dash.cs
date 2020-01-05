@@ -18,23 +18,23 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
-                throw new System.NotImplementedException();
+                fgChar.Play("dash_forward");
             }
 
             public override void Execute(int frameIndex) {
-                throw new System.NotImplementedException();
+                FindInput(fgChar.GetFoundCombinations());
             }
 
             public override void Exit(int frameIndex) {
-                throw new System.NotImplementedException();
+                // do nothing
             }
 
             public void OnDirectionPress(Action stop, Combination combo) {
-
+                stop();
             }
 
             public void OnDoubleTap(Action stop, Combination combo) {
-
+                stop();
             }
         }
     }

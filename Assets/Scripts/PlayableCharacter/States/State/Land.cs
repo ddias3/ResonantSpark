@@ -9,6 +9,9 @@ namespace ResonantSpark {
     namespace CharacterStates {
         public class Land : BaseState {
 
+            private int startFrame;
+            private int frameCount = 0;
+
             public new void Start() {
                 base.Start();
                 states.Register(this, "land");
@@ -19,16 +22,20 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
-                if (messages.Count > 0) {
-                    Combination combo = messages.Dequeue();
-                    combo.inUse = false;
-                }
+                fgChar.Play("jump_land", 0, 0.0f);
 
-                fgChar.Play("idle", 0, 0.0f);
+                startFrame = frameIndex;
+                frameCount = 0;
             }
 
             public override void Execute(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
+
+                if (frameCount >= 4) {
+                    changeState(states.Get("stand"));
+                }
+
+                ++frameCount;
             }
 
             public override void Exit(int frameIndex) {
@@ -38,18 +45,16 @@ namespace ResonantSpark {
             private void OnDirectionPress(Action stop, Combination combo) {
                 var dirPress = (DirectionPress)combo;
                 if (!dirPress.Stale(frame.index)) {
-                    dirPress.inUse = true;
                     stop.Invoke();
-                    changeState(states.Get("walk").Message(dirPress));
+                    changeState(states.Get("stand"));//.Message(dirPress));
                 }
             }
 
             private void OnDoubleTap(Action stop, Combination combo) {
                 var doubleTap = (DoubleTap)combo;
                 if (!doubleTap.Stale(frame.index)) {
-                    doubleTap.inUse = true;
                     stop.Invoke();
-                    changeState(states.Get("run").Message(doubleTap));
+                    changeState(states.Get("run"));//.Message(doubleTap));
                 }
             }
         }

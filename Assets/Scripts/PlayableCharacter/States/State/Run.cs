@@ -20,11 +20,6 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
-                if (messages.Count > 0) {
-                    Combination combo = messages.Dequeue();
-                    combo.inUse = false;
-                }
-
                 //fgChar.Play("run_forward", 0, 0.0f);
             }
 
@@ -40,7 +35,7 @@ namespace ResonantSpark {
                 if (!combo.Stale(frame.index)) {
                     combo.inUse = true;
                     stop.Invoke();
-                    changeState(states.Get("idle").Message(combo));
+                    changeState(states.Get("idle"));
                 }
             }
 
@@ -49,7 +44,7 @@ namespace ResonantSpark {
                 if (!dirPress.Stale(frame.index)) {
                     dirPress.inUse = true;
                     stop.Invoke();
-                    changeState(states.Get("walk").Message(combo));
+                    changeState(states.Get("walk"));
                 }
             }
 

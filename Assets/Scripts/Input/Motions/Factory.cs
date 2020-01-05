@@ -16,6 +16,7 @@ namespace ResonantSpark {
             public Factory() {
                 memPools = new Dictionary<System.Type, List<Combination>> {
                     { typeof(DirectionCurrent), new List<Combination>(INIT_POOL_SIZE) },
+                    { typeof(ButtonsCurrent), new List<Combination>(INIT_POOL_SIZE) },
                     { typeof(DoubleTap), new List<Combination>(INIT_POOL_SIZE) },
                     { typeof(DirectionPress), new List<Combination>(INIT_POOL_SIZE) },
                     { typeof(NeutralReturn), new List<Combination>(INIT_POOL_SIZE) },
@@ -31,6 +32,7 @@ namespace ResonantSpark {
 
                 ind = new Dictionary<System.Type, int> {
                     { typeof(DirectionCurrent), 0 },
+                    { typeof(ButtonsCurrent), 0 },
                     { typeof(DoubleTap), 0 },
                     { typeof(DirectionPress), 0 },
                     { typeof(NeutralReturn), 0 },
@@ -45,6 +47,7 @@ namespace ResonantSpark {
                 };
 
                 var dirCurr = memPools[typeof(DirectionCurrent)];
+                var butsCurr = memPools[typeof(ButtonsCurrent)];
                 var neutRet = memPools[typeof(NeutralReturn)];
                 var dirPress = memPools[typeof(DirectionPress)];
                 var doubleTap = memPools[typeof(DoubleTap)];
@@ -59,6 +62,7 @@ namespace ResonantSpark {
 
                 for (int n = 0; n < INIT_POOL_SIZE; ++n) {
                     //dirCurr.Add(new DirectionCurrent());
+                    //butsCurr.Add(new ButtonsCurrent());
                     //neutRet.Add(new NeutralReturn());
                     //dirPress.Add(new DirectionPress());
                     //doubleTap.Add(new DoubleTap());
@@ -71,6 +75,7 @@ namespace ResonantSpark {
                     //quartCir.Add(new QuarterCircle());
                     //quartCirPlusBut.Add(new QuarterCircleButtonPress());
                     dirCurr.Add(ScriptableObject.CreateInstance<DirectionCurrent>());
+                    butsCurr.Add(ScriptableObject.CreateInstance<ButtonsCurrent>());
                     neutRet.Add(ScriptableObject.CreateInstance<NeutralReturn>());
                     dirPress.Add(ScriptableObject.CreateInstance<DirectionPress>());
                     doubleTap.Add(ScriptableObject.CreateInstance<DoubleTap>());

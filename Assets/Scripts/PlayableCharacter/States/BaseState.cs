@@ -10,27 +10,26 @@ namespace ResonantSpark {
         public abstract class BaseState : MonoBehaviour, IState {
 
             protected StateDict states;
-            protected GameTimeManager gameTime;
 
             protected FightingGameCharacter fgChar;
             protected FrameEnforcer frame;
 
             protected Action<IState> changeState;
 
-            protected Queue<Combination> messages;
-
             private bool continueInputSearch = true;
             private Action stopInputSearch;
 
-            private CallbackRegistry callbackRegistry;
+            private CallbackRegistry inputRegistry;
+            private CallbackRegistry enterRegistry;
             private Dictionary<Type, Action<Action, Combination>> inputCallbacks;
+            private Dictionary<Type, Action<Action, Combination>> enterCallbacks;
 
             public void Start() {
-                callbackRegistry = new CallbackRegistry(this);
                 inputCallbacks = new Dictionary<Type, Action<Action, Combination>>();
+                enterCallbacks = new Dictionary<Type, Action<Action, Combination>>();
+                inputRegistry = new CallbackRegistry(inputCallbacks);
+                enterRegistry = new CallbackRegistry(enterCallbacks);
                 stopInputSearch = new Action(StopInputSearch);
-
-                messages = new Queue<Combination>();
 
                 states = gameObject.GetComponentInParent<StateDict>();
                 fgChar = gameObject.GetComponentInParent<FightingGameCharacter>();
@@ -38,7 +37,11 @@ namespace ResonantSpark {
             }
 
             public CallbackRegistry RegisterInputCallbacks() {
-                return callbackRegistry;
+                return inputRegistry;
+            }
+
+            public CallbackRegistry RegisterEnterCallbacks() {
+                return enterRegistry;
             }
 
             private void StopInputSearch() {
@@ -57,13 +60,20 @@ namespace ResonantSpark {
                 }
             }
 
-            public void OnStateMachineEnable(Action<IState> changeState) {
-                this.changeState = changeState;
+            protected void GivenInput(List<Combination> inputCombos) {
+                continueInputSearch = true;
+                for (int n = 0; n < inputCombos.Count && continueInputSearch; ++n) {
+                    Combination combo = inputCombos[n];
+                    Action<Action, Combination> callback;
+
+                    if (enterCallbacks.TryGetValue(combo.GetType(), out callback)) {
+                        callback(stopInputSearch, combo);
+                    }
+                }
             }
 
-            public BaseState Message(Combination combo) {
-                messages.Enqueue(combo);
-                return this;
+            public void OnStateMachineEnable(Action<IState> changeState) {
+                this.changeState = changeState;
             }
 
             public abstract void Enter(int frameIndex, IState previousState);
@@ -71,14 +81,14 @@ namespace ResonantSpark {
             public abstract void Exit(int frameIndex);
 
             public struct CallbackRegistry {
-                private BaseState stateRef;
+                private Dictionary<Type, Action<Action, Combination>> callbackMap;
 
-                public CallbackRegistry(BaseState stateRef) {
-                    this.stateRef = stateRef;
+                public CallbackRegistry(Dictionary<Type, Action<Action, Combination>> callbackMap) {
+                    this.callbackMap = callbackMap;
                 }
 
                 public CallbackRegistry On<Tbase>(Action<Action, Combination> callback) where Tbase : Combination {
-                    stateRef.inputCallbacks.Add(typeof(Tbase), callback);
+                    callbackMap.Add(typeof(Tbase), callback);
                     return this;
                 }
             }
