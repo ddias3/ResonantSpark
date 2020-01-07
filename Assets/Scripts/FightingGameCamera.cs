@@ -53,12 +53,15 @@ namespace ResonantSpark {
             //testTransform.AddComponent<BoxCollider>();
 
             testTransform0 = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            testTransform0.GetComponent<Collider>().enabled = false;
             testTransform0.transform.localScale = new Vector3(0.1f, 0.2f, 0.1f);
 
             testTransform1 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            testTransform1.GetComponent<Collider>().enabled = false;
             testTransform1.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
 
             testTransform2 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            testTransform2.GetComponent<Collider>().enabled = false;
             testTransform2.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
         }
 
