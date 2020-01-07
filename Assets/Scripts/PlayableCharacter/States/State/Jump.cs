@@ -10,8 +10,12 @@ namespace ResonantSpark {
     namespace CharacterStates {
         public class Jump : BaseState {
 
-            public Vector3 jumpImpulse;
+            public Vector3 jump8Impulse;
+            public Vector3 jump7Impulse;
+            public Vector3 jump9Impulse;
             public Vector3 gravityExtra;
+
+            public float maxSpeed;
 
             private int startFrame;
             private int frameCount;
@@ -19,6 +23,7 @@ namespace ResonantSpark {
             private bool leavingGround;
 
             private FightingGameInputCodeDir jumpDir;
+            private Vector3 jumpImpulse;
 
             public new void Start() {
                 base.Start();
@@ -34,8 +39,26 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
+                jumpDir = FightingGameInputCodeDir.None;
                 GivenInput(fgChar.GivenCombinations());
 
+                switch (jumpDir) {
+                    case FightingGameInputCodeDir.UpLeft:
+                        Debug.Log("Jump Impulse:(7) " + jumpImpulse);
+                        jumpImpulse = jump7Impulse;
+                        break;
+                    case FightingGameInputCodeDir.Up:
+                        Debug.Log("Jump Impulse:(8) " + jumpImpulse);
+                        jumpImpulse = jump8Impulse;
+                        break;
+                    case FightingGameInputCodeDir.UpRight:
+                        Debug.Log("Jump Impulse:(9) " + jumpImpulse);
+                        jumpImpulse = jump9Impulse;
+                        break;
+                    default:
+                        Debug.Log("Jump didn't have a dirPress");
+                        break;
+                }
                 fgChar.Play("jump_start", 0, 0.0f);
                 startFrame = frameIndex;
                 frameCount = 0;
@@ -46,7 +69,11 @@ namespace ResonantSpark {
                 FindInput(fgChar.GetFoundCombinations());
 
                 if (frameCount == 4) {
-                    fgChar.rigidbody.AddForce(jumpImpulse, ForceMode.Impulse);
+                    Vector3 localVelocity = fgChar.GetLocalVelocity();
+
+                    jumpImpulse.z = jumpImpulse.z * (1 - (localVelocity.z / maxSpeed));
+
+                    fgChar.rigidbody.AddRelativeForce(jumpImpulse, ForceMode.Impulse);
                     fgChar.Play("jump", 0, 0.0f);
                 }
                 else if (frameCount > 4) {
