@@ -296,64 +296,48 @@ MonoBehaviour:
   walk: {fileID: 7900438583312813012}
   walkSlow: {fileID: 392367007172760468}
   still: {fileID: 4809177034542261145}
-  forceScalar: {x: 10000, y: 1, z: 10000}
-  forwardAccel:
+  maxForwardForce: 3000
+  maxBackwardForce: 2000
+  maxHorizontalForce: 2000
+  forwardForce:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: -1
-      value: 0
-      inSlope: 0.007959906
-      outSlope: 0.007959906
+      time: -1.1
+      value: 0.05
+      inSlope: 0.45849034
+      outSlope: 0.45849034
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.2962963
+      outWeight: 0.1851852
     - serializedVersion: 3
       time: 0
       value: 1
-      inSlope: 0.0023952485
-      outSlope: 0.0023952485
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.17460318
-      outWeight: 0.30669478
+      inWeight: 0.33333334
+      outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.68419063
-      value: 0.85108775
-      inSlope: -0.7406099
-      outSlope: -0.7406099
+      time: 1.8
+      value: 0.02
+      inSlope: -1.5740699
+      outSlope: -1.5740699
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.17471434
-      outWeight: 0.5710655
-    - serializedVersion: 3
-      time: 0.8989253
-      value: 0.42076474
-      inSlope: -3.9019263
-      outSlope: -3.9019263
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.18301015
-      outWeight: 0.5232819
-    - serializedVersion: 3
-      time: 1
-      value: 0
-      inSlope: 0.0143567985
-      outSlope: 0.0143567985
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 1
+      inWeight: 0.04232806
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  horizontalAccel:
+  horizontalForce:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: -1
-      value: 0
+      time: -1.5
+      value: 0.02
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -370,8 +354,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 1
-      value: 0
+      time: 1.5
+      value: 0.02
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -381,12 +365,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  maxForwardSpeed: 1.2
-  maxBackwardSpeed: 0.7
-  maxHorizontalSpeed: 1
   movementChangeDampTime: 30
   deadZone: {x: 0.01, y: 0, z: 0.01}
-  maxRotation: 300
+  maxRotation: 900
 --- !u!1 &2152161316188553703
 GameObject:
   m_ObjectHideFlags: 0
@@ -903,8 +884,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26dfd37abb08d984ea1d595337ebdd5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jumpImpulse: {x: 0, y: 50, z: 0}
-  gravityExtra: {x: 0, y: -10, z: 0}
+  jump8Impulse: {x: 0, y: 50, z: 0}
+  jump7Impulse: {x: 0, y: 40, z: -15}
+  jump9Impulse: {x: 0, y: 40, z: 25}
+  gravityExtra: {x: 0, y: -8, z: 0}
+  maxSpeed: 2.1
 --- !u!1 &8583087731069198555
 GameObject:
   m_ObjectHideFlags: 0

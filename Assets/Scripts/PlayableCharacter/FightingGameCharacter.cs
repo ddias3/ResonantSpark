@@ -168,6 +168,10 @@ namespace ResonantSpark {
                 return retVal;
             }
 
+            public Vector3 GetLocalVelocity() {
+                return Quaternion.Inverse(rigidbody.rotation) * rigidbody.velocity;
+            }
+
             public void Play(string animationState) {
                 animator.Play(animationState);
             }
@@ -177,6 +181,8 @@ namespace ResonantSpark {
             }
 
             public List<Input.Combinations.Combination> GetFoundCombinations() {
+                    // TODO: Change the way the FGChar gets inputs over to the state machine.
+                    //   If this is an NPC, it won't have an input buffer with it.
                 return inputBuffer.GetFoundCombinations();
             }
         }

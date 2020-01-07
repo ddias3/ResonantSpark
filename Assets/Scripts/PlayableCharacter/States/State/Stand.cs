@@ -14,12 +14,12 @@ namespace ResonantSpark {
             public WalkSlow walkSlow;
             public Still still;
 
-            public Vector3 forceScalar;
-            public AnimationCurve forwardAccel;
-            public AnimationCurve horizontalAccel;
-            public float maxForwardSpeed;
-            public float maxBackwardSpeed;
-            public float maxHorizontalSpeed;
+            public float maxForwardForce;
+            public float maxBackwardForce;
+            public float maxHorizontalForce;
+
+            public AnimationCurve forwardForce;
+            public AnimationCurve horizontalForce;
 
             public float movementChangeDampTime;
             public Vector3 deadZone;
@@ -43,6 +43,7 @@ namespace ResonantSpark {
                     //.On<DirectionPress>(OnDirectionPress)
                     .On<DoubleTap>(OnDoubleTap)
                     .On<ButtonsCurrent>(OnButtonsCurrent)
+                    .On<ButtonPress>(OnButtonPress)
                     .On<DirectionCurrent>(OnDirectionCurrent);
 
                 RegisterEnterCallbacks()
@@ -70,7 +71,7 @@ namespace ResonantSpark {
 
                 //Debug.Log("FGInput = " + dirPress + " (" + ((int) dirPress) + ") | Char X = " + charX + ", Char Z = " + charZ);
 
-                Vector3 localVelocity = Quaternion.Inverse(fgChar.rigidbody.rotation) * fgChar.rigidbody.velocity;
+                Vector3 localVelocity = fgChar.GetLocalVelocity();
                 Vector3 localInput = fgChar.CameraToChar(new Vector3(cameraX, 0, upJump ? 0 : cameraZ));
 
                     // Move the character
@@ -90,20 +91,20 @@ namespace ResonantSpark {
 
                 if (smoothedInput.sqrMagnitude > deadZone.sqrMagnitude) {
 
-                    Debug.Log(smoothedInput);
-
                     Vector3 movementForce = new Vector3 {
                         x = smoothedInput.x,
                         y = smoothedInput.y,
                         z = smoothedInput.z,
                     };
-                    movementForce.Scale(forceScalar);
                     movementForce.Scale(new Vector3 {
-                        x = horizontalAccel.Evaluate(localVelocity.x / maxHorizontalSpeed),
+                        x = maxHorizontalForce * horizontalForce.Evaluate(localVelocity.x),
                         y = 1.0f,
-                        z = forwardAccel.Evaluate(localVelocity.z / (localVelocity.z > 0 ? maxForwardSpeed : maxBackwardSpeed))
+                        z = (localVelocity.z > 0 ? maxForwardForce : maxBackwardForce) * forwardForce.Evaluate(localVelocity.z)
                     });
 
+                    //Debug.Log("Local Velocity: " + localVelocity.ToString("F3"));
+                    //Debug.Log("Smoothed Input: " + smoothedInput.ToString("F3"));
+                    //Debug.Log("Adding local force to character: " + movementForce.ToString("F3"));
                     fgChar.rigidbody.AddRelativeForce(movementForce);
                 }
             }
@@ -169,6 +170,16 @@ namespace ResonantSpark {
                 this.dirPress = ((DirectionCurrent) combo).direction;
                 if (upJump) {
                     StateSelect_upJump(stop, combo);
+                }
+            }
+
+            private void OnButtonPress(Action stop, Combination combo) {
+                var buttonPress = (ButtonPress) combo;
+
+                if (buttonPress.button0 == FightingGameInputCodeBut.A) {
+                    fgChar.UseCombination(combo);
+                    stop();
+                    changeState(states.Get("attack"));
                 }
             }
 

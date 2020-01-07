@@ -53,7 +53,7 @@ public class TestInput : MonoBehaviour {
         Vector2 vec2 = context.ReadValue<Vector2>();
         horizontalInput = vec2.x;
         verticalInput = vec2.y;
-        Debug.Log("OnMove = " + vec2);
+        //Debug.Log("OnMove = " + vec2);
     }
 
         // This is bad. This leaves the input system to handle dead zone and the size of the cardinals vs diagonals

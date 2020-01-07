@@ -70,6 +70,7 @@ namespace ResonantSpark {
                         callback(stopInputSearch, combo);
                     }
                 }
+                inputCombos.Clear();
             }
 
             public void OnStateMachineEnable(Action<IState> changeState) {

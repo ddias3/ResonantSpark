@@ -6,26 +6,37 @@ namespace ResonantSpark {
     namespace CharacterStates {
         public class Attack : BaseState {
 
+            private int startFrame;
+            private int frameCount;
+
             public new void Start() {
                 base.Start();
                 states.Register(this, "attack");
 
                 RegisterInputCallbacks()
-                    .On<DirectionPress>(OnDirectionPress)
-                    .On<DoubleTap>(OnDoubleTap);
+                    .On<ButtonPress>(OnButtonPress)
+                    .On<DirectionPress>(OnDirectionPress);
             }
 
             public override void Enter(int frameIndex, IState previousState) {
-                //if (messages.Count > 0) {
-                //    Combination combo = messages.Dequeue();
-                //    combo.inUse = false;
-                //}
+                    // Start OnEnter with this
+                GivenInput(fgChar.GivenCombinations());
 
-                fgChar.Play("idle", 0, 0.0f);
+                startFrame = frameIndex;
+                frameCount = 0;
+
+                fgChar.SetLocalMoveDirection(0.0f, 0.0f);
+                fgChar.Play("5AA", 0, 0.0f);
             }
 
             public override void Execute(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
+
+                if (frameCount >= 30) {
+                    changeState(states.Get("stand"));
+                }
+
+                ++frameCount;
             }
 
             public override void Exit(int frameIndex) {
@@ -33,21 +44,11 @@ namespace ResonantSpark {
             }
 
             private void OnDirectionPress(Action stop, Combination combo) {
-                var dirPress = (DirectionPress)combo;
-                if (!dirPress.Stale(frame.index)) {
-                    dirPress.inUse = true;
-                    stop.Invoke();
-                    changeState(states.Get("walk"));//.Message(dirPress));
-                }
+                // TODO: figure out the stuff on attack
             }
 
-            private void OnDoubleTap(Action stop, Combination combo) {
-                var doubleTap = (DoubleTap)combo;
-                if (!doubleTap.Stale(frame.index)) {
-                    doubleTap.inUse = true;
-                    stop.Invoke();
-                    changeState(states.Get("run"));//.Message(doubleTap));
-                }
+            private void OnButtonPress(Action stop, Combination combo) {
+                // TODO: figure out the stuff on button press
             }
         }
     }

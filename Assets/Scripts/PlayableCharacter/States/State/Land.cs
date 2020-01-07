@@ -16,9 +16,10 @@ namespace ResonantSpark {
                 base.Start();
                 states.Register(this, "land");
 
-                RegisterInputCallbacks()
-                    .On<DirectionPress>(OnDirectionPress)
-                    .On<DoubleTap>(OnDoubleTap);
+                    // See note below
+                //RegisterInputCallbacks()
+                //    .On<DirectionPress>(OnDirectionPress)
+                //    .On<DoubleTap>(OnDoubleTap);
             }
 
             public override void Enter(int frameIndex, IState previousState) {
@@ -43,17 +44,25 @@ namespace ResonantSpark {
                 // do nothing
             }
 
-            private void OnDirectionPress(Action stop, Combination combo) {
-                var dirPress = (DirectionPress) combo;
-                stop();
-                changeState(states.Get("stand"));//.Message(dirPress));
-            }
+                // TODO: Check to make sure this works. I THINK that if these functions are omitted, then the inputs that are in the buffer
+                //      will remain there and be present for the next state that can serve them.
+            //private void OnDirectionPress(Action stop, Combination combo) {
+            //    if (frameCount >= 4) {
+            //        var dirPress = (DirectionPress)combo;
+            //        stop();
+            //        fgChar.UseCombination(combo);
+            //        changeState(states.Get("stand"));
+            //    }
+            //}
 
-            private void OnDoubleTap(Action stop, Combination combo) {
-                var doubleTap = (DoubleTap) combo;
-                stop();
-                changeState(states.Get("run"));//.Message(doubleTap));
-            }
+            //private void OnDoubleTap(Action stop, Combination combo) {
+            //    if (frameCount >= 4) {
+            //        var doubleTap = (DoubleTap)combo;
+            //        stop();
+            //        fgChar.UseCombination(combo);
+            //        changeState(states.Get("run"));
+            //    }
+            //}
         }
     }
 }
