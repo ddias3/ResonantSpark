@@ -30,6 +30,8 @@ namespace ResonantSpark {
 
             private float charRotation;
 
+            private bool upJump = false;
+
             [Tooltip("in degrees per frame (1/60 s)")]
             public float maxRotation;
 
@@ -40,6 +42,7 @@ namespace ResonantSpark {
                 RegisterInputCallbacks()
                     //.On<DirectionPress>(OnDirectionPress)
                     .On<DoubleTap>(OnDoubleTap)
+                    .On<ButtonsCurrent>(OnButtonsCurrent)
                     .On<DirectionCurrent>(OnDirectionCurrent);
 
                 RegisterEnterCallbacks()
@@ -68,7 +71,7 @@ namespace ResonantSpark {
                 //Debug.Log("FGInput = " + dirPress + " (" + ((int) dirPress) + ") | Char X = " + charX + ", Char Z = " + charZ);
 
                 Vector3 localVelocity = Quaternion.Inverse(fgChar.rigidbody.rotation) * fgChar.rigidbody.velocity;
-                Vector3 localInput = fgChar.CameraToChar(new Vector3(cameraX, 0, cameraZ));
+                Vector3 localInput = fgChar.CameraToChar(new Vector3(cameraX, 0, upJump ? 0 : cameraZ));
 
                     // Move the character
                 WalkCharacter(localVelocity, localInput);
@@ -124,7 +127,7 @@ namespace ResonantSpark {
 
             }
 
-            private void DirectionSelect(Action stop, Combination combo) {
+            private void StateSelect_upJump(Action stop, Combination combo) {
                 switch (this.dirPress) {
                     case FightingGameInputCodeDir.UpLeft:
                     case FightingGameInputCodeDir.Up:
@@ -150,7 +153,9 @@ namespace ResonantSpark {
             private void OnDirectionPress(Action stop, Combination combo) {
                 stop();
                 this.dirPress = ((DirectionPress) combo).direction;
-                DirectionSelect(stop, combo);
+                if (upJump) {
+                    StateSelect_upJump(stop, combo);
+                }
             }
 
             private void OnDoubleTap(Action stop, Combination combo) {
@@ -162,7 +167,15 @@ namespace ResonantSpark {
 
             private void OnDirectionCurrent(Action stop, Combination combo) {
                 this.dirPress = ((DirectionCurrent) combo).direction;
-                DirectionSelect(stop, combo);
+                if (upJump) {
+                    StateSelect_upJump(stop, combo);
+                }
+            }
+
+            private void OnButtonsCurrent(Action stop, Combination combo) {
+                ButtonsCurrent curr = (ButtonsCurrent) combo;
+
+                this.upJump = curr.butS;
             }
 
             private void GivenDirectionPress(Action stop, Combination combo) {

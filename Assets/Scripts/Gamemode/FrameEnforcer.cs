@@ -10,6 +10,7 @@ namespace ResonantSpark {
 
         public Text fpsCounter;
         private int updateCounter = 0;
+        private int fixedUpdateCounter = 0;
         private float elapsedRealTime = 0.0f;
 
         private List<Action<int>> updateActions = new List<Action<int>>();
@@ -56,7 +57,11 @@ namespace ResonantSpark {
             elapsedTime += gameTime.Layer("realTime");
             elapsedRealTime = Time.time;
 
-            fpsCounter.text = (updateCounter / elapsedRealTime).ToString("F1") + " FPS";
+            if (fixedUpdateCounter >= 45) {
+                fpsCounter.text = (updateCounter / elapsedRealTime).ToString("F1") + " FPS";
+                fixedUpdateCounter = 0;
+            }
+            fixedUpdateCounter++;
         }
 
         public void SetUpdate(Action<int> updateAction) {

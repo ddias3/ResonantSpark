@@ -296,7 +296,7 @@ MonoBehaviour:
   walk: {fileID: 7900438583312813012}
   walkSlow: {fileID: 392367007172760468}
   still: {fileID: 4809177034542261145}
-  forceScalar: {x: 1, y: 1, z: 10000}
+  forceScalar: {x: 10000, y: 1, z: 10000}
   forwardAccel:
     serializedVersion: 2
     m_Curve:
