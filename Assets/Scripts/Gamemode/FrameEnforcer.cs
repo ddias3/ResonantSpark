@@ -1,11 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using System;
 
 namespace ResonantSpark {
     [RequireComponent(typeof(GameTimeManager))]
     public class FrameEnforcer : MonoBehaviour {
+
+        public Text fpsCounter;
+        private int updateCounter = 0;
+        private float elapsedRealTime = 0.0f;
 
         private List<Action<int>> updateActions = new List<Action<int>>();
         private GameTimeManager gameTime;
@@ -38,6 +43,7 @@ namespace ResonantSpark {
                 }
 
                 stepsInFrame++;
+                updateCounter++;
 
                 frameIndex++;
                 elapsedTime -= FRAME_TIME;
@@ -48,6 +54,9 @@ namespace ResonantSpark {
             //}
 
             elapsedTime += gameTime.Layer("realTime");
+            elapsedRealTime = Time.time;
+
+            fpsCounter.text = (updateCounter / elapsedRealTime).ToString("F1") + " FPS";
         }
 
         public void SetUpdate(Action<int> updateAction) {
