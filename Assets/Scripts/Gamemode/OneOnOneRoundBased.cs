@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+using ResonantSpark.Gameplay;
+
 namespace ResonantSpark {
-    namespace Gameplay {
-        public class FightingGame : MonoBehaviour {
+    namespace Gamemode {
+        public class OneOnOneRoundBased : MonoBehaviour {
 
             public GameObject char0;
             public GameObject char1;

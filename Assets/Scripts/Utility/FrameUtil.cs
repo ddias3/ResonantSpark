@@ -28,6 +28,7 @@ namespace ResonantSpark {
 
         private class FrameListBuilder : IFrameListCallbackObj {
 
+                // could'a used a Tuple
             private struct FrameUtilMapObject {
                 public string option;
                 public object content;

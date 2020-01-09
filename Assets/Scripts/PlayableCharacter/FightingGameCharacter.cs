@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 using ResonantSpark.Input.Combinations;
+using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace Gameplay {
@@ -20,6 +21,9 @@ namespace ResonantSpark {
 
             public float landAnimationFrameTarget = 3f;
 
+            private int charId;
+            private int teamId;
+
             private Input.InputBuffer inputBuffer;
 
             private GameObject opponentChar;
@@ -32,6 +36,10 @@ namespace ResonantSpark {
             private bool facingRight = true;
 
             public void Init() {
+                //TODO: Create way to set charId and teamId
+                charId = 0;
+                teamId = 0;
+
                 rigidbody = gameObject.GetComponent<Rigidbody>();
                 inUseCombinations = new List<Combination>();
             }
@@ -170,6 +178,16 @@ namespace ResonantSpark {
 
             public Vector3 GetLocalVelocity() {
                 return Quaternion.Inverse(rigidbody.rotation) * rigidbody.velocity;
+            }
+
+            public Orientation GetOrientation() {
+                //TODO: Determine actual orientation programmatically.
+                return Orientation.REGULAR;
+            }
+
+            public GroundRelation GetGroundRelation() {
+                // TODO: Figure out how to get this value into FGChar
+                return GroundRelation.STAND;
             }
 
             public void Play(string animationState) {

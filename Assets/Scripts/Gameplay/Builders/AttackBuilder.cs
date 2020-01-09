@@ -10,6 +10,7 @@ namespace ResonantSpark {
         public class AttackBuilder : IAttackCallbackObj {
             public string name { get; private set; }
             public Orientation orientation { get; private set; }
+            public GroundRelation groundRelation { get; private set; }
             public Input.InputNotation input { get; private set; }
             public string animStateName { get; private set; }
             private FrameBuilder frameBuilder;
@@ -24,6 +25,10 @@ namespace ResonantSpark {
             }
             public IAttackCallbackObj Orientation(Orientation orientation) {
                 this.orientation = orientation;
+                return this;
+            }
+            public IAttackCallbackObj GroundRelation(GroundRelation groundRelation) {
+                this.groundRelation = groundRelation;
                 return this;
             }
             public IAttackCallbackObj Input(Input.InputNotation input) {

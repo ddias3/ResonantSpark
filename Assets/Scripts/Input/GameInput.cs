@@ -39,15 +39,16 @@ namespace ResonantSpark {
 
         [Serializable]
         public enum InputNotation : int {
+            None = 0,
+
             _5A,
-            _5AA,
-            _5AhA,
-            _5AAA,
-            _5AAhA,
-            _5AAAA,
-            _5AAAhA,
+            _5Ah,
             _2A,
-            _2AA
+            _2Ah,
+            _5B,
+            _5Bh,
+            _2B,
+            _2Bh,
         }
 
         [Serializable]
