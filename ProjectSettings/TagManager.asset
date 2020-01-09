@@ -18,10 +18,10 @@ TagManager:
   - 
   - 
   - StaticLevelGeometry
-  - Player0
-  - Player1
-  - 
-  - 
+  - GroundCollider
+  - FightingGameCharacter
+  - HurtBox
+  - HitBox
   - 
   - 
   - 
