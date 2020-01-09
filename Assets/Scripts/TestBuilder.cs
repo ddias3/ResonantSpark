@@ -3,10 +3,11 @@ using UnityEngine.UI;
 
 using ResonantSpark.Builder;
 using ResonantSpark.Gameplay;
+using ResonantSpark.Gamemode;
 using ResonantSpark.Input;
 
 public class TestBuilder : MonoBehaviour {
-    public FightingGame gameManager;
+    public OneOnOneRoundBased gameManager;
     public GameObject male0Builder;
 
     public Text charVelocity;

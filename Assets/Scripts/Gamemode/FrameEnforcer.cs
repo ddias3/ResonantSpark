@@ -9,9 +9,10 @@ namespace ResonantSpark {
     public class FrameEnforcer : MonoBehaviour {
 
         public Text fpsCounter;
+        private int updateCounterSnapshot = 0;
+        private float timeSnapshot = 0.0f;
+
         private int updateCounter = 0;
-        private int fixedUpdateCounter = 0;
-        private float elapsedRealTime = 0.0f;
 
         private List<Action<int>> updateActions = new List<Action<int>>();
         private GameTimeManager gameTime;
@@ -55,13 +56,12 @@ namespace ResonantSpark {
             //}
 
             elapsedTime += gameTime.Layer("realTime");
-            elapsedRealTime = Time.time;
 
-            if (fixedUpdateCounter >= 45) {
-                fpsCounter.text = (updateCounter / elapsedRealTime).ToString("F1") + " FPS";
-                fixedUpdateCounter = 0;
+            if (Time.time - timeSnapshot >= 0.45) {
+                fpsCounter.text = ((updateCounter - updateCounterSnapshot) / (Time.time - timeSnapshot)).ToString("F1") + " FPS";
+                timeSnapshot = Time.time;
+                updateCounterSnapshot = updateCounter;
             }
-            fixedUpdateCounter++;
         }
 
         public void SetUpdate(Action<int> updateAction) {

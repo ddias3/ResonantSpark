@@ -17,6 +17,10 @@ namespace ResonantSpark {
                 name = atkBuilder.name;
                 frames = atkBuilder.GetFrames();
             }
+
+            public void RunFrame(int frameCount) {
+                // TODO: Create this and supply it all the resources it needs.
+            }
         }
     }
 }

@@ -24,16 +24,15 @@ namespace ResonantSpark {
             public float movementChangeDampTime;
             public Vector3 deadZone;
 
-            //private Vector3 charVel = Quaternion.Inverse(fgChar.rigidbody.rotation) * fgChar.rigidbody.velocity;
+            [Tooltip("in degrees per frame (1/60 s)")]
+            public float maxRotation;
+
             private Vector3 smoothedInput = Vector3.zero;
             private Input.FightingGameInputCodeDir dirPress = Input.FightingGameInputCodeDir.None;
 
             private float charRotation;
 
             private bool upJump = false;
-
-            [Tooltip("in degrees per frame (1/60 s)")]
-            public float maxRotation;
 
             public new void Start() {
                 base.Start();
@@ -56,6 +55,11 @@ namespace ResonantSpark {
             public override void Enter(int frameIndex, IState previousState) {
                     // Start OnEnter with this
                 GivenInput(fgChar.GivenCombinations());
+
+                int cameraX = (((int)dirPress) - 1) % 3 - 1;
+                int cameraZ = (((int)dirPress) - 1) / 3 - 1;
+
+                smoothedInput = fgChar.CameraToChar(new Vector3(cameraX, 0, upJump ? 0 : cameraZ));
 
                 fgChar.SetLocalMoveDirection(0.0f, 0.0f);
                 fgChar.Play("stand", 0, 0.0f);
@@ -178,6 +182,9 @@ namespace ResonantSpark {
 
                 if (buttonPress.button0 == FightingGameInputCodeBut.A) {
                     fgChar.UseCombination(combo);
+                        // TODO: Create a way to also supply the DirectionCurrent.
+                        //   something like this:
+                        //      stop((dirCurrent) => { fgChar.UseCombination(dirCurrent); });
                     stop();
                     changeState(states.Get("attack"));
                 }
