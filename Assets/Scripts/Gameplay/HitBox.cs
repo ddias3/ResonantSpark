@@ -4,15 +4,25 @@ using UnityEngine;
 
 namespace ResonantSpark {
     namespace Character {
-        public class HitBox : ScriptableObject {
+        public class HitBox : MonoBehaviour {
 
             public Vector3 relativeLocation { get; private set; }
-            public Collider collider { get; private set; } // maybe make all of them capsule colliders
 
-            public HitBox Init(Vector3 relLoc, Collider col) {
+            private LayerMask hurtBox;
+
+            public HitBox Init(Vector3 relLoc) {
                 this.relativeLocation = relLoc;
-                this.collider = col;
                 return this;
+            }
+
+            public void Start() {
+                hurtBox = LayerMask.NameToLayer("hurtBox");
+            }
+
+            public void OnTriggerEnter(Collider other) {
+                if (other.gameObject.layer == hurtBox) {
+                    Debug.Log("Hitbox hit a hurtbox");
+                }
             }
         }
     }
