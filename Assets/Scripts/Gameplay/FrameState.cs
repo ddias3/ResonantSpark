@@ -13,6 +13,10 @@ namespace ResonantSpark {
                 this.animationClip = anim;
                 return this;
             }
+
+            public void Perform() {
+
+            }
         }
     }
 }
