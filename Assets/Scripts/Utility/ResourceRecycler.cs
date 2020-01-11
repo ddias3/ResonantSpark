@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ResonantSpark {
     namespace Utility {
-        public class ResourceRecycler<T> : ScriptableObject where T : MonoBehaviour, IResource {
+        public class ResourceRecycler<T> where T : MonoBehaviour, IResource {
 
             [SerializeField]
             private List<T> assets;
@@ -17,8 +17,7 @@ namespace ResonantSpark {
             private Action<T> callback;
 
                 // This is supposed to be the constructor
-            //public ResourceRecycler(T prefab, Vector3 storeLocation, int instantiateNum = 4, Transform parent = null, Action<T> callback = null) {
-            public void Init(T prefab, Vector3 storeLocation, int instantiateNum = 4, Transform parent = null, Action<T> callback = null) {
+            public ResourceRecycler(T prefab, Vector3 storeLocation, int instantiateNum = 4, Transform parent = null, Action<T> callback = null) {
                 this.storeLocation = storeLocation;
                 this.prefab = prefab;
                 this.parent = parent;

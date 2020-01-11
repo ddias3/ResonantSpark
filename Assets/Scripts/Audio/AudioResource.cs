@@ -10,7 +10,7 @@ namespace ResonantSpark {
         private bool inUse;
         private AudioSource source;
 
-        public void Start() {
+        public void Awake() {
             inUse = false;
             source = GetComponent<AudioSource>();
         }

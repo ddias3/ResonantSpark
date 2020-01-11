@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using ResonantSpark.Utility;
+
 namespace ResonantSpark {
     namespace Gameplay {
-        public class Projectile : MonoBehaviour {
+        public class Projectile : MonoBehaviour, IResource {
 
             public bool active { get; private set; }
 
@@ -41,6 +43,18 @@ namespace ResonantSpark {
                 //  It should only be called when the projectile is active.
             public void NotUpdate() {
 
+            }
+
+            public bool Active() {
+                return active;
+            }
+
+            public void Activate() {
+                throw new System.NotImplementedException();
+            }
+
+            public void Deactivate() {
+                throw new System.NotImplementedException();
             }
         }
     }
