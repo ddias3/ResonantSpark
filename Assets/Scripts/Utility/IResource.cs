@@ -7,7 +7,7 @@ namespace ResonantSpark {
         public interface IResource {
             bool Active();
             void Activate();
-            //bool Deactivate();
+            void Deactivate();
         }
     }
 }

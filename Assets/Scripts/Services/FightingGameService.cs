@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Gameplay;
+using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace Service {
@@ -17,8 +18,7 @@ namespace ResonantSpark {
             private FrameEnforcer frame;
 
             private Dictionary<int, GameObject> projectilePrefabs;
-            private Dictionary<int, List<Projectile>> preInstantiatedProjectiles;
-            private Dictionary<int, int> preInstantiatedProjectilesIndex;
+            private Dictionary<int, ResourceRecycler<Projectile>> projectileMap;
 
             private List<Projectile> activeProjectiles;
 
@@ -26,23 +26,17 @@ namespace ResonantSpark {
                 frame = GetComponent<FrameEnforcer>();
 
                 projectilePrefabs = new Dictionary<int, GameObject>();
-                preInstantiatedProjectiles = new Dictionary<int, List<Projectile>>();
-                preInstantiatedProjectilesIndex = new Dictionary<int, int>();
-
-                activeProjectiles = new List<Projectile>();
+                projectileMap = new Dictionary<int, ResourceRecycler<Projectile>>();
             }
 
             public int RegisterProjectile(GameObject prefab, int instantiateNum = 4) {
                 int id = projectileCounter++;
                 projectilePrefabs.Add(id, prefab);
 
-                List<Projectile> instantiatedProjectilesList = new List<Projectile>();
-                for (int n = 0; n < instantiateNum; ++n) {
-                    Projectile projectile = GameObject.Instantiate<GameObject>(prefab, underLevel, Quaternion.identity, projectileEmpty).GetComponent<Projectile>();
-                    projectile.Store(underLevel);
-
-                    instantiatedProjectilesList.Add(projectile);
-                }
+                projectileMap.Add(id, new ResourceRecycler<Projectile>(prefab.GetComponent<Projectile>(), underLevel, instantiateNum, projectileEmpty, projectile => {
+                    //projectile.Deactivate();
+                    Debug.Log("Created projectile id: " + id);
+                }));
 
                 return id;
             }
@@ -52,19 +46,7 @@ namespace ResonantSpark {
             }
 
             public void FireProjectile(int id) {
-                Projectile projectile = null;
-                int index = preInstantiatedProjectilesIndex[id];
-                List<Projectile> projectilePool = preInstantiatedProjectiles[id];
-
-                int stopIndex = index;
-                do {
-                    if (!projectilePool[index].active) {
-                        projectile = projectilePool[index];
-                    }
-                    index = (index + 1) % projectilePool.Count;
-                } while (index != stopIndex && projectile == null);
-                preInstantiatedProjectilesIndex[id] = index;
-
+                Projectile projectile = projectileMap[id].UseResource();
                 projectile.FireProjectile();
             }
         }
