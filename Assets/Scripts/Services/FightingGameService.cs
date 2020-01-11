@@ -7,7 +7,7 @@ using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace Service {
-        public class FightingGameService : MonoBehaviour {
+        public class FightingGameService : MonoBehaviour, IHitBoxService, IProjectileService {
 
             public Vector3 underLevel = new Vector3(0, -100, 0);
             public Transform projectileEmpty;
@@ -48,6 +48,10 @@ namespace ResonantSpark {
             public void FireProjectile(int id) {
                 Projectile projectile = projectileMap[id].UseResource();
                 projectile.FireProjectile();
+            }
+
+            public void HitBox(Vector3 position, int durationFrames) {
+                throw new System.NotImplementedException();
             }
         }
     }

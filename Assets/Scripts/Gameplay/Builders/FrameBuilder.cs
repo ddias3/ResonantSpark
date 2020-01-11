@@ -19,8 +19,8 @@ namespace ResonantSpark {
                 return this;
             }
 
-            public FrameState[] GetFrames() {
-                return frames.ToArray();
+            public List<FrameState> GetFrames() {
+                return frames; //.ToArray();
             }
         }
     }

@@ -29,7 +29,7 @@ namespace ResonantSpark {
             }
 
             public void IncrementTracker() {
-                currentAttack.RunFrame(frameCount);
+                //currentAttack.RunFrame();
                 frameCount++;
             }
         }

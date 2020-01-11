@@ -6,7 +6,7 @@ using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace Service {
-        public class AudioService : MonoBehaviour {
+        public class AudioService : MonoBehaviour, IAudioService {
 
             public AudioResource prefab;
             public Transform audioEmpty;
@@ -22,6 +22,19 @@ namespace ResonantSpark {
                 // This works exactly as expected.
                 //AudioSource test = GameObject.Instantiate<AudioSource>(prefab, new Vector3(-33, 0, 47), Quaternion.identity);
                 //test.Play();
+            }
+
+            public AudioResource Use(Transform followTransform) {
+                AudioResource resource = audioSources.UseResource();
+
+                resource.Activate();
+                return resource;
+
+                // TODO: Create this for the functionality that I want.
+            }
+
+            private void OnInterrupt() {
+
             }
         }
     }

@@ -15,7 +15,7 @@ namespace ResonantSpark {
             public string animStateName { get; private set; }
             private FrameBuilder frameBuilder;
 
-            public FrameState[] GetFrames() {
+            public List<FrameState> GetFrames() {
                 return frameBuilder.GetFrames();
             }
 

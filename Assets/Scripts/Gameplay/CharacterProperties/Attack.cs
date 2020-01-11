@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Character;
+using ResonantSpark.Gameplay;
+using ResonantSpark.Service;
+using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace CharacterProperties {
-        public class Attack : ScriptableObject {
+        public class Attack : ScriptableObject, IInGamePerformable {
             private new string name;
-            private FrameState[] frames;
+            private List<FrameState> frames;
+
+            private AttackTracker tracker;
 
             public Attack(Action<Builder.IAttackCallbackObj> builderCallback) {
                 AttackBuilder atkBuilder = new AttackBuilder();
@@ -16,10 +21,26 @@ namespace ResonantSpark {
 
                 name = atkBuilder.name;
                 frames = atkBuilder.GetFrames();
+
+                tracker = new AttackTracker(frames.Count);
             }
 
-            public void RunFrame(int frameCount) {
-                // TODO: Create this and supply it all the resources it needs.
+            public void FrameCountSanityCheck(int frameIndex) {
+                throw new NotImplementedException();
+            }
+
+            public bool IsCompleteRun() {
+                throw new NotImplementedException();
+            }
+
+            public void StartPerformable(int frameIndex) {
+                tracker.Track(frameIndex);
+            }
+
+            public void RunFrame(IHitBoxService hitBoxServ, IProjectileService projectServ, IAudioService audioServ) {
+                int frameCount = tracker.GetFrameCount();
+                // TODO: Perform the actions of the frame.
+                frames[frameCount].Perform();
             }
         }
     }

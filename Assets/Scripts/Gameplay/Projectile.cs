@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Utility;
+using ResonantSpark.Service;
 
 namespace ResonantSpark {
     namespace Gameplay {
-        public class Projectile : MonoBehaviour, IResource {
+        public class Projectile : MonoBehaviour, IResource, IInGamePerformable {
 
             public bool active { get; private set; }
 
-                // TODO: hook this up
+            // TODO: hook this up
             protected GameTimeManager gameTime;
 
             protected LayerMask hurtBox;
@@ -39,12 +40,6 @@ namespace ResonantSpark {
                 this.storeLocation = storeLocation;
             }
 
-                //TODO: Hook this up to the frameEnforcer
-                //  It should only be called when the projectile is active.
-            public void NotUpdate() {
-
-            }
-
             public bool Active() {
                 return active;
             }
@@ -54,6 +49,22 @@ namespace ResonantSpark {
             }
 
             public void Deactivate() {
+                throw new System.NotImplementedException();
+            }
+
+            public void StartPerformable(int frameIndex) {
+                throw new System.NotImplementedException();
+            }
+
+            public void RunFrame(IHitBoxService hitBoxServ, IProjectileService projectServ, IAudioService audioServ) {
+                throw new System.NotImplementedException();
+            }
+
+            public bool IsCompleteRun() {
+                throw new System.NotImplementedException();
+            }
+
+            public void FrameCountSanityCheck(int frameIndex) {
                 throw new System.NotImplementedException();
             }
         }
