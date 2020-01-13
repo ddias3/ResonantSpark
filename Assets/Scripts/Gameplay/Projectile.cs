@@ -7,7 +7,7 @@ using ResonantSpark.Service;
 
 namespace ResonantSpark {
     namespace Gameplay {
-        public class Projectile : MonoBehaviour, IResource, IInGamePerformable {
+        public abstract class Projectile : MonoBehaviour, IResource, IInGamePerformable {
 
             public bool active { get; private set; }
 
@@ -19,9 +19,11 @@ namespace ResonantSpark {
             protected LayerMask outOfBounds;
 
             private Vector3 storeLocation;
+            private int frameStart;
 
             public void Start() {
                 active = false;
+                frameStart = -1;
                 storeLocation = transform.position;
 
                 hurtBox = LayerMask.NameToLayer("HurtBox");
@@ -33,6 +35,18 @@ namespace ResonantSpark {
                 active = true;
 
                 //TODO: Add self to the active projectile list.
+            }
+
+            protected void OnHurtBoxEnter() {
+                // TODO: Hook this up
+            }
+
+            protected void OnHitBoxEnter() {
+                // TODO: Hook this up
+            }
+
+            protected void OnOutOfBoundsEnter() {
+                // TODO: Deactivate self and readd self to resource recycler
             }
 
             public void Store(Vector3 storeLocation) {
@@ -56,10 +70,6 @@ namespace ResonantSpark {
                 throw new System.NotImplementedException();
             }
 
-            public void RunFrame(IHitBoxService hitBoxServ, IProjectileService projectServ, IAudioService audioServ) {
-                throw new System.NotImplementedException();
-            }
-
             public bool IsCompleteRun() {
                 throw new System.NotImplementedException();
             }
@@ -67,6 +77,8 @@ namespace ResonantSpark {
             public void FrameCountSanityCheck(int frameIndex) {
                 throw new System.NotImplementedException();
             }
+
+            public abstract void RunFrame(IHitBoxService hitBoxServ, IProjectileService projectServ, IAudioService audioServ);
         }
     }
 }

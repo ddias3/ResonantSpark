@@ -10,7 +10,6 @@ namespace ResonantSpark {
             IFrameListCallbackObj ChainCancellable(bool chainCancellable);
             IFrameListCallbackObj To(int endFrame);
             IFrameListCallbackObj HitBox(Action<IHitBoxCallbackObject> callback);
-            IFrameListCallbackObj HitBox(Character.HitBox hitBox);
             IFrameListCallbackObj HitBox();
             IFrameListCallbackObj HitDamage(int damage);
             IFrameListCallbackObj BlockDamage(int damage);

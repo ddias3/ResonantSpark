@@ -1,13 +1,15 @@
-﻿using System.Collections;
+﻿
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Gameplay;
 using ResonantSpark.Utility;
+using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace Service {
-        public class FightingGameService : MonoBehaviour, IHitBoxService, IProjectileService {
+        public class FightingGameService : MonoBehaviour, IFightingGameService, IHitBoxService, IProjectileService {
 
             public Vector3 underLevel = new Vector3(0, -100, 0);
             public Transform projectileEmpty;
@@ -51,6 +53,14 @@ namespace ResonantSpark {
             }
 
             public void HitBox(Vector3 position, int durationFrames) {
+                throw new System.NotImplementedException();
+            }
+
+            public HitBox DefaultPrefab() {
+                throw new System.NotImplementedException();
+            }
+
+            public Transform GetCharacterRoot(FightingGameCharacter fgChar) {
                 throw new System.NotImplementedException();
             }
         }
