@@ -8,7 +8,7 @@ using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace Gameplay {
-        public class FightingGameCharacter : MonoBehaviour {
+        public class FightingGameCharacter : MonoBehaviour, IFightingGameCharacter {
 
             public Animator animator;
             public StateMachine stateMachine;
@@ -202,6 +202,10 @@ namespace ResonantSpark {
                     // TODO: Change the way the FGChar gets inputs over to the state machine.
                     //   If this is an NPC, it won't have an input buffer with it.
                 return inputBuffer.GetFoundCombinations();
+            }
+
+            public void Hit() {
+                // TODO: hit the opponent character
             }
         }
     }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Builder;
-using ResonantSpark.Gameplay;
+using ResonantSpark.Utility;
 using ResonantSpark.Input;
 using ResonantSpark.Character;
 
@@ -36,9 +36,10 @@ namespace ResonantSpark {
                                         .ChainCancellable(true)
                                     .From(8)
                                         .HitBox(h => {
-                                            h.Add(new Vector3(0, 0, 0));
-                                            h.Add(new Vector3(0, 0, 1));
-                                            h.Event("hit", () => {
+                                            h.Point0(new Vector3(0, 0, 0));
+                                            h.Point1(new Vector3(0, 1, 0));
+                                            h.Radius(0.25f);
+                                            h.Event("onHitBox", (fgChar) => {
                                                 Debug.Log("Regular 5A Hit");
                                             });
                                         })
@@ -71,14 +72,41 @@ namespace ResonantSpark {
                                     .From(10)
                                         .ChainCancellable(true)
                                     .From(12)
+                                        // This is a possible way to program the configuration code. I think this has its merits,
+                                        //   but having damage values statically defined also has its benefits
+                                        //.HitBox(h => {
+                                        //    h.Point0(new Vector3(0, 0, 0));
+                                        //    h.Point1(new Vector3(0, 1, 0));
+                                        //    h.Radius(0.25f);
+                                        //    h.Event("onHurtBox", (fgChar) => {
+                                        //        Debug.Log("Regular 5AA hit the enemy");
+                                        //        // TODO: Figure out what to do with these events
+                                        //        fgChar.Hit(hitDamage: 800, blockDamage: 0, hitStun: 20.0f, blockStun: 10.0f);
+                                        //    });
+                                        //    h.Event("onHitBox", (fgChar) => {
+                                        //        Debug.Log("Regular 5AA hit another hitbox");
+                                        //        // TODO: Figure out what to do with these events
+                                        //    });
+                                        //})
                                         .HitBox(h => {
-                                            h.Add(new Vector3(0, 0, 0));
-                                            h.Add(new Vector3(0, 0, 1));
-                                            h.Event("hit", () => {
-                                                Debug.Log("Regular 5AA hit");
+                                            h.Point0(new Vector3(0, 0, 0));
+                                            h.Point1(new Vector3(0, 1, 0));
+                                            h.Radius(0.25f);
+                                            h.Event("onHurtBox", (fgChar) => {
+                                                Debug.Log("Regular 5AA hit the enemy");
+                                                // TODO: Figure out what to do with these events
+                                                fgChar.Hit();
+                                            });
+                                            h.Event("onHitBox", (fgChar) => {
+                                                Debug.Log("Regular 5AA hit another hitbox");
                                                 // TODO: Figure out what to do with these events
                                             });
                                         })
+                                        .HitDamage(1000)
+                                        .BlockDamage(10)
+                                        .HitStun(30.0f)
+                                        .BlockStun(12.0f)
+                                    .To(10)
                                     .To(14)
                                     .From(14)
                                         .HitBox()
@@ -105,10 +133,13 @@ namespace ResonantSpark {
                                         .ChainCancellable(true)
                                     .From(8)
                                         .HitBox(h => {
-                                            h.Add(new Vector3(0, 0, 0));
-                                            h.Add(new Vector3(0, 0, 1));
-                                            h.Event("hit", () => {
-                                                Debug.Log("Goofy 5A Hit");
+                                            h.Point0(new Vector3(0, 0, 0));
+                                            h.Point1(new Vector3(0, 1, 0));
+                                            h.Radius(0.25f);
+                                            h.Event("onHurtBox", (fgChar) => {
+                                                Debug.Log("Goofy 5A hit the enemy");
+                                                // TODO: Figure out what to do with these events
+                                                fgChar.Hit();
                                             });
                                         })
                                         .HitDamage(800)
@@ -141,11 +172,13 @@ namespace ResonantSpark {
                                         .ChainCancellable(true)
                                     .From(12)
                                         .HitBox(h => {
-                                            h.Add(new Vector3(0, 0, 0));
-                                            h.Add(new Vector3(0, 0, 1));
-                                            h.Event("hit", () => {
-                                                Debug.Log("Goofy 5AA hit");
+                                            h.Point0(new Vector3(0, 0, 0));
+                                            h.Point1(new Vector3(0, 1, 0));
+                                            h.Radius(0.25f);
+                                            h.Event("onHurtBox", (fgChar) => {
+                                                Debug.Log("Goofy 5AA hit the enemy");
                                                 // TODO: Figure out what to do with these events
+                                                fgChar.Hit();
                                             });
                                         })
                                     .To(14)
@@ -174,11 +207,13 @@ namespace ResonantSpark {
                                         .ChainCancellable(true)
                                     .From(12)
                                         .HitBox(h => {
-                                            h.Add(new Vector3(0, 0, 0));
-                                            h.Add(new Vector3(0, 0, 1));
-                                            h.Event("hit", () => {
-                                                Debug.Log("Goofy 5A[A] hit");
+                                            h.Point0(new Vector3(0, 0, 0));
+                                            h.Point1(new Vector3(0, 1, 0));
+                                            h.Radius(0.25f);
+                                            h.Event("onHurtBox", (fgChar) => {
+                                                Debug.Log("Goofy 5A[A] hit the enemy");
                                                 // TODO: Figure out what to do with these events
+                                                fgChar.Hit();
                                             });
                                         })
                                     .To(14)
