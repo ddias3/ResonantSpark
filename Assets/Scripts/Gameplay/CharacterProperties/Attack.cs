@@ -21,6 +21,13 @@ namespace ResonantSpark {
             public List<FrameState> frames { get; private set; }
             public List<HitBox> hitBoxes { get; private set; }
 
+            private IFightingGameService fgService;
+            private IProjectileService projectServ;
+            private IAudioService audioServ;
+
+            private FightingGameCharacter fgChar;
+            private Action onCompleteCallback;
+
             private AttackTracker tracker;
 
             public Attack(Action<Builder.IAttackCallbackObj> builderCallback) {
@@ -28,6 +35,12 @@ namespace ResonantSpark {
             }
 
             public void BuildAttack(AllServices services) {
+                fgService = services.GetService<IFightingGameService>();
+                projectServ = services.GetService<IProjectileService>();
+                audioServ = services.GetService<IAudioService>();
+
+                fgChar = services.GetService<IBuildService>().GetBuildingFGChar();
+
                 AttackBuilder attackBuilder = new AttackBuilder(services);
                 builderCallback(attackBuilder);
 
@@ -53,11 +66,16 @@ namespace ResonantSpark {
                 throw new NotImplementedException();
             }
 
-            public void StartPerformable(int frameIndex) {
-                tracker.Track(frameIndex);
+            public void SetOnCompleteCallback(Action onCompleteCallback) {
+                this.onCompleteCallback = onCompleteCallback;
             }
 
-            public void RunFrame(IHitBoxService hitBoxServ, IProjectileService projectServ, IAudioService audioServ) {
+            public void StartPerformable(int frameIndex) {
+                tracker.Track(frameIndex);
+                fgService.RunAnimationState(fgChar, animStateName);
+            }
+
+            public void RunFrame() {
                 int frameCount = tracker.GetFrameCount();
                 frames[frameCount].Perform();
             }

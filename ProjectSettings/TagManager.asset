@@ -8,6 +8,7 @@ TagManager:
   - rspCamera
   - rspGamemode
   - rspBuilder
+  - rspTime
   layers:
   - Default
   - TransparentFX

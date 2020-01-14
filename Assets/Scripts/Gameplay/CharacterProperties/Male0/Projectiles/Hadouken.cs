@@ -10,7 +10,7 @@ namespace ResonantSpark {
 
                 public float speed;
 
-                public override void RunFrame(IHitBoxService hitBoxServ, IProjectileService projectServ, IAudioService audioServ) {
+                public override void RunFrame() {
                     transform.position += speed * transform.forward * gameTime.Layer("gameTime");
                 }
 

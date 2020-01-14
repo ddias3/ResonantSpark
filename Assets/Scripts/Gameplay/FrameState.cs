@@ -30,6 +30,8 @@ namespace ResonantSpark {
                 for (int n = 0; n < hitBoxes.Count; ++n) {
                     hitBoxes[n].Active();
                 }
+
+                // TODO: Add call to turn on the sound effect
             }
         }
     }
