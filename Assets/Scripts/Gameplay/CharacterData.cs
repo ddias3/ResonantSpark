@@ -1,39 +1,41 @@
-﻿using System.Collections;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.CharacterProperties;
 using ResonantSpark.Input;
+using System.Collections;
 
 namespace ResonantSpark {
     namespace Character {
         public class CharacterData : MonoBehaviour {
             private Dictionary<string, Attack> attacks;
-
-            private Dictionary<Orientation, Dictionary<GroundRelation, Dictionary<InputNotation, Attack>>> orientations;
-            private Dictionary<GroundRelation, Dictionary<InputNotation, Attack>> groundRelations;
-            private Dictionary<InputNotation, Attack> notations;
+            private Dictionary<Attack, Func<CharacterState, bool>> attackSelectableCallbackMap;
 
             public void Start() {
                 attacks = new Dictionary<string, Attack>();
             }
 
-            public void CacheAttacks() {
-
+            public void AddAttack(Attack attack) {
+                attacks.Add(attack.name, attack);
             }
 
-                // This function is a fucking disaster
-            public Attack SelectAttack(Orientation orientation, GroundRelation groundRelation, InputNotation attackInput) {
-                foreach (KeyValuePair<Orientation, Dictionary<GroundRelation, Dictionary<InputNotation, Attack>>> dic0 in orientations) {
-                    if (dic0.Key == orientation) foreach (KeyValuePair<GroundRelation, Dictionary<InputNotation, Attack>> dic1 in dic0.Value) {
-                        if (dic1.Key == groundRelation) foreach (KeyValuePair<InputNotation, Attack> entry in dic1.Value) {
-                            if (entry.Key == attackInput) {
-                                return entry.Value;
-                            }
-                        }
-                    }
+            public void AddAttackSelectablilityCallback(Attack attack, Func<CharacterState, bool> callback) {
+                attackSelectableCallbackMap.Add(attack, callback);
+            }
+
+            public Attack SelectAttacks(Orientation orientation, GroundRelation groundRelation, InputNotation attackInput) {
+                    // TODO: Create a new IEnumerable class to pull out the filtered values in-place.
+                List<KeyValuePair<string, Attack>> filteredAttacks = attacks
+                    .Where(kvp => kvp.Value.orientation == orientation && kvp.Value.groundRelation == groundRelation && kvp.Value.input == attackInput)
+                    .ToList();
+
+                if (filteredAttacks.Count > 1) {
+                    Debug.LogErrorFormat("Found multiple attacks for the following data: {0}, {1}, {2}", orientation, groundRelation, attackInput);
                 }
-                return null;
+
+                return filteredAttacks[0].Value;
             }
 
             public Attack SelectAttack(string attackName) {

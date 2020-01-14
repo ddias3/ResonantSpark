@@ -6,21 +6,41 @@ using ResonantSpark.Character;
 using ResonantSpark.Gameplay;
 using ResonantSpark.Service;
 using ResonantSpark.Utility;
+using ResonantSpark.Input;
 
 namespace ResonantSpark {
     namespace CharacterProperties {
         public class Attack : ScriptableObject, IInGamePerformable {
-            private new string name;
-            private List<FrameState> frames;
+            private Action<Builder.IAttackCallbackObj> builderCallback;
+
+            public new string name { get; private set; }
+            public Orientation orientation { get; private set; }
+            public GroundRelation groundRelation { get; private set; }
+            public InputNotation input { get; private set; }
+            public string animStateName { get; private set; }
+            public List<FrameState> frames { get; private set; }
+            public List<HitBox> hitBoxes { get; private set; }
 
             private AttackTracker tracker;
 
             public Attack(Action<Builder.IAttackCallbackObj> builderCallback) {
-                AttackBuilder atkBuilder = new AttackBuilder();
-                builderCallback(atkBuilder);
+                this.builderCallback = builderCallback;
+            }
 
-                name = atkBuilder.name;
-                frames = atkBuilder.GetFrames();
+            public void BuildAttack(AllServices services) {
+                AttackBuilder attackBuilder = new AttackBuilder(services);
+                builderCallback(attackBuilder);
+
+                attackBuilder.BuildAttack();
+
+                name = attackBuilder.name;
+                orientation = attackBuilder.orientation;
+                groundRelation = attackBuilder.groundRelation;
+                input = attackBuilder.input;
+                animStateName = attackBuilder.animStateName;
+
+                frames = attackBuilder.GetFrames();
+                hitBoxes = attackBuilder.GetHitBoxes();
 
                 tracker = new AttackTracker(frames.Count);
             }
@@ -39,7 +59,6 @@ namespace ResonantSpark {
 
             public void RunFrame(IHitBoxService hitBoxServ, IProjectileService projectServ, IAudioService audioServ) {
                 int frameCount = tracker.GetFrameCount();
-                // TODO: Perform the actions of the frame.
                 frames[frameCount].Perform();
             }
         }

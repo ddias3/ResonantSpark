@@ -18,12 +18,10 @@ namespace ResonantSpark {
                 public static float blockStun = 10.0f;
                 public static int startFrame = 0;
 
-                public static List<HitBox> hitBoxes = null;
-
                 public static int counter = 0;
             }
 
-            public static List<FrameState> CreateList(Action<IFrameListCallbackObj> callback) {
+            public static (List<FrameStateBuilder>, Dictionary<int, Action<IHitBoxCallbackObject>>) CreateList(Action<IFrameListCallbackObj> callback) {
                 FrameListBuilder builder = new FrameListBuilder();
                 callback(builder);
                 return builder.CreateFrameList();

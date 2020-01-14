@@ -13,6 +13,9 @@ namespace ResonantSpark {
             private const string onHitBoxEventKey = "onHitBox";
             private const string onHurtBoxEventKey = "onHurtBox";
 
+            private IHitBoxService hitBoxService;
+            private IFightingGameService fgService;
+
             private HitBox hitBoxPrefab;
 
             private Dictionary<string, Action<IFightingGameCharacter>> callbacks;
@@ -26,9 +29,11 @@ namespace ResonantSpark {
             private float radius = -1;
             private bool tracking = false;
 
-            public HitBoxBuilder(IHitBoxService hitBoxService) {
+            public HitBoxBuilder(AllServices allServices) {
                 callbacks = new Dictionary<string, Action<IFightingGameCharacter>>();
-                this.hitBoxPrefab = hitBoxService.DefaultPrefab();
+                this.hitBoxService = allServices.GetService<IHitBoxService>();
+                this.fgService = allServices.GetService<IFightingGameService>();
+                this.hitBoxPrefab = this.hitBoxService.DefaultPrefab();
             }
 
             public IHitBoxCallbackObject Prefab(HitBox hitBoxPrefab) {
@@ -74,10 +79,11 @@ namespace ResonantSpark {
             public HitBox CreateHitBox(Transform hitBoxEmptyParentTransform) {
                     // default means Vector3.zero in this case
                 if (collider != null) {
-                    // TODO: supply the HitBox root prefab.
                     HitBox hitBox = GameObject.Instantiate<HitBox>(hitBoxPrefab, hitBoxEmptyParentTransform.position, Quaternion.identity, hitBoxEmptyParentTransform);
                     callbacks.TryGetValue(onHurtBoxEventKey, out Action<IFightingGameCharacter> onHurtBoxCallback);
                     callbacks.TryGetValue(onHitBoxEventKey, out Action<IFightingGameCharacter> onHitBoxCallback);
+
+                    hitBox.SetServices(hitBoxService, fgService);
                     hitBox.Init(transform, tracking, onHurtBoxCallback, onHitBoxCallback);
 
                     switch (collider.direction) {
@@ -94,10 +100,11 @@ namespace ResonantSpark {
                     return hitBox;
                 }
                 else if (radius > 0 && point0 != default && point1 != default) {
-                    // TODO: supply the HitBox root prefab.
                     HitBox hitBox = GameObject.Instantiate<HitBox>(hitBoxPrefab, hitBoxEmptyParentTransform.position, Quaternion.identity, hitBoxEmptyParentTransform);
                     callbacks.TryGetValue(onHurtBoxEventKey, out Action<IFightingGameCharacter> onHurtBoxCallback);
                     callbacks.TryGetValue(onHitBoxEventKey, out Action<IFightingGameCharacter> onHitBoxCallback);
+
+                    hitBox.SetServices(hitBoxService, fgService);
                     hitBox.Init(transform, tracking, onHurtBoxCallback, onHitBoxCallback);
 
                     hitBox.SetColliderPosition(point0, point1, radius);

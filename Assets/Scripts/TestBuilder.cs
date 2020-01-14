@@ -15,7 +15,6 @@ public class TestBuilder : MonoBehaviour {
 
     public void Start() {
         ICharacterBuilder builder = male0Builder.GetComponent<ICharacterBuilder>();
-        builder.Init();
         GameObject char0 = builder.CreateCharacter();
 
         gameManager.char0 = char0;

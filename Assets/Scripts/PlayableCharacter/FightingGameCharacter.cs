@@ -35,6 +35,8 @@ namespace ResonantSpark {
 
             private bool facingRight = true;
 
+            private CharacterData charData;
+
             public void Init() {
                 //TODO: Create way to set charId and teamId
                 charId = 0;
