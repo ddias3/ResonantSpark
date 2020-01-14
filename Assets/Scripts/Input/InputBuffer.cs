@@ -26,7 +26,7 @@ namespace ResonantSpark {
             private List<Input.Combinations.Combination> inputCombinations;
 
             public void Start() {
-                frame = gameObject.GetComponentInParent<FrameEnforcer>();
+                frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
                 frame.SetUpdate(new Action<int>(ServeBuffer));
 
                 inputFactory = new Input.Factory();

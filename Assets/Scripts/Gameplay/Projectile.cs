@@ -78,7 +78,7 @@ namespace ResonantSpark {
                 throw new System.NotImplementedException();
             }
 
-            public abstract void RunFrame(IHitBoxService hitBoxServ, IProjectileService projectServ, IAudioService audioServ);
+            public abstract void RunFrame();
         }
     }
 }

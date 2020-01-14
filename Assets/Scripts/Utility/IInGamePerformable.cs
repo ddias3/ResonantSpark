@@ -6,7 +6,7 @@ namespace ResonantSpark {
     namespace Gameplay {
         public interface IInGamePerformable {
             void StartPerformable(int frameIndex);
-            void RunFrame(IHitBoxService hitBoxServ, IProjectileService projectServ, IAudioService audioServ);
+            void RunFrame();
 
                 // This expects the Performable to track which frame it's in.
             bool IsCompleteRun();

@@ -33,7 +33,7 @@ namespace ResonantSpark {
 
                 states = gameObject.GetComponentInParent<StateDict>();
                 fgChar = gameObject.GetComponentInParent<FightingGameCharacter>();
-                frame = GameObject.FindGameObjectWithTag("rspGamemode").GetComponent<FrameEnforcer>();
+                frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
             }
 
             public CallbackRegistry RegisterInputCallbacks() {

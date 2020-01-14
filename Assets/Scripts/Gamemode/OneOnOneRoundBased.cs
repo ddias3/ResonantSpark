@@ -7,10 +7,10 @@ using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace Gamemode {
-        public class OneOnOneRoundBased : MonoBehaviour {
+        public class OneOnOneRoundBased : MonoBehaviour, IGamemode {
 
-            public GameObject char0;
-            public GameObject char1;
+            private FightingGameCharacter char0;
+            private FightingGameCharacter char1;
 
             public new GameObject camera;
 
@@ -23,8 +23,8 @@ namespace ResonantSpark {
             private float roundTime;
 
             public void Start() {
-                frame = gameObject.GetComponent<FrameEnforcer>();
-                gameTimeManager = gameObject.GetComponent<GameTimeManager>();
+                frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
+                gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
 
                 gameTimeManager.AddLayer(new Func<float, float>(GameTime), "gameTime");
 
@@ -35,11 +35,11 @@ namespace ResonantSpark {
             public void ConnectFightingGameCharacters() {
                 Debug.Log("ConnectFightingGameCharacters");
 
-                char0.GetComponent<FightingGameCharacter>()
-                    .SetOpponentCharacter(char1)
+                char0
+                    .SetOpponentCharacter(char1.gameObject)
                     .SetGameTimeManager(gameTimeManager);
-                //char1.GetComponent<FightingGameCharacter>()
-                //    .SetOpponentCharacter(char0)
+                //char1
+                //    .SetOpponentCharacter(char0.gameObject)
                 //    .SetGameTimeManager(gameTimeManager);
             }
 
@@ -62,6 +62,19 @@ namespace ResonantSpark {
 
             void Update() {
 
+            }
+
+            public void SetFightingGameCharacter(FightingGameCharacter fgChar, int index) {
+                switch (index) {
+                    case 0:
+                        char0 = fgChar;
+                        break;
+                    case 1:
+                        char1 = fgChar;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException("Index " + index + " out of range for setting a character for 1-v-1 gamemode");
+                }
             }
         }
     }

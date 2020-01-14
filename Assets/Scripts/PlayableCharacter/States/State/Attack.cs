@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Input.Combinations;
@@ -9,10 +10,8 @@ namespace ResonantSpark {
     namespace CharacterStates {
         public class Attack : BaseState {
 
-            public AttackServer server;
-            public AttackTracker tracker;
-
-            private CharacterData character;
+            private CharacterData charData;
+            private Action onCompleteAttack;
 
             private InputNotation notation;
 
@@ -29,31 +28,28 @@ namespace ResonantSpark {
                     .On<DirectionPress>(GivenDirectionPress)
                     .On<DirectionCurrent>(GivenDirectionCurrent);
 
-                tracker.onCompleteAttackCallback = new Action(OnCompleteAttack);
+                this.onCompleteAttack = new Action(OnCompleteAttack);
             }
 
             public override void Enter(int frameIndex, IState previousState) {
                     // Start OnEnter with this
                 GivenInput(fgChar.GivenCombinations());
 
-                CharacterProperties.Attack attack = character.SelectAttack(fgChar.GetOrientation(), fgChar.GetGroundRelation(), notation);
+                List<CharacterProperties.Attack> attack = charData.SelectAttacks(fgChar.GetOrientation(), fgChar.GetGroundRelation(), notation);
 
-                if (attack != null) {
-                    tracker.TrackAttack(frameIndex, attack);
-                }
-                else {
+                if (attack.Count == 0) {
                     Debug.LogFormat(LogType.Exception, LogOption.None, this, "Missing attack given conditions: {0}, {1}, {2}", fgChar.GetOrientation(), fgChar.GetGroundRelation(), notation);
                     throw new InvalidOperationException("Missing attack given conditions.");
                 }
 
-                //fgChar.SetLocalMoveDirection(0.0f, 0.0f);
-                //fgChar.Play("5AA", 0, 0.0f);
+
+                // FOR NOW ONLY, just do this
+                attack[0].StartPerformable(frameIndex);
+                attack[0].SetOnCompleteCallback(onCompleteAttack);
             }
 
             public override void Execute(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
-
-                tracker.IncrementTracker();
             }
 
             public override void Exit(int frameIndex) {
@@ -61,7 +57,6 @@ namespace ResonantSpark {
             }
 
             public void OnCompleteAttack() {
-                tracker.ClearAttack();
                 // TODO: Figure out rest of this code
             }
 

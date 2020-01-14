@@ -9,7 +9,7 @@ namespace ResonantSpark {
             private FrameEnforcer frame;
 
             public void Start() {
-                frame = gameObject.GetComponentInParent<FrameEnforcer>();
+                frame = gameObject.GetComponent<FrameEnforcer>();
                 frame.SetUpdate(new Action<int>(ProcessEventsManually));
             }
 

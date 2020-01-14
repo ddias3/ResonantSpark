@@ -25,17 +25,15 @@ namespace ResonantSpark {
                 attackSelectableCallbackMap.Add(attack, callback);
             }
 
-            public Attack SelectAttacks(Orientation orientation, GroundRelation groundRelation, InputNotation attackInput) {
-                    // TODO: Create a new IEnumerable class to pull out the filtered values in-place.
-                List<KeyValuePair<string, Attack>> filteredAttacks = attacks
-                    .Where(kvp => kvp.Value.orientation == orientation && kvp.Value.groundRelation == groundRelation && kvp.Value.input == attackInput)
+            public List<Attack> SelectAttacks(Orientation orientation, GroundRelation groundRelation, InputNotation attackInput) {
+                // TODO: Create a new IEnumerable class to pull out the filtered values in-place.
+
+                List<Attack> filteredAttacks = attacks
+                    .Select<KeyValuePair<string, Attack>, Attack>(kvp => kvp.Value)
+                    .Where(atk => atk.orientation == orientation && atk.groundRelation == groundRelation && atk.input == attackInput)
                     .ToList();
 
-                if (filteredAttacks.Count > 1) {
-                    Debug.LogErrorFormat("Found multiple attacks for the following data: {0}, {1}, {2}", orientation, groundRelation, attackInput);
-                }
-
-                return filteredAttacks[0].Value;
+                return filteredAttacks;
             }
 
             public Attack SelectAttack(string attackName) {
