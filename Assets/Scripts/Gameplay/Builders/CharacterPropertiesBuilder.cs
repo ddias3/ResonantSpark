@@ -4,6 +4,8 @@ using UnityEngine;
 
 using ResonantSpark.Builder;
 using ResonantSpark.Character;
+using ResonantSpark.Service;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterProperties {
@@ -11,9 +13,32 @@ namespace ResonantSpark {
             protected string version;
             protected List<(Attack, Func<CharacterState, bool>)> attacks { get; private set; }
 
-            public CharacterPropertiesBuilder() {
+            protected AllServices services;
+
+            public CharacterPropertiesBuilder(AllServices services) {
                 attacks = new List<(Attack, Func<CharacterState, bool>)>();
+
+                this.services = services;
             }
+
+            public CharacterData BuildAttacks(CharacterData charData) {
+                foreach ((Attack, Func<CharacterState, bool>) atk in attacks) {
+                    Attack attack = atk.Item1;
+                    Func<CharacterState, bool> callback = atk.Item2;
+
+                    attack.BuildAttack(services);
+
+                    charData.AddAttackSelectablilityCallback(attack, callback);
+                    charData.AddAttack(attack);
+                }
+
+                return charData;
+            }
+
+            //TODO:
+            //public void BuildMovement() {
+            //    
+            //}
 
             public ICharacterPropertiesCallbackObj MaxJumpHeight(float maxJumpHeight) {
                 //TODO: Figure out how to connect this

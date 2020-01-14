@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Gameplay;
-using ResonantSpark.Utility;
+using ResonantSpark.Service;
 
 namespace ResonantSpark {
     namespace Character {
-        public class HitBox : MonoBehaviour, IResource {
+        public class HitBox : MonoBehaviour {
 
             private LayerMask hurtBox;
             private LayerMask hitBox;
@@ -22,6 +22,9 @@ namespace ResonantSpark {
             private Action<IFightingGameCharacter> onHurtBoxEnter;
             private Action<IFightingGameCharacter> onHitBoxEnter;
 
+            private IHitBoxService hitBoxService;
+            private IFightingGameService fgService;
+
             public HitBox Init(Transform relativeTransform, bool tracking, Action<IFightingGameCharacter> onHurtBoxEnter, Action<IFightingGameCharacter> onHitBoxEnter) {
                 this.relativeTransform = relativeTransform;
                 this.offset = relativeTransform.position - transform.position;
@@ -29,7 +32,14 @@ namespace ResonantSpark {
                 this.onHurtBoxEnter = onHurtBoxEnter;
                 this.onHitBoxEnter = onHitBoxEnter;
 
+                // TODO: Register hitbox into hitboxService
+
                 return this;
+            }
+
+            public void SetServices(IHitBoxService hitBoxService, IFightingGameService fgService) {
+                this.hitBoxService = hitBoxService;
+                this.fgService = fgService;
             }
 
             public void Start() {
@@ -62,7 +72,11 @@ namespace ResonantSpark {
                 collider.center = (cylinderHeight / 2 + radius) * Vector3.forward;
             }
 
-            public bool Active() {
+            public void Active() {
+                hitBoxService.Active(this);
+            }
+
+            public bool IsActive() {
                 return collider.enabled;
             }
 
