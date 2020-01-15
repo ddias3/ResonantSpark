@@ -27,7 +27,7 @@ namespace ResonantSpark {
 
             public void Start() {
                 frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
-                frame.SetUpdate(new Action<int>(ServeBuffer));
+                frame.AddUpdate((int) FramePriority.InputBuffer, new Action<int>(ServeBuffer));
 
                 inputFactory = new Input.Factory();
                 inputBuffer = new GameInputStruct[bufferLength];

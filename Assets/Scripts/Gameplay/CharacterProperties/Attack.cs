@@ -10,10 +10,13 @@ using ResonantSpark.Input;
 
 namespace ResonantSpark {
     namespace CharacterProperties {
-        public class Attack : ScriptableObject, IInGamePerformable {
+        public class Attack : IInGamePerformable, IEquatable<Attack> {
+            private static int attackCounter = 0;
+
             private Action<Builder.IAttackCallbackObj> builderCallback;
 
-            public new string name { get; private set; }
+            public int id { get; private set; }
+            public string name { get; private set; }
             public Orientation orientation { get; private set; }
             public GroundRelation groundRelation { get; private set; }
             public InputNotation input { get; private set; }
@@ -32,6 +35,8 @@ namespace ResonantSpark {
 
             public Attack(Action<Builder.IAttackCallbackObj> builderCallback) {
                 this.builderCallback = builderCallback;
+
+                this.id = Attack.attackCounter++;
             }
 
             public void BuildAttack(AllServices services) {
@@ -78,6 +83,14 @@ namespace ResonantSpark {
             public void RunFrame() {
                 int frameCount = tracker.GetFrameCount();
                 frames[frameCount].Perform();
+            }
+
+            public bool Equals(Attack other) {
+                return id == other.id;
+            }
+
+            public override int GetHashCode() {
+                return id;
             }
         }
     }

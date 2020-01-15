@@ -7,7 +7,10 @@ using ResonantSpark.Service;
 
 namespace ResonantSpark {
     namespace Character {
-        public class HitBox : MonoBehaviour {
+        public class HitBox : MonoBehaviour, IEquatable<HitBox> {
+            private static int hitBoxCounter = 0;
+
+            public int id { get; private set; }
 
             private LayerMask hurtBox;
             private LayerMask hitBox;
@@ -26,13 +29,15 @@ namespace ResonantSpark {
             private IFightingGameService fgService;
 
             public HitBox Init(Transform relativeTransform, bool tracking, Action<IFightingGameCharacter> onHurtBoxEnter, Action<IFightingGameCharacter> onHitBoxEnter) {
+                this.id = HitBox.hitBoxCounter++;
+
                 this.relativeTransform = relativeTransform;
                 this.offset = relativeTransform.position - transform.position;
 
                 this.onHurtBoxEnter = onHurtBoxEnter;
                 this.onHitBoxEnter = onHitBoxEnter;
 
-                // TODO: Register hitbox into hitboxService
+                hitBoxService.RegisterHitBox(this);
 
                 return this;
             }
@@ -92,6 +97,14 @@ namespace ResonantSpark {
 
                     // TODO: Provide an actual location to place this hitbox when deactivated.
                 rigidbody.position = new Vector3(0, -100, 0);
+            }
+
+            public bool Equals(HitBox other) {
+                return id == other.id;
+            }
+
+            public override int GetHashCode() {
+                return id;
             }
         }
     }

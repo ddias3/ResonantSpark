@@ -8,6 +8,8 @@ namespace ResonantSpark {
             HitBox DefaultPrefab();
             Transform GetEmptyHoldTransform();
             void Active(HitBox hitBox);
+
+            void RegisterHitBox(HitBox hitBox);
         }
     }
 }

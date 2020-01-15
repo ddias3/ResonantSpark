@@ -193,7 +193,7 @@ namespace ResonantSpark {
             private void OnButtonsCurrent(Action stop, Combination combo) {
                 ButtonsCurrent curr = (ButtonsCurrent) combo;
 
-                this.upJump = curr.butS;
+                this.upJump = !curr.butS;
             }
 
             private void GivenDirectionPress(Action stop, Combination combo) {
