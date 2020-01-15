@@ -38,16 +38,16 @@ namespace ResonantSpark {
                 char0
                     .SetOpponentCharacter(char1.gameObject)
                     .SetGameTimeManager(gameTimeManager);
-                //char1
-                //    .SetOpponentCharacter(char0.gameObject)
-                //    .SetGameTimeManager(gameTimeManager);
+                char1
+                    .SetOpponentCharacter(char0.gameObject)
+                    .SetGameTimeManager(gameTimeManager);
             }
 
             private void EnablePlayers() {
                 Debug.Log("Enable Players");
 
                 char0.GetComponent<CharacterStates.Init>().StartStateMachine(frame);
-                //char1.GetComponent<CharacterStates.Init>().StartStateMachine(frame);
+                char1.GetComponent<CharacterStates.Init>().StartStateMachine(frame);
 
                 //ResetRound();
             }
@@ -75,6 +75,10 @@ namespace ResonantSpark {
                     default:
                         throw new ArgumentOutOfRangeException("Index " + index + " out of range for setting a character for 1-v-1 gamemode");
                 }
+            }
+
+            public int GetMaxPlayers() {
+                return 2;
             }
         }
     }

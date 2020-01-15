@@ -54,7 +54,7 @@ namespace ResonantSpark {
             };
             //this.enabled = true;
 
-            frame.SetUpdate(new Action<int>(Execute));
+            frame.AddUpdate((int) FramePriority.StateMachine, new Action<int>(Execute));
             curr = startState;
 
             stateDict.Each(state => {

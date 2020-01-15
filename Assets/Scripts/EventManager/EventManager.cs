@@ -181,4 +181,24 @@ public class EventManager {
             }
         }
     }
+
+    public static void ClearEvents<Tbase>(Tbase t) where Tbase : UnityEvent, new() {
+        Get().eventDict.Remove(typeof(Tbase));
+    }
+
+    public static void ClearEvents<Tbase, T0>(Tbase t) where Tbase : UnityEvent<T0>, new() {
+        Get().eventDict.Remove(typeof(Tbase));
+    }
+
+    public static void ClearEvents<Tbase, T0, T1>(Tbase t) where Tbase : UnityEvent<T0, T1>, new() {
+        Get().eventDict.Remove(typeof(Tbase));
+    }
+
+    public static void ClearEvents<Tbase, T0, T1, T2>(Tbase t) where Tbase : UnityEvent<T0, T1, T2>, new() {
+        Get().eventDict.Remove(typeof(Tbase));
+    }
+
+    public static void ClearEvents<Tbase, T0, T1, T2, T3>(Tbase t) where Tbase : UnityEvent<T0, T1, T2, T3>, new() {
+        Get().eventDict.Remove(typeof(Tbase));
+    }
 }

@@ -14,22 +14,8 @@ namespace ResonantSpark {
 
                 public GameObject male0Prefab;
 
-                public BuildService buildService;
-                public FightingGameService fgService;
-                public AudioService audioService;
-                public HitBoxService hitBoxService;
-                public ProjectileService projectileService;
-
-                private Male0Builder charBuilder;
-
-                public GameObject CreateCharacter() {
-                    charBuilder = new Male0Builder(
-                        new AllServices()
-                            .AddServiceAs<IBuildService>(buildService)
-                            .AddServiceAs<IFightingGameService>(fgService)
-                            .AddServiceAs<IAudioService>(audioService)
-                            .AddServiceAs<IHitBoxService>(hitBoxService)
-                            .AddServiceAs<IProjectileService>(projectileService));
+                public GameObject CreateCharacter(AllServices services) {
+                    Male0Builder charBuilder = new Male0Builder(services);
 
                     Attacks attacks = new Attacks();
                     Movement movement = new Movement();

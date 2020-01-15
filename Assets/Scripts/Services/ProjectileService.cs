@@ -23,11 +23,16 @@ namespace ResonantSpark {
 
             public void Start() {
                 frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
+                frame.AddUpdate((int) FramePriority.Service, new System.Action<int>(FrameUpdate));
 
                 projectilePrefabs = new Dictionary<int, GameObject>();
                 projectileMap = new Dictionary<int, ResourceRecycler<Projectile>>();
 
                 activeProjectiles = new List<Projectile>();
+            }
+
+            private void FrameUpdate(int frameIndex) {
+
             }
 
             public int RegisterProjectile(GameObject prefab, int instantiateNum = 4) {

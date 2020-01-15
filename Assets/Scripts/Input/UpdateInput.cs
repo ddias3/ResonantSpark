@@ -10,7 +10,7 @@ namespace ResonantSpark {
 
             public void Start() {
                 frame = gameObject.GetComponent<FrameEnforcer>();
-                frame.SetUpdate(new Action<int>(ProcessEventsManually));
+                frame.AddUpdate((int) FramePriority.UpdateInput, new Action<int>(ProcessEventsManually));
             }
 
             public void ProcessEventsManually(int frameIndex) {

@@ -13,7 +13,12 @@ namespace ResonantSpark {
 
             private ResourceRecycler<AudioResource> audioSources;
 
+            private FrameEnforcer frame;
+
             public void Start() {
+                frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
+                frame.AddUpdate((int)FramePriority.Service, new System.Action<int>(FrameUpdate));
+
                 audioSources = new ResourceRecycler<AudioResource>(prefab, Vector3.zero, 4, audioEmpty, resource => {
                     Debug.Log("callback called");
                     resource.Deactivate();
@@ -22,6 +27,10 @@ namespace ResonantSpark {
                 // This works exactly as expected.
                 //AudioSource test = GameObject.Instantiate<AudioSource>(prefab, new Vector3(-33, 0, 47), Quaternion.identity);
                 //test.Play();
+            }
+
+            private void FrameUpdate(int frameIndex) {
+
             }
 
             public AudioResource Use(Transform followTransform) {

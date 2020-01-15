@@ -89,7 +89,8 @@ namespace ResonantSpark {
                     quartCirPlusBut.Add(ScriptableObject.CreateInstance<QuarterCircleButtonPress>());
                 }
 
-                empty = new Empty();
+                //empty = new Empty();
+                empty = ScriptableObject.CreateInstance<Empty>();
             }
 
             private void IncreasePoolSize(Type type, Action<List<Combination>> callback) {

@@ -5,8 +5,25 @@ using UnityEngine.UI;
 using System;
 
 namespace ResonantSpark {
+    public enum FramePriority : int {
+        StateMachine = 256,
+        InputBuffer = 512,
+        Service = 1024,
+
+        UpdateInput = 9999999,
+    }
+
     [RequireComponent(typeof(GameTimeManager))]
     public class FrameEnforcer : MonoBehaviour {
+
+        private class FrameEnforcerCallback : IComparable<FrameEnforcerCallback> {
+            public int priority;
+            public Action<int> callback;
+
+            public int CompareTo(FrameEnforcerCallback other) {
+                return other.priority - this.priority;
+            }
+        }
 
         public Text fpsCounter;
         private int updateCounterSnapshot = 0;
@@ -14,7 +31,7 @@ namespace ResonantSpark {
 
         private int updateCounter = 0;
 
-        private List<Action<int>> updateActions = new List<Action<int>>();
+        private List<FrameEnforcerCallback> updateActions = new List<FrameEnforcerCallback>();
         private GameTimeManager gameTime;
 
         private const float FRAME_TIME = 1f / 60.0f; // 1 sec over 60 frames
@@ -45,8 +62,8 @@ namespace ResonantSpark {
 
                 // TODO: This may be incorrect. I may need to pull this while loop out into an async call
             while (elapsedTime > FRAME_TIME) {
-                foreach (Action<int> action in updateActions) {
-                    action.Invoke(frameIndex);
+                foreach (FrameEnforcerCallback action in updateActions) {
+                    action.callback.Invoke(frameIndex);
                 }
 
                 stepsInFrame++;
@@ -69,18 +86,18 @@ namespace ResonantSpark {
             }
         }
 
-        public void SetUpdate(Action<int> updateAction) {
-            this.updateActions.Add(updateAction);
+        public void AddUpdate(int priority, Action<int> updateAction) {
+            var feCb = new FrameEnforcerCallback {
+                priority = priority,
+                callback = updateAction
+            };
 
-            if (!this.enabled) {
-                StartCoroutine(TriggerEndOfFrame());
-            }
-
-            this.enabled = true;
+            this.updateActions.Add(feCb);
+            this.updateActions.Sort();
         }
 
-        private IEnumerator TriggerEndOfFrame() {
-            yield return new WaitForEndOfFrame();
+        public void StartFrameEnforcer() {
+            this.enabled = true;
             EventManager.TriggerEvent<Events.FrameEnforcerReady>();
         }
     }

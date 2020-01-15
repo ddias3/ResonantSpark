@@ -8,7 +8,8 @@ using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace Gameplay {
-        public class FightingGameCharacter : MonoBehaviour, IFightingGameCharacter {
+        public class FightingGameCharacter : MonoBehaviour, IFightingGameCharacter, IEquatable<FightingGameCharacter> {
+            public static int fgCharCounter = 0;
 
             public Animator animator;
             public StateMachine stateMachine;
@@ -21,7 +22,7 @@ namespace ResonantSpark {
 
             public float landAnimationFrameTarget = 3f;
 
-            private int charId;
+            public int id { get; private set; }
             private int teamId;
 
             private Input.InputBuffer inputBuffer;
@@ -38,8 +39,8 @@ namespace ResonantSpark {
             private CharacterData charData;
 
             public void Init() {
-                //TODO: Create way to set charId and teamId
-                charId = 0;
+                this.id = fgCharCounter++;
+
                 teamId = 0;
 
                 rigidbody = gameObject.GetComponent<Rigidbody>();
@@ -74,12 +75,12 @@ namespace ResonantSpark {
             }
 
             public void FixedUpdate() {
-                try {
-                    charVelocity.text = "Vel = " + (Quaternion.Inverse(rigidbody.rotation) * rigidbody.velocity).ToString("F3");
-                }
-                catch (System.NullReferenceException) {
-                    // do nothing
-                }
+                //try {
+                //    charVelocity.text = "Vel = " + (Quaternion.Inverse(rigidbody.rotation) * rigidbody.velocity).ToString("F3");
+                //}
+                //catch (System.NullReferenceException) {
+                //    // do nothing
+                //}
             }
 
             public bool Grounded(out Vector3 groundPoint) {
@@ -203,11 +204,19 @@ namespace ResonantSpark {
             public List<Input.Combinations.Combination> GetFoundCombinations() {
                     // TODO: Change the way the FGChar gets inputs over to the state machine.
                     //   If this is an NPC, it won't have an input buffer with it.
-                return inputBuffer.GetFoundCombinations();
+                return inputBuffer?.GetFoundCombinations();
             }
 
             public void Hit() {
                 // TODO: hit the opponent character
+            }
+
+            public bool Equals(FightingGameCharacter other) {
+                return id == other.id;
+            }
+
+            public override int GetHashCode() {
+                return id;
             }
         }
     }
