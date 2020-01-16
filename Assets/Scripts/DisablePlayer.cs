@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityStandardAssets.Characters.ThirdPerson;
 
 public class DisablePlayer : MonoBehaviour {
@@ -11,7 +12,7 @@ public class DisablePlayer : MonoBehaviour {
     }
 
     public void Update() {
-        if (Input.GetKeyDown(KeyCode.Backspace)) {
+        if (Keyboard.current.backspaceKey.wasPressedThisFrame) {
             userControl.enabled = !userControl.enabled;
         }
     }

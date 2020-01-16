@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 using ResonantSpark.Service;
 using ResonantSpark.Gamemode;
@@ -18,12 +19,25 @@ namespace ResonantSpark {
         public FightingGameService fgService;
 
         public void Start() {
-            StartCoroutine(TriggerEndOfFrame());
+            //StartCoroutine(TriggerEndOfFrame());
+            EventManager.StartListening<Events.StartupRequirementsReady>(new UnityAction(StartSceneSetup));
+
+            EventManager.OnAllTasks<Events.StartupRequirementsReady>(new UnityAction(StartSceneSetup));
         }
 
         private IEnumerator TriggerEndOfFrame() {
             yield return new WaitForEndOfFrame();
 
+            fgService.RegisterGamemode(gamemode);
+            playerService.SetNumberHumanPlayers(1);
+            playerService.AssociateHumanInput(0, controller);
+
+            playerService.StartCharacterBuild();
+
+            GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>().StartFrameEnforcer();
+        }
+
+        private void StartSceneSetup() {
             fgService.RegisterGamemode(gamemode);
             playerService.SetNumberHumanPlayers(1);
             playerService.AssociateHumanInput(0, controller);

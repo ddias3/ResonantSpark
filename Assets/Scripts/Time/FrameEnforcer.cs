@@ -45,6 +45,7 @@ namespace ResonantSpark {
         //}
 
         public void Start() {
+            this.enabled = false;
             gameTime = gameObject.GetComponent<GameTimeManager>();
             elapsedTime = FRAME_TIME;
             frameIndex = 0;
