@@ -4,6 +4,7 @@ using UnityEngine;
 
 using ResonantSpark.Builder;
 using ResonantSpark.Character;
+using ResonantSpark.Gameplay;
 using ResonantSpark.Service;
 using ResonantSpark.Input;
 

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-using ResonantSpark.Character;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace Service {

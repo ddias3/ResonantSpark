@@ -14,23 +14,28 @@ namespace ResonantSpark {
 
                 public GameObject male0Prefab;
 
-                public GameObject CreateCharacter(AllServices services) {
+                private FightingGameCharacter fgChar;
+
+                public FightingGameCharacter CreateCharacter(AllServices services) {
+                    GameObject character = Instantiate<GameObject>(male0Prefab, transform.position, transform.rotation);
+                    fgChar = character.GetComponent<FightingGameCharacter>();
+
+                    return fgChar;
+                }
+
+                public void Build(AllServices services) {
                     Male0Builder charBuilder = new Male0Builder(services);
 
-                    Attacks attacks = new Attacks();
-                    Movement movement = new Movement();
+                    Attacks attacks = ScriptableObject.CreateInstance<Attacks>(); //new Attacks();
+                    Movement movement = ScriptableObject.CreateInstance<Movement>(); //new Movement();
 
                     charBuilder.Version("0.1");
                     attacks.Init(charBuilder);
                     movement.Init(charBuilder);
 
-                    GameObject character = Instantiate<GameObject>(male0Prefab, transform.position, transform.rotation);
-
-                    FightingGameCharacter fgChar = charBuilder.SetUpCharacter(character);
+                    charBuilder.SetUpCharacter(fgChar);
 
                     Destroy(gameObject);
-
-                    return character;
                 }
 
                 private class Male0Builder : CharacterPropertiesBuilder {
@@ -39,17 +44,13 @@ namespace ResonantSpark {
                         // do nothing
                     }
 
-                    public FightingGameCharacter SetUpCharacter(GameObject gameObject) {
+                    public void SetUpCharacter(FightingGameCharacter fgChar) {
                         CharacterData charData = new CharacterData();
 
                         BuildAttacks(charData);
                         //BuildMovement(charData);
 
-                        FightingGameCharacter fgChar = gameObject.GetComponent<FightingGameCharacter>();
-
                         fgChar.Init();
-
-                        return fgChar;
                     }
                 }
             }

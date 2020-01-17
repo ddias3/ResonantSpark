@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
 
 using ResonantSpark.Service;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace Builder {
         public interface ICharacterBuilder {
-            GameObject CreateCharacter(AllServices services);
+            FightingGameCharacter CreateCharacter(AllServices services);
+            void Build(AllServices services);
         }
     }
 }

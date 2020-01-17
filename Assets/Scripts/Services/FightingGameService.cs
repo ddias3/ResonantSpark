@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,9 +10,12 @@ namespace ResonantSpark {
     namespace Service {
         public class FightingGameService : MonoBehaviour, IFightingGameService {
 
+            public GameObject oneOnOneRoundBasedPrefab;
+
             public Vector3 underLevel = new Vector3(0, -100, 0);
 
             private PlayerService playerService;
+            private PersistenceService persistenceService;
 
             private FrameEnforcer frame;
 
@@ -20,12 +23,21 @@ namespace ResonantSpark {
 
             public void Start() {
                 frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
-
                 playerService = GetComponent<PlayerService>();
+                persistenceService = GetComponent<PersistenceService>();
+
+                EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(FightingGameService));
             }
 
-            public void RegisterGamemode(IGamemode gamemode) {
-                this.gamemode = gamemode;
+            public void CreateGamemode() {
+                GameObject newGameMode;
+                switch (persistenceService.GetGamemode()) {
+                    case "oneOnOneRoundBased":
+                        newGameMode = GameObject.Instantiate(oneOnOneRoundBasedPrefab);
+                        newGameMode.name = "Gamemode";
+                        this.gamemode = newGameMode.GetComponent<OneOnOneRoundBased>();
+                        break;
+                }
 
                 playerService.SetMaxPlayers(gamemode.GetMaxPlayers());
             }

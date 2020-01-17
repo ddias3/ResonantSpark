@@ -32,10 +32,13 @@ namespace ResonantSpark {
         private GameObject testTransform2;
 
         public void Start() {
+            this.enabled = false;
             EventManager.StartListening<Events.FightingGameCharsReady>(new UnityAction(ConnectFightingGameCharacters));
         }
 
         public void ConnectFightingGameCharacters() {
+            this.enabled = true;
+
             camera = gameObject.GetComponent<Camera>();
             camera.fieldOfView = cameraFov;
 

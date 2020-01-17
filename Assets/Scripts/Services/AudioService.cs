@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -27,6 +27,8 @@ namespace ResonantSpark {
                 // This works exactly as expected.
                 //AudioSource test = GameObject.Instantiate<AudioSource>(prefab, new Vector3(-33, 0, 47), Quaternion.identity);
                 //test.Play();
+
+                EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(AudioService));
             }
 
             private void FrameUpdate(int frameIndex) {
