@@ -1,13 +1,14 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-using ResonantSpark.Character;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace Service {
         public class HitBoxService : MonoBehaviour, IHitBoxService {
             public Transform hitBoxEmpty;
+            public HitBox hitBoxDefaultPrefab;
 
             private FrameEnforcer frame;
 
@@ -20,6 +21,8 @@ namespace ResonantSpark {
 
                 hitBoxMap = new Dictionary<int, HitBox>();
                 activeHitBoxes = new List<HitBox>();
+
+                EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(HitBoxService));
             }
 
             private void FrameUpdate(int frameIndex) {
@@ -35,11 +38,11 @@ namespace ResonantSpark {
             }
 
             public HitBox DefaultPrefab() {
-                throw new System.NotImplementedException();
+                return hitBoxDefaultPrefab;
             }
 
             public Transform GetEmptyHoldTransform() {
-                throw new System.NotImplementedException();
+                return hitBoxEmpty;
             }
         }
     }

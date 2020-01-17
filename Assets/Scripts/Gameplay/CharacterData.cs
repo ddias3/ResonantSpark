@@ -9,7 +9,7 @@ using System.Collections;
 
 namespace ResonantSpark {
     namespace Character {
-        public class CharacterData : MonoBehaviour {
+        public class CharacterData {
             private Dictionary<string, Attack> attacks;
             private Dictionary<Attack, Func<CharacterState, bool>> attackSelectableCallbackMap;
 

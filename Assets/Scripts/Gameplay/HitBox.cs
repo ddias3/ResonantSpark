@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-using ResonantSpark.Gameplay;
 using ResonantSpark.Service;
 
 namespace ResonantSpark {
-    namespace Character {
+    namespace Gameplay {
         public class HitBox : MonoBehaviour, IEquatable<HitBox> {
             private static int hitBoxCounter = 0;
 

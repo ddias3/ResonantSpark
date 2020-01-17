@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using ResonantSpark.Gameplay;
+
 namespace ResonantSpark {
     namespace Character {
         public class FrameState {

@@ -12,8 +12,6 @@ namespace ResonantSpark {
             private FightingGameCharacter char0;
             private FightingGameCharacter char1;
 
-            public new GameObject camera;
-
             [Tooltip("the rate of in-game time")]
             public float gameTime = 1.0f;
 
@@ -33,14 +31,8 @@ namespace ResonantSpark {
             }
 
             public void ConnectFightingGameCharacters() {
-                Debug.Log("ConnectFightingGameCharacters");
-
-                char0
-                    .SetOpponentCharacter(char1.gameObject)
-                    .SetGameTimeManager(gameTimeManager);
-                char1
-                    .SetOpponentCharacter(char0.gameObject)
-                    .SetGameTimeManager(gameTimeManager);
+                char0.SetOpponentCharacter(char1.gameObject);
+                char1.SetOpponentCharacter(char0.gameObject);
             }
 
             private void EnablePlayers() {
@@ -49,7 +41,7 @@ namespace ResonantSpark {
                 char0.GetComponent<CharacterStates.Init>().StartStateMachine(frame);
                 char1.GetComponent<CharacterStates.Init>().StartStateMachine(frame);
 
-                //ResetRound();
+                ResetRound();
             }
 
             private float GameTime(float input) {

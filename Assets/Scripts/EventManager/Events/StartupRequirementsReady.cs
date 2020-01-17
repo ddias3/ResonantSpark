@@ -1,8 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
 using UnityEngine.Events;
 
 namespace ResonantSpark {
     namespace Events {
-        public class StartupRequirementsReady : UnityEvent { }
+        public class ServiceReady : UnityEvent<Type> { }
     }
 }

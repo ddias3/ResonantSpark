@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -29,6 +29,8 @@ namespace ResonantSpark {
                 projectileMap = new Dictionary<int, ResourceRecycler<Projectile>>();
 
                 activeProjectiles = new List<Projectile>();
+
+                EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(ProjectileService));
             }
 
             private void FrameUpdate(int frameIndex) {

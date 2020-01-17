@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -23,9 +23,11 @@ namespace ResonantSpark {
 
                 selectedFGChars = new Dictionary<int, ICharacterBuilder>();
                 humanInputControllerMap = new Dictionary<int, HumanInputController>();
+
+                EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(PlayerService));
             }
 
-            public void StartCharacterBuild() {
+            public void StartCharacterBuild(Action<FightingGameCharacter> fgCharCallback) {
                 foreach (KeyValuePair<int, ICharacterBuilder> charBuilder in selectedFGChars) {
                     int playerId = charBuilder.Key;
                     FightingGameCharacter builtFGChar = buildService.Build(charBuilder.Value);
@@ -35,7 +37,11 @@ namespace ResonantSpark {
                         inputController.SetControllerId(0);
                         inputController.ConnectToCharacter(builtFGChar);
                     }
+
+                    fgCharCallback(builtFGChar);
                 }
+
+                EventManager.TriggerEvent<Events.FightingGameCharsReady>();
             }
 
             public void SetMaxPlayers(int maxTotalPlayers) {

@@ -15,7 +15,7 @@ namespace ResonantSpark {
             valid = false;
         }
 
-        private void Start() {
+        private void Awake() {
             callbacks = new List<Func<float, float>>();
             cachedValues = new List<float>();
             layerNames = new Dictionary<string, int>();

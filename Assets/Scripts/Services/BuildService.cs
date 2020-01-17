@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 using ResonantSpark.Gameplay;
 using ResonantSpark.Builder;
@@ -14,27 +15,32 @@ namespace ResonantSpark {
 
             private AllServices services;
 
+            private FightingGameCharacter currFGChar;
+
             public void Start() {
                 fgService = GetComponent<FightingGameService>();
                 audioService = GetComponent<AudioService>();
                 hitBoxService = GetComponent<HitBoxService>();
                 projectileService = GetComponent<ProjectileService>();
 
-                new AllServices()
+                services = new AllServices()
                     .AddServiceAs<IBuildService>(this)
                     .AddServiceAs<IFightingGameService>(fgService)
                     .AddServiceAs<IAudioService>(audioService)
                     .AddServiceAs<IHitBoxService>(hitBoxService)
                     .AddServiceAs<IProjectileService>(projectileService);
+
+                EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(BuildService));
             }
 
             public FightingGameCharacter Build(ICharacterBuilder charBuilder) {
-                GameObject char0 = charBuilder.CreateCharacter(services);
-                return char0.GetComponent<FightingGameCharacter>();
+                currFGChar = charBuilder.CreateCharacter(services);
+                charBuilder.Build(services);
+                return currFGChar;
             }
 
             public FightingGameCharacter GetBuildingFGChar() {
-                throw new System.NotImplementedException();
+                return currFGChar;
             }
         }
     }

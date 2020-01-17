@@ -4,7 +4,7 @@ using UnityEngine;
 
 using ResonantSpark.Builder;
 using ResonantSpark.Character;
-using ResonantSpark.Service;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterProperties {
