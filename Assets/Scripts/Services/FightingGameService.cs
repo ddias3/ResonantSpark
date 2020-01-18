@@ -28,7 +28,10 @@ namespace ResonantSpark {
             }
 
             public void CreateGamemode() {
-                gamemode = persistenceService.GetGamemode();
+                GameObject newGameMode = GameObject.Instantiate(persistenceService.GetGamemode());
+                newGameMode.name = "Gamemode";
+                this.gamemode = newGameMode.GetComponent<OneOnOneRoundBased>();
+
                 playerService.SetMaxPlayers(gamemode.GetMaxPlayers());
             }
 

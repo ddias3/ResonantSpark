@@ -19,38 +19,33 @@ namespace ResonantSpark {
                 return pers;
             }
 
-            private string _gamemode;
-            private string _playerSelection;
-            private string _humanPlayers;
+            public string gamemode { get; set; }
+            public List<string> playerSelection { get; private set; }
+            public List<int> humanPlayers { get; private set; }
 
-            public string gamemode {
-                get { return _gamemode; }
-                set {
-                    PlayerPrefs.SetString("gamemode", value);
-                    _gamemode = value;
+            public void SetCharacterSelected(int index, string characterName) {
+                if (playerSelection.Count <= index) {
+                    for (int n = playerSelection.Count; n > index; ++n) {
+                        playerSelection.Add("");
+                    }
                 }
+
+                playerSelection[index] = characterName;
             }
 
-            public string playerSelection {
-                get { return _playerSelection; }
-                set {
-                    PlayerPrefs.SetString("playerSelection", value);
-                    _playerSelection = value;
+            public void SetControllerSelected(int index, int controllerIndex) {
+                if (humanPlayers.Count <= index) {
+                    for (int n = humanPlayers.Count; n > index; ++n) {
+                        humanPlayers.Add(-1);
+                    }
                 }
-            }
 
-            public string humanPlayers {
-                get { return _humanPlayers; }
-                set {
-                    PlayerPrefs.SetString("humanPlayers", value);
-                    _humanPlayers = value;
-                }
+                humanPlayers[index] = controllerIndex;
             }
 
             private Persistence() {
-                gamemode = PlayerPrefs.GetString("gamemode");
-                playerSelection = PlayerPrefs.GetString("playerSelection");
-                humanPlayers = PlayerPrefs.GetString("humanPlayers");
+                playerSelection = new List<string>();
+                humanPlayers = new List<int>();
             }
         }
 
@@ -64,42 +59,52 @@ namespace ResonantSpark {
             public List<int> controllerIndex;
 
             public GameObject oneOnOneRoundBasedPrefab;
+
             public GameObject male0BuilderPrefab;
             public GameObject female0BuilderPrefab;
 
-            private IGamemode gamemode;
             private Persistence persObj;
 
             public void Start() {
                 if (Persistence.Exists()) {
                     persObj = Persistence.GetPersistence();
 
-                    gamemodeStr = persObj.gamemode;
-                }
-
-                switch (gamemodeStr) {
-                    case "oneOnOneRoundBased":
-                        GameObject newGameMode = GameObject.Instantiate(oneOnOneRoundBasedPrefab);
-                        newGameMode.name = "Gamemode";
-                        this.gamemode = newGameMode.GetComponent<OneOnOneRoundBased>();
-                        break;
-                    case "training":
-                        break;
+                    gamemodeStr         = persObj.gamemode;
+                    characterSelections = persObj.playerSelection;
+                    controllerIndex     = persObj.humanPlayers;
                 }
 
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(PersistenceService));
             }
 
-            public IGamemode GetGamemode() {
-                return gamemode;
+            public GameObject GetGamemode() {
+                switch (gamemodeStr) {
+                    case "oneOnOneRoundBased":
+                        return oneOnOneRoundBasedPrefab;
+                    case "training":
+                        return null;
+                    default:
+                        return null;
+                }
             }
 
-            public void SetGamemode(string gamemode) {
-                persObj.gamemode = gamemode;
+            public GameObject GetSelectedCharacter(int playerIndex) {
+                switch (characterSelections[playerIndex]) {
+                    case "male0":
+                        return male0BuilderPrefab;
+                    default:
+                        return null;
+                }
             }
 
-            public ICharacterBuilder GetSelectedCharacter(int playerIndex) {
-                throw new NotImplementedException();
+            public int GetTotalHumanPlayers() {
+                int counter = 0;
+                for (int n = 0; n < controllerIndex.Count; ++n) {
+                    if (controllerIndex[n] < 0) {
+                        ++counter;
+                    }
+                }
+                return counter;
             }
         }
     }

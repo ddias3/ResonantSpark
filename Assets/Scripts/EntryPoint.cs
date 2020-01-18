@@ -47,12 +47,6 @@ namespace ResonantSpark {
             fgService.CreateGamemode();
             playerService.SetUpCharacters();
 
-            playerService.SetCharacterSelected(0, char0Builder.GetComponent<ICharacterBuilder>());
-            playerService.SetCharacterSelected(1, char1Builder.GetComponent<ICharacterBuilder>());
-
-            playerService.SetNumberHumanPlayers(1);
-            playerService.AssociateHumanInput(0, inputService.GetInputController(0));
-
             List<FightingGameCharacter> fgChars = new List<FightingGameCharacter>();
 
             playerService.StartCharacterBuild(fgChar => {

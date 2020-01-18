@@ -8,9 +8,9 @@ using ResonantSpark.Gamemode;
 namespace ResonantSpark {
     namespace Service {
         public interface IPersistenceService {
-            void SetGamemode(string gamemode);
-            IGamemode GetGamemode();
-            ICharacterBuilder GetSelectedCharacter(int playerIndex);
+            GameObject GetGamemode();
+            GameObject GetSelectedCharacter(int playerIndex);
+            int GetTotalHumanPlayers();
         }
     }
 }
