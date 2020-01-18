@@ -7,6 +7,7 @@ using ResonantSpark.Builder;
 namespace ResonantSpark {
     namespace Service {
         public interface IPlayerService {
+            void SetUpCharacters();
             void SetMaxPlayers(int maxTotalPlayers);
             void SetNumberHumanPlayers(int numHumanPlayers);
             void AssociateHumanInput(int playerIndex, HumanInputController humanController);

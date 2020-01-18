@@ -11,8 +11,12 @@ namespace ResonantSpark {
         public class PlayerService : MonoBehaviour, IPlayerService {
 
             private BuildService buildService;
+            private PersistenceService persistenceService;
+            private InputService inputService;
 
             private int maxTotalPlayers = 0;
+
+            private Dictionary<int, FightingGameCharacter> fgChars;
 
             private Dictionary<int, ICharacterBuilder> selectedFGChars;
             private int numHumanPlayers = 0;
@@ -20,17 +24,32 @@ namespace ResonantSpark {
 
             public void Start() {
                 buildService = GetComponent<BuildService>();
+                persistenceService = GetComponent<PersistenceService>();
+                inputService = GetComponent<InputService>();
 
+                fgChars = new Dictionary<int, FightingGameCharacter>();
                 selectedFGChars = new Dictionary<int, ICharacterBuilder>();
                 humanInputControllerMap = new Dictionary<int, HumanInputController>();
 
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(PlayerService));
             }
 
+            public void SetUpCharacters() {
+                SetCharacterSelected(0, persistenceService.GetSelectedCharacter(0));
+                SetCharacterSelected(1, persistenceService.GetSelectedCharacter(1));
+
+                SetNumberHumanPlayers(1);
+
+                    // TODO: properly associate characters with controllers.
+                AssociateHumanInput(0, inputService.GetInputController(0));
+            }
+
             public void StartCharacterBuild(Action<FightingGameCharacter> fgCharCallback) {
                 foreach (KeyValuePair<int, ICharacterBuilder> charBuilder in selectedFGChars) {
                     int playerId = charBuilder.Key;
                     FightingGameCharacter builtFGChar = buildService.Build(charBuilder.Value);
+
+                    fgChars.Add(playerId, builtFGChar);
 
                     if (humanInputControllerMap.TryGetValue(playerId, out HumanInputController inputController)) {
                         // TODO: Properly associate with the correct controller

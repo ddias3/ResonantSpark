@@ -45,15 +45,12 @@ namespace ResonantSpark {
 
                 rigidbody = gameObject.GetComponent<Rigidbody>();
                 inUseCombinations = new List<Combination>();
+
+                gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
             }
 
             public FightingGameCharacter SetOpponentCharacter(GameObject opponentChar) {
                 this.opponentChar = opponentChar;
-                return this;
-            }
-
-            public FightingGameCharacter SetGameTimeManager(GameTimeManager gameTimeManager) {
-                this.gameTimeManager = gameTimeManager;
                 return this;
             }
 

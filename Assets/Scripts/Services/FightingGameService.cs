@@ -10,8 +10,6 @@ namespace ResonantSpark {
     namespace Service {
         public class FightingGameService : MonoBehaviour, IFightingGameService {
 
-            public GameObject oneOnOneRoundBasedPrefab;
-
             public Vector3 underLevel = new Vector3(0, -100, 0);
 
             private PlayerService playerService;
@@ -30,15 +28,7 @@ namespace ResonantSpark {
             }
 
             public void CreateGamemode() {
-                GameObject newGameMode;
-                switch (persistenceService.GetGamemode()) {
-                    case "oneOnOneRoundBased":
-                        newGameMode = GameObject.Instantiate(oneOnOneRoundBasedPrefab);
-                        newGameMode.name = "Gamemode";
-                        this.gamemode = newGameMode.GetComponent<OneOnOneRoundBased>();
-                        break;
-                }
-
+                gamemode = persistenceService.GetGamemode();
                 playerService.SetMaxPlayers(gamemode.GetMaxPlayers());
             }
 
