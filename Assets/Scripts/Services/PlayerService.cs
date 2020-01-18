@@ -35,10 +35,15 @@ namespace ResonantSpark {
             }
 
             public void SetUpCharacters() {
-                SetCharacterSelected(0, persistenceService.GetSelectedCharacter(0));
-                SetCharacterSelected(1, persistenceService.GetSelectedCharacter(1));
+                for (int n = 0; n < maxTotalPlayers; ++n) {
+                    GameObject charBuilderPrefab = persistenceService.GetSelectedCharacter(n);
+                    GameObject newGameMode = GameObject.Instantiate(charBuilderPrefab);
+                    newGameMode.name = "Player" + n;
 
-                SetNumberHumanPlayers(1);
+                    SetCharacterSelected(n, newGameMode.GetComponent<ICharacterBuilder>());
+                }
+
+                SetNumberHumanPlayers(persistenceService.GetTotalHumanPlayers());
 
                     // TODO: properly associate characters with controllers.
                 AssociateHumanInput(0, inputService.GetInputController(0));
