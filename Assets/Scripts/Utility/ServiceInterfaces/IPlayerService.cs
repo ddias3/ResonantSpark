@@ -9,8 +9,6 @@ namespace ResonantSpark {
         public interface IPlayerService {
             void SetUpCharacters();
             void SetMaxPlayers(int maxTotalPlayers);
-            void SetNumberHumanPlayers(int numHumanPlayers);
-            void AssociateHumanInput(int playerIndex, HumanInputController humanController);
             void StartCharacterBuild(Action<FightingGameCharacter> fgCharCallback);
             void SetCharacterSelected(int playerId, ICharacterBuilder charSelected);
         }

@@ -17,10 +17,7 @@ namespace ResonantSpark {
             private int maxTotalPlayers = 0;
 
             private Dictionary<int, FightingGameCharacter> fgChars;
-
             private Dictionary<int, ICharacterBuilder> selectedFGChars;
-            private int numHumanPlayers = 0;
-            private Dictionary<int, HumanInputController> humanInputControllerMap;
 
             public void Start() {
                 buildService = GetComponent<BuildService>();
@@ -29,7 +26,6 @@ namespace ResonantSpark {
 
                 fgChars = new Dictionary<int, FightingGameCharacter>();
                 selectedFGChars = new Dictionary<int, ICharacterBuilder>();
-                humanInputControllerMap = new Dictionary<int, HumanInputController>();
 
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(PlayerService));
             }
@@ -42,11 +38,6 @@ namespace ResonantSpark {
 
                     SetCharacterSelected(n, newGameMode.GetComponent<ICharacterBuilder>());
                 }
-
-                SetNumberHumanPlayers(persistenceService.GetTotalHumanPlayers());
-
-                    // TODO: properly associate characters with controllers.
-                AssociateHumanInput(0, inputService.GetInputController(0));
             }
 
             public void StartCharacterBuild(Action<FightingGameCharacter> fgCharCallback) {
@@ -56,10 +47,9 @@ namespace ResonantSpark {
 
                     fgChars.Add(playerId, builtFGChar);
 
-                    if (humanInputControllerMap.TryGetValue(playerId, out HumanInputController inputController)) {
-                        // TODO: Properly associate with the correct controller
-                        inputController.SetControllerId(0);
-                        inputController.ConnectToCharacter(builtFGChar);
+                    HumanInputController humanInputController = inputService.GetInputController(playerId);
+                    if (humanInputController != null) {
+                        humanInputController.ConnectToCharacter(builtFGChar);
                     }
 
                     fgCharCallback(builtFGChar);
@@ -72,12 +62,8 @@ namespace ResonantSpark {
                 this.maxTotalPlayers = maxTotalPlayers;
             }
 
-            public void SetNumberHumanPlayers(int numHumanPlayers) {
-                this.numHumanPlayers = numHumanPlayers;
-            }
-
-            public void AssociateHumanInput(int playerIndex, HumanInputController inputController) {
-                humanInputControllerMap.Add(playerIndex, inputController);
+            public int GetMaxPlayers() {
+                return maxTotalPlayers;
             }
 
             public void SetCharacterSelected(int playerId, ICharacterBuilder charSelected) {

@@ -21,7 +21,7 @@ namespace ResonantSpark {
 
             public string gamemode { get; set; }
             public List<string> playerSelection { get; private set; }
-            public List<int> humanPlayers { get; private set; }
+            public List<int> controllerIndex { get; private set; }
 
             public void SetCharacterSelected(int index, string characterName) {
                 if (playerSelection.Count <= index) {
@@ -34,18 +34,18 @@ namespace ResonantSpark {
             }
 
             public void SetControllerSelected(int index, int controllerIndex) {
-                if (humanPlayers.Count <= index) {
-                    for (int n = humanPlayers.Count; n > index; ++n) {
-                        humanPlayers.Add(-1);
+                if (this.controllerIndex.Count <= index) {
+                    for (int n = this.controllerIndex.Count; n > index; ++n) {
+                        this.controllerIndex.Add(-1);
                     }
                 }
 
-                humanPlayers[index] = controllerIndex;
+                this.controllerIndex[index] = controllerIndex;
             }
 
             private Persistence() {
                 playerSelection = new List<string>();
-                humanPlayers = new List<int>();
+                controllerIndex = new List<int>();
             }
         }
 
@@ -71,7 +71,7 @@ namespace ResonantSpark {
 
                     gamemodeStr         = persObj.gamemode;
                     characterSelections = persObj.playerSelection;
-                    controllerIndex     = persObj.humanPlayers;
+                    controllerIndex     = persObj.controllerIndex;
                 }
 
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(PersistenceService));
@@ -95,6 +95,10 @@ namespace ResonantSpark {
                     default:
                         return null;
                 }
+            }
+
+            public int GetControllerIndex(int playerIndex) {
+                return controllerIndex[playerIndex];
             }
 
             public int GetTotalHumanPlayers() {

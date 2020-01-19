@@ -6,13 +6,14 @@ using ResonantSpark.Builder;
 using ResonantSpark.Utility;
 using ResonantSpark.Input;
 using ResonantSpark.Character;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterProperties {
         namespace Male0 {
             public class Attacks : ScriptableObject {
 
-                public void Init(ICharacterPropertiesCallbackObj charBuilder) {
+                public void Init(ICharacterPropertiesCallbackObj charBuilder, FightingGameCharacter fgChar) {
 
                     Attack atkReg5A = new Attack(atkBuilder => { atkBuilder
                         .Name("regular_5A")
@@ -31,10 +32,12 @@ namespace ResonantSpark {
                                     .ChainCancellable(true)
                                 .From(8)
                                     .HitBox(h => {
+                                        h.Relative(fgChar.gameObject.transform);
                                         h.Point0(new Vector3(0, 0, 0));
                                         h.Point1(new Vector3(0, 1, 0));
                                         h.Radius(0.25f);
-                                        h.Event("onHitBox", (fgChar) => {
+                                        h.Event("onHitBox", (opponent) => {
+                                            opponent.Hit();
                                             Debug.Log("Regular 5A Hit");
                                         });
                                     })
@@ -86,14 +89,15 @@ namespace ResonantSpark {
                                         h.Point0(new Vector3(0, 0, 0));
                                         h.Point1(new Vector3(0, 1, 0));
                                         h.Radius(0.25f);
-                                        h.Event("onHurtBox", (fgChar) => {
+                                        h.Event("onHurtBox", (opponent) => {
                                             Debug.Log("Regular 5AA hit the enemy");
                                             // TODO: Figure out what to do with these events
-                                            fgChar.Hit();
+                                            opponent.Hit();
                                         });
-                                        h.Event("onHitBox", (fgChar) => {
+                                        h.Event("onHitBox", (opponent) => {
                                             Debug.Log("Regular 5AA hit another hitbox");
                                             // TODO: Figure out what to do with these events
+                                            opponent.Hit();
                                         });
                                     })
                                     .HitDamage(1000)
@@ -129,10 +133,10 @@ namespace ResonantSpark {
                                         h.Point0(new Vector3(0, 0, 0));
                                         h.Point1(new Vector3(0, 1, 0));
                                         h.Radius(0.25f);
-                                        h.Event("onHurtBox", (fgChar) => {
+                                        h.Event("onHurtBox", (opponent) => {
                                             Debug.Log("Goofy 5A hit the enemy");
                                             // TODO: Figure out what to do with these events
-                                            fgChar.Hit();
+                                            opponent.Hit();
                                         });
                                     })
                                     .HitDamage(800)
@@ -167,10 +171,10 @@ namespace ResonantSpark {
                                         h.Point0(new Vector3(0, 0, 0));
                                         h.Point1(new Vector3(0, 1, 0));
                                         h.Radius(0.25f);
-                                        h.Event("onHurtBox", (fgChar) => {
+                                        h.Event("onHurtBox", (opponent) => {
                                             Debug.Log("Goofy 5AA hit the enemy");
                                             // TODO: Figure out what to do with these events
-                                            fgChar.Hit();
+                                            opponent.Hit();
                                         });
                                     })
                                 .To(14)
@@ -201,10 +205,10 @@ namespace ResonantSpark {
                                         h.Point0(new Vector3(0, 0, 0));
                                         h.Point1(new Vector3(0, 1, 0));
                                         h.Radius(0.25f);
-                                        h.Event("onHurtBox", (fgChar) => {
+                                        h.Event("onHurtBox", (opponent) => {
                                             Debug.Log("Goofy 5A[A] hit the enemy");
                                             // TODO: Figure out what to do with these events
-                                            fgChar.Hit();
+                                            opponent.Hit();
                                         });
                                     })
                                 .To(14)
