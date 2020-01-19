@@ -30,8 +30,8 @@ namespace ResonantSpark {
                     Movement movement = ScriptableObject.CreateInstance<Movement>(); //new Movement();
 
                     charBuilder.Version("0.1");
-                    attacks.Init(charBuilder);
-                    movement.Init(charBuilder);
+                    attacks.Init(charBuilder, fgChar);
+                    movement.Init(charBuilder, fgChar);
 
                     charBuilder.SetUpCharacter(fgChar);
 

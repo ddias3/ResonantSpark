@@ -99,7 +99,7 @@ namespace ResonantSpark {
                     }
                     return hitBox;
                 }
-                else if (radius > 0 && point0 != default && point1 != default) {
+                else if (radius > 0) {
                     HitBox hitBox = GameObject.Instantiate<HitBox>(hitBoxPrefab, hitBoxEmptyParentTransform.position, Quaternion.identity, hitBoxEmptyParentTransform);
                     callbacks.TryGetValue(onHurtBoxEventKey, out Action<IFightingGameCharacter> onHurtBoxCallback);
                     callbacks.TryGetValue(onHitBoxEventKey, out Action<IFightingGameCharacter> onHitBoxCallback);

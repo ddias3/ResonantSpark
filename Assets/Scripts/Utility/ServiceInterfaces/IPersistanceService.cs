@@ -10,6 +10,7 @@ namespace ResonantSpark {
         public interface IPersistenceService {
             GameObject GetGamemode();
             GameObject GetSelectedCharacter(int playerIndex);
+            int GetControllerIndex(int playerIndex);
             int GetTotalHumanPlayers();
         }
     }

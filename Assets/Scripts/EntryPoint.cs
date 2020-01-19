@@ -45,6 +45,7 @@ namespace ResonantSpark {
 
         private void StartSceneSetup() {
             fgService.CreateGamemode();
+            inputService.SetUpControllers();
             playerService.SetUpCharacters();
 
             List<FightingGameCharacter> fgChars = new List<FightingGameCharacter>();
