@@ -10,13 +10,14 @@ namespace ResonantSpark {
     namespace CharacterStates {
         public class Attack : BaseState {
 
-            private CharacterData charData;
+            public CharacterData charData { get; set; }
+
             private Action onCompleteAttack;
 
             private InputNotation notation;
 
-            public new void Start() {
-                base.Start();
+            public new void Awake() {
+                base.Awake();
                 states.Register(this, "attack");
 
                 RegisterInputCallbacks()

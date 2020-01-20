@@ -73,7 +73,6 @@ namespace ResonantSpark {
                 float hitStun =           FrameUtil.Default.hitStun;
                 float blockStun =         FrameUtil.Default.blockStun;
 
-                List<int> hitBoxCallbackIds = new List<int>();
                 int hitBoxCallbackCounter = 0;
                 Dictionary<int, Action<IHitBoxCallbackObject>> hitBoxCallbackMap = new Dictionary<int, Action<IHitBoxCallbackObject>>();
 
@@ -89,7 +88,7 @@ namespace ResonantSpark {
                     blockDamage = blockDamage,
                     hitStun = hitStun,
                     blockStun = blockStun,
-                    hitBoxCallbackIds = hitBoxCallbackIds,
+                    hitBoxCallbackIds = new List<int>(),
                 };
                 stack.Push(baseStackFrame);
 
@@ -104,7 +103,8 @@ namespace ResonantSpark {
                                 hitDamage = hitDamage,
                                 blockDamage = blockDamage,
                                 hitStun = hitStun,
-                                blockStun = blockStun
+                                blockStun = blockStun,
+                                hitBoxCallbackIds = new List<int>(),
                             };
                             stack.Push(topStackFrame);
                             break;
@@ -134,13 +134,10 @@ namespace ResonantSpark {
                             topStackFrame.blockStun = blockStun = (float) entry.content;
                             break;
                         case "hitBox":
-                            if (entry.content == null) {
-                                topStackFrame.hitBoxCallbackIds = hitBoxCallbackIds = new List<int>();
-                            }
-                            else {
+                            topStackFrame.hitBoxCallbackIds = new List<int>();
+                            if (entry.content != null) {
                                 hitBoxCallbackMap.Add(hitBoxCallbackCounter, (Action<IHitBoxCallbackObject>) entry.content);
-                                hitBoxCallbackIds.Add(hitBoxCallbackCounter);
-                                topStackFrame.hitBoxCallbackIds = hitBoxCallbackIds;
+                                topStackFrame.hitBoxCallbackIds.Add(hitBoxCallbackCounter);
 
                                 hitBoxCallbackCounter++;
                             }
@@ -153,7 +150,6 @@ namespace ResonantSpark {
                 }
 
                 baseStackFrame.endFrame = completeStackFrames[completeStackFrames.Count - 1].endFrame;
-                completeStackFrames.Add(baseStackFrame);
 
                 completeStackFrames.Sort(new Comparison<ListStackFrame>((ListStackFrame x, ListStackFrame y) => {
                     if (x.startFrame < y.startFrame) {
@@ -175,11 +171,13 @@ namespace ResonantSpark {
                     }
                 }));
 
+                completeStackFrames.Insert(0, baseStackFrame);
+
                 return (completeStackFrames, hitBoxCallbackMap);
             }
 
             private List<FrameStateBuilder> CreateFromCompleteStackFrames(List<ListStackFrame> completeStackFrames) {
-                int numFrames = completeStackFrames[completeStackFrames.Count - 1].endFrame;
+                int numFrames = completeStackFrames[0].endFrame;
 
                 List<FrameStateBuilder> frameList = new List<FrameStateBuilder>(numFrames);
                 for (int n = 0; n < numFrames; ++n) {
@@ -192,10 +190,6 @@ namespace ResonantSpark {
                             .SupplyAllStaticInfo(stackFrame.chainCancellable, stackFrame.specialCancellable, stackFrame.hitDamage, stackFrame.blockDamage, stackFrame.hitStun, stackFrame.blockStun)
                             .HitBoxCallbackIds(stackFrame.hitBoxCallbackIds);
                     }
-                }
-
-                for (int n = 0; n < numFrames; ++n) {
-                    FrameStateBuilder frameBuilder = frameList[n];
                 }
 
                 return frameList;
@@ -234,28 +228,12 @@ namespace ResonantSpark {
             }
 
             public IFrameListCallbackObj HitBox(Action<IHitBoxCallbackObject> hitBoxCallback) {
-                //HitBoxBuilder builder = new HitBoxBuilder(hitBoxService);
-                //callback(builder);
-
-                //// TODO: Pass along the events
-
-                //HitBox hitBox = builder.CreateHitBox(playerRootTransform);
-
                 entries.Add(new FrameUtilMapObject {
                     option = "hitBox",
                     content = hitBoxCallback
                 });
                 return this;
             }
-
-            //public IFrameListCallbackObj HitBox(HitBox hitBox) {
-            //    HitBox[] hitBoxes = { hitBox };
-            //    entries.Add(new FrameUtilMapObject {
-            //        option = "hitBox",
-            //        content = new List<HitBox>(hitBoxes)
-            //    });
-            //    return this;
-            //}
 
             public IFrameListCallbackObj HitBox() {
                 entries.Add(new FrameUtilMapObject {

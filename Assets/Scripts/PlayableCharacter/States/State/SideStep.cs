@@ -8,8 +8,8 @@ namespace ResonantSpark {
     namespace CharacterStates {
         public class SideStep : BaseState {
 
-            public new void Start() {
-                base.Start();
+            public new void Awake() {
+                base.Awake();
                 states.Register(this, "sideStep");
 
                 RegisterInputCallbacks()

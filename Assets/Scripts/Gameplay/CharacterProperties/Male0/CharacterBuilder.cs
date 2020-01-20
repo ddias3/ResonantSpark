@@ -18,6 +18,7 @@ namespace ResonantSpark {
 
                 public FightingGameCharacter CreateCharacter(AllServices services) {
                     GameObject character = Instantiate<GameObject>(male0Prefab, transform.position, transform.rotation);
+                    character.name = male0Prefab.name;
                     fgChar = character.GetComponent<FightingGameCharacter>();
 
                     return fgChar;
@@ -50,7 +51,7 @@ namespace ResonantSpark {
                         BuildAttacks(charData);
                         //BuildMovement(charData);
 
-                        fgChar.Init();
+                        fgChar.Init(charData);
                     }
                 }
             }

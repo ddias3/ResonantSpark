@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 using ResonantSpark.Gameplay;
+using ResonantSpark.Service;
 
 namespace ResonantSpark {
     namespace Gamemode {
@@ -20,19 +21,33 @@ namespace ResonantSpark {
 
             private float roundTime;
 
-            public void Start() {
+            public void Awake() {
                 frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
+                frame.AddUpdate((int) FramePriority.Gamemode, new Action<int>(FrameUpdate));
                 gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
 
                 gameTimeManager.AddLayer(new Func<float, float>(GameTime), "gameTime");
 
-                EventManager.StartListening<Events.FightingGameCharsReady>(new UnityAction(ConnectFightingGameCharacters));
                 EventManager.StartListening<Events.FrameEnforcerReady>(new UnityAction(EnablePlayers));
+                EventManager.StartListening<Events.StartGame>(new UnityAction(StartGame));
             }
 
-            public void ConnectFightingGameCharacters() {
-                char0.SetOpponentCharacter(char1.gameObject);
-                char1.SetOpponentCharacter(char0.gameObject);
+            public void SetUp(PlayerService playerService, FightingGameService fgService) {
+                char0 = playerService.GetFGChar(0);
+                char1 = playerService.GetFGChar(1);
+
+                char0.SetOpponentCharacter(char1);
+                char1.SetOpponentCharacter(char0);
+
+                Vector3 spawnMid = fgService.GetSpawnPoint().position;
+
+                Quaternion rotation = Quaternion.Euler(0, 180, 0); //Quaternion.Euler(0, UnityEngine.Random.Range(0, 360), 0);
+
+                char0.transform.position = spawnMid + rotation * new Vector3(0, 0, fgService.GetSpawnPointOffset());
+                char1.transform.position = spawnMid + rotation * Quaternion.Euler(0, 180, 0) * new Vector3(0, 0, fgService.GetSpawnPointOffset());
+
+                char0.transform.LookAt(char1.transform);
+                char1.transform.LookAt(char0.transform);
             }
 
             private void EnablePlayers() {
@@ -40,19 +55,21 @@ namespace ResonantSpark {
 
                 char0.GetComponent<CharacterStates.Init>().StartStateMachine(frame);
                 char1.GetComponent<CharacterStates.Init>().StartStateMachine(frame);
-
-                ResetRound();
             }
 
             private float GameTime(float input) {
                 return input * gameTime;
             }
 
+            private void StartGame() {
+                ResetRound();
+            }
+
             private void ResetRound() {
                 roundTime = 60.0f;
             }
 
-            void Update() {
+            void FrameUpdate(int frameIndex) {
 
             }
 

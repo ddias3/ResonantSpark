@@ -13,8 +13,8 @@ namespace ResonantSpark {
 
             private CharacterProperties.Attack currentAttack;
 
-            public new void Start() {
-                base.Start();
+            public new void Awake() {
+                base.Awake();
             }
 
             public void TrackAttack(int frameIndex, CharacterProperties.Attack attack) {

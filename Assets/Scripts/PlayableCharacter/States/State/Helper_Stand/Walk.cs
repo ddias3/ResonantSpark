@@ -7,8 +7,8 @@ namespace ResonantSpark {
     namespace CharacterStates {
         public class Walk : StateHelper {
 
-            public new void Start() {
-                base.Start();
+            public new void Awake() {
+                base.Awake();
             }
         }
     }

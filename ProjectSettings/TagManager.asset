@@ -9,6 +9,7 @@ TagManager:
   - rspGamemode
   - rspBuilder
   - rspTime
+  - rspService
   layers:
   - Default
   - TransparentFX

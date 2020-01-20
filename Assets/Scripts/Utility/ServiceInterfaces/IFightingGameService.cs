@@ -6,6 +6,9 @@ namespace ResonantSpark {
     namespace Service {
         public interface IFightingGameService {
             void CreateGamemode();
+            void SetUpGamemode();
+            Transform GetSpawnPoint();
+            float GetSpawnPointOffset();
             Transform GetCharacterRoot(FightingGameCharacter fgChar);
             void RunAnimationState(FightingGameCharacter fgChar, string animationStateName);
         }

@@ -34,8 +34,8 @@ namespace ResonantSpark {
 
             private bool upJump = false;
 
-            public new void Start() {
-                base.Start();
+            public new void Awake() {
+                base.Awake();
                 states.Register(this, "stand");
 
                 RegisterInputCallbacks()
@@ -53,7 +53,8 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
-                    // Start OnEnter with this
+                dirPress = FightingGameInputCodeDir.Neutral;
+
                 GivenInput(fgChar.GivenCombinations());
 
                 int cameraX = (((int)dirPress) - 1) % 3 - 1;
@@ -132,7 +133,7 @@ namespace ResonantSpark {
 
             }
 
-            private void StateSelect_upJump(Action stop, Combination combo) {
+            private void StateSelectOnUpJump(Action stop, Combination combo) {
                 switch (this.dirPress) {
                     case FightingGameInputCodeDir.UpLeft:
                     case FightingGameInputCodeDir.Up:
@@ -159,7 +160,7 @@ namespace ResonantSpark {
                 stop();
                 this.dirPress = ((DirectionPress) combo).direction;
                 if (upJump) {
-                    StateSelect_upJump(stop, combo);
+                    StateSelectOnUpJump(stop, combo);
                 }
             }
 
@@ -173,14 +174,14 @@ namespace ResonantSpark {
             private void OnDirectionCurrent(Action stop, Combination combo) {
                 this.dirPress = ((DirectionCurrent) combo).direction;
                 if (upJump) {
-                    StateSelect_upJump(stop, combo);
+                    StateSelectOnUpJump(stop, combo);
                 }
             }
 
             private void OnButtonPress(Action stop, Combination combo) {
                 var buttonPress = (ButtonPress) combo;
 
-                if (buttonPress.button0 == FightingGameInputCodeBut.A) {
+                if (buttonPress.button0 != FightingGameInputCodeBut.S) {
                     fgChar.UseCombination(combo);
                         // TODO: Create a way to also supply the DirectionCurrent.
                         //   something like this:

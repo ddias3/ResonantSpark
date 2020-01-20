@@ -26,8 +26,9 @@ namespace ResonantSpark {
             private int teamId;
 
             private Input.InputBuffer inputBuffer;
+            private List<Combination> inputDoNothingList;
 
-            private GameObject opponentChar;
+            private FightingGameCharacter opponentChar;
             private GameTimeManager gameTimeManager;
 
             private List<Combination> inUseCombinations;
@@ -38,18 +39,24 @@ namespace ResonantSpark {
 
             private CharacterData charData;
 
-            public void Init() {
+            public void Init(CharacterData charData) {
                 this.id = fgCharCounter++;
 
+                this.charData = charData;
                 teamId = 0;
+
+                inputDoNothingList = new List<Combination> { ScriptableObject.CreateInstance<DirectionCurrent>().Init(0, Input.FightingGameInputCodeDir.Neutral) };
 
                 rigidbody = gameObject.GetComponent<Rigidbody>();
                 inUseCombinations = new List<Combination>();
 
                 gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
+
+                CharacterStates.Attack attackState = stateMachine.gameObject.GetComponentInChildren<CharacterStates.Attack>();
+                attackState.charData = charData;
             }
 
-            public FightingGameCharacter SetOpponentCharacter(GameObject opponentChar) {
+            public FightingGameCharacter SetOpponentCharacter(FightingGameCharacter opponentChar) {
                 this.opponentChar = opponentChar;
                 return this;
             }
@@ -201,7 +208,14 @@ namespace ResonantSpark {
             public List<Input.Combinations.Combination> GetFoundCombinations() {
                     // TODO: Change the way the FGChar gets inputs over to the state machine.
                     //   If this is an NPC, it won't have an input buffer with it.
-                return inputBuffer?.GetFoundCombinations();
+                //return inputBuffer?.GetFoundCombinations();
+
+                if (inputBuffer != null) {
+                    return inputBuffer.GetFoundCombinations();
+                }
+                else {
+                    return inputDoNothingList;
+                }
             }
 
             public void Hit() {

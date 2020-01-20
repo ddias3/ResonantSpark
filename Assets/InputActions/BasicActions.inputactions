@@ -14,14 +14,6 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Fire",
-                    "type": "PassThrough",
-                    "id": "0af61e80-070d-4356-88bf-2e37ddf84a78",
-                    "expectedControlType": "Vector2",
-                    "processors": "",
-                    "interactions": ""
-                },
-                {
                     "name": "Button A",
                     "type": "Button",
                     "id": "698c8bc6-bad4-4347-91be-d19beca706cc",
@@ -77,7 +69,7 @@
                 {
                     "name": "WASD",
                     "id": "cdc23752-97e4-4788-acaa-4b8caee1fb6d",
-                    "path": "2DVector(normalize=false)",
+                    "path": "2DVector",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -131,69 +123,14 @@
                 },
                 {
                     "name": "",
-                    "id": "f3ed63da-2e86-47c0-a5e1-2d4adc0f9fa5",
-                    "path": "<Gamepad>/rightStick",
+                    "id": "53d0653f-9b0d-4549-9d99-26a8fb93badc",
+                    "path": "<Gamepad>/dpad",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
-                    "action": "Fire",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": false
-                },
-                {
-                    "name": "ArrowKeys",
-                    "id": "d5db8765-98fe-4a96-bc8b-cd791231fe3c",
-                    "path": "2DVector",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Fire",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "up",
-                    "id": "7c59cf04-529e-4ba7-a76c-9523d0ec522f",
-                    "path": "<Keyboard>/upArrow",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard",
-                    "action": "Fire",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "down",
-                    "id": "5110a0a8-590e-4478-8e53-5a6bd18a9466",
-                    "path": "<Keyboard>/downArrow",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard",
-                    "action": "Fire",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "left",
-                    "id": "127a19e3-8400-4420-a1f7-14b61530b9ff",
-                    "path": "<Keyboard>/leftArrow",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard",
-                    "action": "Fire",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "right",
-                    "id": "3ba1088b-2af1-405e-b220-01b3ad27a9c2",
-                    "path": "<Keyboard>/rightArrow",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard",
-                    "action": "Fire",
-                    "isComposite": false,
-                    "isPartOfComposite": true
                 },
                 {
                     "name": "",

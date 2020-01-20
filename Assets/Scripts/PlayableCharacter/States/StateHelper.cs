@@ -14,7 +14,7 @@ namespace ResonantSpark {
 
             protected Action<string> changeState;
 
-            public void Start() {
+            public void Awake() {
                 fgChar = gameObject.GetComponentInParent<FightingGameCharacter>();
                 frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
             }

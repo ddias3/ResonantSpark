@@ -86,6 +86,7 @@ namespace ResonantSpark {
                                     //    });
                                     //})
                                     .HitBox(h => {
+                                        h.Relative(fgChar.gameObject.transform);
                                         h.Point0(new Vector3(0, 0, 0));
                                         h.Point1(new Vector3(0, 1, 0));
                                         h.Radius(0.25f);
@@ -105,7 +106,7 @@ namespace ResonantSpark {
                                     .HitStun(30.0f)
                                     .BlockStun(12.0f)
                                 .To(10)
-                                .To(14)
+                                //.To(14)
                                 .From(14)
                                     .HitBox()
                                 .To(20);
@@ -130,6 +131,7 @@ namespace ResonantSpark {
                                     .ChainCancellable(true)
                                 .From(8)
                                     .HitBox(h => {
+                                        h.Relative(fgChar.gameObject.transform);
                                         h.Point0(new Vector3(0, 0, 0));
                                         h.Point1(new Vector3(0, 1, 0));
                                         h.Radius(0.25f);
@@ -168,6 +170,7 @@ namespace ResonantSpark {
                                     .ChainCancellable(true)
                                 .From(12)
                                     .HitBox(h => {
+                                        h.Relative(fgChar.gameObject.transform);
                                         h.Point0(new Vector3(0, 0, 0));
                                         h.Point1(new Vector3(0, 1, 0));
                                         h.Radius(0.25f);
@@ -202,6 +205,7 @@ namespace ResonantSpark {
                                     .ChainCancellable(true)
                                 .From(12)
                                     .HitBox(h => {
+                                        h.Relative(fgChar.gameObject.transform);
                                         h.Point0(new Vector3(0, 0, 0));
                                         h.Point1(new Vector3(0, 1, 0));
                                         h.Radius(0.25f);

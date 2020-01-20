@@ -24,7 +24,7 @@ namespace ResonantSpark {
             private Dictionary<Type, Action<Action, Combination>> inputCallbacks;
             private Dictionary<Type, Action<Action, Combination>> enterCallbacks;
 
-            public void Start() {
+            public void Awake() {
                 inputCallbacks = new Dictionary<Type, Action<Action, Combination>>();
                 enterCallbacks = new Dictionary<Type, Action<Action, Combination>>();
                 inputRegistry = new CallbackRegistry(inputCallbacks);

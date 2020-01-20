@@ -13,8 +13,9 @@ namespace ResonantSpark {
             private Dictionary<string, Attack> attacks;
             private Dictionary<Attack, Func<CharacterState, bool>> attackSelectableCallbackMap;
 
-            public void Start() {
+            public CharacterData() {
                 attacks = new Dictionary<string, Attack>();
+                attackSelectableCallbackMap = new Dictionary<Attack, Func<CharacterState, bool>>();
             }
 
             public void AddAttack(Attack attack) {
