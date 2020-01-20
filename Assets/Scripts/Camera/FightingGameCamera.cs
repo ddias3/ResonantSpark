@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+using ResonantSpark.Service;
+
 namespace ResonantSpark {
     public class FightingGameCamera : MonoBehaviour {
 
@@ -31,29 +33,23 @@ namespace ResonantSpark {
         private GameObject testTransform1;
         private GameObject testTransform2;
 
-        public void Start() {
+        public void Awake() {
             this.enabled = false;
-            EventManager.StartListening<Events.FightingGameCharsReady>(new UnityAction(ConnectFightingGameCharacters));
+            EventManager.StartListening<Events.StartGame>(new UnityAction(SetUpCamera));
         }
 
-        public void ConnectFightingGameCharacters() {
+        public void SetUpCamera() {
             this.enabled = true;
 
-            camera = gameObject.GetComponent<Camera>();
+            camera = GetComponent<Camera>();
             camera.fieldOfView = cameraFov;
 
-            GameObject[] chars = GameObject.FindGameObjectsWithTag("rspCharacter");
+            GameObject serviceObj = GameObject.FindGameObjectWithTag("rspService");
 
-            if (chars != null && chars.Length == 2) {
-                char0 = chars[0].transform;
-                char1 = chars[1].transform;
-            }
-            else {
-                Debug.LogError("Too many 'rspCharacters.' Number of chars = " + chars?.Length);
-            }
+            PlayerService playerService = serviceObj.GetComponent<PlayerService>();
 
-            //testTransform = new GameObject("testTransform");
-            //testTransform.AddComponent<BoxCollider>();
+            char0 = playerService.GetFGChar(0).transform;
+            char1 = playerService.GetFGChar(1).transform;
 
             testTransform0 = GameObject.CreatePrimitive(PrimitiveType.Cube);
             testTransform0.GetComponent<Collider>().enabled = false;

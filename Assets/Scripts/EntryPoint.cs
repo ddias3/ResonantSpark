@@ -39,20 +39,20 @@ namespace ResonantSpark {
             remainingServices.Remove(serviceType);
 
             if (remainingServices.Count == 0) {
-                StartSceneSetup();
+                StartCoroutine(StartSceneSetup());
             }
         }
 
-        private void StartSceneSetup() {
+        private IEnumerator StartSceneSetup() {
+            yield return new WaitForEndOfFrame();
+
             fgService.CreateGamemode();
             inputService.SetUpControllers();
             playerService.SetUpCharacters();
+            playerService.StartCharacterBuild();
+            fgService.SetUpGamemode();
 
-            List<FightingGameCharacter> fgChars = new List<FightingGameCharacter>();
-
-            playerService.StartCharacterBuild(fgChar => {
-                fgChars.Add(fgChar);
-            });
+            EventManager.TriggerEvent<Events.StartGame>();
 
             GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>().StartFrameEnforcer();
         }

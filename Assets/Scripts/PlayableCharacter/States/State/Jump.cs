@@ -25,8 +25,8 @@ namespace ResonantSpark {
             private FightingGameInputCodeDir jumpDir;
             private Vector3 jumpImpulse;
 
-            public new void Start() {
-                base.Start();
+            public new void Awake() {
+                base.Awake();
                 states.Register(this, "jump");
 
                 RegisterInputCallbacks()

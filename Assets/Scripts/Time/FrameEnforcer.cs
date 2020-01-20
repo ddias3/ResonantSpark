@@ -7,6 +7,7 @@ using System;
 namespace ResonantSpark {
     public enum FramePriority : int {
         StateMachine = 256,
+        Gamemode = 320,
         InputBuffer = 512,
         Service = 1024,
 
@@ -39,16 +40,14 @@ namespace ResonantSpark {
 
         private int frameIndex = 0;
 
-            // This might be a mistake, instead the user needs to uncheck the enable button for this component in the editor
-        //public void Awake() {
-        //    this.enabled = false;
-        //}
-
-        public void Start() {
+        public void Awake() {
             this.enabled = false;
-            gameTime = gameObject.GetComponent<GameTimeManager>();
             elapsedTime = FRAME_TIME;
             frameIndex = 0;
+        }
+
+        public void Start() {
+            gameTime = gameObject.GetComponent<GameTimeManager>();
         }
 
         public int index {

@@ -9,8 +9,8 @@ namespace ResonantSpark {
     namespace CharacterStates {
         public class GrabBreak : BaseState {
 
-            public new void Start() {
-                base.Start();
+            public new void Awake() {
+                base.Awake();
 
                 // NOTE: this state might not be necessary.
                 states.Register(this, "grabBreak");

@@ -8,8 +8,8 @@ namespace ResonantSpark {
 
             private List<CharacterProperties.Attack> attackQueue;
 
-            public new void Start() {
-                base.Start();
+            public new void Awake() {
+                base.Awake();
 
                 attackQueue = new List<CharacterProperties.Attack>();
             }

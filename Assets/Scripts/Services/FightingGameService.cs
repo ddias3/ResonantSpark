@@ -11,8 +11,12 @@ namespace ResonantSpark {
         public class FightingGameService : MonoBehaviour, IFightingGameService {
 
             public Vector3 underLevel = new Vector3(0, -100, 0);
+            public Transform spawnPoint;
+            public float offset = 3.0f;
+            public Transform outOfBounds;
 
             private PlayerService playerService;
+            private FightingGameService fgService;
             private PersistenceService persistenceService;
 
             private FrameEnforcer frame;
@@ -22,6 +26,7 @@ namespace ResonantSpark {
             public void Start() {
                 frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
                 playerService = GetComponent<PlayerService>();
+                fgService = GetComponent<FightingGameService>();
                 persistenceService = GetComponent<PersistenceService>();
 
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(FightingGameService));
@@ -33,6 +38,18 @@ namespace ResonantSpark {
                 this.gamemode = newGameMode.GetComponent<OneOnOneRoundBased>();
 
                 playerService.SetMaxPlayers(gamemode.GetMaxPlayers());
+            }
+
+            public void SetUpGamemode() {
+                gamemode.SetUp(playerService, fgService);
+            }
+
+            public Transform GetSpawnPoint() {
+                return spawnPoint;
+            }
+
+            public float GetSpawnPointOffset() {
+                return offset;
             }
 
             public Transform GetCharacterRoot(FightingGameCharacter fgChar) {

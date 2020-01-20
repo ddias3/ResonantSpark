@@ -38,6 +38,10 @@ namespace ResonantSpark {
 
                 hitBoxService.RegisterHitBox(this);
 
+                collider = GetComponentInChildren<CapsuleCollider>();
+                rigidbody = GetComponent<Rigidbody>();
+                colliderTransform = collider.transform;
+
                 return this;
             }
 
@@ -46,12 +50,9 @@ namespace ResonantSpark {
                 this.fgService = fgService;
             }
 
-            public void Start() {
+            public void Awake() {
                 hurtBox = LayerMask.NameToLayer("hurtBox");
                 hitBox = LayerMask.NameToLayer("hitBox");
-                collider = GetComponentInChildren<CapsuleCollider>();
-                rigidbody = GetComponent<Rigidbody>();
-                colliderTransform = collider.transform;
             }
 
             public void OnTriggerEnter(Collider other) {

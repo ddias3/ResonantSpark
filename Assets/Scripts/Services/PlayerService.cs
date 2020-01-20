@@ -40,7 +40,7 @@ namespace ResonantSpark {
                 }
             }
 
-            public void StartCharacterBuild(Action<FightingGameCharacter> fgCharCallback) {
+            public void StartCharacterBuild(Action<FightingGameCharacter> fgCharCallback = null) {
                 foreach (KeyValuePair<int, ICharacterBuilder> charBuilder in selectedFGChars) {
                     int playerId = charBuilder.Key;
                     FightingGameCharacter builtFGChar = buildService.Build(charBuilder.Value);
@@ -52,10 +52,8 @@ namespace ResonantSpark {
                         humanInputController.ConnectToCharacter(builtFGChar);
                     }
 
-                    fgCharCallback(builtFGChar);
+                    fgCharCallback?.Invoke(builtFGChar);
                 }
-
-                EventManager.TriggerEvent<Events.FightingGameCharsReady>();
             }
 
             public void SetMaxPlayers(int maxTotalPlayers) {
@@ -68,6 +66,10 @@ namespace ResonantSpark {
 
             public void SetCharacterSelected(int playerId, ICharacterBuilder charSelected) {
                 selectedFGChars.Add(playerId, charSelected);
+            }
+
+            public FightingGameCharacter GetFGChar(int playerIndex) {
+                return fgChars[playerIndex];
             }
         }
     }

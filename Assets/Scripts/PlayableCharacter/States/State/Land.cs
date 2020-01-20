@@ -12,8 +12,8 @@ namespace ResonantSpark {
             private int startFrame;
             private int frameCount = 0;
 
-            public new void Start() {
-                base.Start();
+            public new void Awake() {
+                base.Awake();
                 states.Register(this, "land");
 
                     // See note below
