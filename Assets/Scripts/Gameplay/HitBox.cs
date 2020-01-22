@@ -95,7 +95,7 @@ namespace ResonantSpark {
             }
 
             public void Activate() {
-                Debug.Break();
+                //Debug.Break();
                 collider.enabled = true;
 
                     // I'm not sure witch method of movement is better for this situation. They are technically different.

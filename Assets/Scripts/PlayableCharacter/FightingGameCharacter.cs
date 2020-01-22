@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Character;
+using ResonantSpark.Input;
 
 namespace ResonantSpark {
     namespace Gameplay {
@@ -39,6 +40,17 @@ namespace ResonantSpark {
 
             private CharacterData charData;
 
+            private CharacterStates.Attack attackState;
+            private CharacterStates.Block blockState;
+
+            public float gameTime {
+                get { return gameTimeManager.Layer("gameTime"); }
+            }
+
+            public float realTime {
+                get { return gameTimeManager.Layer("realTime"); }
+            }
+
             public void Init(CharacterData charData) {
                 this.id = fgCharCounter++;
 
@@ -50,10 +62,9 @@ namespace ResonantSpark {
                 rigidbody = gameObject.GetComponent<Rigidbody>();
                 inUseCombinations = new List<Combination>();
 
-                gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
+                attackState = stateMachine.gameObject.GetComponentInChildren<CharacterStates.Attack>();
 
-                CharacterStates.Attack attackState = stateMachine.gameObject.GetComponentInChildren<CharacterStates.Attack>();
-                attackState.charData = charData;
+                gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
             }
 
             public FightingGameCharacter SetOpponentCharacter(FightingGameCharacter opponentChar) {
@@ -66,12 +77,88 @@ namespace ResonantSpark {
                 return this;
             }
 
-            public float gameTime {
-                get { return gameTimeManager.Layer("gameTime"); }
+            public void ChooseAttack(CharacterStates.BaseState currState, CharacterProperties.Attack currAttack, FightingGameInputCodeBut button, FightingGameInputCodeDir direction = FightingGameInputCodeDir.None) {
+                InputNotation notation = SelectInputNotation(button, direction);
+
+                List<CharacterProperties.Attack> attackCandidates = charData.SelectAttacks(GetOrientation(), GetGroundRelation(), notation);
+                CharacterProperties.Attack attack = charData.ChooseAttackFromSelectability(attackCandidates, currState, currAttack);
+
+                if (attack != null) {
+                    attackState.SetActiveAttack(attack);
+                }
             }
 
-            public float realTime {
-                get { return gameTimeManager.Layer("realTime"); }
+            private InputNotation SelectInputNotation(FightingGameInputCodeBut button, FightingGameInputCodeDir direction) {
+                InputNotation notation = InputNotation.None;
+
+                switch (button) {
+                    case FightingGameInputCodeBut.A:
+                        switch (direction) {
+                            case FightingGameInputCodeDir.Neutral:
+                            case FightingGameInputCodeDir.None:
+                                notation = InputNotation._5A;
+                                break;
+                            case FightingGameInputCodeDir.DownLeft:
+                            case FightingGameInputCodeDir.Down:
+                            case FightingGameInputCodeDir.DownRight:
+                                notation = InputNotation._2A;
+                                break;
+                            default:
+                                notation = InputNotation._5A;
+                                break;
+                        }
+                        break;
+                    case FightingGameInputCodeBut.B:
+                        switch (direction) {
+                            case FightingGameInputCodeDir.Neutral:
+                            case FightingGameInputCodeDir.None:
+                                notation = InputNotation._5B;
+                                break;
+                            case FightingGameInputCodeDir.DownLeft:
+                            case FightingGameInputCodeDir.Down:
+                            case FightingGameInputCodeDir.DownRight:
+                                notation = InputNotation._2B;
+                                break;
+                            default:
+                                notation = InputNotation._5B;
+                                break;
+                        }
+                        break;
+                    case FightingGameInputCodeBut.C:
+                        switch (direction) {
+                            case FightingGameInputCodeDir.Neutral:
+                            case FightingGameInputCodeDir.None:
+                                notation = InputNotation._5C;
+                                break;
+                            case FightingGameInputCodeDir.DownLeft:
+                            case FightingGameInputCodeDir.Down:
+                            case FightingGameInputCodeDir.DownRight:
+                                notation = InputNotation._2C;
+                                break;
+                            default:
+                                notation = InputNotation._5C;
+                                break;
+                        }
+                        break;
+                    case FightingGameInputCodeBut.D:
+                        switch (direction) {
+                            case FightingGameInputCodeDir.Neutral:
+                            case FightingGameInputCodeDir.None:
+                                notation = InputNotation._5D;
+                                break;
+                            case FightingGameInputCodeDir.DownLeft:
+                            case FightingGameInputCodeDir.Down:
+                            case FightingGameInputCodeDir.DownRight:
+                                notation = InputNotation._2D;
+                                break;
+                            default:
+                                notation = InputNotation._5D;
+                                break;
+                        }
+                        break;
+                }
+
+                return notation;
             }
 
             public void SetDirectionFacing(bool right) {

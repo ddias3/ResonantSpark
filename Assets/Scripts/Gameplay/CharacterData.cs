@@ -11,19 +11,34 @@ namespace ResonantSpark {
     namespace Character {
         public class CharacterData {
             private Dictionary<string, Attack> attacks;
-            private Dictionary<Attack, Func<CharacterState, bool>> attackSelectableCallbackMap;
+            private Dictionary<Attack, Func<CharacterStates.BaseState, Attack, bool>> attackSelectableCallbackMap;
 
             public CharacterData() {
                 attacks = new Dictionary<string, Attack>();
-                attackSelectableCallbackMap = new Dictionary<Attack, Func<CharacterState, bool>>();
+                attackSelectableCallbackMap = new Dictionary<Attack, Func<CharacterStates.BaseState, Attack, bool>>();
             }
 
             public void AddAttack(Attack attack) {
                 attacks.Add(attack.name, attack);
             }
 
-            public void AddAttackSelectablilityCallback(Attack attack, Func<CharacterState, bool> callback) {
+            public void AddAttackSelectablilityCallback(Attack attack, Func<CharacterStates.BaseState, Attack, bool> callback) {
                 attackSelectableCallbackMap.Add(attack, callback);
+            }
+
+            public Attack ChooseAttackFromSelectability(List<Attack> attacks, CharacterStates.BaseState currState, Attack currAttack) {
+
+                List<Attack> validAttacks = attacks
+                    .Where(atk => attackSelectableCallbackMap[atk].Invoke(currState, currAttack))
+                    .OrderBy(atk => atk.priority)
+                    .ToList();
+
+                if (validAttacks.Count > 0) {
+                    return validAttacks[0];
+                }
+                else {
+                    return null;
+                }
             }
 
             public List<Attack> SelectAttacks(Orientation orientation, GroundRelation groundRelation, InputNotation attackInput) {

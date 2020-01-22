@@ -11,20 +11,20 @@ namespace ResonantSpark {
     namespace CharacterProperties {
         public class CharacterPropertiesBuilder : ICharacterPropertiesCallbackObj {
             protected string version;
-            protected List<(Attack, Func<CharacterState, bool>)> attacks { get; private set; }
+            protected List<(Attack, Func<CharacterStates.BaseState, Attack, bool>)> attacks { get; private set; }
 
             protected AllServices services;
 
             public CharacterPropertiesBuilder(AllServices services) {
-                attacks = new List<(Attack, Func<CharacterState, bool>)>();
+                attacks = new List<(Attack, Func<CharacterStates.BaseState, Attack, bool>)>();
 
                 this.services = services;
             }
 
             public CharacterData BuildAttacks(CharacterData charData) {
-                foreach ((Attack, Func<CharacterState, bool>) atk in attacks) {
+                foreach ((Attack, Func<CharacterStates.BaseState, Attack, bool>) atk in attacks) {
                     Attack attack = atk.Item1;
-                    Func<CharacterState, bool> callback = atk.Item2;
+                    Func<CharacterStates.BaseState, Attack, bool> callback = atk.Item2;
 
                     attack.BuildAttack(services);
 
@@ -45,7 +45,7 @@ namespace ResonantSpark {
                 return this;
             }
 
-            public ICharacterPropertiesCallbackObj MaxJumpHeight(Func<CharacterState, float> callback) {
+            public ICharacterPropertiesCallbackObj MaxJumpHeight(Func<CharacterStates.BaseState, float> callback) {
                 //TODO: Figure out how to connect this
                 return this;
             }
@@ -55,7 +55,7 @@ namespace ResonantSpark {
                 return this;
             }
 
-            public ICharacterPropertiesCallbackObj RunSpeed(Func<CharacterState, float> callback) {
+            public ICharacterPropertiesCallbackObj RunSpeed(Func<CharacterStates.BaseState, float> callback) {
                 //TODO: Figure out how to connect this
                 return this;
             }
@@ -70,12 +70,12 @@ namespace ResonantSpark {
                 return this;
             }
 
-            public ICharacterPropertiesCallbackObj WalkSpeed(Func<CharacterState, float> callback) {
+            public ICharacterPropertiesCallbackObj WalkSpeed(Func<CharacterStates.BaseState, float> callback) {
                 //TODO: Figure out how to connect this
                 return this;
             }
 
-            public ICharacterPropertiesCallbackObj Attack(Attack attack, Func<CharacterState, bool> callback) {
+            public ICharacterPropertiesCallbackObj Attack(Attack attack, Func<CharacterStates.BaseState, Attack, bool> callback) {
                 attacks.Add((attack, callback));
                 return this;
             }
