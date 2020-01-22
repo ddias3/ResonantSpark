@@ -49,6 +49,18 @@ namespace ResonantSpark {
             _5Bh,
             _2B,
             _2Bh,
+            _5C,
+            _5Ch,
+            _2C,
+            _2Ch,
+            _5D,
+            _5Dh,
+            _2D,
+            _2Dh,
+            _5S,
+            _5Sh,
+            _2S,
+            _2Sh,
         }
 
         [Serializable]

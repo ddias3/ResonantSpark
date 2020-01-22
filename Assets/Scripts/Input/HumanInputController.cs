@@ -12,6 +12,8 @@ namespace ResonantSpark {
                 // These are empirically good numbers
             public Vector2 deadZone = new Vector2(0.25f, 0.25f);
             public float cardinalOverlap = 0.4f;
+            [Tooltip("Buttons will only ever return 0 or 1, but some continuous inputs can be used as buttons, like triggers")]
+            public float buttonDeadZone = 0.5f;
 
             private InputBuffer inputBuffer;
 
@@ -58,6 +60,7 @@ namespace ResonantSpark {
                     else verticalInput = 0f;
 
                     // TODO: Also create version with angles for determining input.
+                    //   But, a cardinalOverlap of 0.4f essentially equals an equal 45d for all 8 direction inputs.
                 }
                 else {
                     horizontalInput = 0f;
@@ -66,32 +69,32 @@ namespace ResonantSpark {
             }
 
             public void OnButtonA(InputAction.CallbackContext context) {
-                Debug.Log("ButtonA performed: " + context.performed + ")");
-                SetButtonBit(context.performed, FightingGameInputCodeBut.A);
+                Debug.Log("ButtonA performed: " + context.ReadValue<float>() + ")");
+                SetButtonBit(context.ReadValue<float>(), FightingGameInputCodeBut.A);
             }
 
             public void OnButtonB(InputAction.CallbackContext context) {
-                Debug.Log("ButtonB performed: " + context.performed + ")");
-                SetButtonBit(context.performed, FightingGameInputCodeBut.B);
+                Debug.Log("ButtonB performed: " + context.ReadValue<float>() + ")");
+                SetButtonBit(context.ReadValue<float>(), FightingGameInputCodeBut.B);
             }
 
             public void OnButtonC(InputAction.CallbackContext context) {
-                Debug.Log("ButtonC performed: " + context.performed + ")");
-                SetButtonBit(context.performed, FightingGameInputCodeBut.C);
+                Debug.Log("ButtonC performed: " + context.ReadValue<float>() + ")");
+                SetButtonBit(context.ReadValue<float>(), FightingGameInputCodeBut.C);
             }
 
             public void OnButtonD(InputAction.CallbackContext context) {
-                Debug.Log("ButtonD performed: " + context.performed + ")");
-                SetButtonBit(context.performed, FightingGameInputCodeBut.D);
+                Debug.Log("ButtonD performed: " + context.ReadValue<float>() + ")");
+                SetButtonBit(context.ReadValue<float>(), FightingGameInputCodeBut.D);
             }
 
             public void OnButtonS(InputAction.CallbackContext context) {
-                Debug.Log("ButtonS performed: " + context.performed + ")");
-                SetButtonBit(context.performed, FightingGameInputCodeBut.S);
+                Debug.Log("ButtonS performed: " + context.ReadValue<float>() + ")");
+                SetButtonBit(context.ReadValue<float>(), FightingGameInputCodeBut.S);
             }
 
-            private void SetButtonBit(bool setTrue, FightingGameInputCodeBut bitMask) {
-                buttonInputCode = buttonInputCode & ~((int) bitMask) | (setTrue ? (int) bitMask : 0);
+            private void SetButtonBit(float buttonValue, FightingGameInputCodeBut bitMask) {
+                buttonInputCode = buttonInputCode & ~((int) bitMask) | ((buttonValue > buttonDeadZone) ? (int) bitMask : 0);
             }
 
             public void SetControllerId(int controllerId) {

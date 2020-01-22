@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Service;
+using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace Gameplay {
@@ -21,6 +22,8 @@ namespace ResonantSpark {
             private new CapsuleCollider collider;
             private Transform colliderTransform;
 
+            private Vector3 deactivatedPosition;
+
             private Action<IFightingGameCharacter> onHurtBoxEnter;
             private Action<IFightingGameCharacter> onHitBoxEnter;
 
@@ -31,7 +34,8 @@ namespace ResonantSpark {
                 this.id = HitBox.hitBoxCounter++;
 
                 this.relativeTransform = relativeTransform;
-                this.offset = relativeTransform.position - transform.position;
+                //this.offset = relativeTransform.position - transform.position;
+                this.offset = Vector3.zero;
 
                 this.onHurtBoxEnter = onHurtBoxEnter;
                 this.onHitBoxEnter = onHitBoxEnter;
@@ -42,6 +46,9 @@ namespace ResonantSpark {
                 rigidbody = GetComponent<Rigidbody>();
                 colliderTransform = collider.transform;
 
+                deactivatedPosition = hitBoxService.GetEmptyHoldTransform().position;
+                Deactivate();
+
                 return this;
             }
 
@@ -51,16 +58,18 @@ namespace ResonantSpark {
             }
 
             public void Awake() {
-                hurtBox = LayerMask.NameToLayer("hurtBox");
-                hitBox = LayerMask.NameToLayer("hitBox");
+                hurtBox = LayerMask.NameToLayer("HurtBox");
+                hitBox = LayerMask.NameToLayer("HitBox");
             }
 
             public void OnTriggerEnter(Collider other) {
                 if (other.gameObject.layer == hurtBox) {
+                    Debug.Log(other.gameObject);
                     Debug.Log("Hitbox hit a hurtbox");
                     onHurtBoxEnter?.Invoke(null);
                 }
                 else if (other.gameObject.layer == hitBox) {
+                    Debug.Log(other.gameObject);
                     Debug.Log("Hitbox hit other hitbox");
                     onHitBoxEnter?.Invoke(null);
                 }
@@ -86,17 +95,22 @@ namespace ResonantSpark {
             }
 
             public void Activate() {
+                Debug.Break();
                 collider.enabled = true;
 
-                rigidbody.rotation = relativeTransform.rotation;
-                rigidbody.position = relativeTransform.rotation * offset + relativeTransform.position;
+                    // I'm not sure witch method of movement is better for this situation. They are technically different.
+                //rigidbody.rotation = relativeTransform.rotation;
+                //rigidbody.position = relativeTransform.rotation * offset + relativeTransform.position;
+                rigidbody.MoveRotation(relativeTransform.rotation);
+                rigidbody.MovePosition(relativeTransform.rotation * offset + relativeTransform.position);
             }
 
             public void Deactivate() {
                 collider.enabled = false;
 
-                    // TODO: Provide an actual location to place this hitbox when deactivated.
-                rigidbody.position = new Vector3(0, -100, 0);
+                    // I'm not sure witch method of movement is better for this situation. They are technically different.
+                //rigidbody.position = deactivatedPosition;
+                rigidbody.MovePosition(deactivatedPosition);
             }
 
             public bool Equals(HitBox other) {

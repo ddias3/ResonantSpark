@@ -77,12 +77,26 @@ namespace ResonantSpark {
 
             public void StartPerformable(int frameIndex) {
                 tracker.Track(frameIndex);
-                fgService.RunAnimationState(fgChar, animStateName);
+                fgChar.Play(animStateName);
             }
 
             public void RunFrame() {
-                int frameCount = tracker.GetFrameCount();
+                int frameCount = tracker.frameCount;
                 frames[frameCount].Perform();
+
+                if (frameCount == frames.Count - 1) {
+                    onCompleteCallback();
+                }
+
+                tracker.Increment();
+            }
+
+            public bool ChainCancellable() {
+                return frames[tracker.frameCount].chainCancellable;
+            }
+
+            public bool SpecialCancellable() {
+                return frames[tracker.frameCount].specialCancellable;
             }
 
             public bool Equals(Attack other) {

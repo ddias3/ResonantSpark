@@ -63,7 +63,7 @@ namespace ResonantSpark {
                 smoothedInput = fgChar.CameraToChar(new Vector3(cameraX, 0, upJump ? 0 : cameraZ));
 
                 fgChar.SetLocalMoveDirection(0.0f, 0.0f);
-                fgChar.Play("stand", 0, 0.0f);
+                fgChar.Play("stand");
             }
 
             public override void Execute(int frameIndex) {

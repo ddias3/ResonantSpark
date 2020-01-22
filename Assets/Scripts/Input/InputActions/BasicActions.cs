@@ -34,7 +34,7 @@ namespace ResonantSpark
                     ""id"": ""698c8bc6-bad4-4347-91be-d19beca706cc"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """"
+                    ""interactions"": ""Press(behavior=2)""
                 },
                 {
                     ""name"": ""Button B"",
@@ -42,7 +42,7 @@ namespace ResonantSpark
                     ""id"": ""f16c23f9-9ac7-44d3-ba9e-feebc2ee32db"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """"
+                    ""interactions"": ""Press(behavior=2)""
                 },
                 {
                     ""name"": ""Button C"",
@@ -50,7 +50,7 @@ namespace ResonantSpark
                     ""id"": ""07a234c5-b325-442b-9e1a-e663dbf5979a"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """"
+                    ""interactions"": ""Press(behavior=2)""
                 },
                 {
                     ""name"": ""Button D"",
@@ -58,7 +58,7 @@ namespace ResonantSpark
                     ""id"": ""654ebbee-5600-4e78-b57b-588a35a2880d"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """"
+                    ""interactions"": ""Press(behavior=2)""
                 },
                 {
                     ""name"": ""Button S"",
@@ -66,7 +66,7 @@ namespace ResonantSpark
                     ""id"": ""b8ec316a-815f-4511-817e-da94e33002c9"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """"
+                    ""interactions"": ""Press(behavior=2)""
                 }
             ],
             ""bindings"": [

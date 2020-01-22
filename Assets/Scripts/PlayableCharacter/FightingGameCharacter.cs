@@ -198,11 +198,7 @@ namespace ResonantSpark {
             }
 
             public void Play(string animationState) {
-                animator.Play(animationState);
-            }
-
-            public void Play(string animationState, int layer, float normalizedTime) {
-                animator.Play(animationState, layer, normalizedTime);
+                animator.Play(animationState, 0, this.gameTime);
             }
 
             public List<Input.Combinations.Combination> GetFoundCombinations() {

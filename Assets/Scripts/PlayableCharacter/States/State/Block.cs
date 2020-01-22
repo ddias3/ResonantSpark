@@ -24,7 +24,7 @@ namespace ResonantSpark {
                 //    combo.inUse = false;
                 //}
 
-                fgChar.Play("idle", 0, 0.0f);
+                fgChar.Play("idle");
             }
 
             public override void Execute(int frameIndex) {

@@ -55,10 +55,6 @@ namespace ResonantSpark {
             public Transform GetCharacterRoot(FightingGameCharacter fgChar) {
                 throw new System.NotImplementedException();
             }
-
-            public void RunAnimationState(FightingGameCharacter fgChar, string animationStateName) {
-                throw new System.NotImplementedException();
-            }
         }
     }
 }

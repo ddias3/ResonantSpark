@@ -6,10 +6,11 @@ using System;
 
 namespace ResonantSpark {
     public enum FramePriority : int {
-        StateMachine = 256,
-        Gamemode = 320,
-        InputBuffer = 512,
-        Service = 1024,
+        ActivePollingReset = 1,
+        Gamemode = 256,
+        Service = 512,
+        StateMachine = 1024,
+        InputBuffer = 2048,
 
         UpdateInput = 9999999,
     }

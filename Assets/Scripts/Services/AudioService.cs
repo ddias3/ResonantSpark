@@ -18,6 +18,7 @@ namespace ResonantSpark {
             public void Start() {
                 frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
                 frame.AddUpdate((int)FramePriority.Service, new System.Action<int>(FrameUpdate));
+                frame.AddUpdate((int)FramePriority.ActivePollingReset, new System.Action<int>(ResetActivePolling));
 
                 audioSources = new ResourceRecycler<AudioResource>(prefab, Vector3.zero, 4, audioEmpty, resource => {
                     Debug.Log("callback called");
@@ -32,6 +33,10 @@ namespace ResonantSpark {
             }
 
             private void FrameUpdate(int frameIndex) {
+
+            }
+
+            private void ResetActivePolling(int frameIndex) {
 
             }
 
