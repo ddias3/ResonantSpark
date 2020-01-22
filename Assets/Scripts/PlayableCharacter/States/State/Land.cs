@@ -24,7 +24,7 @@ namespace ResonantSpark {
 
             public override void Enter(int frameIndex, IState previousState) {
                 fgChar.GivenCombinations();
-                fgChar.Play("jump_land", 0, 0.0f);
+                fgChar.Play("jump_land");
 
                 startFrame = frameIndex;
                 frameCount = 0;

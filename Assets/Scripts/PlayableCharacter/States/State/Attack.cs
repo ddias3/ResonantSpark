@@ -14,7 +14,10 @@ namespace ResonantSpark {
 
             private Action onCompleteAttack;
 
-            private InputNotation notation;
+            private FightingGameInputCodeBut button;
+            private FightingGameInputCodeDir direction;
+
+            private CharacterProperties.Attack activeAttack;
 
             public new void Awake() {
                 base.Awake();
@@ -22,19 +25,25 @@ namespace ResonantSpark {
 
                 RegisterInputCallbacks()
                     .On<ButtonPress>(OnButtonPress)
-                    .On<DirectionPress>(OnDirectionPress);
+                    .On<DirectionPress>(OnDirectionPress)
+                    .On<DirectionCurrent>(OnDirectionCurrent);
 
                 RegisterEnterCallbacks()
                     .On<ButtonPress>(GivenButtonPress)
                     .On<DirectionPress>(GivenDirectionPress)
-                    .On<DirectionCurrent>(GivenDirectionCurrent);
+                    .On<DirectionCurrent>(OnDirectionCurrent);
 
                 this.onCompleteAttack = new Action(OnCompleteAttack);
             }
 
             public override void Enter(int frameIndex, IState previousState) {
+                button = FightingGameInputCodeBut.None;
+                direction = FightingGameInputCodeDir.None;
+
                     // Start OnEnter with this
                 GivenInput(fgChar.GivenCombinations());
+
+                InputNotation notation = SelectInputNotation();
 
                 List<CharacterProperties.Attack> attack = charData.SelectAttacks(fgChar.GetOrientation(), fgChar.GetGroundRelation(), notation);
 
@@ -42,23 +51,100 @@ namespace ResonantSpark {
                     Debug.LogFormat(LogType.Exception, LogOption.None, this, "Missing attack given conditions: {0}, {1}, {2}", fgChar.GetOrientation(), fgChar.GetGroundRelation(), notation);
                     throw new InvalidOperationException("Missing attack given conditions.");
                 }
-
+                
 
                 // FOR NOW ONLY, just do this
-                attack[0].StartPerformable(frameIndex);
-                attack[0].SetOnCompleteCallback(onCompleteAttack);
+                activeAttack = attack[0];
+
+                activeAttack.StartPerformable(frameIndex);
+                activeAttack.SetOnCompleteCallback(onCompleteAttack);
             }
 
             public override void Execute(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
+
+                activeAttack?.RunFrame();
             }
 
             public override void Exit(int frameIndex) {
                 // do nothing
             }
 
+            private InputNotation SelectInputNotation() {
+                InputNotation notation = InputNotation.None;
+
+                switch (button) {
+                    case FightingGameInputCodeBut.A:
+                        switch (direction) {
+                            case FightingGameInputCodeDir.Neutral:
+                            case FightingGameInputCodeDir.None:
+                                notation = InputNotation._5A;
+                                break;
+                            case FightingGameInputCodeDir.DownLeft:
+                            case FightingGameInputCodeDir.Down:
+                            case FightingGameInputCodeDir.DownRight:
+                                notation = InputNotation._2A;
+                                break;
+                        }
+                        break;
+                    case FightingGameInputCodeBut.B:
+                        switch (direction) {
+                            case FightingGameInputCodeDir.Neutral:
+                            case FightingGameInputCodeDir.None:
+                                notation = InputNotation._5B;
+                                break;
+                            case FightingGameInputCodeDir.DownLeft:
+                            case FightingGameInputCodeDir.Down:
+                            case FightingGameInputCodeDir.DownRight:
+                                notation = InputNotation._2B;
+                                break;
+                        }
+                        break;
+                    case FightingGameInputCodeBut.C:
+                        switch (direction) {
+                            case FightingGameInputCodeDir.Neutral:
+                            case FightingGameInputCodeDir.None:
+                                notation = InputNotation._5C;
+                                break;
+                            case FightingGameInputCodeDir.DownLeft:
+                            case FightingGameInputCodeDir.Down:
+                            case FightingGameInputCodeDir.DownRight:
+                                notation = InputNotation._2C;
+                                break;
+                        }
+                        break;
+                    case FightingGameInputCodeBut.D:
+                        switch (direction) {
+                            case FightingGameInputCodeDir.Neutral:
+                            case FightingGameInputCodeDir.None:
+                                notation = InputNotation._5D;
+                                break;
+                            case FightingGameInputCodeDir.DownLeft:
+                            case FightingGameInputCodeDir.Down:
+                            case FightingGameInputCodeDir.DownRight:
+                                notation = InputNotation._2D;
+                                break;
+                        }
+                        break;
+                }
+
+                return notation;
+            }
+
             public void OnCompleteAttack() {
-                // TODO: Figure out rest of this code
+                //TODO: Choose a new attack, which is also possible.
+                switch (direction) {
+                    case FightingGameInputCodeDir.DownLeft:
+                    case FightingGameInputCodeDir.Down:
+                    case FightingGameInputCodeDir.DownRight:
+                        changeState(states.Get("crouch"));
+                        break;
+                    default:
+                        changeState(states.Get("stand"));
+                        break;
+                }
+
+                activeAttack = null;
             }
 
             private void OnDirectionPress(Action stop, Combination combo) {
@@ -66,29 +152,27 @@ namespace ResonantSpark {
             }
 
             private void OnButtonPress(Action stop, Combination combo) {
-                // TODO: figure out the stuff on button press
+                if (activeAttack == null) {
+                    fgChar.UseCombination(combo);
+                    stop();
+                    changeState(states.Get("attack"));
+                }
+
+                if (activeAttack.ChainCancellable()) {
+
+                }
             }
 
             private void GivenButtonPress(Action stop, Combination combo) {
-                //TODO: Select the proper input notation only after the correct direction for the character has been established.
-                InputNotation notation = InputNotation.None;
-                switch (((ButtonPress) combo).button0) {
-                    case FightingGameInputCodeBut.A:
-                        notation = InputNotation._5A;
-                        break;
-                    case FightingGameInputCodeBut.B:
-                        notation = InputNotation._5B;
-                        break;
-                }
-                this.notation = notation;
+                button = ((ButtonPress) combo).button0;
             }
 
             private void GivenDirectionPress(Action stop, Combination combo) {
-
+                direction = ((DirectionPress) combo).direction;
             }
 
-            private void GivenDirectionCurrent(Action stop, Combination combo) {
-
+            private void OnDirectionCurrent(Action stop, Combination combo) {
+                direction = ((DirectionCurrent) combo).direction;
             }
         }
     }

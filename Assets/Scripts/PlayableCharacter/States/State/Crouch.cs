@@ -28,7 +28,7 @@ namespace ResonantSpark {
                     // Start OnEnter with this
                 GivenInput(fgChar.GivenCombinations());
 
-                fgChar.Play("idle_crouch", 0, 0.0f);
+                fgChar.Play("idle_crouch");
             }
 
             public override void Execute(int frameIndex) {
@@ -42,41 +42,26 @@ namespace ResonantSpark {
             private void OnDirectionPress(Action stop, Combination combo) {
                 var dirPress = combo as DirectionPress;
                 switch (dirPress.direction) {
-                    //case FightingGameInputCodeDir.UpLeft:
+                    case FightingGameInputCodeDir.UpLeft:
                     case FightingGameInputCodeDir.Up:
-                    //case FightingGameInputCodeDir.UpRight:
-                        //fgChar.Use(dirPress);
+                    case FightingGameInputCodeDir.UpRight:
+                        fgChar.UseCombination(dirPress);
                         stop();
                         changeState(states.Get("jump"));
-                        break;
-                    //case FightingGameInputCodeDir.DownLeft:
-                    case FightingGameInputCodeDir.Down:
-                    //case FightingGameInputCodeDir.DownRight:
-                        //fgChar.Use(dirPress);
-                        stop();
-                        changeState(states.Get("crouch"));
                         break;
                 }
             }
 
             private void OnButtonPress(Action stop, Combination combo) {
-                var butPress = (ButtonPress) combo;
-                switch (butPress.button0) {
-                    case FightingGameInputCodeBut.A:
-                        Debug.Log("Crouch pressed A");
-                        break;
-                    case FightingGameInputCodeBut.B:
-                        Debug.Log("Crouch pressed B");
-                        break;
-                    case FightingGameInputCodeBut.C:
-                        Debug.Log("Crouch pressed C");
-                        break;
-                    case FightingGameInputCodeBut.D:
-                        Debug.Log("Crouch pressed D");
-                        break;
-                    case FightingGameInputCodeBut.S:
-                        Debug.Log("Crouch pressed S");
-                        break;
+                var buttonPress = (ButtonPress) combo;
+
+                if (buttonPress.button0 != FightingGameInputCodeBut.S) {
+                    fgChar.UseCombination(combo);
+                    // TODO: Create a way to also supply the DirectionCurrent.
+                    //   something like this:
+                    //      stop((dirCurrent) => { fgChar.UseCombination(dirCurrent); });
+                    stop();
+                    changeState(states.Get("attack"));
                 }
             }
 

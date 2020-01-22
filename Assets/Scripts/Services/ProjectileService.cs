@@ -24,6 +24,7 @@ namespace ResonantSpark {
             public void Start() {
                 frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
                 frame.AddUpdate((int) FramePriority.Service, new System.Action<int>(FrameUpdate));
+                frame.AddUpdate((int)FramePriority.ActivePollingReset, new System.Action<int>(ResetActivePolling));
 
                 projectilePrefabs = new Dictionary<int, GameObject>();
                 projectileMap = new Dictionary<int, ResourceRecycler<Projectile>>();
@@ -34,6 +35,10 @@ namespace ResonantSpark {
             }
 
             private void FrameUpdate(int frameIndex) {
+
+            }
+
+            private void ResetActivePolling(int frameIndex) {
 
             }
 

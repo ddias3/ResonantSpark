@@ -4,8 +4,9 @@ namespace ResonantSpark {
     namespace Utility {
         public class AttackTracker {
 
+            public int frameCount { get; private set; }
+
             private int startFrame;
-            private int frameCount;
 
             private readonly int numFrames;
 
@@ -20,8 +21,8 @@ namespace ResonantSpark {
                 frameCount = 0;
             }
 
-            public int GetFrameCount() {
-                return frameCount++;
+            public void Increment() {
+                frameCount++;
             }
         }
     }

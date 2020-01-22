@@ -25,7 +25,7 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
-                fgChar.Play("idle", 0, 0.0f);
+                fgChar.Play("idle");
             }
 
             public override void Execute(int frameIndex) {

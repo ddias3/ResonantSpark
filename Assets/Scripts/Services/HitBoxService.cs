@@ -13,20 +13,59 @@ namespace ResonantSpark {
             private FrameEnforcer frame;
 
             private Dictionary<int, HitBox> hitBoxMap;
+            private List<HitBox> previousActiveHitBoxes;
             private List<HitBox> activeHitBoxes;
 
             public void Start() {
                 frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
-                frame.AddUpdate((int)FramePriority.Service, new System.Action<int>(FrameUpdate));
+                frame.AddUpdate((int) FramePriority.Service, new System.Action<int>(FrameUpdate));
+                frame.AddUpdate((int) FramePriority.ActivePollingReset, new System.Action<int>(ResetActivePolling));
 
                 hitBoxMap = new Dictionary<int, HitBox>();
                 activeHitBoxes = new List<HitBox>();
+                previousActiveHitBoxes = new List<HitBox>();
 
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(HitBoxService));
             }
 
+                // There is a better way to do this.
+            //private void FrameUpdate(int frameIndex) {
+            //    foreach (KeyValuePair<int, HitBox> kvp in hitBoxMap) {
+            //        HitBox hitBox = kvp.Value;
+            //        if (activeHitBoxes.Contains(hitBox)) {
+            //            if (!hitBox.IsActive()) {
+            //                hitBox.Activate();
+            //            }
+            //        }
+            //        else {
+            //            if (hitBox.IsActive()) {
+            //                hitBox.Deactivate();
+            //            }
+            //        }
+            //    }
+            //}
+
             private void FrameUpdate(int frameIndex) {
-                //activeHitBoxes.Clear();
+                foreach (HitBox hitBox in activeHitBoxes) {
+                    if (!previousActiveHitBoxes.Contains(hitBox)) {
+                        if (!hitBox.IsActive()) {
+                            hitBox.Activate();
+                        }
+                    }
+                }
+
+                foreach (HitBox hitBox in previousActiveHitBoxes) {
+                    if (!activeHitBoxes.Contains(hitBox)) {
+                        if (hitBox.IsActive()) {
+                            hitBox.Deactivate();
+                        }
+                    }
+                }
+            }
+
+            private void ResetActivePolling(int frameIndex) {
+                previousActiveHitBoxes = activeHitBoxes;
+                activeHitBoxes = new List<HitBox>();
             }
 
             public void RegisterHitBox(HitBox hitBox) {

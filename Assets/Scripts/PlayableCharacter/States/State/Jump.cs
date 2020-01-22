@@ -59,7 +59,7 @@ namespace ResonantSpark {
                         Debug.Log("Jump didn't have a dirPress");
                         break;
                 }
-                fgChar.Play("jump_start", 0, 0.0f);
+                fgChar.Play("jump_start");
                 startFrame = frameIndex;
                 frameCount = 0;
                 leavingGround = true;
@@ -74,7 +74,7 @@ namespace ResonantSpark {
                     jumpImpulse.z = jumpImpulse.z * (1 - (localVelocity.z / maxSpeed));
 
                     fgChar.rigidbody.AddRelativeForce(jumpImpulse, ForceMode.Impulse);
-                    fgChar.Play("jump", 0, 0.0f);
+                    fgChar.Play("jump");
                 }
                 else if (frameCount > 4) {
                     fgChar.rigidbody.AddForce(gravityExtra, ForceMode.Acceleration);
