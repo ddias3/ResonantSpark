@@ -24,12 +24,10 @@ namespace ResonantSpark {
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
+                                .ChainCancellable(false)
                                 .From(1)
                                     .HitBox()
-                                    .ChainCancellable(false)
                                 .To(8)
-                                .From(6)
-                                    .ChainCancellable(true)
                                 .From(8)
                                     .HitBox(h => {
                                         h.Relative(fgChar.gameObject.transform);
@@ -48,7 +46,8 @@ namespace ResonantSpark {
                                 .To(10)
                                 .From(10)
                                     .HitBox()
-                                .To(16);
+                                    .ChainCancellable(true)
+                                .To(22);
                             })
                         );
                     });
@@ -109,7 +108,7 @@ namespace ResonantSpark {
                                 //.To(14)
                                 .From(14)
                                     .HitBox()
-                                .To(20);
+                                .To(30);
                             })
                         );
                     });
@@ -224,7 +223,7 @@ namespace ResonantSpark {
                     });
 
                     charBuilder
-                        .Attack(atkReg5A, charState => {
+                        .Attack(atkReg5A, (charState, currAttack) => {
                                 // I've decided that this line of code will be handled by the config above.
                                 //   This code will only handle whether a move may be called during the current attack/non-attack
                             //if (charState.orientation == Orientation.REGULAR && charState.ground == GroundRelation.STAND) {
@@ -236,35 +235,35 @@ namespace ResonantSpark {
                             //    charState.activeAttack == charState.Name("regular_2A")) {
                             //    return true;
                             //}
-                            if (charState.attack == null) {
+                            if (currAttack == null) {
                                 return true;
                             }
                             return false;
                         })
-                        .Attack(atkReg5AA, charState => {
-                            if (charState.attack == atkReg5A) {
+                        .Attack(atkReg5AA, (charState, currAttack) => {
+                            if (currAttack == atkReg5A) {
                                 return true;
                             }
                             return false;
                         })
-                        .Attack(atkGfy5A, charState => {
+                        .Attack(atkGfy5A, (charState, currAttack) => {
                             //if (charState.activeAttack == null ||
                             //    charState.activeAttack == charState.Notation(InputNotation._2A, Orientation.GOOFY, GroundRelation.CROUCH)) {
                             //    return true;
                             //}
-                            if (charState.attack == null) {
+                            if (currAttack == null) {
                                 return true;
                             }
                             return false;
                         })
-                        .Attack(atkGfy5AA, charState => {
-                            if (charState.attack == atkGfy5A) {
+                        .Attack(atkGfy5AA, (charState, currAttack) => {
+                            if (currAttack == atkGfy5A) {
                                 return true;
                             }
                             return false;
                         })
-                        .Attack(atkGfy5AAh, charState => {
-                            if (charState.attack == atkGfy5A) {
+                        .Attack(atkGfy5AAh, (charState, currAttack) => {
+                            if (currAttack == atkGfy5A) {
                                 return true;
                             }
                             return false;

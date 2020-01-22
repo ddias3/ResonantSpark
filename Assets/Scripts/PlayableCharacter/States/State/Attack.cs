@@ -10,14 +10,15 @@ namespace ResonantSpark {
     namespace CharacterStates {
         public class Attack : BaseState {
 
-            public CharacterData charData { get; set; }
-
             private Action onCompleteAttack;
+
+            private InputNotation notation;
 
             private FightingGameInputCodeBut button;
             private FightingGameInputCodeDir direction;
 
             private CharacterProperties.Attack activeAttack;
+            private CharacterProperties.Attack queuedUpAttack;
 
             public new void Awake() {
                 base.Awake();
@@ -37,24 +38,11 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
-                button = FightingGameInputCodeBut.None;
-                direction = FightingGameInputCodeDir.None;
-
                     // Start OnEnter with this
                 GivenInput(fgChar.GivenCombinations());
 
-                InputNotation notation = SelectInputNotation();
-
-                List<CharacterProperties.Attack> attack = charData.SelectAttacks(fgChar.GetOrientation(), fgChar.GetGroundRelation(), notation);
-
-                if (attack.Count == 0) {
-                    Debug.LogFormat(LogType.Exception, LogOption.None, this, "Missing attack given conditions: {0}, {1}, {2}", fgChar.GetOrientation(), fgChar.GetGroundRelation(), notation);
-                    throw new InvalidOperationException("Missing attack given conditions.");
-                }
-                
-
-                // FOR NOW ONLY, just do this
-                activeAttack = attack[0];
+                activeAttack = queuedUpAttack;
+                queuedUpAttack = null;
 
                 activeAttack.StartPerformable(frameIndex);
                 activeAttack.SetOnCompleteCallback(onCompleteAttack);
@@ -67,68 +55,7 @@ namespace ResonantSpark {
             }
 
             public override void Exit(int frameIndex) {
-                // do nothing
-            }
-
-            private InputNotation SelectInputNotation() {
-                InputNotation notation = InputNotation.None;
-
-                switch (button) {
-                    case FightingGameInputCodeBut.A:
-                        switch (direction) {
-                            case FightingGameInputCodeDir.Neutral:
-                            case FightingGameInputCodeDir.None:
-                                notation = InputNotation._5A;
-                                break;
-                            case FightingGameInputCodeDir.DownLeft:
-                            case FightingGameInputCodeDir.Down:
-                            case FightingGameInputCodeDir.DownRight:
-                                notation = InputNotation._2A;
-                                break;
-                        }
-                        break;
-                    case FightingGameInputCodeBut.B:
-                        switch (direction) {
-                            case FightingGameInputCodeDir.Neutral:
-                            case FightingGameInputCodeDir.None:
-                                notation = InputNotation._5B;
-                                break;
-                            case FightingGameInputCodeDir.DownLeft:
-                            case FightingGameInputCodeDir.Down:
-                            case FightingGameInputCodeDir.DownRight:
-                                notation = InputNotation._2B;
-                                break;
-                        }
-                        break;
-                    case FightingGameInputCodeBut.C:
-                        switch (direction) {
-                            case FightingGameInputCodeDir.Neutral:
-                            case FightingGameInputCodeDir.None:
-                                notation = InputNotation._5C;
-                                break;
-                            case FightingGameInputCodeDir.DownLeft:
-                            case FightingGameInputCodeDir.Down:
-                            case FightingGameInputCodeDir.DownRight:
-                                notation = InputNotation._2C;
-                                break;
-                        }
-                        break;
-                    case FightingGameInputCodeBut.D:
-                        switch (direction) {
-                            case FightingGameInputCodeDir.Neutral:
-                            case FightingGameInputCodeDir.None:
-                                notation = InputNotation._5D;
-                                break;
-                            case FightingGameInputCodeDir.DownLeft:
-                            case FightingGameInputCodeDir.Down:
-                            case FightingGameInputCodeDir.DownRight:
-                                notation = InputNotation._2D;
-                                break;
-                        }
-                        break;
-                }
-
-                return notation;
+                activeAttack = null;
             }
 
             public void OnCompleteAttack() {
@@ -147,19 +74,21 @@ namespace ResonantSpark {
                 activeAttack = null;
             }
 
+            public void SetActiveAttack(CharacterProperties.Attack atk) {
+                queuedUpAttack = atk;
+                changeState(this);
+            }
+
             private void OnDirectionPress(Action stop, Combination combo) {
-                // TODO: figure out the stuff on attack
+                direction = ((DirectionPress) combo).direction;
             }
 
             private void OnButtonPress(Action stop, Combination combo) {
-                if (activeAttack == null) {
-                    fgChar.UseCombination(combo);
-                    stop();
-                    changeState(states.Get("attack"));
-                }
+                button = ((ButtonPress) combo).button0;
 
-                if (activeAttack.ChainCancellable()) {
-
+                if (activeAttack == null || activeAttack.ChainCancellable()) {
+                        // TODO: I need to change the input buffer to look further into the future than the input delay for a direction press.
+                    fgChar.ChooseAttack(this, activeAttack, button, direction);
                 }
             }
 

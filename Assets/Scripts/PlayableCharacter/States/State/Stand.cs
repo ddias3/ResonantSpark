@@ -182,12 +182,9 @@ namespace ResonantSpark {
                 var buttonPress = (ButtonPress) combo;
 
                 if (buttonPress.button0 != FightingGameInputCodeBut.S) {
-                    fgChar.UseCombination(combo);
-                        // TODO: Create a way to also supply the DirectionCurrent.
-                        //   something like this:
-                        //      stop((dirCurrent) => { fgChar.UseCombination(dirCurrent); });
+                        // TODO: I need to change the input buffer to look further into the future than the input delay for a direction press.
+                    fgChar.ChooseAttack(this, null, buttonPress.button0, this.dirPress);
                     stop();
-                    changeState(states.Get("attack"));
                 }
             }
 

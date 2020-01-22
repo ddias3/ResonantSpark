@@ -20,6 +20,7 @@ namespace ResonantSpark {
             public Orientation orientation { get; private set; }
             public GroundRelation groundRelation { get; private set; }
             public InputNotation input { get; private set; }
+            public int priority { get; private set; }
             public string animStateName { get; private set; }
             public List<FrameState> frames { get; private set; }
             public List<HitBox> hitBoxes { get; private set; }
@@ -55,6 +56,7 @@ namespace ResonantSpark {
                 orientation = attackBuilder.orientation;
                 groundRelation = attackBuilder.groundRelation;
                 input = attackBuilder.input;
+                priority = 1;
                 animStateName = attackBuilder.animStateName;
 
                 frames = attackBuilder.GetFrames();
