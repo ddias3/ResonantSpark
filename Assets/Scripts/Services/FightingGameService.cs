@@ -18,6 +18,7 @@ namespace ResonantSpark {
             private PlayerService playerService;
             private FightingGameService fgService;
             private PersistenceService persistenceService;
+            private UIService uiService;
 
             private FrameEnforcer frame;
 
@@ -28,6 +29,7 @@ namespace ResonantSpark {
                 playerService = GetComponent<PlayerService>();
                 fgService = GetComponent<FightingGameService>();
                 persistenceService = GetComponent<PersistenceService>();
+                uiService = GetComponent<UIService>();
 
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(FightingGameService));
             }
@@ -41,7 +43,7 @@ namespace ResonantSpark {
             }
 
             public void SetUpGamemode() {
-                gamemode.SetUp(playerService, fgService);
+                gamemode.SetUp(playerService, fgService, uiService);
             }
 
             public Transform GetSpawnPoint() {
@@ -50,10 +52,6 @@ namespace ResonantSpark {
 
             public float GetSpawnPointOffset() {
                 return offset;
-            }
-
-            public Transform GetCharacterRoot(FightingGameCharacter fgChar) {
-                throw new System.NotImplementedException();
             }
         }
     }

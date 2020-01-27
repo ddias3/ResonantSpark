@@ -10,12 +10,16 @@ using System.Collections;
 namespace ResonantSpark {
     namespace Character {
         public class CharacterData {
+            public int maxHealth { get; private set; }
+
             private Dictionary<string, Attack> attacks;
             private Dictionary<Attack, Func<CharacterStates.BaseState, Attack, bool>> attackSelectableCallbackMap;
 
-            public CharacterData() {
+            public CharacterData(int maxHealth) {
                 attacks = new Dictionary<string, Attack>();
                 attackSelectableCallbackMap = new Dictionary<Attack, Func<CharacterStates.BaseState, Attack, bool>>();
+
+                this.maxHealth = maxHealth;
             }
 
             public void AddAttack(Attack attack) {

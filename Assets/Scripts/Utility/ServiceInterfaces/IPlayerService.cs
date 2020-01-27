@@ -12,6 +12,7 @@ namespace ResonantSpark {
             void StartCharacterBuild(Action<FightingGameCharacter> fgCharCallback = null);
             void SetCharacterSelected(int playerId, ICharacterBuilder charSelected);
             FightingGameCharacter GetFGChar(int playerIndex);
+            void EachFGChar(Action<int, FightingGameCharacter> callback);
         }
     }
 }

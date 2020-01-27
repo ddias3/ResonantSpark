@@ -11,6 +11,7 @@ namespace ResonantSpark {
     namespace CharacterProperties {
         public class CharacterPropertiesBuilder : ICharacterPropertiesCallbackObj {
             protected string version;
+            protected int maxHealth = 10000;
             protected List<(Attack, Func<CharacterStates.BaseState, Attack, bool>)> attacks { get; private set; }
 
             protected AllServices services;
@@ -39,6 +40,11 @@ namespace ResonantSpark {
             //public void BuildMovement() {
             //    
             //}
+
+            public ICharacterPropertiesCallbackObj MaxHealth(int maxHealth) {
+                this.maxHealth = maxHealth;
+                return this;
+            }
 
             public ICharacterPropertiesCallbackObj MaxJumpHeight(float maxJumpHeight) {
                 //TODO: Figure out how to connect this

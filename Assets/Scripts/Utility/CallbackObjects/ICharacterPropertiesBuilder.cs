@@ -8,6 +8,7 @@ namespace ResonantSpark {
     namespace Builder {
         public interface ICharacterPropertiesCallbackObj {
             ICharacterPropertiesCallbackObj Version(string version);
+            ICharacterPropertiesCallbackObj MaxHealth(int maxHealth);
             ICharacterPropertiesCallbackObj WalkSpeed(float speed);
             ICharacterPropertiesCallbackObj WalkSpeed(Func<CharacterStates.BaseState, float> callback);
             ICharacterPropertiesCallbackObj RunSpeed(float speed);

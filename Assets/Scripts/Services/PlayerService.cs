@@ -71,6 +71,12 @@ namespace ResonantSpark {
             public FightingGameCharacter GetFGChar(int playerIndex) {
                 return fgChars[playerIndex];
             }
+
+            public void EachFGChar(Action<int, FightingGameCharacter> callback) {
+                foreach (KeyValuePair<int, FightingGameCharacter> kvp in fgChars) {
+                    callback(kvp.Key, kvp.Value);
+                }
+            }
         }
     }
 }

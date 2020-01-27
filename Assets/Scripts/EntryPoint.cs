@@ -29,6 +29,7 @@ namespace ResonantSpark {
             typeof(PersistenceService),
             typeof(PlayerService),
             typeof(ProjectileService),
+            typeof(UIService),
         };
 
         public void Start() {
