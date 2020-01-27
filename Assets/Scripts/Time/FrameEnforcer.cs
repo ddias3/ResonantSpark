@@ -18,6 +18,8 @@ namespace ResonantSpark {
     [RequireComponent(typeof(GameTimeManager))]
     public class FrameEnforcer : MonoBehaviour {
 
+        public static float FRAME_TIME = 1f / 60.0f; // 1 sec over 60 frames
+
         private class FrameEnforcerCallback : IComparable<FrameEnforcerCallback> {
             public int priority;
             public Action<int> callback;
@@ -36,7 +38,6 @@ namespace ResonantSpark {
         private List<FrameEnforcerCallback> updateActions = new List<FrameEnforcerCallback>();
         private GameTimeManager gameTime;
 
-        private const float FRAME_TIME = 1f / 60.0f; // 1 sec over 60 frames
         private float elapsedTime = 0f;
 
         private int frameIndex = 0;

@@ -36,6 +36,11 @@ namespace ResonantSpark {
 
             public new Rigidbody rigidbody { get; private set; }
 
+            public int maxHealth {
+                get { return charData.maxHealth; }
+            }
+            public int health { get; private set; }
+
             private bool facingRight = true;
 
             private CharacterData charData;
@@ -56,6 +61,8 @@ namespace ResonantSpark {
 
                 this.charData = charData;
                 teamId = 0;
+
+                health = charData.maxHealth;
 
                 inputDoNothingList = new List<Combination> { ScriptableObject.CreateInstance<DirectionCurrent>().Init(0, Input.FightingGameInputCodeDir.Neutral) };
 
@@ -282,6 +289,10 @@ namespace ResonantSpark {
             public GroundRelation GetGroundRelation() {
                 // TODO: Figure out how to get this value into FGChar
                 return GroundRelation.STAND;
+            }
+
+            public void ResetHealth() {
+                health = this.charData.maxHealth;
             }
 
             public void Play(string animationState) {

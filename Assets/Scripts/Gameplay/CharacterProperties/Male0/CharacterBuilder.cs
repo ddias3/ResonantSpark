@@ -46,7 +46,7 @@ namespace ResonantSpark {
                     }
 
                     public void SetUpCharacter(FightingGameCharacter fgChar) {
-                        CharacterData charData = new CharacterData();
+                        CharacterData charData = new CharacterData(this.maxHealth);
 
                         BuildAttacks(charData);
                         //BuildMovement(charData);
