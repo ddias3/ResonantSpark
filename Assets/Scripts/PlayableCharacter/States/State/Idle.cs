@@ -5,6 +5,7 @@ using UnityEngine;
 
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Input;
+using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -34,6 +35,10 @@ namespace ResonantSpark {
 
             public override void Exit(int frameIndex) {
                 // do nothing
+            }
+
+            public override GroundRelation GetGroundRelation() {
+                return GroundRelation.GROUNDED;
             }
 
             private void OnDirectionCurrent(Action stop, Combination combo) {

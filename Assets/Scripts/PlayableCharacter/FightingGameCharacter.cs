@@ -252,6 +252,20 @@ namespace ResonantSpark {
                 return checkDistance > 0.0f && Physics.Raycast(rigidbody.position + (Vector3.up * 0.1f), Vector3.down, out hitInfo, checkDistance + 0.1f, groundRaycastMask, QueryTriggerInteraction.Ignore);
             }
 
+            public void PushAway(float maxDistance, FightingGameCharacter otherChar) {
+                float oneMinusDistance = maxDistance - Vector3.Distance(otherChar.transform.position, transform.position);
+                Vector3 force = 1000.0f * oneMinusDistance * (otherChar.transform.position - transform.position).normalized;
+                force.y = 0;
+
+                //TODO: Decrease the force from the one actually doing the pushing.
+                rigidbody.AddForce(-0.2f * force);
+                otherChar.AddForce(0.8f * force);
+            }
+
+            public void AddForce(Vector3 force) {
+                rigidbody.AddForce(force, ForceMode.Force);
+            }
+
             //protected void StickToGroundHelper(float downwardDistance) {
             //    RaycastHit hitInfo;
             //    if (Physics.SphereCast(rigidbody.position + player.legsCollider.center + (Vector3.up * (0.02f - 0.5f * player.legsCollider.height + player.legsCollider.radius)),
@@ -326,8 +340,7 @@ namespace ResonantSpark {
             }
 
             public GroundRelation GetGroundRelation() {
-                // TODO: Figure out how to get this value into FGChar
-                return GroundRelation.STAND;
+                return ((CharacterStates.BaseState) stateMachine.GetCurrentState()).GetGroundRelation();
             }
 
             public void Play(string animationState) {

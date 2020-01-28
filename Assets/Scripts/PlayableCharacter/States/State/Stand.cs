@@ -5,6 +5,7 @@ using UnityEngine;
 
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Input;
+using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -130,6 +131,10 @@ namespace ResonantSpark {
 
             private void AnimateCharacter(Vector3 localVelocity, Vector3 localInput) {
 
+            }
+
+            public override GroundRelation GetGroundRelation() {
+                return GroundRelation.GROUNDED;
             }
 
             private void StateSelectOnUpJump(Action stop, Combination combo) {

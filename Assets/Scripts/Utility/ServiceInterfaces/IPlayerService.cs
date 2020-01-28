@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using ResonantSpark.Gameplay;
 using ResonantSpark.Input;
@@ -13,6 +14,7 @@ namespace ResonantSpark {
             void SetCharacterSelected(int playerId, ICharacterBuilder charSelected);
             FightingGameCharacter GetFGChar(int playerIndex);
             void EachFGChar(Action<int, FightingGameCharacter> callback);
+            void OneToOthers(Action<int, FightingGameCharacter, List<FightingGameCharacter>> callback);
         }
     }
 }
