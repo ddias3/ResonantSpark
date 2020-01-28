@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Input.Combinations;
+using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace CharacterStates {
+            //TODO: Create a HitStunStanding, and a HitStunAirborne
         public class HitStun : BaseState {
 
             public new void Awake() {
@@ -33,6 +35,10 @@ namespace ResonantSpark {
 
             public override void Exit(int frameIndex) {
                 // do nothing
+            }
+
+            public override GroundRelation GetGroundRelation() {
+                return GroundRelation.GROUNDED;
             }
 
             private void OnDirectionPress(Action stop, Combination combo) {

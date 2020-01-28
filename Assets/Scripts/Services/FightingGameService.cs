@@ -30,6 +30,7 @@ namespace ResonantSpark {
 
             public void Start() {
                 frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
+                frame.AddUpdate((int)FramePriority.Service, new System.Action<int>(FrameUpdate));
                 playerService = GetComponent<PlayerService>();
                 fgService = GetComponent<FightingGameService>();
                 persistenceService = GetComponent<PersistenceService>();
@@ -55,6 +56,20 @@ namespace ResonantSpark {
             public void SetUpGamemode() {
                 gamemode.SetUp(playerService, fgService, uiService);
                 camera.SetUpCamera(cameraStart);
+            }
+
+            private void FrameUpdate(int frameIndex) {
+                playerService.OneToOthers((id, fgChar, others) => {
+                    for (int n = 0; n < others.Count; ++n) {
+                        //Debug.LogFormat("#{0} : distance from other[{1}] = {2}", id, others[n].id, Vector3.Distance(fgChar.transform.position, others[n].transform.position));
+
+                        if (others[n].GetGroundRelation() == Character.GroundRelation.GROUNDED) {
+                            if (Vector3.Distance(fgChar.transform.position, others[n].transform.position) < 0.68f) {
+                                fgChar.PushAway(0.68f, others[n]);
+                            }
+                        }
+                    }
+                });
             }
 
             public Transform GetSpawnPoint() {

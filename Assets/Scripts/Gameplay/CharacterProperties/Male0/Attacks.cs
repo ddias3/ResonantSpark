@@ -18,7 +18,7 @@ namespace ResonantSpark {
                     Attack atkReg5A = new Attack(atkBuilder => { atkBuilder
                         .Name("regular_5A")
                         .Orientation(Orientation.REGULAR)
-                        .GroundRelation(GroundRelation.STAND)
+                        .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._5A)
                         .AnimationState("regular_5A")
                         .Frames(
@@ -55,7 +55,7 @@ namespace ResonantSpark {
                     Attack atkReg5AA = new Attack(atkBuilder => { atkBuilder
                         .Name("regular_5AA")
                         .Orientation(Orientation.REGULAR)
-                        .GroundRelation(GroundRelation.STAND)
+                        .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._5A)
                         .AnimationState("regular_5AA")
                         .Frames(
@@ -116,7 +116,7 @@ namespace ResonantSpark {
                     Attack atkGfy5A = new Attack(atkBuilder => { atkBuilder
                         .Name("goofy_5A")
                         .Orientation(Orientation.GOOFY)
-                        .GroundRelation(GroundRelation.STAND)
+                        .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._5A)
                         .AnimationState("goofy_5A")
                         .Frames(
@@ -155,7 +155,7 @@ namespace ResonantSpark {
                     Attack atkGfy5AA = new Attack(atkBuilder => { atkBuilder
                         .Name("goofy_5AA")
                         .Orientation(Orientation.GOOFY)
-                        .GroundRelation(GroundRelation.STAND)
+                        .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._5A)
                         .AnimationState("goofy_5AA")
                         .Frames(
@@ -190,7 +190,7 @@ namespace ResonantSpark {
                     Attack atkGfy5AAh = new Attack(atkBuilder => { atkBuilder
                         .Name("goofy_5A[A]")
                         .Orientation(Orientation.GOOFY)
-                        .GroundRelation(GroundRelation.STAND)
+                        .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._5Ah)
                         .AnimationState("goofy_5A[A]")
                         .Frames(

@@ -4,6 +4,7 @@ using UnityEngine;
 
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Gameplay;
+using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -80,6 +81,8 @@ namespace ResonantSpark {
             public abstract void Enter(int frameIndex, IState previousState);
             public abstract void Execute(int frameIndex);
             public abstract void Exit(int frameIndex);
+
+            public abstract GroundRelation GetGroundRelation();
 
             public struct CallbackRegistry {
                 private Dictionary<Type, Action<Action, Combination>> callbackMap;

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Input.Combinations;
+using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -44,8 +45,12 @@ namespace ResonantSpark {
                 // do nothing
             }
 
-                // TODO: Check to make sure this works. I THINK that if these functions are omitted, then the inputs that are in the buffer
-                //      will remain there and be present for the next state that can serve them.
+            public override GroundRelation GetGroundRelation() {
+                return GroundRelation.GROUNDED;
+            }
+
+            // TODO: Check to make sure this works. I THINK that if these functions are omitted, then the inputs that are in the buffer
+            //      will remain there and be present for the next state that can serve them.
             //private void OnDirectionPress(Action stop, Combination combo) {
             //    if (frameCount >= 4) {
             //        var dirPress = (DirectionPress)combo;

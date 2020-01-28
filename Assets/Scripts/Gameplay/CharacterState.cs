@@ -21,8 +21,8 @@ namespace ResonantSpark {
         }
 
         public enum GroundRelation : int {
-            STAND,
-            CROUCH,
+            AMBIGUOUS = 0,
+            GROUNDED,
             AIRBORNE,
             DOWN,
         }

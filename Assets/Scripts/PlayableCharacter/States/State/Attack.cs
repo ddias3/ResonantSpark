@@ -79,6 +79,10 @@ namespace ResonantSpark {
                 changeState(this);
             }
 
+            public override GroundRelation GetGroundRelation() {
+                return GroundRelation.GROUNDED;
+            }
+
             private void OnDirectionPress(Action stop, Combination combo) {
                 direction = fgChar.MapAbsoluteToRelative(((DirectionPress) combo).direction);
             }
