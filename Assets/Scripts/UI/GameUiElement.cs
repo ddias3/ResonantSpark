@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ResonantSpark {
     namespace UI {
-        public class InGameElement : MonoBehaviour {
+        public class GameUiElement : MonoBehaviour {
 
             protected GameTimeManager gameTime;
 

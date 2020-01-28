@@ -20,7 +20,7 @@ namespace ResonantSpark {
             private PlayerService playerService;
             private FightingGameService fgService;
             private PersistenceService persistenceService;
-            private UIService uiService;
+            private UiService uiService;
 
             private new FightingGameCamera camera;
 
@@ -34,7 +34,7 @@ namespace ResonantSpark {
                 playerService = GetComponent<PlayerService>();
                 fgService = GetComponent<FightingGameService>();
                 persistenceService = GetComponent<PersistenceService>();
-                uiService = GetComponent<UIService>();
+                uiService = GetComponent<UiService>();
 
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(FightingGameService));
             }

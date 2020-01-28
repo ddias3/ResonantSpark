@@ -6,14 +6,14 @@ using ResonantSpark.UI;
 
 namespace ResonantSpark {
     namespace Service {
-        public class UIService : MonoBehaviour, IUIService {
+        public class UiService : MonoBehaviour, IUiService {
 
             public HealthBar healthBarP0;
             public HealthBar healthBarP1;
             public RoundTimer roundTimer;
 
             public void Start() {
-                EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(UIService));
+                EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(UiService));
             }
 
             public void SetTime(float time) {
