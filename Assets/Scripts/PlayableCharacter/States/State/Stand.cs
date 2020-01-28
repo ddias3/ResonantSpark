@@ -57,10 +57,11 @@ namespace ResonantSpark {
 
                 GivenInput(fgChar.GivenCombinations());
 
-                int cameraX = (((int)dirPress) - 1) % 3 - 1;
-                int cameraZ = (((int)dirPress) - 1) / 3 - 1;
+                //int forwardBackward = (((int) dirPress) - 1) % 3 - 1;
+                //int upDown          = (((int) dirPress) - 1) / 3 - 1;
 
-                smoothedInput = fgChar.CameraToChar(new Vector3(cameraX, 0, upJump ? 0 : cameraZ));
+                //smoothedInput = fgChar.CameraToWorld(new Vector3(forwardBackward, 0, upJump ? 0 : upDown));
+                smoothedInput = fgChar.RelativeInputToLocal(dirPress, upJump);
 
                 fgChar.SetLocalMoveDirection(0.0f, 0.0f);
                 fgChar.Play("stand");
@@ -71,13 +72,11 @@ namespace ResonantSpark {
 
                 //...((FightingGameInputCodeDir)((verticalInput + 1) * 3 + (horizontalInput + 1) + 1));
 
-                int cameraX = (((int) dirPress) - 1) % 3 - 1;
-                int cameraZ = (((int) dirPress) - 1) / 3 - 1;
-
                 //Debug.Log("FGInput = " + dirPress + " (" + ((int) dirPress) + ") | Char X = " + charX + ", Char Z = " + charZ);
 
                 Vector3 localVelocity = fgChar.GetLocalVelocity();
-                Vector3 localInput = fgChar.CameraToChar(new Vector3(cameraX, 0, upJump ? 0 : cameraZ));
+                //Vector3 localInput = fgChar.CameraToChar(new Vector3(cameraX, 0, upJump ? 0 : cameraZ));
+                Vector3 localInput = fgChar.RelativeInputToLocal(dirPress, upJump);
 
                     // Move the character
                 WalkCharacter(localVelocity, localInput);
@@ -135,20 +134,20 @@ namespace ResonantSpark {
 
             private void StateSelectOnUpJump(Action stop, Combination combo) {
                 switch (this.dirPress) {
-                    case FightingGameInputCodeDir.UpLeft:
+                    case FightingGameInputCodeDir.UpBack:
                     case FightingGameInputCodeDir.Up:
-                    case FightingGameInputCodeDir.UpRight:
+                    case FightingGameInputCodeDir.UpForward:
                         fgChar.UseCombination(combo);
                         stop();
                         changeState(states.Get("jump"));
                         break;
-                    case FightingGameInputCodeDir.Left:
-                    case FightingGameInputCodeDir.Right:
+                    case FightingGameInputCodeDir.Back:
+                    case FightingGameInputCodeDir.Forward:
                         stop();
                         break;
-                    case FightingGameInputCodeDir.DownLeft:
+                    case FightingGameInputCodeDir.DownBack:
                     case FightingGameInputCodeDir.Down:
-                    case FightingGameInputCodeDir.DownRight:
+                    case FightingGameInputCodeDir.DownForward:
                         fgChar.UseCombination(combo);
                         stop();
                         changeState(states.Get("crouch"));
@@ -158,7 +157,7 @@ namespace ResonantSpark {
 
             private void OnDirectionPress(Action stop, Combination combo) {
                 stop();
-                this.dirPress = ((DirectionPress) combo).direction;
+                this.dirPress = fgChar.MapAbsoluteToRelative(((DirectionPress) combo).direction);
                 if (upJump) {
                     StateSelectOnUpJump(stop, combo);
                 }
@@ -172,7 +171,8 @@ namespace ResonantSpark {
             }
 
             private void OnDirectionCurrent(Action stop, Combination combo) {
-                this.dirPress = ((DirectionCurrent) combo).direction;
+                //Debug.Log(((DirectionCurrent)combo).direction);
+                this.dirPress = fgChar.MapAbsoluteToRelative(((DirectionCurrent) combo).direction);
                 if (upJump) {
                     StateSelectOnUpJump(stop, combo);
                 }
@@ -195,19 +195,19 @@ namespace ResonantSpark {
             }
 
             private void GivenDirectionPress(Action stop, Combination combo) {
-                dirPress = ((DirectionPress) combo).direction;
+                dirPress = fgChar.MapAbsoluteToRelative(((DirectionPress) combo).direction);
             }
 
             private void GivenDirectionCurrent(Action stop, Combination combo) {
-                dirPress = ((DirectionCurrent) combo).direction;
+                dirPress = fgChar.MapAbsoluteToRelative(((DirectionCurrent) combo).direction);
             }
 
             private void GivenNeutralReturn(Action stop, Combination combo) {
-                dirPress = Input.FightingGameInputCodeDir.Neutral;
+                dirPress = fgChar.MapAbsoluteToRelative(Input.FightingGameAbsInputCodeDir.Neutral);
             }
 
             private void GivenNothing(Action stop, Combination combo) {
-                dirPress = Input.FightingGameInputCodeDir.Neutral;
+                dirPress = fgChar.MapAbsoluteToRelative(Input.FightingGameAbsInputCodeDir.Neutral);
             }
         }
     }

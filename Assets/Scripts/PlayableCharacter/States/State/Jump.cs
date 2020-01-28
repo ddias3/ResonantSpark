@@ -43,7 +43,7 @@ namespace ResonantSpark {
                 GivenInput(fgChar.GivenCombinations());
 
                 switch (jumpDir) {
-                    case FightingGameInputCodeDir.UpLeft:
+                    case FightingGameInputCodeDir.UpBack:
                         Debug.Log("Jump Impulse:(7) " + jumpImpulse);
                         jumpImpulse = jump7Impulse;
                         break;
@@ -51,7 +51,7 @@ namespace ResonantSpark {
                         Debug.Log("Jump Impulse:(8) " + jumpImpulse);
                         jumpImpulse = jump8Impulse;
                         break;
-                    case FightingGameInputCodeDir.UpRight:
+                    case FightingGameInputCodeDir.UpForward:
                         Debug.Log("Jump Impulse:(9) " + jumpImpulse);
                         jumpImpulse = jump9Impulse;
                         break;
@@ -117,11 +117,11 @@ namespace ResonantSpark {
             }
 
             private void GivenDirectionPress(Action stop, Combination combo) {
-                jumpDir = ((DirectionPress) combo).direction;
+                jumpDir = fgChar.MapAbsoluteToRelative(((DirectionPress) combo).direction);
             }
 
             private void GivenDirectionCurrent(Action stop, Combination combo) {
-                jumpDir = ((DirectionCurrent) combo).direction;
+                jumpDir = fgChar.MapAbsoluteToRelative(((DirectionCurrent) combo).direction);
             }
         }
     }

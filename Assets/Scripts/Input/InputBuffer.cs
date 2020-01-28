@@ -32,7 +32,7 @@ namespace ResonantSpark {
                 inputFactory = new Input.Factory();
                 inputBuffer = new GameInputStruct[bufferLength];
                 currState = new GameInputStruct {
-                    direction = FightingGameInputCodeDir.Neutral,
+                    direction = FightingGameAbsInputCodeDir.Neutral,
                     butA = false,
                     butB = false,
                     butC = false,
@@ -42,7 +42,7 @@ namespace ResonantSpark {
 
                 for (int n = 0; n < inputBuffer.Length; ++n) {
                     inputBuffer[n] = new GameInputStruct {
-                        direction = FightingGameInputCodeDir.Neutral,
+                        direction = FightingGameAbsInputCodeDir.Neutral,
                         butA = false,
                         butB = false,
                         butC = false,
@@ -54,8 +54,8 @@ namespace ResonantSpark {
                 inputCombinations = new List<Input.Combinations.Combination>();
             }
 
-            public void SetCurrentInputState(FightingGameInputCodeDir dirInputCode = FightingGameInputCodeDir.Neutral, int buttonInputCode = 0) {
-                currState.direction = dirInputCode != FightingGameInputCodeDir.None ? dirInputCode : FightingGameInputCodeDir.Neutral;
+            public void SetCurrentInputState(FightingGameAbsInputCodeDir dirInputCode = FightingGameAbsInputCodeDir.Neutral, int buttonInputCode = 0) {
+                currState.direction = dirInputCode != FightingGameAbsInputCodeDir.None ? dirInputCode : FightingGameAbsInputCodeDir.Neutral;
                 currState.butA = (buttonInputCode & (int) FightingGameInputCodeBut.A) != 0;
                 currState.butB = (buttonInputCode & (int) FightingGameInputCodeBut.B) != 0;
                 currState.butC = (buttonInputCode & (int) FightingGameInputCodeBut.C) != 0;
@@ -70,9 +70,9 @@ namespace ResonantSpark {
                 StepFrame();
             }
 
-            public FightingGameInputCodeDir GetLatestInput() {
+            public FightingGameAbsInputCodeDir GetLatestInput() {
                 int currIndex = (bufferLength + inputIndex - inputDelay) % bufferLength;
-                if (inputBuffer[currIndex].direction == FightingGameInputCodeDir.None) Debug.Break();
+                if (inputBuffer[currIndex].direction == FightingGameAbsInputCodeDir.None) Debug.Break();
                 return inputBuffer[currIndex].direction;
             }
 

@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Character;
 using ResonantSpark.Input;
+using ResonantSpark.Service;
 
 namespace ResonantSpark {
     namespace Gameplay {
@@ -26,6 +27,8 @@ namespace ResonantSpark {
             public int id { get; private set; }
             private int teamId;
 
+            private FightingGameService fgService;
+
             private Input.InputBuffer inputBuffer;
             private List<Combination> inputDoNothingList;
 
@@ -41,7 +44,7 @@ namespace ResonantSpark {
             }
             public int health { get; private set; }
 
-            private bool facingRight = true;
+            private Vector2 screenOrientation = Vector2.zero;
 
             private CharacterData charData;
 
@@ -64,7 +67,9 @@ namespace ResonantSpark {
 
                 health = charData.maxHealth;
 
-                inputDoNothingList = new List<Combination> { ScriptableObject.CreateInstance<DirectionCurrent>().Init(0, Input.FightingGameInputCodeDir.Neutral) };
+                fgService = GameObject.FindGameObjectWithTag("rspService").GetComponent<FightingGameService>();
+
+                inputDoNothingList = new List<Combination> { ScriptableObject.CreateInstance<DirectionCurrent>().Init(0, Input.FightingGameAbsInputCodeDir.Neutral) };
 
                 rigidbody = gameObject.GetComponent<Rigidbody>();
                 inUseCombinations = new List<Combination>();
@@ -82,6 +87,14 @@ namespace ResonantSpark {
             public FightingGameCharacter SetInputBuffer(Input.InputBuffer inputBuffer) {
                 this.inputBuffer = inputBuffer;
                 return this;
+            }
+
+            public void RoundReset() {
+                screenOrientation = fgService.ScreenOrientation(this);
+
+                health = charData.maxHealth;
+
+                stateMachine.Reset(); // TODO: Complete this functionality.
             }
 
             public void ChooseAttack(CharacterStates.BaseState currState, CharacterProperties.Attack currAttack, FightingGameInputCodeBut button, FightingGameInputCodeDir direction = FightingGameInputCodeDir.None) {
@@ -105,9 +118,9 @@ namespace ResonantSpark {
                             case FightingGameInputCodeDir.None:
                                 notation = InputNotation._5A;
                                 break;
-                            case FightingGameInputCodeDir.DownLeft:
+                            case FightingGameInputCodeDir.DownBack:
                             case FightingGameInputCodeDir.Down:
-                            case FightingGameInputCodeDir.DownRight:
+                            case FightingGameInputCodeDir.DownForward:
                                 notation = InputNotation._2A;
                                 break;
                             default:
@@ -121,9 +134,9 @@ namespace ResonantSpark {
                             case FightingGameInputCodeDir.None:
                                 notation = InputNotation._5B;
                                 break;
-                            case FightingGameInputCodeDir.DownLeft:
+                            case FightingGameInputCodeDir.DownBack:
                             case FightingGameInputCodeDir.Down:
-                            case FightingGameInputCodeDir.DownRight:
+                            case FightingGameInputCodeDir.DownForward:
                                 notation = InputNotation._2B;
                                 break;
                             default:
@@ -137,9 +150,9 @@ namespace ResonantSpark {
                             case FightingGameInputCodeDir.None:
                                 notation = InputNotation._5C;
                                 break;
-                            case FightingGameInputCodeDir.DownLeft:
+                            case FightingGameInputCodeDir.DownBack:
                             case FightingGameInputCodeDir.Down:
-                            case FightingGameInputCodeDir.DownRight:
+                            case FightingGameInputCodeDir.DownForward:
                                 notation = InputNotation._2C;
                                 break;
                             default:
@@ -153,9 +166,9 @@ namespace ResonantSpark {
                             case FightingGameInputCodeDir.None:
                                 notation = InputNotation._5D;
                                 break;
-                            case FightingGameInputCodeDir.DownLeft:
+                            case FightingGameInputCodeDir.DownBack:
                             case FightingGameInputCodeDir.Down:
-                            case FightingGameInputCodeDir.DownRight:
+                            case FightingGameInputCodeDir.DownForward:
                                 notation = InputNotation._2D;
                                 break;
                             default:
@@ -168,11 +181,46 @@ namespace ResonantSpark {
                 return notation;
             }
 
-            public void SetDirectionFacing(bool right) {
-                this.facingRight = right;
+            public void CalculateScreenOrientation() {
+                Vector2 newScreenOrientation = fgService.ScreenOrientation(this);
+                if (newScreenOrientation.x == 0) {
+                    newScreenOrientation = screenOrientation;
+                }
+                screenOrientation = newScreenOrientation;
+            }
+
+            public FightingGameInputCodeDir MapAbsoluteToRelative(FightingGameAbsInputCodeDir absInput) {
+                    //horizontal = ((((x - 1) mod 3) - 1) * orientation + 1);
+                    //vertical = floor((x - 1) / 3) * 3 + 1
+                FightingGameInputCodeDir temp = (FightingGameInputCodeDir) (((int) absInput - 1) / 3 * 3 + 1 + (int) (((((int) absInput - 1) % 3) - 1) * screenOrientation.x + 1));
+                //if (id == 0) Debug.Log((int) temp);
+                return temp;
+            }
+
+            public FightingGameAbsInputCodeDir MapRelativeToAbsolute(FightingGameInputCodeDir relInput) {
+                return (FightingGameAbsInputCodeDir) (int) MapAbsoluteToRelative((FightingGameAbsInputCodeDir) (int) relInput);
+            }
+
+            public Vector3 RelativeInputToLocal(FightingGameInputCodeDir relInput, bool upJump) {
+                int forwardBackward = (((int) relInput) - 1) % 3 - 1;
+                int upDown          = (((int) relInput) - 1) / 3 - 1;
+
+                Vector3 worldInput = new Vector3(forwardBackward, upDown, 0);
+                if (!upJump) {
+                    worldInput = Quaternion.Euler(90f, 0, 0) * worldInput;
+                }
+
+                    // This sure is arbitrary... I'm not sure I have the vectors correctly set up so
+                    //   the part that mirrors across from side to side is the Z-axis???
+                worldInput.z *= screenOrientation.x;
+
+                //if (id == 0) Debug.Log((Quaternion.Euler(0.0f, -90.0f, 0.0f) * worldInput).ToString("F3"));
+
+                return Quaternion.Euler(0.0f, -90.0f, 0.0f) * worldInput;
             }
 
             public void FixedUpdate() {
+                //if (id == 0) Debug.Log(screenOrientation.ToString("F2"));
                 //try {
                 //    charVelocity.text = "Vel = " + (Quaternion.Inverse(rigidbody.rotation) * rigidbody.velocity).ToString("F3");
                 //}
@@ -243,15 +291,6 @@ namespace ResonantSpark {
                 animator.SetFloat("charZ", z);
             }
 
-            public Vector3 CameraToChar(Vector3 input) {
-                if (facingRight) {
-                    return Quaternion.Euler(0.0f, -90.0f, 0.0f) * input;
-                }
-                else {
-                    return Quaternion.Euler(0.0f, 90.0f, 0.0f) * input;
-                }
-            }
-
             public void UseCombination(Combination combo) {
                 combo.inUse = true;
                 inUseCombinations.Add(combo);
@@ -289,10 +328,6 @@ namespace ResonantSpark {
             public GroundRelation GetGroundRelation() {
                 // TODO: Figure out how to get this value into FGChar
                 return GroundRelation.STAND;
-            }
-
-            public void ResetHealth() {
-                health = this.charData.maxHealth;
             }
 
             public void Play(string animationState) {

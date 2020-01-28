@@ -9,7 +9,7 @@ public class TestInput : MonoBehaviour {
 
     [Serializable]
     public class GameInputStructWrapper {
-        public FightingGameInputCodeDir[] direction;
+        public FightingGameAbsInputCodeDir[] direction;
         public bool[] buttonA;
         public bool[] buttonB;
         public bool[] buttonC;
@@ -18,7 +18,7 @@ public class TestInput : MonoBehaviour {
     }
 
     public bool autoInput = false;
-    public FightingGameInputCodeDir[] inputString;
+    public FightingGameAbsInputCodeDir[] inputString;
     public GameInputStructWrapper[] selectableStrings;
     public int test0 = 0;
     public int test1 = 1;
@@ -147,12 +147,12 @@ public class TestInput : MonoBehaviour {
             inputBuffer.breakPoint = true;
         }
 
-        FightingGameInputCodeDir fgInputCodeDir;
+        FightingGameAbsInputCodeDir fgInputCodeDir;
         if (autoInput && initAutoInput && frameCounter < selectableStrings[selectedInputString].direction.Length) {
             fgInputCodeDir = selectableStrings[selectedInputString].direction[frameCounter];
         }
         else {
-            fgInputCodeDir = (FightingGameInputCodeDir) ((verticalInput + 1) * 3 + (horizontalInput + 1) + 1);
+            fgInputCodeDir = (FightingGameAbsInputCodeDir) ((verticalInput + 1) * 3 + (horizontalInput + 1) + 1);
         }
 
         if (initAutoInput && frameCounter < selectableStrings[selectedInputString].buttonA.Length) {
@@ -180,7 +180,7 @@ public class TestInput : MonoBehaviour {
             immediateArrow.GetComponent<Transform>().rotation = Quaternion.Euler(0.0f, 0.0f, Mathf.Atan2(-horizontalInput, verticalInput) * Mathf.Rad2Deg);
         }
 
-        if (inputBuffer.GetLatestInput() == FightingGameInputCodeDir.Neutral || inputBuffer.GetLatestInput() == FightingGameInputCodeDir.None) {
+        if (inputBuffer.GetLatestInput() == FightingGameAbsInputCodeDir.Neutral || inputBuffer.GetLatestInput() == FightingGameAbsInputCodeDir.None) {
             bufferArrow.enabled = false;
         }
         else {

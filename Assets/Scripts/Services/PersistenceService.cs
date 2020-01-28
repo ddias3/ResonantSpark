@@ -60,6 +60,8 @@ namespace ResonantSpark {
 
             public GameObject oneOnOneRoundBasedPrefab;
 
+            public GameObject fightingGameCameraPrefab;
+
             public GameObject male0BuilderPrefab;
             public GameObject female0BuilderPrefab;
 
@@ -83,6 +85,16 @@ namespace ResonantSpark {
                         return oneOnOneRoundBasedPrefab;
                     case "training":
                         return null;
+                    default:
+                        return null;
+                }
+            }
+
+            public GameObject GetCamera() {
+                switch (gamemodeStr) {
+                    case "oneOnOneRoundBased":
+                    case "training":
+                        return fightingGameCameraPrefab;
                     default:
                         return null;
                 }

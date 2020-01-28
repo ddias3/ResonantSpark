@@ -4,7 +4,7 @@ namespace ResonantSpark {
     namespace Input {
 
         [Serializable]
-        public enum FightingGameInputCodeDir : int {
+        public enum FightingGameAbsInputCodeDir : int {
             // [7,8,9]       [A] [B] [S]
             // [4,5,6]       [D] [C]
             // [1,2,3]
@@ -20,6 +20,24 @@ namespace ResonantSpark {
             UpLeft,
             Up,
             UpRight,
+        };
+
+        public enum FightingGameInputCodeDir : int {
+            // [7,8,9]       [A] [B] [S]
+            // [4,5,6]       [D] [C]
+            // [1,2,3]
+
+            None = 0,
+
+            DownBack    = 1,
+            Down        = 2,
+            DownForward = 3,
+            Back        = 4,
+            Neutral     = 5,
+            Forward     = 6,
+            UpBack      = 7,
+            Up          = 8,
+            UpForward   = 9,
         };
 
         [Serializable]
@@ -65,7 +83,7 @@ namespace ResonantSpark {
 
         [Serializable]
         public struct GameInputStruct {
-            public FightingGameInputCodeDir direction;
+            public FightingGameAbsInputCodeDir direction;
             public bool butA;
             public bool butB;
             public bool butC;
@@ -79,41 +97,41 @@ namespace ResonantSpark {
                     butC = !inputStruct.butC,
                     butD = !inputStruct.butD,
                     butS = !inputStruct.butS,
-                    direction = (FightingGameInputCodeDir)(10 - (int) inputStruct.direction),
+                    direction = (FightingGameAbsInputCodeDir)(10 - (int) inputStruct.direction),
                 };
             }
 
             public new string ToString() {
                 string dir = "";
                 switch (direction) {
-                    case FightingGameInputCodeDir.None:
+                    case FightingGameAbsInputCodeDir.None:
                         dir += " ";
                         break;
-                    case FightingGameInputCodeDir.DownLeft:
+                    case FightingGameAbsInputCodeDir.DownLeft:
                         dir += "↙";
                         break;
-                    case FightingGameInputCodeDir.Down:
+                    case FightingGameAbsInputCodeDir.Down:
                         dir += "↓";
                         break;
-                    case FightingGameInputCodeDir.DownRight:
+                    case FightingGameAbsInputCodeDir.DownRight:
                         dir += "↘";
                         break;
-                    case FightingGameInputCodeDir.Left:
+                    case FightingGameAbsInputCodeDir.Left:
                         dir += "←";
                         break;
-                    case FightingGameInputCodeDir.Neutral:
+                    case FightingGameAbsInputCodeDir.Neutral:
                         dir += "⋅";
                         break;
-                    case FightingGameInputCodeDir.Right:
+                    case FightingGameAbsInputCodeDir.Right:
                         dir += "→";
                         break;
-                    case FightingGameInputCodeDir.UpLeft:
+                    case FightingGameAbsInputCodeDir.UpLeft:
                         dir += "↖";
                         break;
-                    case FightingGameInputCodeDir.Up:
+                    case FightingGameAbsInputCodeDir.Up:
                         dir += "↑";
                         break;
-                    case FightingGameInputCodeDir.UpRight:
+                    case FightingGameAbsInputCodeDir.UpRight:
                         dir += "↗";
                         break;
                 }

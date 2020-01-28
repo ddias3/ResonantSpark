@@ -106,7 +106,7 @@ namespace ResonantSpark {
             }
 
             public void FrameUpdate(int frameIndex) {
-                FightingGameInputCodeDir fgInputCodeDir = (FightingGameInputCodeDir) ((verticalInput + 1) * 3 + (horizontalInput + 1) + 1);
+                FightingGameAbsInputCodeDir fgInputCodeDir = (FightingGameAbsInputCodeDir) ((verticalInput + 1) * 3 + (horizontalInput + 1) + 1);
                 inputBuffer.SetCurrentInputState(fgInputCodeDir, buttonInputCode);
             }
         }
