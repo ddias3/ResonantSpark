@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace ResonantSpark {
     namespace UI {
-        public class RoundTimer : InGameElement {
+        public class RoundTimer : GameUiElement {
             public TextMeshProUGUI roundTimer;
 
             public void SetTime(float time) {

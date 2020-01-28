@@ -13,7 +13,7 @@ namespace ResonantSpark {
 
             public float roundTime = 60.0f;
             private PlayerService playerService;
-            private UIService uiService;
+            private UiService uiService;
             private FightingGameService fgService;
 
             private FightingGameCharacter char0;
@@ -44,7 +44,7 @@ namespace ResonantSpark {
                 EventManager.StartListening<Events.StartGame>(new UnityAction(StartGame));
             }
 
-            public void SetUp(PlayerService playerService, FightingGameService fgService, UIService uiService) {
+            public void SetUp(PlayerService playerService, FightingGameService fgService, UiService uiService) {
                 this.playerService = playerService;
                 this.fgService = fgService;
                 this.uiService = uiService;
