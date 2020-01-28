@@ -10,15 +10,19 @@ namespace ResonantSpark {
     namespace Service {
         public class FightingGameService : MonoBehaviour, IFightingGameService {
 
+            public GameObject mapCamera;
             public Vector3 underLevel = new Vector3(0, -100, 0);
             public Transform spawnPoint;
             public float offset = 3.0f;
             public Transform outOfBounds;
+            public Transform cameraStart;
 
             private PlayerService playerService;
             private FightingGameService fgService;
             private PersistenceService persistenceService;
             private UIService uiService;
+
+            private new FightingGameCamera camera;
 
             private FrameEnforcer frame;
 
@@ -39,11 +43,18 @@ namespace ResonantSpark {
                 newGameMode.name = "Gamemode";
                 this.gamemode = newGameMode.GetComponent<OneOnOneRoundBased>();
 
+                GameObject newCamera = GameObject.Instantiate(persistenceService.GetCamera());
+                newCamera.name = "FightingGameCamera";
+                this.camera = newCamera.GetComponent<FightingGameCamera>();
+
+                mapCamera.SetActive(false);
+
                 playerService.SetMaxPlayers(gamemode.GetMaxPlayers());
             }
 
             public void SetUpGamemode() {
                 gamemode.SetUp(playerService, fgService, uiService);
+                camera.SetUpCamera(cameraStart);
             }
 
             public Transform GetSpawnPoint() {
@@ -52,6 +63,14 @@ namespace ResonantSpark {
 
             public float GetSpawnPointOffset() {
                 return offset;
+            }
+
+            public void ResetCamera() {
+                camera.ResetCameraPosition();
+            }
+
+            public Vector2 ScreenOrientation(FightingGameCharacter fgChar) {
+                return camera.ScreenOrientation(fgChar.transform);
             }
         }
     }

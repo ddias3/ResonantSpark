@@ -27,8 +27,16 @@ namespace ResonantSpark {
 
             public new void Start() {
                 base.Start();
+
+                this.enabled = false;
                 anchorOffset = fillHealth.rectTransform.anchoredPosition.x;
                 fullHealthWidth = fillHealth.rectTransform.sizeDelta.x;
+
+                EventManager.StartListening<Events.StartGame>(new UnityEngine.Events.UnityAction(StartGame));
+            }
+
+            private void StartGame() {
+                this.enabled = true;
             }
 
             public void SetMaxHealth(int maxHealth) {

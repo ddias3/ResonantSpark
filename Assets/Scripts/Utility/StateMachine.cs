@@ -11,6 +11,8 @@ namespace ResonantSpark {
         public string currStateName;
 #endif
 
+        private IState initState;
+
         private IState curr;
         private List<IState> nextStates;
         private Action<IState> changeStateCallback;
@@ -56,12 +58,18 @@ namespace ResonantSpark {
 
             frame.AddUpdate((int) FramePriority.StateMachine, new Action<int>(Execute));
             curr = startState;
+            initState = startState;
 
             stateDict.Each(state => {
                 state.OnStateMachineEnable(changeStateCallback);
             });
 
             startState.Enter(-1, null);
+        }
+
+        public void Reset() {
+            //TODO: Reset StateMachine
+            //   I'm not sure I like this design, so far
         }
 
         private void ChangeState(int frameIndex) {

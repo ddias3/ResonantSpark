@@ -42,9 +42,9 @@ namespace ResonantSpark {
             private void OnDirectionPress(Action stop, Combination combo) {
                 var dirPress = combo as DirectionPress;
                 switch (dirPress.direction) {
-                    case FightingGameInputCodeDir.UpLeft:
-                    case FightingGameInputCodeDir.Up:
-                    case FightingGameInputCodeDir.UpRight:
+                    case FightingGameAbsInputCodeDir.UpLeft:
+                    case FightingGameAbsInputCodeDir.Up:
+                    case FightingGameAbsInputCodeDir.UpRight:
                         fgChar.UseCombination(dirPress);
                         stop();
                         changeState(states.Get("jump"));
@@ -72,9 +72,9 @@ namespace ResonantSpark {
 
             private void OnDirectionCurrent(Action stop, Combination combo) {
                 var curr = (DirectionCurrent) combo;
-                if (curr.direction != FightingGameInputCodeDir.DownLeft &&
-                    curr.direction != FightingGameInputCodeDir.Down &&
-                    curr.direction != FightingGameInputCodeDir.DownRight) {
+                if (curr.direction != FightingGameAbsInputCodeDir.DownLeft &&
+                    curr.direction != FightingGameAbsInputCodeDir.Down &&
+                    curr.direction != FightingGameAbsInputCodeDir.DownRight) {
                     changeState(states.Get("stand"));
                 }
             }

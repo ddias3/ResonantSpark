@@ -9,6 +9,7 @@ namespace ResonantSpark {
             void SetUpGamemode();
             Transform GetSpawnPoint();
             float GetSpawnPointOffset();
+            void ResetCamera();
         }
     }
 }

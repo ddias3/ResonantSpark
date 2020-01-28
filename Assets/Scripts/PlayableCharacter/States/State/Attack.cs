@@ -61,9 +61,9 @@ namespace ResonantSpark {
             public void OnCompleteAttack() {
                 //TODO: Choose a new attack, which is also possible.
                 switch (direction) {
-                    case FightingGameInputCodeDir.DownLeft:
+                    case FightingGameInputCodeDir.DownBack:
                     case FightingGameInputCodeDir.Down:
-                    case FightingGameInputCodeDir.DownRight:
+                    case FightingGameInputCodeDir.DownForward:
                         changeState(states.Get("crouch"));
                         break;
                     default:
@@ -80,7 +80,7 @@ namespace ResonantSpark {
             }
 
             private void OnDirectionPress(Action stop, Combination combo) {
-                direction = ((DirectionPress) combo).direction;
+                direction = fgChar.MapAbsoluteToRelative(((DirectionPress) combo).direction);
             }
 
             private void OnButtonPress(Action stop, Combination combo) {
@@ -97,11 +97,11 @@ namespace ResonantSpark {
             }
 
             private void GivenDirectionPress(Action stop, Combination combo) {
-                direction = ((DirectionPress) combo).direction;
+                direction = fgChar.MapAbsoluteToRelative(((DirectionPress) combo).direction);
             }
 
             private void OnDirectionCurrent(Action stop, Combination combo) {
-                direction = ((DirectionCurrent) combo).direction;
+                direction = fgChar.MapAbsoluteToRelative(((DirectionCurrent) combo).direction);
             }
         }
     }

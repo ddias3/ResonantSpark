@@ -96,7 +96,7 @@ namespace ResonantSpark {
                 }
                 else {
                     curr = new GameInputStruct {
-                        direction = FightingGameInputCodeDir.None,
+                        direction = FightingGameAbsInputCodeDir.None,
                         butA = false,
                         butB = false,
                         butC = false,
@@ -115,7 +115,7 @@ namespace ResonantSpark {
                 }
                 else {
                     ahead = new GameInputStruct {
-                        direction = FightingGameInputCodeDir.None,
+                        direction = FightingGameAbsInputCodeDir.None,
                         butA = false,
                         butB = false,
                         butC = false,
@@ -134,7 +134,7 @@ namespace ResonantSpark {
                 }
                 else {
                     behind = new GameInputStruct {
-                        direction = FightingGameInputCodeDir.None,
+                        direction = FightingGameAbsInputCodeDir.None,
                         butA = false,
                         butB = false,
                         butC = false,
@@ -149,7 +149,7 @@ namespace ResonantSpark {
                 System.Text.StringBuilder debugText = new System.Text.StringBuilder();
                 for (int n = 0; n < inputBufferSize; ++n) {
                     int currIndex = (bufferLength + inputIndex - (inputDelay + inputBufferSize) + 1 + n) % bufferLength;
-                    if (inputBuffer[currIndex].direction != FightingGameInputCodeDir.None) {
+                    if (inputBuffer[currIndex].direction != FightingGameAbsInputCodeDir.None) {
                         debugText.Append((int)inputBuffer[currIndex].direction);
                     }
                     else {

@@ -70,14 +70,14 @@ namespace ResonantSpark {
             }
 
             public class DirectionCurrent : Combination {
-                public FightingGameInputCodeDir direction { get; private set; }
+                public FightingGameAbsInputCodeDir direction { get; private set; }
 
                 public DirectionCurrent() {
                     SetInfo(staleTime: 0, priorityValue: 1);
-                    this.direction = FightingGameInputCodeDir.None;
+                    this.direction = FightingGameAbsInputCodeDir.None;
                 }
 
-                public virtual DirectionCurrent Init(int frameTrigger, FightingGameInputCodeDir direction) {
+                public virtual DirectionCurrent Init(int frameTrigger, FightingGameAbsInputCodeDir direction) {
                     base.Init(frameTrigger);
                     this.direction = direction;
                     return this;
@@ -116,14 +116,14 @@ namespace ResonantSpark {
             }
 
             public class DirectionPress : Combination {
-                public FightingGameInputCodeDir direction { get; private set; }
+                public FightingGameAbsInputCodeDir direction { get; private set; }
 
                 public DirectionPress() {
                     SetInfo(staleTime: 6, priorityValue: 100);
-                    this.direction = FightingGameInputCodeDir.None;
+                    this.direction = FightingGameAbsInputCodeDir.None;
                 }
 
-                public virtual DirectionPress Init(int frameTrigger, FightingGameInputCodeDir direction) {
+                public virtual DirectionPress Init(int frameTrigger, FightingGameAbsInputCodeDir direction) {
                     base.Init(frameTrigger);
                     this.direction = direction;
                     return this;
@@ -143,7 +143,7 @@ namespace ResonantSpark {
                     SetInfo(staleTime: 15, priorityValue: 750);
                 }
 
-                public DirectionLongHold Init(int frameTrigger, FightingGameInputCodeDir direction, int holdLength) {
+                public DirectionLongHold Init(int frameTrigger, FightingGameAbsInputCodeDir direction, int holdLength) {
                     base.Init(frameTrigger, direction);
                     this.holdLength = holdLength;
                     return this;
@@ -160,7 +160,7 @@ namespace ResonantSpark {
             public class DoubleTap : Combination {
                 public int frameStart { get; private set; }
                 public int frameEnd { get; private set; }
-                public FightingGameInputCodeDir direction { get; private set; }
+                public FightingGameAbsInputCodeDir direction { get; private set; }
 
                 public DoubleTap() {
                     SetInfo(staleTime: 18, priorityValue: 1000);
@@ -168,7 +168,7 @@ namespace ResonantSpark {
                     this.frameEnd = -1;
                 }
 
-                public DoubleTap Init(int frameEnd, int frameStart, FightingGameInputCodeDir direction) {
+                public DoubleTap Init(int frameEnd, int frameStart, FightingGameAbsInputCodeDir direction) {
                     base.Init(frameEnd);
                     this.direction = direction;
                     this.frameStart = frameStart;
@@ -341,16 +341,16 @@ namespace ResonantSpark {
 
             public class DirectionPlusButton : Combination {
                 public FightingGameInputCodeBut button0 { get; private set; }
-                public FightingGameInputCodeDir direction { get; private set; }
+                public FightingGameAbsInputCodeDir direction { get; private set; }
 
                 public DirectionPlusButton() {
                     SetInfo(staleTime: 15, priorityValue: 1200);
 
                     button0 = FightingGameInputCodeBut.None;
-                    direction = FightingGameInputCodeDir.None;
+                    direction = FightingGameAbsInputCodeDir.None;
                 }
 
-                public DirectionPlusButton Init(int frameTrigger, FightingGameInputCodeBut button0, FightingGameInputCodeDir direction) {
+                public DirectionPlusButton Init(int frameTrigger, FightingGameInputCodeBut button0, FightingGameAbsInputCodeDir direction) {
                     base.Init(frameTrigger);
                     this.button0 = button0;
                     this.direction = direction;
@@ -372,15 +372,15 @@ namespace ResonantSpark {
             }
 
             public class QuarterCircle : Combination {
-                public FightingGameInputCodeDir endDirection { get; private set; }
+                public FightingGameAbsInputCodeDir endDirection { get; private set; }
 
                 public QuarterCircle() {
                     SetInfo(staleTime: 24, priorityValue: 5000);
 
-                    endDirection = FightingGameInputCodeDir.None;
+                    endDirection = FightingGameAbsInputCodeDir.None;
                 }
 
-                public QuarterCircle Init(int frameTrigger, FightingGameInputCodeDir endDirection) {
+                public QuarterCircle Init(int frameTrigger, FightingGameAbsInputCodeDir endDirection) {
                     base.Init(frameTrigger);
                     this.endDirection = endDirection;
                     return this;
@@ -402,7 +402,7 @@ namespace ResonantSpark {
                     button0 = FightingGameInputCodeBut.None;
                 }
 
-                public QuarterCircleButtonPress Init(int frameTrigger, FightingGameInputCodeDir endDirection, FightingGameInputCodeBut button0) {
+                public QuarterCircleButtonPress Init(int frameTrigger, FightingGameAbsInputCodeDir endDirection, FightingGameInputCodeBut button0) {
                     base.Init(frameTrigger, endDirection);
                     this.button0 = button0;
                     return this;

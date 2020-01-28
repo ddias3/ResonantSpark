@@ -75,7 +75,7 @@ namespace ResonantSpark {
             }
 
             private void ResetRound() {
-                currRoundTime = 10.0f; //roundTime;
+                currRoundTime = 60.0f; //roundTime;
                 uiService.SetTime(currRoundTime);
 
                 Vector3 spawnMid = fgService.GetSpawnPoint().position;
@@ -88,13 +88,15 @@ namespace ResonantSpark {
                 char1.transform.LookAt(char0.transform);
 
                 playerService.EachFGChar((id, fgChar) => {
-                    fgChar.ResetHealth();
+                    fgChar.RoundReset();
                     uiService.SetMaxHealth(id, fgChar.maxHealth);
                     uiService.SetHealth(id, fgChar.maxHealth);
 
                     if (id == 0) testHP0 = fgChar.maxHealth;
                     else if (id == 1) testHP1 = fgChar.maxHealth;
                 });
+
+                fgService.ResetCamera();
             }
 
             private void OnRoundEnd() {
@@ -121,6 +123,14 @@ namespace ResonantSpark {
                     testHP1 -= 500;
                     uiService.SetHealth(1, testHP1);
                 }
+
+                if (Keyboard.current.digit0Key.wasPressedThisFrame) {
+                    ResetRound();
+                }
+
+                playerService.EachFGChar((id, fgChar) => {
+                    fgChar.CalculateScreenOrientation();
+                });
 
                 uiService.SetTime(currRoundTime);
 
