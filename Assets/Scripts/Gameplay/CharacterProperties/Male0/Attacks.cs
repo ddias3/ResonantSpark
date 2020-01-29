@@ -15,10 +15,12 @@ namespace ResonantSpark {
             public class Attacks {
 
                 private IAudioService audioService;
+                private IProjectileService projectileService;
                 private Dictionary<string, AudioClip> audioMap;
 
                 public Attacks(AllServices services, Dictionary<string, AudioClip> audioMap) {
                     audioService = services.GetService<IAudioService>();
+                    projectileService = services.GetService<IProjectileService>();
                     this.audioMap = audioMap;
                 }
 
@@ -39,7 +41,7 @@ namespace ResonantSpark {
                                 .To(8)
                                 .From(8)
                                     .HitBox(h => {
-                                        h.Relative(fgChar.gameObject.transform);
+                                        h.Relative(fgChar.transform);
                                         h.Point0(new Vector3(0, 0, 0));
                                         h.Point1(new Vector3(0, 1, 0));
                                         h.Radius(0.25f);
@@ -256,13 +258,35 @@ namespace ResonantSpark {
                         );
                     });
 
+                    //Attack hadouken = new Attack(atkBuilder => { atkBuilder
+                    //    .Name("hadouken")
+                    //    .Orientation(Orientation.REGULAR)
+                    //    .GroundRelation(GroundRelation.GROUNDED)
+                    //    .Input(InputNotation._5A)
+                    //    .AnimationState("crouch_to_stand")
+                    //    .Frames(
+                    //        FrameUtil.CreateList(f => { f
+                    //            .SpecialCancellable(false)
+                    //            .ChainCancellable(false)
+                    //            .From(1)
+                    //                .HitBox()
+                    //            .From(3)
+                    //                .Sound(audioMap["hadouken"], soundResource => {
+                    //                    soundResource.transform.position = fgChar.transform.position;
+                    //                    audioService.Play(soundResource);
+                    //                })
+                    //                .Sound(audioMap["hadouken"])
+                    //            .From(12)
+                    //                .Projectile(projectileMap["hadouken"], proj => {
+                    //                    projectileService.FireProjectile(proj.id);
+                    //                })
+                    //            .To(46);
+                    //        })
+                    //    );
+                    //});
+
                     charBuilder
                         .Attack(atkReg5A, (charState, currAttack) => {
-                                // I've decided that this line of code will be handled by the config above.
-                                //   This code will only handle whether a move may be called during the current attack/non-attack
-                            //if (charState.orientation == Orientation.REGULAR && charState.ground == GroundRelation.STAND) {
-
-
                             //if (charState.activeAttack == null ||
                             //    charState.activeAttack == charState.Notation(InputNotation._2A, Orientation.REGULAR, GroundRelation.CROUCH)) {
                             //          or
@@ -302,6 +326,12 @@ namespace ResonantSpark {
                             }
                             return false;
                         });
+                        //.Attack(hadouken, (charState, currAttack) => {
+                        //    if (currAttack == null) {
+                        //        return true;
+                        //    }
+                        //    return false;
+                        //});
 
                     //charBuilder.Adapter("1.0", "1.2", new Version1_2Adapter());
                 }

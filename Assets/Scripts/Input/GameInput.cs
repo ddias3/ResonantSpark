@@ -79,6 +79,10 @@ namespace ResonantSpark {
             _5Sh,
             _2S,
             _2Sh,
+            _236A,
+            _236B,
+            _236C,
+            _236D,
         }
 
         [Serializable]

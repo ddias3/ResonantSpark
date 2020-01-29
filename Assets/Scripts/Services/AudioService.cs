@@ -98,6 +98,10 @@ namespace ResonantSpark {
             public void Play(AudioResource audioResource) {
                 activeSounds.Add(audioResource);
             }
+
+            public Transform GetEmptyHoldTransform() {
+                return audioEmpty;
+            }
         }
     }
 }
