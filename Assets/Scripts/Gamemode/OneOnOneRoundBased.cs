@@ -54,6 +54,9 @@ namespace ResonantSpark {
 
                 char0.SetOpponentCharacter(char1);
                 char1.SetOpponentCharacter(char0);
+
+                char0.RegisterOnHealthChangeCallback(PlayerHealthChange(0));
+                char1.RegisterOnHealthChangeCallback(PlayerHealthChange(1));
             }
 
             private void EnablePlayers() {
@@ -100,10 +103,10 @@ namespace ResonantSpark {
             }
 
             private void OnRoundEnd() {
-                if (testHP0 > testHP1) {
+                if (char0.health > char1.health) {
                     char0RoundWins += 1;
                 }
-                else if (testHP1 > testHP0) {
+                else if (char1.health > char0.health) {
                     char1RoundWins += 1;
                 }
                 else {
@@ -113,17 +116,13 @@ namespace ResonantSpark {
                 }
             }
 
+            private Action<int, int> PlayerHealthChange(int playerId) {
+                return (hpChange, newHealth) => {
+                    uiService.SetHealth(playerId, newHealth);
+                };
+            }
+
             private void FrameUpdate(int frameIndex) {
-                if (Keyboard.current.digit7Key.wasPressedThisFrame) {
-                    testHP0 -= 500;
-                    uiService.SetHealth(0, testHP0);
-                }
-
-                if (Keyboard.current.digit8Key.wasPressedThisFrame) {
-                    testHP1 -= 500;
-                    uiService.SetHealth(1, testHP1);
-                }
-
                 if (Keyboard.current.digit0Key.wasPressedThisFrame) {
                     ResetRound();
                 }

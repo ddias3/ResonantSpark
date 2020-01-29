@@ -34,8 +34,13 @@ namespace ResonantSpark {
                                         h.Point0(new Vector3(0, 0, 0));
                                         h.Point1(new Vector3(0, 1, 0));
                                         h.Radius(0.25f);
-                                        h.Event("onHitBox", (opponent) => {
-                                            opponent.Hit();
+                                        h.Event("onHurtBox", (hitBox, opponent) => {
+                                            if (opponent != fgChar) {
+                                                opponent.GetHitBy(hitBox);
+                                            }
+                                            Debug.Log("Regular 5A hit enemey");
+                                            // TODO: audioService.Play("male0_regular_5A");
+                                            //          change it to -> audioService.Play(soundMap.Get("regular_5A"));
                                             Debug.Log("Regular 5A Hit");
                                         });
                                     })
@@ -89,15 +94,21 @@ namespace ResonantSpark {
                                         h.Point0(new Vector3(0, 0, 0));
                                         h.Point1(new Vector3(0, 1, 0));
                                         h.Radius(0.25f);
-                                        h.Event("onHurtBox", (opponent) => {
+                                        h.Event("onHurtBox", (hitBox, opponent) => {
                                             Debug.Log("Regular 5AA hit the enemy");
-                                            // TODO: Figure out what to do with these events
-                                            opponent.Hit();
+                                            // TODO: audioService.Play("male0_regular_5AA");
+                                            //          change it to -> audioService.Play(soundMap.Get("regular_5A"));
+                                            if (opponent != fgChar) {
+                                                opponent.GetHitBy(hitBox);
+                                            }
                                         });
-                                        h.Event("onHitBox", (opponent) => {
+                                        h.Event("onHitBox", (hitBox, opponent) => {
                                             Debug.Log("Regular 5AA hit another hitbox");
-                                            // TODO: Figure out what to do with these events
-                                            opponent.Hit();
+                                            // TODO: audioService.Play("male0_regular_5AA");
+                                            //          change it to -> audioService.Play(soundMap.Get("regular_5A"));
+                                            if (opponent != fgChar) {
+                                                opponent.GetHitBy(hitBox);
+                                            }
                                         });
                                     })
                                     .HitDamage(1000)
@@ -134,10 +145,13 @@ namespace ResonantSpark {
                                         h.Point0(new Vector3(0, 0, 0));
                                         h.Point1(new Vector3(0, 1, 0));
                                         h.Radius(0.25f);
-                                        h.Event("onHurtBox", (opponent) => {
+                                        h.Event("onHurtBox", (hitBox, opponent) => {
                                             Debug.Log("Goofy 5A hit the enemy");
-                                            // TODO: Figure out what to do with these events
-                                            opponent.Hit();
+                                            // TODO: audioService.Play("male0_goofy_5A");
+                                            //          change it to -> audioService.Play(soundMap.Get("regular_5A"));
+                                            if (opponent != fgChar) {
+                                                opponent.GetHitBy(hitBox);
+                                            }
                                         });
                                     })
                                     .HitDamage(800)
@@ -173,10 +187,13 @@ namespace ResonantSpark {
                                         h.Point0(new Vector3(0, 0, 0));
                                         h.Point1(new Vector3(0, 1, 0));
                                         h.Radius(0.25f);
-                                        h.Event("onHurtBox", (opponent) => {
+                                        h.Event("onHurtBox", (hitBox, opponent) => {
                                             Debug.Log("Goofy 5AA hit the enemy");
-                                            // TODO: Figure out what to do with these events
-                                            opponent.Hit();
+                                            // TODO: audioService.Play("male0_goofy_5A");
+                                            //          change it to -> audioService.Play(soundMap.Get("goofy_5A"));
+                                            if (opponent != fgChar) {
+                                                opponent.GetHitBy(hitBox);
+                                            }
                                         });
                                     })
                                 .To(14)
@@ -208,10 +225,12 @@ namespace ResonantSpark {
                                         h.Point0(new Vector3(0, 0, 0));
                                         h.Point1(new Vector3(0, 1, 0));
                                         h.Radius(0.25f);
-                                        h.Event("onHurtBox", (opponent) => {
+                                        h.Event("onHurtBox", (hitBox, opponent) => {
                                             Debug.Log("Goofy 5A[A] hit the enemy");
                                             // TODO: Figure out what to do with these events
-                                            opponent.Hit();
+                                            if (opponent != fgChar) {
+                                                opponent.GetHitBy(hitBox);
+                                            }
                                         });
                                     })
                                 .To(14)
