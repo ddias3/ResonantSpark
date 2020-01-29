@@ -4,8 +4,10 @@ using UnityEngine;
 
 namespace ResonantSpark {
     namespace Gameplay {
-        public interface IFightingGameCharacter {
-            void Hit();
+        public interface IInGameEntity {
+            void GetHitBy(HitBox hitBox);
+            void AddSelf();
+            void RemoveSelf();
         }
     }
 }

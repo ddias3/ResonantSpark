@@ -10,7 +10,7 @@ using ResonantSpark.Service;
 
 namespace ResonantSpark {
     namespace Gameplay {
-        public class FightingGameCharacter : MonoBehaviour, IFightingGameCharacter, IEquatable<FightingGameCharacter> {
+        public class FightingGameCharacter : InGameEntity, IEquatable<FightingGameCharacter> {
             public static int fgCharCounter = 0;
 
             public Animator animator;
@@ -24,7 +24,7 @@ namespace ResonantSpark {
 
             public float landAnimationFrameTarget = 3f;
 
-            public int id { get; private set; }
+            public int fgCharId { get; private set; }
             private int teamId;
 
             private FightingGameService fgService;
@@ -36,6 +36,8 @@ namespace ResonantSpark {
             private GameTimeManager gameTimeManager;
 
             private List<Combination> inUseCombinations;
+
+            private List<Action<int, int>> onHealthChangeCallbacks;
 
             public new Rigidbody rigidbody { get; private set; }
 
@@ -60,7 +62,8 @@ namespace ResonantSpark {
             }
 
             public void Init(CharacterData charData) {
-                this.id = fgCharCounter++;
+                base.Init();
+                this.fgCharId = fgCharCounter++;
 
                 this.charData = charData;
                 teamId = 0;
@@ -73,6 +76,8 @@ namespace ResonantSpark {
 
                 rigidbody = gameObject.GetComponent<Rigidbody>();
                 inUseCombinations = new List<Combination>();
+
+                onHealthChangeCallbacks = new List<Action<int, int>>();
 
                 attackState = stateMachine.gameObject.GetComponentInChildren<CharacterStates.Attack>();
 
@@ -360,16 +365,32 @@ namespace ResonantSpark {
                 }
             }
 
-            public void Hit() {
-                // TODO: hit the opponent character
+            public override void GetHitBy(HitBox hitBox) {
+                health -= maxHealth / 10;
+
+                for (int n = 0; n < onHealthChangeCallbacks.Count; ++n) {
+                    onHealthChangeCallbacks[n].Invoke(maxHealth / 10, health);
+                }
+            }
+
+            public override void AddSelf() {
+                throw new NotImplementedException();
+            }
+
+            public override void RemoveSelf() {
+                throw new NotImplementedException();
+            }
+
+            public void RegisterOnHealthChangeCallback(Action<int, int> callback) {
+                onHealthChangeCallbacks.Add(callback);
             }
 
             public bool Equals(FightingGameCharacter other) {
-                return id == other.id;
+                return fgCharId == other.fgCharId;
             }
 
             public override int GetHashCode() {
-                return id;
+                return fgCharId;
             }
         }
     }

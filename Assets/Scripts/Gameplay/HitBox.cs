@@ -24,18 +24,22 @@ namespace ResonantSpark {
 
             private Vector3 deactivatedPosition;
 
-            private Action<IFightingGameCharacter> onHurtBoxEnter;
-            private Action<IFightingGameCharacter> onHitBoxEnter;
+            private List<InGameEntity> hitEntities;
+
+            private Action<HitBox, IInGameEntity> onHurtBoxEnter;
+            private Action<HitBox, IInGameEntity> onHitBoxEnter;
 
             private IHitBoxService hitBoxService;
             private IFightingGameService fgService;
 
-            public HitBox Init(Transform relativeTransform, bool tracking, Action<IFightingGameCharacter> onHurtBoxEnter, Action<IFightingGameCharacter> onHitBoxEnter) {
+            public HitBox Init(Transform relativeTransform, bool tracking, Action<HitBox, IInGameEntity> onHurtBoxEnter, Action<HitBox, IInGameEntity> onHitBoxEnter) {
                 this.id = HitBox.hitBoxCounter++;
 
                 this.relativeTransform = relativeTransform;
                 //this.offset = relativeTransform.position - transform.position;
                 this.offset = Vector3.zero;
+
+                hitEntities = new List<InGameEntity>();
 
                 this.onHurtBoxEnter = onHurtBoxEnter;
                 this.onHitBoxEnter = onHitBoxEnter;
@@ -66,12 +70,21 @@ namespace ResonantSpark {
                 if (other.gameObject.layer == hurtBox) {
                     Debug.Log(other.gameObject);
                     Debug.Log("Hitbox hit a hurtbox");
-                    onHurtBoxEnter?.Invoke(null);
+
+                    InGameEntity gameEntity = other.gameObject.GetComponentInParent<InGameEntity>();
+                    if (gameEntity != null && !hitEntities.Contains(gameEntity)) {
+                        hitEntities.Add(gameEntity);
+                        onHurtBoxEnter?.Invoke(this, gameEntity);
+                    }
                 }
                 else if (other.gameObject.layer == hitBox) {
                     Debug.Log(other.gameObject);
                     Debug.Log("Hitbox hit other hitbox");
-                    onHitBoxEnter?.Invoke(null);
+                    InGameEntity gameEntity = other.gameObject.GetComponentInParent<InGameEntity>();
+                    if (gameEntity != null && !hitEntities.Contains(gameEntity)) {
+                        hitEntities.Add(gameEntity);
+                        onHitBoxEnter?.Invoke(this, gameEntity);
+                    }
                 }
             }
 
@@ -97,6 +110,7 @@ namespace ResonantSpark {
             public void Activate() {
                 //Debug.Break();
                 collider.enabled = true;
+                hitEntities.Clear();
 
                     // I'm not sure witch method of movement is better for this situation. They are technically different.
                 //rigidbody.rotation = relativeTransform.rotation;

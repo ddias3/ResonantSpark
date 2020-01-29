@@ -15,7 +15,7 @@ namespace ResonantSpark {
             IHitBoxCallbackObject Tracking(bool tracking);
             IHitBoxCallbackObject FromCollider(CapsuleCollider collider);
             IHitBoxCallbackObject Relative(Transform transform);
-            IHitBoxCallbackObject Event(string eventName, Action<IFightingGameCharacter> callback);
+            IHitBoxCallbackObject Event(string eventName, Action<HitBox, IInGameEntity> callback);
         }
     }
 }
