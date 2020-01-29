@@ -38,6 +38,7 @@ namespace ResonantSpark {
             private List<Combination> inUseCombinations;
 
             private List<Action<int, int>> onHealthChangeCallbacks;
+            private List<Action<FightingGameCharacter>> onEmptyHealthCallbacks;
 
             public new Rigidbody rigidbody { get; private set; }
 
@@ -78,6 +79,7 @@ namespace ResonantSpark {
                 inUseCombinations = new List<Combination>();
 
                 onHealthChangeCallbacks = new List<Action<int, int>>();
+                onEmptyHealthCallbacks = new List<Action<FightingGameCharacter>>();
 
                 attackState = stateMachine.gameObject.GetComponentInChildren<CharacterStates.Attack>();
 
@@ -371,6 +373,12 @@ namespace ResonantSpark {
                 for (int n = 0; n < onHealthChangeCallbacks.Count; ++n) {
                     onHealthChangeCallbacks[n].Invoke(maxHealth / 10, health);
                 }
+
+                if (health <= 0) {
+                    for (int n = 0; n < onEmptyHealthCallbacks.Count; ++n) {
+                        onEmptyHealthCallbacks[n].Invoke(this);
+                    }
+                }
             }
 
             public override void AddSelf() {
@@ -383,6 +391,10 @@ namespace ResonantSpark {
 
             public void RegisterOnHealthChangeCallback(Action<int, int> callback) {
                 onHealthChangeCallbacks.Add(callback);
+            }
+
+            public void RegisterOnEmptyHealthCallback(Action<FightingGameCharacter> callback) {
+                onEmptyHealthCallbacks.Add(callback);
             }
 
             public bool Equals(FightingGameCharacter other) {

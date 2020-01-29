@@ -55,8 +55,11 @@ namespace ResonantSpark {
                 char0.SetOpponentCharacter(char1);
                 char1.SetOpponentCharacter(char0);
 
-                char0.RegisterOnHealthChangeCallback(PlayerHealthChange(0));
-                char1.RegisterOnHealthChangeCallback(PlayerHealthChange(1));
+                char0.RegisterOnHealthChangeCallback(OnPlayerHealthChange(0));
+                char1.RegisterOnHealthChangeCallback(OnPlayerHealthChange(1));
+
+                char0.RegisterOnEmptyHealthCallback(OnPlayerEmptyHealth);
+                char1.RegisterOnEmptyHealthCallback(OnPlayerEmptyHealth);
             }
 
             private void EnablePlayers() {
@@ -103,6 +106,8 @@ namespace ResonantSpark {
             }
 
             private void OnRoundEnd() {
+                uiService.SetTime(0.0f);
+
                 if (char0.health > char1.health) {
                     char0RoundWins += 1;
                 }
@@ -114,12 +119,25 @@ namespace ResonantSpark {
                     char0RoundWins += 1;
                     char1RoundWins += 1;
                 }
+
+                // TODO: Remove this and replace it with a state-machine.
+                ResetRound();
             }
 
-            private Action<int, int> PlayerHealthChange(int playerId) {
+            private void EndRound() {
+                //TODO: Stop inputs from both players, or don't not sure.
+                OnRoundEnd();
+            }
+
+            private Action<int, int> OnPlayerHealthChange(int playerId) {
                 return (hpChange, newHealth) => {
                     uiService.SetHealth(playerId, newHealth);
                 };
+            }
+
+            private void OnPlayerEmptyHealth(FightingGameCharacter fgChar) {
+                    // TODO: this might result in a race condition that needs to be resolved for double K.O.s
+                EndRound();
             }
 
             private void FrameUpdate(int frameIndex) {
@@ -134,7 +152,7 @@ namespace ResonantSpark {
                 uiService.SetTime(currRoundTime);
 
                 if (currRoundTime < 0) {
-                    ResetRound();
+                    EndRound();
                 }
                 currRoundTime -= gameTimeManager.Layer("gameTime");
             }
