@@ -10,6 +10,8 @@ namespace ResonantSpark {
 
         public AudioService service;
 
+        private Vector3 deactivatedPosition;
+
         private bool inUse;
         private AudioSource source;
 
@@ -20,6 +22,8 @@ namespace ResonantSpark {
 
         public void SetService(IAudioService audioService) {
             this.service = (AudioService) audioService;
+
+            deactivatedPosition = this.service.GetEmptyHoldTransform().position;
         }
 
         public void SetUp(Vector3 position, AudioClip audioClip, float playbackPosition) {
@@ -44,6 +48,8 @@ namespace ResonantSpark {
         public void Deactivate() {
             inUse = false;
             source.Stop();
+
+            transform.position = deactivatedPosition;
         }
     }
 }
