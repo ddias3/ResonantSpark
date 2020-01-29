@@ -22,22 +22,27 @@ namespace ResonantSpark {
             private new CapsuleCollider collider;
             private Transform colliderTransform;
 
+            private Vector3 localHitLocation;
+
             private Vector3 deactivatedPosition;
 
             private List<InGameEntity> hitEntities;
 
-            private Action<HitBox, IInGameEntity> onHurtBoxEnter;
-            private Action<HitBox, IInGameEntity> onHitBoxEnter;
+            private Action<HitInfo> onHurtBoxEnter;
+            private Action<HitInfo> onHitBoxEnter;
 
             private IHitBoxService hitBoxService;
             private IFightingGameService fgService;
 
-            public HitBox Init(Transform relativeTransform, bool tracking, Action<HitBox, IInGameEntity> onHurtBoxEnter, Action<HitBox, IInGameEntity> onHitBoxEnter) {
+            public HitBox Init(Transform relativeTransform, bool tracking, Action<HitInfo> onHurtBoxEnter, Action<HitInfo> onHitBoxEnter) {
                 this.id = HitBox.hitBoxCounter++;
 
                 this.relativeTransform = relativeTransform;
                 //this.offset = relativeTransform.position - transform.position;
                 this.offset = Vector3.zero;
+
+                // TODO: Set Local Hit Location
+                localHitLocation = Vector3.up;
 
                 hitEntities = new List<InGameEntity>();
 
@@ -74,7 +79,8 @@ namespace ResonantSpark {
                     InGameEntity gameEntity = other.gameObject.GetComponentInParent<InGameEntity>();
                     if (gameEntity != null && !hitEntities.Contains(gameEntity)) {
                         hitEntities.Add(gameEntity);
-                        onHurtBoxEnter?.Invoke(this, gameEntity);
+                        HitInfo hitInfo = new HitInfo(this, gameEntity, transform.position + transform.rotation * localHitLocation, -1);
+                        onHurtBoxEnter?.Invoke(hitInfo);
                     }
                 }
                 else if (other.gameObject.layer == hitBox) {
@@ -83,7 +89,8 @@ namespace ResonantSpark {
                     InGameEntity gameEntity = other.gameObject.GetComponentInParent<InGameEntity>();
                     if (gameEntity != null && !hitEntities.Contains(gameEntity)) {
                         hitEntities.Add(gameEntity);
-                        onHitBoxEnter?.Invoke(this, gameEntity);
+                        HitInfo hitInfo = new HitInfo(this, gameEntity, transform.position + transform.rotation * localHitLocation, -1);
+                        onHitBoxEnter?.Invoke(hitInfo);
                     }
                 }
             }

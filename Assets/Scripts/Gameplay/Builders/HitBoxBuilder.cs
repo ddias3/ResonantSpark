@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Builder;
-using ResonantSpark.Character;
 using ResonantSpark.Gameplay;
 using ResonantSpark.Service;
+using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace CharacterProperties {
@@ -18,7 +18,7 @@ namespace ResonantSpark {
 
             private HitBox hitBoxPrefab;
 
-            private Dictionary<string, Action<HitBox, IInGameEntity>> callbacks;
+            private Dictionary<string, Action<HitInfo>> callbacks;
 
             private CapsuleCollider collider;
             private Transform transform;
@@ -30,7 +30,7 @@ namespace ResonantSpark {
             private bool tracking = false;
 
             public HitBoxBuilder(AllServices allServices) {
-                callbacks = new Dictionary<string, Action<HitBox, IInGameEntity>>();
+                callbacks = new Dictionary<string, Action<HitInfo>>();
                 this.hitBoxService = allServices.GetService<IHitBoxService>();
                 this.fgService = allServices.GetService<IFightingGameService>();
                 this.hitBoxPrefab = this.hitBoxService.DefaultPrefab();
@@ -61,7 +61,7 @@ namespace ResonantSpark {
                 return this;
             }
 
-            public IHitBoxCallbackObject Event(string eventName, Action<HitBox, IInGameEntity> callback) {
+            public IHitBoxCallbackObject Event(string eventName, Action<HitInfo> callback) {
                 callbacks.Add(eventName, callback);
                 return this;
             }
@@ -80,8 +80,8 @@ namespace ResonantSpark {
                     // default means Vector3.zero in this case
                 if (collider != null) {
                     HitBox hitBox = GameObject.Instantiate<HitBox>(hitBoxPrefab, hitBoxEmptyParentTransform.position, Quaternion.identity, hitBoxEmptyParentTransform);
-                    callbacks.TryGetValue(onHurtBoxEventKey, out Action<HitBox, IInGameEntity> onHurtBoxCallback);
-                    callbacks.TryGetValue(onHitBoxEventKey, out Action<HitBox, IInGameEntity> onHitBoxCallback);
+                    callbacks.TryGetValue(onHurtBoxEventKey, out Action<HitInfo> onHurtBoxCallback);
+                    callbacks.TryGetValue(onHitBoxEventKey, out Action<HitInfo> onHitBoxCallback);
 
                     hitBox.SetServices(hitBoxService, fgService);
                     hitBox.Init(transform, tracking, onHurtBoxCallback, onHitBoxCallback);
@@ -101,8 +101,8 @@ namespace ResonantSpark {
                 }
                 else if (radius > 0) {
                     HitBox hitBox = GameObject.Instantiate<HitBox>(hitBoxPrefab, hitBoxEmptyParentTransform.position, Quaternion.identity, hitBoxEmptyParentTransform);
-                    callbacks.TryGetValue(onHurtBoxEventKey, out Action<HitBox, IInGameEntity> onHurtBoxCallback);
-                    callbacks.TryGetValue(onHitBoxEventKey, out Action<HitBox, IInGameEntity> onHitBoxCallback);
+                    callbacks.TryGetValue(onHurtBoxEventKey, out Action<HitInfo> onHurtBoxCallback);
+                    callbacks.TryGetValue(onHitBoxEventKey, out Action<HitInfo> onHitBoxCallback);
 
                     hitBox.SetServices(hitBoxService, fgService);
                     hitBox.Init(transform, tracking, onHurtBoxCallback, onHitBoxCallback);
@@ -115,7 +115,7 @@ namespace ResonantSpark {
                 }
             }
 
-            public Dictionary<string, Action<HitBox, IInGameEntity>> GetEvents() {
+            public Dictionary<string, Action<HitInfo>> GetEvents() {
                 return callbacks;
             }
         }

@@ -34,14 +34,17 @@ namespace ResonantSpark {
                                         h.Point0(new Vector3(0, 0, 0));
                                         h.Point1(new Vector3(0, 1, 0));
                                         h.Radius(0.25f);
-                                        h.Event("onHurtBox", (hitBox, opponent) => {
-                                            if (opponent != fgChar) {
-                                                opponent.GetHitBy(hitBox);
-                                            }
+                                        h.Event("onHurtBox", (hitInfo) => {
                                             Debug.Log("Regular 5A hit enemey");
                                             // TODO: audioService.Play("male0_regular_5A");
                                             //          change it to -> audioService.Play(soundMap.Get("regular_5A"));
                                             Debug.Log("Regular 5A Hit");
+                                            // TODO: audioService.Play("male0_regular_5AA")
+                                            //                   .At(hitInfo.position); or .Follow(/*supply a trasform*/);
+                                            //          change it to -> audioService.Play(soundMap.Get("regular_5A"));
+                                            if (hitInfo.hitEntity != fgChar) {
+                                                hitInfo.hitEntity.GetHitBy(hitInfo.hitBox);
+                                            }
                                         });
                                     })
                                     .HitDamage(800)
@@ -94,20 +97,22 @@ namespace ResonantSpark {
                                         h.Point0(new Vector3(0, 0, 0));
                                         h.Point1(new Vector3(0, 1, 0));
                                         h.Radius(0.25f);
-                                        h.Event("onHurtBox", (hitBox, opponent) => {
+                                        h.Event("onHurtBox", (hitInfo) => {
                                             Debug.Log("Regular 5AA hit the enemy");
-                                            // TODO: audioService.Play("male0_regular_5AA");
+                                            // TODO: audioService.Play("male0_regular_5AA")
+                                            //                   .At(hitInfo.position); or .Follow(/*supply a trasform*/);
                                             //          change it to -> audioService.Play(soundMap.Get("regular_5A"));
-                                            if (opponent != fgChar) {
-                                                opponent.GetHitBy(hitBox);
+                                            if (hitInfo.hitEntity != fgChar) {
+                                                hitInfo.hitEntity.GetHitBy(hitInfo.hitBox);
                                             }
                                         });
-                                        h.Event("onHitBox", (hitBox, opponent) => {
+                                        h.Event("onHitBox", (hitInfo) => {
                                             Debug.Log("Regular 5AA hit another hitbox");
-                                            // TODO: audioService.Play("male0_regular_5AA");
+                                            // TODO: audioService.Play("male0_regular_5AA")
+                                            //                   .At(hitInfo.position); or .Follow(/*supply a trasform*/);
                                             //          change it to -> audioService.Play(soundMap.Get("regular_5A"));
-                                            if (opponent != fgChar) {
-                                                opponent.GetHitBy(hitBox);
+                                            if (hitInfo.hitEntity != fgChar) {
+                                                hitInfo.hitEntity.GetHitBy(hitInfo.hitBox);
                                             }
                                         });
                                     })
@@ -145,12 +150,13 @@ namespace ResonantSpark {
                                         h.Point0(new Vector3(0, 0, 0));
                                         h.Point1(new Vector3(0, 1, 0));
                                         h.Radius(0.25f);
-                                        h.Event("onHurtBox", (hitBox, opponent) => {
+                                        h.Event("onHurtBox", (hitInfo) => {
                                             Debug.Log("Goofy 5A hit the enemy");
-                                            // TODO: audioService.Play("male0_goofy_5A");
+                                            // TODO: audioService.Play("male0_goofy_5A")
+                                            //                   .At(hitInfo.position); or .Follow(/*supply a trasform*/);
                                             //          change it to -> audioService.Play(soundMap.Get("regular_5A"));
-                                            if (opponent != fgChar) {
-                                                opponent.GetHitBy(hitBox);
+                                            if (hitInfo.hitEntity != fgChar) {
+                                                hitInfo.hitEntity.GetHitBy(hitInfo.hitBox);
                                             }
                                         });
                                     })
@@ -187,12 +193,13 @@ namespace ResonantSpark {
                                         h.Point0(new Vector3(0, 0, 0));
                                         h.Point1(new Vector3(0, 1, 0));
                                         h.Radius(0.25f);
-                                        h.Event("onHurtBox", (hitBox, opponent) => {
+                                        h.Event("onHurtBox", (hitInfo) => {
                                             Debug.Log("Goofy 5AA hit the enemy");
-                                            // TODO: audioService.Play("male0_goofy_5A");
-                                            //          change it to -> audioService.Play(soundMap.Get("goofy_5A"));
-                                            if (opponent != fgChar) {
-                                                opponent.GetHitBy(hitBox);
+                                            // TODO: audioService.Play("male0_goofy_5AA")
+                                            //                   .At(hitInfo.position); or .Follow(/*supply a trasform*/);
+                                            //          change it to -> audioService.Play(soundMap.Get("regular_5A"));
+                                            if (hitInfo.hitEntity != fgChar) {
+                                                hitInfo.hitEntity.GetHitBy(hitInfo.hitBox);
                                             }
                                         });
                                     })
@@ -225,11 +232,11 @@ namespace ResonantSpark {
                                         h.Point0(new Vector3(0, 0, 0));
                                         h.Point1(new Vector3(0, 1, 0));
                                         h.Radius(0.25f);
-                                        h.Event("onHurtBox", (hitBox, opponent) => {
+                                        h.Event("onHurtBox", (hitInfo) => {
                                             Debug.Log("Goofy 5A[A] hit the enemy");
                                             // TODO: Figure out what to do with these events
-                                            if (opponent != fgChar) {
-                                                opponent.GetHitBy(hitBox);
+                                            if (hitInfo.hitEntity != fgChar) {
+                                                hitInfo.hitEntity.GetHitBy(hitInfo.hitBox);
                                             }
                                         });
                                     })
