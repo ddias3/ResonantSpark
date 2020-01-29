@@ -38,7 +38,7 @@ namespace ResonantSpark {
 
                 int stopIndex = index;
                 do {
-                    if (!assets[index].Active()) {
+                    if (!assets[index].IsActive()) {
                         asset = assets[index];
                     }
                     index = (index + 1) % assets.Count;

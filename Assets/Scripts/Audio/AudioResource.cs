@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Utility;
+using ResonantSpark.Service;
 
 namespace ResonantSpark {
     public class AudioResource : MonoBehaviour, IResource {
+
+        public AudioService service;
 
         private bool inUse;
         private AudioSource source;
@@ -15,21 +18,32 @@ namespace ResonantSpark {
             source = GetComponent<AudioSource>();
         }
 
-        public bool Active() {
-            return inUse;
+        public void SetService(IAudioService audioService) {
+            this.service = (AudioService) audioService;
+        }
+
+        public void SetUp(Vector3 position, AudioClip audioClip, float playbackPosition) {
+            transform.position = position;
+
+            source.clip = audioClip;
+            source.time = playbackPosition;
+
+            source.Play();
+        }
+
+        public bool IsActive() {
+            //return inUse;
+            return source.isPlaying;
         }
 
         public void Activate() {
-            throw new System.NotImplementedException();
+            inUse = true;
+            //source.Play();
         }
 
         public void Deactivate() {
+            inUse = false;
             source.Stop();
-        }
-
-        // Update is called once per frame
-        void Update() {
-
         }
     }
 }

@@ -7,11 +7,20 @@ using ResonantSpark.Utility;
 using ResonantSpark.Input;
 using ResonantSpark.Character;
 using ResonantSpark.Gameplay;
+using ResonantSpark.Service;
 
 namespace ResonantSpark {
     namespace CharacterProperties {
         namespace Male0 {
-            public class Attacks : ScriptableObject {
+            public class Attacks {
+
+                private IAudioService audioService;
+                private Dictionary<string, AudioClip> audioMap;
+
+                public Attacks(AllServices services, Dictionary<string, AudioClip> audioMap) {
+                    audioService = services.GetService<IAudioService>();
+                    this.audioMap = audioMap;
+                }
 
                 public void Init(ICharacterPropertiesCallbackObj charBuilder, FightingGameCharacter fgChar) {
 
@@ -35,14 +44,13 @@ namespace ResonantSpark {
                                         h.Point1(new Vector3(0, 1, 0));
                                         h.Radius(0.25f);
                                         h.Event("onHurtBox", (hitInfo) => {
-                                            Debug.Log("Regular 5A hit enemey");
-                                            // TODO: audioService.Play("male0_regular_5A");
-                                            //          change it to -> audioService.Play(soundMap.Get("regular_5A"));
-                                            Debug.Log("Regular 5A Hit");
-                                            // TODO: audioService.Play("male0_regular_5AA")
-                                            //                   .At(hitInfo.position); or .Follow(/*supply a trasform*/);
-                                            //          change it to -> audioService.Play(soundMap.Get("regular_5A"));
                                             if (hitInfo.hitEntity != fgChar) {
+                                                Debug.Log("Regular 5A hit enemey");
+                                                audioService.PlayOneShot(hitInfo.position, audioMap["regular_5A"]);
+                                                Debug.Log("Regular 5A Hit");
+                                                // TODO: audioService.Play("male0_regular_5AA")
+                                                //                   .At(hitInfo.position); or .Follow(/*supply a trasform*/);
+                                                //          change it to -> audioService.Play(soundMap.Get("regular_5A"));
                                                 hitInfo.hitEntity.GetHitBy(hitInfo.hitBox);
                                             }
                                         });

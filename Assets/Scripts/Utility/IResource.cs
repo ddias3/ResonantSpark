@@ -5,7 +5,7 @@ using UnityEngine;
 namespace ResonantSpark {
     namespace Utility {
         public interface IResource {
-            bool Active();
+            bool IsActive();
             void Activate();
             void Deactivate();
         }

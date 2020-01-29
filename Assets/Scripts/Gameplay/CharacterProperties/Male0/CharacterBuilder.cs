@@ -13,6 +13,7 @@ namespace ResonantSpark {
             public class CharacterBuilder : MonoBehaviour, ICharacterBuilder {
 
                 public GameObject male0Prefab;
+                public AudioMap audioMap;
 
                 private FightingGameCharacter fgChar;
 
@@ -27,8 +28,8 @@ namespace ResonantSpark {
                 public void Build(AllServices services) {
                     Male0Builder charBuilder = new Male0Builder(services);
 
-                    Attacks attacks = ScriptableObject.CreateInstance<Attacks>(); //new Attacks();
-                    Movement movement = ScriptableObject.CreateInstance<Movement>(); //new Movement();
+                    Attacks attacks = new Attacks(services, audioMap.BuildDictionary());
+                    Movement movement = new Movement(services);
 
                     charBuilder.Version("0.1");
                     attacks.Init(charBuilder, fgChar);

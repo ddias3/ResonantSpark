@@ -4,11 +4,17 @@ using UnityEngine;
 
 using ResonantSpark.Builder;
 using ResonantSpark.Gameplay;
+using ResonantSpark.Service;
 
 namespace ResonantSpark {
     namespace CharacterProperties {
         namespace Male0 {
-            public class Movement : ScriptableObject {
+            public class Movement {
+
+                public Movement(AllServices services) {
+
+                }
+
                 public void Init(ICharacterPropertiesCallbackObj charBuilder, FightingGameCharacter fgChar) {
                     charBuilder
                         .WalkSpeed(1.0f)
