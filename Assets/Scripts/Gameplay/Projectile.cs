@@ -54,7 +54,7 @@ namespace ResonantSpark {
                 this.storeLocation = storeLocation;
             }
 
-            public bool Active() {
+            public bool IsActive() {
                 return active;
             }
 

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2424264271135548663}
   - component: {fileID: 2424264271135548616}
+  - component: {fileID: 3573387217134595391}
   m_Layer: 9
   m_Name: male0_builder
   m_TagString: rspBuilder
@@ -45,3 +46,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   male0Prefab: {fileID: 2977870892190075293, guid: 96e60e8965d972e4e9648844727deb22,
     type: 3}
+  audioMap: {fileID: 3573387217134595391}
+--- !u!114 &3573387217134595391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2424264271135548662}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd109a1a19ab7f143b04e11b02fe995c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioClipNames:
+  - regular_5A
+  audioClips:
+  - {fileID: 8300000, guid: fc879980a72b572498007248658a8612, type: 3}

@@ -63,9 +63,17 @@ namespace ResonantSpark {
                 }
             }
 
+            //private void ResetActivePolling(int frameIndex) {
+            //    previousActiveHitBoxes = activeHitBoxes;
+            //    activeHitBoxes = new List<HitBox>();
+            //}
+
             private void ResetActivePolling(int frameIndex) {
-                previousActiveHitBoxes = activeHitBoxes;
-                activeHitBoxes = new List<HitBox>();
+                previousActiveHitBoxes.Clear();
+                foreach (HitBox hitBox in activeHitBoxes) {
+                    previousActiveHitBoxes.Add(hitBox);
+                }
+                activeHitBoxes.Clear();
             }
 
             public void RegisterHitBox(HitBox hitBox) {
