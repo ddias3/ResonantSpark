@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Gameplay;
-using ResonantSpark.Character;
+using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace Builder {
@@ -15,7 +15,7 @@ namespace ResonantSpark {
             IHitBoxCallbackObject Tracking(bool tracking);
             IHitBoxCallbackObject FromCollider(CapsuleCollider collider);
             IHitBoxCallbackObject Relative(Transform transform);
-            IHitBoxCallbackObject Event(string eventName, Action<HitBox, IInGameEntity> callback);
+            IHitBoxCallbackObject Event(string eventName, Action<HitInfo> callback);
         }
     }
 }

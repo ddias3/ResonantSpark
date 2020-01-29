@@ -12,6 +12,7 @@ namespace ResonantSpark {
 
             public float delayTime = 1.5f;
             public float flushSpeed = 1.0f;
+            public float flushEndingLinearSpeed = 16f;
 
             private int maxHealth = 1;
             private int prevHealth = 1;
@@ -83,7 +84,7 @@ namespace ResonantSpark {
             public void Update() {
                 if (timer > delayTime || flushHealthBar) {
                     if (prevHealth - currHealth < 400) {
-                        prevHealth -= Mathf.RoundToInt(10f * 1 / FrameEnforcer.FRAME_TIME * gameTime.Layer("gameTime"));
+                        prevHealth -= Mathf.RoundToInt(flushEndingLinearSpeed * 1 / FrameEnforcer.FRAME_TIME * gameTime.Layer("gameTime"));
                     }
                     else {
                         prevHealth = Mathf.RoundToInt(Mathf.Lerp(prevHealth, currHealth, gameTime.Layer("gameTime") * flushSpeed));
