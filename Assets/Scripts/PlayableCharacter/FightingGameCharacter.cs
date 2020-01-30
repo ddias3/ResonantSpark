@@ -343,7 +343,7 @@ namespace ResonantSpark {
 
             public Orientation GetOrientation() {
                 //TODO: Determine actual orientation programmatically.
-                return Orientation.REGULAR;
+                return Orientation.SOUTHPAW;
             }
 
             public GroundRelation GetGroundRelation() {
