@@ -10,7 +10,7 @@ namespace ResonantSpark
 {
     public class @BasicActions : IInputActionCollection, IDisposable
     {
-        private InputActionAsset asset;
+        public InputActionAsset asset { get; }
         public @BasicActions()
         {
             asset = InputActionAsset.FromJson(@"{
