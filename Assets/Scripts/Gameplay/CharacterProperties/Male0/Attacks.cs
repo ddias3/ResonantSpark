@@ -48,13 +48,17 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._4A, InputNotation._5A)
                         .AnimationState("southpaw_5A")
-                        .Movement(attackMovementMap["southpaw_5A.x"], null, attackMovementMap["southpaw_5A.z"])
+                        .MovementCurve(attackMovementMap["southpaw_5A.x"], null, attackMovementMap["southpaw_5A.z"])
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
                                 .ChainCancellable(false)
                                 .From(1)
                                     .HitBox()
+                                .From(4)
+                                    .Track((localFrame, target) => {
+                                        fgChar.SetLookAt(fgChar.rigidbody.position - target.position);
+                                    })
                                 .To(8)
                                 .From(8)
                                     .Hit(hit => {
@@ -63,7 +67,7 @@ namespace ResonantSpark {
                                             .HitStun(20.0f)
                                             .BlockStun(8.0f);
 
-                                        // hit.Block(); default is to not require any kind of blocking
+                                        // hit.Block(); default is to allow any kind of blocking
 
                                         hit.HitBox(hb => {
                                             hb.Relative(fgChar.transform);
@@ -96,13 +100,17 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._5A)
                         .AnimationState("southpaw_5AA")
-                        .Movement(attackMovementMap["southpaw_5AA.x"], null, attackMovementMap["southpaw_5AA.z"])
+                        .MovementCurve(attackMovementMap["southpaw_5AA.x"], null, attackMovementMap["southpaw_5AA.z"])
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
                                 .From(1)
                                     .HitBox()
                                     .ChainCancellable(false)
+                                .From(4)
+                                    .Track((localFrame, target) => {
+                                        fgChar.SetLookAt(fgChar.rigidbody.position - target.position);
+                                    })
                                 .To(12)
                                 .From(10)
                                     .ChainCancellable(true)
@@ -142,7 +150,7 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._5A)
                         .AnimationState("southpaw_5AAA")
-                        .Movement(attackMovementMap["southpaw_5AAA.x"], null, attackMovementMap["southpaw_5AAA.z"])
+                        .MovementCurve(attackMovementMap["southpaw_5AAA.x"], null, attackMovementMap["southpaw_5AAA.z"])
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
@@ -176,7 +184,7 @@ namespace ResonantSpark {
                                 .From(22)
                                     .Rotate((localFrame, target) => { // localFrame is an integer between 22 and 30 (in this case), target is a Transform
                                         float p = (localFrame - 22.0f) / 30.0f;
-                                        fgChar.SetRotation(Quaternion.Euler(0.0f, -180f * p, 0.0f) * (fgChar.rigidbody.position - target.position));
+                                        fgChar.SetLookAt(Quaternion.Euler(0.0f, -180f * p, 0.0f) * (fgChar.rigidbody.position - target.position));
                                             // fgChar.GetOrientation is done automatically on each frame
                                     })
                                 .To(30);
@@ -190,13 +198,17 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._4A, InputNotation._5A)
                         .AnimationState("orthodox_5A")
-                        .Movement(attackMovementMap["orthodox_5A.x"], null, attackMovementMap["orthodox_5A.z"])
+                        .MovementCurve(attackMovementMap["orthodox_5A.x"], null, attackMovementMap["orthodox_5A.z"])
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
                                 .ChainCancellable(false)
                                 .From(1)
                                     .HitBox()
+                                .From(4)
+                                    .Track((localFrame, target) => {
+                                        fgChar.SetLookAt(fgChar.rigidbody.position - target.position);
+                                    })
                                 .To(10)
                                 .From(10)
                                     .Hit(hit => {
@@ -236,13 +248,17 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._5A)
                         .AnimationState("orthodox_5AA")
-                        .Movement(attackMovementMap["orthodox_5AA.x"], null, attackMovementMap["orthodox_5AA.z"])
+                        .MovementCurve(attackMovementMap["orthodox_5AA.x"], null, attackMovementMap["orthodox_5AA.z"])
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
                                 .ChainCancellable(false)
                                 .From(1)
                                     .HitBox()
+                                .From(4)
+                                    .Track((localFrame, target) => {
+                                        fgChar.SetLookAt(fgChar.rigidbody.position - target.position);
+                                    })
                                 .To(16)
                                 .From(16)
                                     .Hit(hit => {
@@ -273,7 +289,7 @@ namespace ResonantSpark {
                                 .From(20)
                                     .Rotate((localFrame, target) => { // localFrame is an integer between 20 and 26 (in this case), target is a Transform
                                         float p = (localFrame - 20.0f) / 26.0f;
-                                        fgChar.SetRotation(Quaternion.Euler(0.0f, 180f * p, 0.0f) * (fgChar.rigidbody.position - target.position));
+                                        fgChar.SetLookAt(Quaternion.Euler(0.0f, 180f * p, 0.0f) * (fgChar.rigidbody.position - target.position));
                                             // fgChar.GetOrientation is done automatically on each frame
                                     })
                                 .To(26);
@@ -287,7 +303,7 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._2A)
                         .AnimationState("southpaw_2A")
-                        .Movement(attackMovementMap["southpaw_2A.x"], null, attackMovementMap["southpaw_2A.z"])
+                        .MovementCurve(attackMovementMap["southpaw_2A.x"], null, attackMovementMap["southpaw_2A.z"])
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
@@ -336,13 +352,17 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._2A)
                         .AnimationState("southpaw_2AA")
-                        .Movement(attackMovementMap["southpaw_2AA.x"], null, attackMovementMap["southpaw_2AA.z"])
+                        .MovementCurve(attackMovementMap["southpaw_2AA.x"], null, attackMovementMap["southpaw_2AA.z"])
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
                                 .ChainCancellable(false)
                                 .From(1)
                                     .HitBox()
+                                .From(4)
+                                    .Track((localFrame, target) => {
+                                        fgChar.SetLookAt(fgChar.rigidbody.position - target.position);
+                                    })
                                 .To(13)
                                 .From(13)
                                     .Hit(hit => {
@@ -385,7 +405,7 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._2A)
                         .AnimationState("orthodox_2A")
-                        .Movement(attackMovementMap["orthodox_2A.x"], null, attackMovementMap["orthodox_2A.z"])
+                        .MovementCurve(attackMovementMap["orthodox_2A.x"], null, attackMovementMap["orthodox_2A.z"])
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
@@ -426,13 +446,305 @@ namespace ResonantSpark {
                         .OnComplete(ReturnToPreviousState);
                     });
 
+                    Attack atkJumpSpw5A = new Attack(atkBuilder => { atkBuilder
+                        .Name("jump_orthodox_5A")
+                        .Orientation(Orientation.ORTHODOX)
+                        .GroundRelation(GroundRelation.AIRBORNE)
+                        .Input(InputNotation._5A)
+                        .AnimationState("jump_orthodox_5A")
+                        .Frames(
+                            FrameUtil.CreateList(f => { f
+                                .SpecialCancellable(true)
+                                .ChainCancellable(false)
+                                .From(1)
+                                    .HitBox()
+                                .To(8)
+                                .From(8)
+                                    .Hit(hit => {
+                                        hit.HitDamage(700)
+                                            .BlockDamage(0)
+                                            .HitStun(12.0f)
+                                            .BlockStun(30.0f);
+
+                                        hit.HitBox(hb => {
+                                            hb.Relative(fgChar.transform);
+                                            hb.Point0(new Vector3(0, 0, 0));
+                                            hb.Point1(new Vector3(0, 1, 0));
+                                            hb.Radius(0.25f);
+                                            hb.Event("onHurtBox", (hitInfo) => {
+                                                if (hitInfo.hitEntity != fgChar) {
+                                                    audioService.PlayOneShot(hitInfo.position, audioMap["weakHit"]);
+                                                        // This exists to make characters hitting each other async
+                                                    fgService
+                                                        .Hit(hitInfo.hitEntity)
+                                                        .By(hitInfo.hitBox);
+                                                }
+                                            });
+                                        });
+                                    })
+                                        // localFrame is an integer between 8 and 11 (in this case),
+                                        // collider is the transform of the child stand collider, default is the collider at (0,0,0)
+                                        // target is a Transform
+                                    .StandCollider((localFrame, target) => {
+                                        float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
+                                        fgChar.SetStandCollider(p * 0.5f * Vector3.up);
+                                    })
+                                .To(11)
+                                .From(11)
+                                    .HitBox()
+                                .From(13)
+                                    .ChainCancellable(true)
+                                .To(23);
+                            }))
+                        .OnComplete((prevState) => {
+                            fgChar.SetStandCollider(Vector3.zero);
+                            fgChar.SetState(prevState);
+                        });
+                    });
+
+                    Attack atkJumpSpw5AA = new Attack(atkBuilder => { atkBuilder
+                        .Name("jump_southpaw_5AA")
+                        .Orientation(Orientation.SOUTHPAW)
+                        .GroundRelation(GroundRelation.AIRBORNE)
+                        .Input(InputNotation._5A)
+                        .AnimationState("jump_southpaw_5AA")
+                        .Frames(
+                            FrameUtil.CreateList(f => { f
+                                .SpecialCancellable(true)
+                                .ChainCancellable(false)
+                                .From(1)
+                                    .HitBox()
+                                .From(4)
+                                    .Track((localFrame, target) => {
+                                        fgChar.SetLookAt(fgChar.rigidbody.position - target.position);
+                                    })
+                                .To(12)
+                                .From(12)
+                                    .Hit(hit => {
+                                        hit.HitDamage(700)
+                                            .BlockDamage(0)
+                                            .HitStun(12.0f)
+                                            .BlockStun(12.0f);
+
+                                        hit.HitBox(hb => {
+                                            hb.Relative(fgChar.transform);
+                                            hb.Point0(new Vector3(0, 0, 0));
+                                            hb.Point1(new Vector3(0, 1, 0));
+                                            hb.Radius(0.25f);
+                                            hb.Event("onHurtBox", (hitInfo) => {
+                                                if (hitInfo.hitEntity != fgChar) {
+                                                    audioService.PlayOneShot(hitInfo.position, audioMap["mediumHit"]);
+                                                        // This exists to make characters hitting each other async
+                                                    fgService
+                                                        .Hit(hitInfo.hitEntity)
+                                                        .By(hitInfo.hitBox);
+                                                }
+                                            });
+                                        });
+                                    })
+                                        // localFrame is an integer between 8 and 11 (in this case),
+                                        // target is a Transform
+                                    .StandCollider((localFrame, target) => {
+                                        float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
+                                        fgChar.SetStandCollider(p * 0.5f * Vector3.up);
+                                    })
+                                .To(13)
+                                .From(13)
+                                    .HitBox()
+                                .From(16)
+                                    .ChainCancellable(true)
+                                .To(30);
+                            }))
+                        .OnComplete((prevState) => {
+                            fgChar.SetStandCollider(Vector3.zero);
+                            fgChar.SetState(prevState);
+                        });
+                    });
+
+                    Attack atkJumpSpw5AAA = new Attack(atkBuilder => { atkBuilder
+                        .Name("jump_southpaw_5AAA")
+                        .Orientation(Orientation.SOUTHPAW)
+                        .GroundRelation(GroundRelation.AIRBORNE)
+                        .Input(InputNotation._5A)
+                        .AnimationState("jump_southpaw_5AAA")
+                        .Frames(
+                            FrameUtil.CreateList(f => { f
+                                .SpecialCancellable(true)
+                                .ChainCancellable(false)
+                                .From(1)
+                                    .HitBox()
+                                .From(4)
+                                    .Track((localFrame, target) => {
+                                        fgChar.SetLookAt(fgChar.rigidbody.position - target.position);
+                                    })
+                                .To(12)
+                                .From(20)
+                                    .Hit(hit => {
+                                        hit.HitDamage(2000)
+                                            .BlockDamage(0)
+                                            .HitStun(40.0f)
+                                            .BlockStun(30.0f);
+
+                                        hit.HitBox(hb => {
+                                            hb.Relative(fgChar.transform);
+                                            hb.Point0(new Vector3(0, 0, 0));
+                                            hb.Point1(new Vector3(0, 1, 0));
+                                            hb.Radius(0.25f);
+                                            hb.Event("onHurtBox", (hitInfo) => {
+                                                if (hitInfo.hitEntity != fgChar) {
+                                                    audioService.PlayOneShot(hitInfo.position, audioMap["strongHit"]);
+                                                        // This exists to make characters hitting each other async
+                                                    fgService
+                                                        .Hit(hitInfo.hitEntity)
+                                                        .By(hitInfo.hitBox);
+                                                }
+                                            });
+                                        });
+                                    })
+                                        // localFrame is an integer between 8 and 11 (in this case),
+                                        // target is a Transform
+                                    .StandCollider((localFrame, target) => {
+                                        float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
+                                        fgChar.SetStandCollider(p * 0.5f * Vector3.up);
+                                    })
+                                .To(21)
+                                .From(21)
+                                    .HitBox()
+                                .From(40)
+                                    .ChainCancellable(true)
+                                .To(40);
+                            }))
+                        .OnComplete((prevState) => {
+                            fgChar.SetStandCollider(Vector3.zero);
+                            fgChar.SetState(prevState);
+                        });
+                    });
+
+                    Attack atkJumpOrt5A = new Attack(atkBuilder => { atkBuilder
+                        .Name("jump_orthodox_5A")
+                        .Orientation(Orientation.ORTHODOX)
+                        .GroundRelation(GroundRelation.AIRBORNE)
+                        .Input(InputNotation._5A)
+                        .AnimationState("jump_orthodox_5A")
+                        .Frames(
+                            FrameUtil.CreateList(f => { f
+                                .SpecialCancellable(true)
+                                .ChainCancellable(false)
+                                .From(1)
+                                    .HitBox()
+                                .From(4)
+                                    .Track((localFrame, target) => {
+                                        fgChar.SetLookAt(fgChar.rigidbody.position - target.position);
+                                    })
+                                .To(10)
+                                .From(10)
+                                    .Hit(hit => {
+                                        hit.HitDamage(700)
+                                            .BlockDamage(0)
+                                            .HitStun(12.0f)
+                                            .BlockStun(12.0f);
+
+                                        hit.HitBox(hb => {
+                                            hb.Relative(fgChar.transform);
+                                            hb.Point0(new Vector3(0, 0, 0));
+                                            hb.Point1(new Vector3(0, 1, 0));
+                                            hb.Radius(0.25f);
+                                            hb.Event("onHurtBox", (hitInfo) => {
+                                                if (hitInfo.hitEntity != fgChar) {
+                                                    audioService.PlayOneShot(hitInfo.position, audioMap["mediumHit"]);
+                                                        // This exists to make characters hitting each other async
+                                                    fgService
+                                                        .Hit(hitInfo.hitEntity)
+                                                        .By(hitInfo.hitBox);
+                                                }
+                                            });
+                                        });
+                                    })
+                                        // localFrame is an integer between 8 and 11 (in this case),
+                                        // target is a Transform
+                                    .StandCollider((localFrame, target) => {
+                                        float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
+                                        fgChar.SetStandCollider(p * 0.5f * Vector3.up);
+                                    })
+                                .To(13)
+                                .From(13)
+                                    .HitBox()
+                                .From(16)
+                                    .ChainCancellable(true)
+                                .To(30);
+                            }))
+                        .OnComplete((prevState) => {
+                            fgChar.SetStandCollider(Vector3.zero);
+                            fgChar.SetState(prevState);
+                        });
+                    });
+
+                    Attack atkJumpOrt5AA = new Attack(atkBuilder => { atkBuilder
+                        .Name("jump_orthodox_5AA")
+                        .Orientation(Orientation.ORTHODOX)
+                        .GroundRelation(GroundRelation.AIRBORNE)
+                        .Input(InputNotation._5A)
+                        .AnimationState("jump_orthodox_5AA")
+                        .Frames(
+                            FrameUtil.CreateList(f => { f
+                                .SpecialCancellable(true)
+                                .ChainCancellable(false)
+                                .From(1)
+                                    .HitBox()
+                                .From(4)
+                                    .Track((localFrame, target) => {
+                                        fgChar.SetLookAt(fgChar.rigidbody.position - target.position);
+                                    })
+                                .To(12)
+                                .From(12)
+                                    .Hit(hit => {
+                                        hit.HitDamage(700)
+                                            .BlockDamage(0)
+                                            .HitStun(12.0f)
+                                            .BlockStun(12.0f);
+
+                                        hit.HitBox(hb => {
+                                            hb.Relative(fgChar.transform);
+                                            hb.Point0(new Vector3(0, 0, 0));
+                                            hb.Point1(new Vector3(0, 1, 0));
+                                            hb.Radius(0.25f);
+                                            hb.Event("onHurtBox", (hitInfo) => {
+                                                if (hitInfo.hitEntity != fgChar) {
+                                                    audioService.PlayOneShot(hitInfo.position, audioMap["mediumHit"]);
+                                                        // This exists to make characters hitting each other async
+                                                    fgService
+                                                        .Hit(hitInfo.hitEntity)
+                                                        .By(hitInfo.hitBox);
+                                                }
+                                            });
+                                        });
+                                    })
+                                        // localFrame is an integer between 8 and 11 (in this case),
+                                        // target is a Transform
+                                    .StandCollider((localFrame, target) => {
+                                        float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
+                                        fgChar.SetStandCollider(p * 0.5f * Vector3.up);
+                                    })
+                                .To(13)
+                                .From(13)
+                                    .HitBox()
+                                .From(16)
+                                    .ChainCancellable(true)
+                                .To(30);
+                            }))
+                        .OnComplete((prevState) => {
+                            fgChar.SetStandCollider(Vector3.zero);
+                            fgChar.SetState(prevState);
+                        });
+                    });
+
                     Attack hadouken = new Attack(atkBuilder => { atkBuilder
                         .Name("hadouken")
                         .Orientation(Orientation.SOUTHPAW)
                         .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._236C)
                         .AnimationState("hadouken")
-                        .Movement(null, null, attackMovementMap["hadouken.z"])
+                        .MovementCurve(null, null, attackMovementMap["hadouken.z"])
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(false)
@@ -443,6 +755,9 @@ namespace ResonantSpark {
                                     .Sound(audioMap["hadouken"], soundResource => {
                                         soundResource.transform.position = fgChar.GetSpeakPosition();
                                         audioService.Play(soundResource);
+                                    })
+                                    .Track((localFrame, target) => {
+                                        fgChar.SetLookAt(fgChar.rigidbody.position - target.position);
                                     })
                                 .From(12)
                                     .Projectile(projectileMap["hadouken"], proj => {
@@ -499,7 +814,6 @@ namespace ResonantSpark {
                                 prevAttacks.Contains(atkSpw2A)) {
                                 return false;
                             }
-
                             if (currAttack == null ||
                                 currAttack == atkSpw5A) {
                                 return true;
@@ -517,10 +831,39 @@ namespace ResonantSpark {
                                 prevAttacks.Contains(atkOrt2A)) {
                                 return false;
                             }
-
                             if (currAttack == null ||
                                 currAttack == atkOrt2A ||
                                 currAttack == atkOrt5A) {
+                                return true;
+                            }
+                            return false;
+                        })
+                        .Attack(atkJumpSpw5A, (charState, currAttack, prevAttacks) => {
+                            if (currAttack == null) {
+                                return true;
+                            }
+                            return false;
+                        })
+                        .Attack(atkJumpSpw5AA, (charState, currAttack, prevAttacks) => {
+                            if (currAttack == atkJumpSpw5A) {
+                                return true;
+                            }
+                            return false;
+                        })
+                        .Attack(atkJumpSpw5AAA, (charState, currAttack, prevAttacks) => {
+                            if (currAttack == atkJumpSpw5AA) {
+                                return true;
+                            }
+                            return false;
+                        })
+                        .Attack(atkJumpOrt5A, (charState, currAttack, prevAttacks) => {
+                            if (currAttack == null) {
+                                return true;
+                            }
+                            return false;
+                        })
+                        .Attack(atkJumpOrt5AA, (charState, currAttack, prevAttacks) => {
+                            if (currAttack == atkJumpOrt5A) {
                                 return true;
                             }
                             return false;
