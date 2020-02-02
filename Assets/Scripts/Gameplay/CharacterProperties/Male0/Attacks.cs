@@ -92,7 +92,7 @@ namespace ResonantSpark {
                                     .ChainCancellable(true)
                                 .To(22);
                             }))
-                        .OnComplete(ReturnToPreviousState);
+                        .CleanUp(ReturnToPreviousState);
                     });
 
                     Attack atkSpw5AA = new Attack(atkBuilder => { atkBuilder
@@ -142,7 +142,7 @@ namespace ResonantSpark {
                                     .HitBox()
                                 .To(30);
                             }))
-                        .OnComplete(ReturnToPreviousState);
+                        .CleanUp(ReturnToPreviousState);
                     });
 
                     Attack atkSpw5AAA = new Attack(atkBuilder => { atkBuilder
@@ -152,7 +152,7 @@ namespace ResonantSpark {
                         .Input(InputNotation._5A)
                         .AnimationState("southpaw_5AAA")
                         .Movement(attackMovementMap["southpaw_5AAA.x"], null, attackMovementMap["southpaw_5AAA.z"])
-                        .Rotation((localFrame, target) => { // localFrame is an integer between 22 and 30 (in this case), target is a Transform
+                        .Rotation((localFrame, target) => {
                             if (localFrame >= 22.0f && localFrame <= 30.0f) {
                                 float p = (localFrame - 22.0f) / 30.0f;
                                 fgChar.SetLookAt(Quaternion.Euler(0.0f, -180f * p, 0.0f) * (fgChar.rigidbody.position - target.position));
@@ -193,7 +193,7 @@ namespace ResonantSpark {
                                     .HitBox()
                                 .To(30);
                             }))
-                        .OnComplete(ReturnToPreviousState);
+                        .CleanUp(ReturnToPreviousState);
                     });
 
                     Attack atkOrt5A = new Attack(atkBuilder => { atkBuilder
@@ -243,7 +243,7 @@ namespace ResonantSpark {
                                     .ChainCancellable(true)
                                 .To(22);
                             }))
-                        .OnComplete(ReturnToPreviousState);
+                        .CleanUp(ReturnToPreviousState);
                     });
 
                     Attack atkOrt5AA = new Attack(atkBuilder => { atkBuilder
@@ -253,7 +253,7 @@ namespace ResonantSpark {
                         .Input(InputNotation._5A)
                         .AnimationState("orthodox_5AA")
                         .Movement(attackMovementMap["orthodox_5AA.x"], null, attackMovementMap["orthodox_5AA.z"])
-                        .Rotation((localFrame, target) => { // localFrame is an integer between 20 and 26 (in this case), target is a Transform
+                        .Rotation((localFrame, target) => {
                             if (localFrame >= 20.0f && localFrame <= 26.0f) {
                                 float p = (localFrame - 20.0f) / 26.0f;
                                 fgChar.SetLookAt(Quaternion.Euler(0.0f, -180f * p, 0.0f) * (fgChar.rigidbody.position - target.position));
@@ -299,7 +299,7 @@ namespace ResonantSpark {
                                     .HitBox()
                                 .To(26);
                             }))
-                        .OnComplete(ReturnToPreviousState);
+                        .CleanUp(ReturnToPreviousState);
                     });
 
                     Attack atkSpw2A = new Attack(atkBuilder => { atkBuilder
@@ -348,7 +348,7 @@ namespace ResonantSpark {
                                     .ChainCancellable(true)
                                 .To(22);
                             }))
-                        .OnComplete(ReturnToPreviousState);
+                        .CleanUp(ReturnToPreviousState);
                     });
 
                     Attack atkSpw2AA = new Attack(atkBuilder => { atkBuilder
@@ -399,7 +399,7 @@ namespace ResonantSpark {
                                     .HitBox()
                                 .To(28);
                             }))
-                        .OnComplete((prevState) => {
+                        .CleanUp((prevState) => {
                             fgChar.SetState(fgChar.State("stand"));
                         });
                     });
@@ -448,7 +448,7 @@ namespace ResonantSpark {
                                     .ChainCancellable(true)
                                 .To(23);
                             }))
-                        .OnComplete(ReturnToPreviousState);
+                        .CleanUp(ReturnToPreviousState);
                     });
 
                     Attack atkJumpSpw5A = new Attack(atkBuilder => { atkBuilder
@@ -457,12 +457,11 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.AIRBORNE)
                         .Input(InputNotation._5A)
                         .AnimationState("jump_orthodox_5A")
-                            // localFrame is an integer between 8 and 11 (in this case),
-                            // collider is the transform of the child stand collider, default is the collider at (0,0,0)
-                            // target is a Transform
                         .StandCollider((localFrame, target) => {
-                            float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
-                            fgChar.SetStandCollider(p * 0.5f * Vector3.up);
+                            if (localFrame >= 8.0f && localFrame <= 11.0f) {
+                                float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
+                                fgChar.SetStandCollider(p * 0.5f * Vector3.up);
+                            }
                         })
                         .Frames(
                             FrameUtil.CreateList(f => { f
@@ -501,7 +500,7 @@ namespace ResonantSpark {
                                     .ChainCancellable(true)
                                 .To(23);
                             }))
-                        .OnComplete((prevState) => {
+                        .CleanUp((prevState) => {
                             fgChar.SetStandCollider(Vector3.zero);
                             fgChar.SetState(prevState);
                         });
@@ -513,11 +512,11 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.AIRBORNE)
                         .Input(InputNotation._5A)
                         .AnimationState("jump_southpaw_5AA")
-                            // localFrame is an integer between 8 and 11 (in this case),
-                            // target is a Transform
                         .StandCollider((localFrame, target) => {
-                            float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
-                            fgChar.SetStandCollider(p * 0.5f * Vector3.up);
+                            if (localFrame >= 8.0f && localFrame <= 11.0f) {
+                                float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
+                                fgChar.SetStandCollider(p * 0.5f * Vector3.up);
+                            }
                         })
                         .Frames(
                             FrameUtil.CreateList(f => { f
@@ -560,7 +559,7 @@ namespace ResonantSpark {
                                     .ChainCancellable(true)
                                 .To(30);
                             }))
-                        .OnComplete((prevState) => {
+                        .CleanUp((prevState) => {
                             fgChar.SetStandCollider(Vector3.zero);
                             fgChar.SetState(prevState);
                         });
@@ -572,11 +571,11 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.AIRBORNE)
                         .Input(InputNotation._5A)
                         .AnimationState("jump_southpaw_5AAA")
-                            // localFrame is an integer between 8 and 11 (in this case),
-                            // target is a Transform
                         .StandCollider((localFrame, target) => {
-                            float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
-                            fgChar.SetStandCollider(p * 0.5f * Vector3.up);
+                            if (localFrame >= 8.0f && localFrame <= 11.0f) {
+                                float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
+                                fgChar.SetStandCollider(p * 0.5f * Vector3.up);
+                            }
                         })
                         .Frames(
                             FrameUtil.CreateList(f => { f
@@ -617,7 +616,7 @@ namespace ResonantSpark {
                                     .HitBox()
                                 .To(40);
                             }))
-                        .OnComplete((prevState) => {
+                        .CleanUp((prevState) => {
                             fgChar.SetStandCollider(Vector3.zero);
                             fgChar.SetState(prevState);
                         });
@@ -629,11 +628,11 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.AIRBORNE)
                         .Input(InputNotation._5A)
                         .AnimationState("jump_orthodox_5A")
-                            // localFrame is an integer between 8 and 11 (in this case),
-                            // target is a Transform
                         .StandCollider((localFrame, target) => {
-                            float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
-                            fgChar.SetStandCollider(p * 0.5f * Vector3.up);
+                            if (localFrame >= 8.0f && localFrame <= 11.0f) {
+                                float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
+                                fgChar.SetStandCollider(p * 0.5f * Vector3.up);
+                            }
                         })
                         .Frames(
                             FrameUtil.CreateList(f => { f
@@ -676,7 +675,7 @@ namespace ResonantSpark {
                                     .ChainCancellable(true)
                                 .To(30);
                             }))
-                        .OnComplete((prevState) => {
+                        .CleanUp((prevState) => {
                             fgChar.SetStandCollider(Vector3.zero);
                             fgChar.SetState(prevState);
                         });
@@ -688,11 +687,11 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.AIRBORNE)
                         .Input(InputNotation._5A)
                         .AnimationState("jump_orthodox_5AA")
-                            // localFrame is an integer between 8 and 11 (in this case),
-                            // target is a Transform
                         .StandCollider((localFrame, target) => {
-                            float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
-                            fgChar.SetStandCollider(p * 0.5f * Vector3.up);
+                            if (localFrame >= 8.0f && localFrame <= 11.0f) {
+                                float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
+                                fgChar.SetStandCollider(p * 0.5f * Vector3.up);
+                            }
                         })
                         .Frames(
                             FrameUtil.CreateList(f => { f
@@ -735,7 +734,7 @@ namespace ResonantSpark {
                                     .ChainCancellable(true)
                                 .To(30);
                             }))
-                        .OnComplete((prevState) => {
+                        .CleanUp((prevState) => {
                             fgChar.SetStandCollider(Vector3.zero);
                             fgChar.SetState(prevState);
                         });
@@ -768,7 +767,7 @@ namespace ResonantSpark {
                                     })
                                 .To(46);
                             }))
-                        .OnComplete(ReturnToPreviousState);
+                        .CleanUp(ReturnToPreviousState);
                     });
 
                     charBuilder
