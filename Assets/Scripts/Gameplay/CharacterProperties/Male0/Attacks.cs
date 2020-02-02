@@ -48,7 +48,7 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._4A, InputNotation._5A)
                         .AnimationState("southpaw_5A")
-                        .MovementCurve(attackMovementMap["southpaw_5A.x"], null, attackMovementMap["southpaw_5A.z"])
+                        .Movement(attackMovementMap["southpaw_5A.x"], null, attackMovementMap["southpaw_5A.z"])
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
@@ -56,8 +56,9 @@ namespace ResonantSpark {
                                 .From(1)
                                     .HitBox()
                                 .From(4)
-                                    .Track((localFrame, target) => {
-                                        fgChar.SetLookAt(fgChar.rigidbody.position - target.position);
+                                    .Track((target) => {
+                                            // the vector that forward should point to, and a max turn speed per frame.
+                                        fgChar.LookTowards(fgChar.rigidbody.position - target.position, 20.0f);
                                     })
                                 .To(8)
                                 .From(8)
@@ -100,7 +101,7 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._5A)
                         .AnimationState("southpaw_5AA")
-                        .MovementCurve(attackMovementMap["southpaw_5AA.x"], null, attackMovementMap["southpaw_5AA.z"])
+                        .Movement(attackMovementMap["southpaw_5AA.x"], null, attackMovementMap["southpaw_5AA.z"])
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
@@ -108,8 +109,8 @@ namespace ResonantSpark {
                                     .HitBox()
                                     .ChainCancellable(false)
                                 .From(4)
-                                    .Track((localFrame, target) => {
-                                        fgChar.SetLookAt(fgChar.rigidbody.position - target.position);
+                                    .Track((target) => {
+                                        fgChar.LookTowards(fgChar.rigidbody.position - target.position, 30.0f);
                                     })
                                 .To(12)
                                 .From(10)
@@ -150,7 +151,14 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._5A)
                         .AnimationState("southpaw_5AAA")
-                        .MovementCurve(attackMovementMap["southpaw_5AAA.x"], null, attackMovementMap["southpaw_5AAA.z"])
+                        .Movement(attackMovementMap["southpaw_5AAA.x"], null, attackMovementMap["southpaw_5AAA.z"])
+                        .Rotation((localFrame, target) => { // localFrame is an integer between 22 and 30 (in this case), target is a Transform
+                            if (localFrame >= 22.0f && localFrame <= 30.0f) {
+                                float p = (localFrame - 22.0f) / 30.0f;
+                                fgChar.SetLookAt(Quaternion.Euler(0.0f, -180f * p, 0.0f) * (fgChar.rigidbody.position - target.position));
+                                    // fgChar.GetOrientation is done automatically on each frame
+                            }
+                        })
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
@@ -182,11 +190,7 @@ namespace ResonantSpark {
                                     })
                                 .To(21)
                                 .From(22)
-                                    .Rotate((localFrame, target) => { // localFrame is an integer between 22 and 30 (in this case), target is a Transform
-                                        float p = (localFrame - 22.0f) / 30.0f;
-                                        fgChar.SetLookAt(Quaternion.Euler(0.0f, -180f * p, 0.0f) * (fgChar.rigidbody.position - target.position));
-                                            // fgChar.GetOrientation is done automatically on each frame
-                                    })
+                                    .HitBox()
                                 .To(30);
                             }))
                         .OnComplete(ReturnToPreviousState);
@@ -198,7 +202,7 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._4A, InputNotation._5A)
                         .AnimationState("orthodox_5A")
-                        .MovementCurve(attackMovementMap["orthodox_5A.x"], null, attackMovementMap["orthodox_5A.z"])
+                        .Movement(attackMovementMap["orthodox_5A.x"], null, attackMovementMap["orthodox_5A.z"])
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
@@ -206,8 +210,8 @@ namespace ResonantSpark {
                                 .From(1)
                                     .HitBox()
                                 .From(4)
-                                    .Track((localFrame, target) => {
-                                        fgChar.SetLookAt(fgChar.rigidbody.position - target.position);
+                                    .Track((target) => {
+                                        fgChar.LookTowards(fgChar.rigidbody.position - target.position, 20.0f);
                                     })
                                 .To(10)
                                 .From(10)
@@ -248,7 +252,14 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._5A)
                         .AnimationState("orthodox_5AA")
-                        .MovementCurve(attackMovementMap["orthodox_5AA.x"], null, attackMovementMap["orthodox_5AA.z"])
+                        .Movement(attackMovementMap["orthodox_5AA.x"], null, attackMovementMap["orthodox_5AA.z"])
+                        .Rotation((localFrame, target) => { // localFrame is an integer between 20 and 26 (in this case), target is a Transform
+                            if (localFrame >= 20.0f && localFrame <= 26.0f) {
+                                float p = (localFrame - 20.0f) / 26.0f;
+                                fgChar.SetLookAt(Quaternion.Euler(0.0f, -180f * p, 0.0f) * (fgChar.rigidbody.position - target.position));
+                                    // fgChar.GetOrientation is done automatically on each frame
+                            }
+                        })
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
@@ -256,8 +267,8 @@ namespace ResonantSpark {
                                 .From(1)
                                     .HitBox()
                                 .From(4)
-                                    .Track((localFrame, target) => {
-                                        fgChar.SetLookAt(fgChar.rigidbody.position - target.position);
+                                    .Track((target) => {
+                                        fgChar.LookTowards(fgChar.rigidbody.position - target.position, 20.0f);
                                     })
                                 .To(16)
                                 .From(16)
@@ -286,12 +297,6 @@ namespace ResonantSpark {
                                 .To(17)
                                 .From(17)
                                     .HitBox()
-                                .From(20)
-                                    .Rotate((localFrame, target) => { // localFrame is an integer between 20 and 26 (in this case), target is a Transform
-                                        float p = (localFrame - 20.0f) / 26.0f;
-                                        fgChar.SetLookAt(Quaternion.Euler(0.0f, 180f * p, 0.0f) * (fgChar.rigidbody.position - target.position));
-                                            // fgChar.GetOrientation is done automatically on each frame
-                                    })
                                 .To(26);
                             }))
                         .OnComplete(ReturnToPreviousState);
@@ -303,7 +308,7 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._2A)
                         .AnimationState("southpaw_2A")
-                        .MovementCurve(attackMovementMap["southpaw_2A.x"], null, attackMovementMap["southpaw_2A.z"])
+                        .Movement(attackMovementMap["southpaw_2A.x"], null, attackMovementMap["southpaw_2A.z"])
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
@@ -352,7 +357,7 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._2A)
                         .AnimationState("southpaw_2AA")
-                        .MovementCurve(attackMovementMap["southpaw_2AA.x"], null, attackMovementMap["southpaw_2AA.z"])
+                        .Movement(attackMovementMap["southpaw_2AA.x"], null, attackMovementMap["southpaw_2AA.z"])
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
@@ -360,8 +365,8 @@ namespace ResonantSpark {
                                 .From(1)
                                     .HitBox()
                                 .From(4)
-                                    .Track((localFrame, target) => {
-                                        fgChar.SetLookAt(fgChar.rigidbody.position - target.position);
+                                    .Track((target) => {
+                                        fgChar.LookTowards(fgChar.rigidbody.position - target.position, 20.0f);
                                     })
                                 .To(13)
                                 .From(13)
@@ -405,7 +410,7 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._2A)
                         .AnimationState("orthodox_2A")
-                        .MovementCurve(attackMovementMap["orthodox_2A.x"], null, attackMovementMap["orthodox_2A.z"])
+                        .Movement(attackMovementMap["orthodox_2A.x"], null, attackMovementMap["orthodox_2A.z"])
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
@@ -452,6 +457,13 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.AIRBORNE)
                         .Input(InputNotation._5A)
                         .AnimationState("jump_orthodox_5A")
+                            // localFrame is an integer between 8 and 11 (in this case),
+                            // collider is the transform of the child stand collider, default is the collider at (0,0,0)
+                            // target is a Transform
+                        .StandCollider((localFrame, target) => {
+                            float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
+                            fgChar.SetStandCollider(p * 0.5f * Vector3.up);
+                        })
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
@@ -482,13 +494,6 @@ namespace ResonantSpark {
                                             });
                                         });
                                     })
-                                        // localFrame is an integer between 8 and 11 (in this case),
-                                        // collider is the transform of the child stand collider, default is the collider at (0,0,0)
-                                        // target is a Transform
-                                    .StandCollider((localFrame, target) => {
-                                        float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
-                                        fgChar.SetStandCollider(p * 0.5f * Vector3.up);
-                                    })
                                 .To(11)
                                 .From(11)
                                     .HitBox()
@@ -508,6 +513,12 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.AIRBORNE)
                         .Input(InputNotation._5A)
                         .AnimationState("jump_southpaw_5AA")
+                            // localFrame is an integer between 8 and 11 (in this case),
+                            // target is a Transform
+                        .StandCollider((localFrame, target) => {
+                            float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
+                            fgChar.SetStandCollider(p * 0.5f * Vector3.up);
+                        })
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
@@ -515,8 +526,8 @@ namespace ResonantSpark {
                                 .From(1)
                                     .HitBox()
                                 .From(4)
-                                    .Track((localFrame, target) => {
-                                        fgChar.SetLookAt(fgChar.rigidbody.position - target.position);
+                                    .Track((target) => {
+                                        fgChar.LookTowards(fgChar.rigidbody.position - target.position, 20.0f);
                                     })
                                 .To(12)
                                 .From(12)
@@ -542,12 +553,6 @@ namespace ResonantSpark {
                                             });
                                         });
                                     })
-                                        // localFrame is an integer between 8 and 11 (in this case),
-                                        // target is a Transform
-                                    .StandCollider((localFrame, target) => {
-                                        float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
-                                        fgChar.SetStandCollider(p * 0.5f * Vector3.up);
-                                    })
                                 .To(13)
                                 .From(13)
                                     .HitBox()
@@ -567,6 +572,12 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.AIRBORNE)
                         .Input(InputNotation._5A)
                         .AnimationState("jump_southpaw_5AAA")
+                            // localFrame is an integer between 8 and 11 (in this case),
+                            // target is a Transform
+                        .StandCollider((localFrame, target) => {
+                            float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
+                            fgChar.SetStandCollider(p * 0.5f * Vector3.up);
+                        })
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
@@ -574,8 +585,8 @@ namespace ResonantSpark {
                                 .From(1)
                                     .HitBox()
                                 .From(4)
-                                    .Track((localFrame, target) => {
-                                        fgChar.SetLookAt(fgChar.rigidbody.position - target.position);
+                                    .Track((target) => {
+                                        fgChar.LookTowards(fgChar.rigidbody.position - target.position, 20.0f);
                                     })
                                 .To(12)
                                 .From(20)
@@ -601,17 +612,9 @@ namespace ResonantSpark {
                                             });
                                         });
                                     })
-                                        // localFrame is an integer between 8 and 11 (in this case),
-                                        // target is a Transform
-                                    .StandCollider((localFrame, target) => {
-                                        float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
-                                        fgChar.SetStandCollider(p * 0.5f * Vector3.up);
-                                    })
                                 .To(21)
                                 .From(21)
                                     .HitBox()
-                                .From(40)
-                                    .ChainCancellable(true)
                                 .To(40);
                             }))
                         .OnComplete((prevState) => {
@@ -626,6 +629,12 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.AIRBORNE)
                         .Input(InputNotation._5A)
                         .AnimationState("jump_orthodox_5A")
+                            // localFrame is an integer between 8 and 11 (in this case),
+                            // target is a Transform
+                        .StandCollider((localFrame, target) => {
+                            float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
+                            fgChar.SetStandCollider(p * 0.5f * Vector3.up);
+                        })
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
@@ -633,8 +642,8 @@ namespace ResonantSpark {
                                 .From(1)
                                     .HitBox()
                                 .From(4)
-                                    .Track((localFrame, target) => {
-                                        fgChar.SetLookAt(fgChar.rigidbody.position - target.position);
+                                    .Track((target) => {
+                                        fgChar.LookTowards(fgChar.rigidbody.position - target.position, 20.0f);
                                     })
                                 .To(10)
                                 .From(10)
@@ -660,12 +669,6 @@ namespace ResonantSpark {
                                             });
                                         });
                                     })
-                                        // localFrame is an integer between 8 and 11 (in this case),
-                                        // target is a Transform
-                                    .StandCollider((localFrame, target) => {
-                                        float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
-                                        fgChar.SetStandCollider(p * 0.5f * Vector3.up);
-                                    })
                                 .To(13)
                                 .From(13)
                                     .HitBox()
@@ -685,6 +688,12 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.AIRBORNE)
                         .Input(InputNotation._5A)
                         .AnimationState("jump_orthodox_5AA")
+                            // localFrame is an integer between 8 and 11 (in this case),
+                            // target is a Transform
+                        .StandCollider((localFrame, target) => {
+                            float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
+                            fgChar.SetStandCollider(p * 0.5f * Vector3.up);
+                        })
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
@@ -692,8 +701,8 @@ namespace ResonantSpark {
                                 .From(1)
                                     .HitBox()
                                 .From(4)
-                                    .Track((localFrame, target) => {
-                                        fgChar.SetLookAt(fgChar.rigidbody.position - target.position);
+                                    .Track((target) => {
+                                        fgChar.LookTowards(fgChar.rigidbody.position - target.position, 20.0f);
                                     })
                                 .To(12)
                                 .From(12)
@@ -719,12 +728,6 @@ namespace ResonantSpark {
                                             });
                                         });
                                     })
-                                        // localFrame is an integer between 8 and 11 (in this case),
-                                        // target is a Transform
-                                    .StandCollider((localFrame, target) => {
-                                        float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
-                                        fgChar.SetStandCollider(p * 0.5f * Vector3.up);
-                                    })
                                 .To(13)
                                 .From(13)
                                     .HitBox()
@@ -744,7 +747,7 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._236C)
                         .AnimationState("hadouken")
-                        .MovementCurve(null, null, attackMovementMap["hadouken.z"])
+                        .Movement(null, null, attackMovementMap["hadouken.z"])
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(false)
@@ -756,8 +759,8 @@ namespace ResonantSpark {
                                         soundResource.transform.position = fgChar.GetSpeakPosition();
                                         audioService.Play(soundResource);
                                     })
-                                    .Track((localFrame, target) => {
-                                        fgChar.SetLookAt(fgChar.rigidbody.position - target.position);
+                                    .Track((target) => {
+                                        fgChar.LookTowards(fgChar.rigidbody.position - target.position, 5.0f);
                                     })
                                 .From(12)
                                     .Projectile(projectileMap["hadouken"], proj => {
