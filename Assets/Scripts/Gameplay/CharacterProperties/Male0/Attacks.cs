@@ -1,4 +1,4 @@
-﻿// Attack.cs wishlist
+// Attack.cs wishlist
 
 using System.Collections;
 using System.Collections.Generic;
@@ -20,8 +20,12 @@ namespace ResonantSpark {
                 private IFightingGameService fgService;
                 private IAudioService audioService;
                 private IProjectileService projectileService;
+                private IParticleService particleService;
+                private ICameraService cameraService;
+                private ITimeService timeService;
 
                 private Dictionary<string, AudioClip> audioMap;
+                private Dictionary<string, ParticleEffect> particleMap;
                 private Dictionary<string, AnimationCurveCallback> attackMovementMap;
 
                                         // Action<> attackMovementCallback = (frame) => {
@@ -32,6 +36,9 @@ namespace ResonantSpark {
                     fgService = services.GetService<IFightingGameService>();
                     audioService = services.GetService<IAudioService>();
                     projectileService = services.GetService<IProjectileService>();
+                    particleService = services.GetService<IParticleService>();
+                    cameraService = services.GetService<ICameraService>();
+                    timeService = services.GetService<ITimeService>();
 
                     this.audioMap = audioMap;
                 }
@@ -52,7 +59,8 @@ namespace ResonantSpark {
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
-                                .ChainCancellable(false)
+                                .CancellableOnWhiff(true)
+                                .ChainCancellable(true)
                                 .From(1)
                                     .HitBox()
                                 .From(4)
@@ -61,12 +69,16 @@ namespace ResonantSpark {
                                         fgChar.LookTowards(fgChar.rigidbody.position - target.position, 20.0f);
                                     })
                                 .To(8)
+                                .From(7)
+                                    .CancellableOnWhiff(false)
                                 .From(8)
                                     .Hit(hit => {
                                         hit.HitDamage(800)
                                             .BlockDamage(0)
                                             .HitStun(20.0f)
-                                            .BlockStun(8.0f);
+                                            .BlockStun(8.0f)
+                                            .ComboScaling(0.65f)
+                                            .Priority(AttackPriority.LightAttack);
 
                                         // hit.Block(); default is to allow any kind of blocking
 
@@ -75,13 +87,30 @@ namespace ResonantSpark {
                                             hb.Point0(new Vector3(0, 0, 0));
                                             hb.Point1(new Vector3(0, 1, 0));
                                             hb.Radius(0.25f);
-                                            hb.Event("onHurtBox", (hitInfo) => {
+                                            hb.Event("onHitFGChar", (hitInfo) => {
                                                 if (hitInfo.hitEntity != fgChar) {
                                                     audioService.PlayOneShot(hitInfo.position, audioMap["weakHit"]);
                                                         // This exists to make characters hitting each other async
-                                                    fgService
-                                                        .Hit(hitInfo.hitEntity)
-                                                        .By(hitInfo.hitBox);
+                                                    fgService.Hit(hitInfo.hitEntity, hitInfo.hitBox, (opponent, hitAtSameTimeByAttackPriority) => {
+                                                        opponent.LoseHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
+
+                                                        switch (opponent.GetGroundRelation()) {
+                                                            case GroundRelation.GROUNDED:
+                                                                opponent.Force(
+                                                                    attackPriority: AttackForcePriority.LightAttack,
+                                                                    launch: false,
+                                                                    forceDirection: fgChar.transform.rotation * Vector3.forward,
+                                                                    forceMagnitude: 0.5f);
+                                                                break;
+                                                            case GroundRelation.AIRBORNE:
+                                                                opponent.Force(
+                                                                    attackPriority: AttackForcePriority.LightAttack,
+                                                                    launch: true,
+                                                                    forceDirection: fgChar.transform.rotation * new Vector3(0.0f, 1.0f, 1.0f),
+                                                                    forceMagnitude: 1.0f);
+                                                                break;
+                                                        }
+                                                    });
                                                 }
                                             });
                                         });
@@ -105,6 +134,7 @@ namespace ResonantSpark {
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
+                                .CancellableOnWhiff(false)
                                 .From(1)
                                     .HitBox()
                                     .ChainCancellable(false)
@@ -120,19 +150,44 @@ namespace ResonantSpark {
                                         hit.HitDamage(1000)
                                             .BlockDamage(0)
                                             .HitStun(30.0f)
-                                            .BlockStun(12.0f);
+                                            .BlockStun(12.0f)
+                                            .ComboScaling(1.0f)
+                                            .Priority(AttackPriority.LightAttack);
 
                                         hit.HitBox(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0));
                                             hb.Point1(new Vector3(0, 1, 0));
                                             hb.Radius(0.25f);
-                                            hb.Event("onHurtBox", (hitInfo) => {
+                                            hb.Event("onHitFGChar", (hitInfo) => {
                                                 if (hitInfo.hitEntity != fgChar) {
                                                     audioService.PlayOneShot(hitInfo.position, audioMap["mediumHit"]);
-                                                    fgService
-                                                        .Hit(hitInfo.hitEntity)
-                                                        .By(hitInfo.hitBox);
+                                                        // This exists to make characters hitting each other async
+                                                    fgService.Hit(hitInfo.hitEntity, hitInfo.hitBox, (opponent, hitAtSameTimeByAttackPriority) => {
+                                                        opponent.LoseHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
+
+                                                        switch (opponent.GetGroundRelation()) {
+                                                            case GroundRelation.GROUNDED:
+                                                                opponent.Force(
+                                                                    attackPriority: AttackForcePriority.MediumAttack,
+                                                                    launch: false,
+                                                                    forceDirection: fgChar.transform.rotation * Vector3.forward,
+                                                                    forceMagnitude: 0.5f);
+                                                                break;
+                                                            case GroundRelation.AIRBORNE:
+                                                                opponent.Force(
+                                                                    attackPriority: AttackForcePriority.MediumAttack,
+                                                                    launch: true,
+                                                                    forceDirection: fgChar.transform.rotation * new Vector3(0.0f, 1.0f, 1.0f),
+                                                                    forceMagnitude: 1.0f);
+                                                                break;
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                            hb.Event("onEqualPriorityHitBox", (hitInfo) => {
+                                                if (hitInfo.hitEntity != fgChar) {
+                                                    fgChar.Perform("verticalClash");
                                                 }
                                             });
                                         });
@@ -162,6 +217,7 @@ namespace ResonantSpark {
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
+                                .CancellableOnWhiff(false)
                                 .From(1)
                                     .HitBox()
                                     .ChainCancellable(false)
@@ -171,19 +227,42 @@ namespace ResonantSpark {
                                         hit.HitDamage(1000)
                                             .BlockDamage(0)
                                             .HitStun(30.0f)
-                                            .BlockStun(12.0f);
+                                            .BlockStun(12.0f)
+                                            .Priority(AttackPriority.MediumAttack);
 
                                         hit.HitBox(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0));
                                             hb.Point1(new Vector3(0, 1, 0));
                                             hb.Radius(0.25f);
-                                            hb.Event("onHurtBox", (hitInfo) => {
+                                            hb.Event("onHitFGChar", (hitInfo) => {
                                                 if (hitInfo.hitEntity != fgChar) {
                                                     audioService.PlayOneShot(hitInfo.position, audioMap["mediumHit"]);
-                                                    fgService
-                                                        .Hit(hitInfo.hitEntity)
-                                                        .By(hitInfo.hitBox);
+                                                    fgService.Hit(hitInfo.hitEntity, hitInfo.hitBox, (opponent, hitAtSameTimeByAttackPriority) => {
+                                                        opponent.LoseHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
+
+                                                        switch (opponent.GetGroundRelation()) {
+                                                            case GroundRelation.GROUNDED:
+                                                                opponent.Force(
+                                                                    attackPriority: AttackForcePriority.MediumAttack,
+                                                                    launch: false,
+                                                                    forceDirection: fgChar.transform.rotation * Vector3.forward,
+                                                                    forceMagnitude: 0.5f);
+                                                                break;
+                                                            case GroundRelation.AIRBORNE:
+                                                                opponent.Force(
+                                                                    attackPriority: AttackForcePriority.MediumAttack,
+                                                                    launch: true,
+                                                                    forceDirection: fgChar.transform.rotation * new Vector3(0.0f, 1.0f, 1.0f),
+                                                                    forceMagnitude: 1.0f);
+                                                                break;
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                            hb.Event("onEqualPriorityHitBox", (hitInfo) => {
+                                                if (hitInfo.hitEntity != fgChar) {
+                                                    fgChar.Perform("horizontalClashSwingFromLeft");
                                                 }
                                             });
                                         });
@@ -206,7 +285,8 @@ namespace ResonantSpark {
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
-                                .ChainCancellable(false)
+                                .CancellableOnWhiff(true)
+                                .ChainCancellable(true)
                                 .From(1)
                                     .HitBox()
                                 .From(4)
@@ -214,25 +294,44 @@ namespace ResonantSpark {
                                         fgChar.LookTowards(fgChar.rigidbody.position - target.position, 20.0f);
                                     })
                                 .To(10)
+                                .From(9)
+                                    .CancellableOnWhiff(false)
                                 .From(10)
                                     .Hit(hit => {
                                         hit.HitDamage(900)
                                             .BlockDamage(0)
                                             .HitStun(24.0f)
-                                            .BlockStun(10.0f);
+                                            .BlockStun(10.0f)
+                                            .Priority(AttackPriority.LightAttack);
 
                                         hit.HitBox(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0));
                                             hb.Point1(new Vector3(0, 1, 0));
                                             hb.Radius(0.25f);
-                                            hb.Event("onHurtBox", (hitInfo) => {
+                                            hb.Event("onHitFGChar", (hitInfo) => {
                                                 if (hitInfo.hitEntity != fgChar) {
                                                     audioService.PlayOneShot(hitInfo.position, audioMap["weakHit"]);
-                                                        // This exists to make characters hitting each other async
-                                                    fgService
-                                                        .Hit(hitInfo.hitEntity)
-                                                        .By(hitInfo.hitBox);
+                                                    fgService.Hit(hitInfo.hitEntity, hitInfo.hitBox, (opponent, hitAtSameTimeByAttackPriority) => {
+                                                        opponent.LoseHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
+
+                                                        switch (opponent.GetGroundRelation()) {
+                                                            case GroundRelation.GROUNDED:
+                                                                opponent.Force(
+                                                                    attackPriority: AttackForcePriority.LightAttack,
+                                                                    launch: false,
+                                                                    forceDirection: fgChar.transform.rotation * Vector3.forward,
+                                                                    forceMagnitude: 0.5f);
+                                                                break;
+                                                            case GroundRelation.AIRBORNE:
+                                                                opponent.Force(
+                                                                    attackPriority: AttackForcePriority.LightAttack,
+                                                                    launch: true,
+                                                                    forceDirection: fgChar.transform.rotation * new Vector3(0.0f, 1.0f, 1.0f),
+                                                                    forceMagnitude: 1.0f);
+                                                                break;
+                                                        }
+                                                    });
                                                 }
                                             });
                                         });
@@ -264,6 +363,7 @@ namespace ResonantSpark {
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
                                 .ChainCancellable(false)
+                                .CancellableOnWhiff(false)
                                 .From(1)
                                     .HitBox()
                                 .From(4)
@@ -276,20 +376,42 @@ namespace ResonantSpark {
                                         hit.HitDamage(1200)
                                             .BlockDamage(0)
                                             .HitStun(24.0f)
-                                            .BlockStun(10.0f);
+                                            .BlockStun(10.0f)
+                                            .Priority(AttackPriority.MediumAttack);
 
                                         hit.HitBox(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0));
                                             hb.Point1(new Vector3(0, 1, 0));
                                             hb.Radius(0.25f);
-                                            hb.Event("onHurtBox", (hitInfo) => {
+                                            hb.Event("onHitFGChar", (hitInfo) => {
                                                 if (hitInfo.hitEntity != fgChar) {
                                                     audioService.PlayOneShot(hitInfo.position, audioMap["mediumHit"]);
-                                                        // This exists to make characters hitting each other async
-                                                    fgService
-                                                        .Hit(hitInfo.hitEntity)
-                                                        .By(hitInfo.hitBox);
+                                                    fgService.Hit(hitInfo.hitEntity, hitInfo.hitBox, (opponent, hitAtSameTimeByAttackPriority) => {
+                                                        opponent.LoseHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
+
+                                                        switch (opponent.GetGroundRelation()) {
+                                                            case GroundRelation.GROUNDED:
+                                                                opponent.Force(
+                                                                    attackPriority: AttackForcePriority.MediumAttack,
+                                                                    launch: false,
+                                                                    forceDirection: fgChar.transform.rotation * Vector3.forward,
+                                                                    forceMagnitude: 0.5f);
+                                                                break;
+                                                            case GroundRelation.AIRBORNE:
+                                                                opponent.Force(
+                                                                    attackPriority: AttackForcePriority.MediumAttack,
+                                                                    launch: true,
+                                                                    forceDirection: fgChar.transform.rotation * new Vector3(0.0f, 1.0f, 1.0f),
+                                                                    forceMagnitude: 1.0f);
+                                                                break;
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                            hb.Event("onEqualPriorityHitBox", (hitInfo) => {
+                                                if (hitInfo.hitEntity != fgChar) {
+                                                    fgChar.Perform("horizontalClashSwingFromRight");
                                                 }
                                             });
                                         });
@@ -313,6 +435,7 @@ namespace ResonantSpark {
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
                                 .ChainCancellable(false)
+                                .CancellableOnWhiff(false)
                                 .From(1)
                                     .HitBox()
                                 .To(8)
@@ -330,13 +453,17 @@ namespace ResonantSpark {
                                             hb.Point0(new Vector3(0, 0, 0));
                                             hb.Point1(new Vector3(0, 1, 0));
                                             hb.Radius(0.25f);
-                                            hb.Event("onHurtBox", (hitInfo) => {
+                                            hb.Event("onHitFGChar", (hitInfo) => {
                                                 if (hitInfo.hitEntity != fgChar) {
                                                     audioService.PlayOneShot(hitInfo.position, audioMap["weakHit"]);
-                                                        // This exists to make characters hitting each other async
-                                                    fgService
-                                                        .Hit(hitInfo.hitEntity)
-                                                        .By(hitInfo.hitBox);    // the hitBox should know what hit it's a part of.
+                                                    fgService.Hit(hitInfo.hitEntity, hitInfo.hitBox, (opponent, hitAtSameTimeByAttackPriority) => {
+                                                        opponent.LoseHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
+                                                        opponent.Force(
+                                                            attackPriority: AttackForcePriority.LightAttack,
+                                                            launch: false,
+                                                            forceDirection: fgChar.transform.rotation * new Vector3(0.0f, 1.0f, 1.0f),
+                                                            forceMagnitude: 1.0f);
+                                                    });
                                                 }
                                             });
                                         });
@@ -362,6 +489,7 @@ namespace ResonantSpark {
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
                                 .ChainCancellable(false)
+                                .CancellableOnWhiff(false)
                                 .From(1)
                                     .HitBox()
                                 .From(4)
@@ -374,7 +502,8 @@ namespace ResonantSpark {
                                         hit.HitDamage(800)
                                             .BlockDamage(0)
                                             .HitStun(20.0f)
-                                            .BlockStun(20.0f);
+                                            .BlockStun(20.0f)
+                                            .ComboScaling(0.5f);
 
                                         hit.Block(Block.LOW);
 
@@ -383,13 +512,29 @@ namespace ResonantSpark {
                                             hb.Point0(new Vector3(0, 0, 0));
                                             hb.Point1(new Vector3(0, 1, 0));
                                             hb.Radius(0.25f);
-                                            hb.Event("onHurtBox", (hitInfo) => {
+                                            hb.Event("onHitFGChar", (hitInfo) => {
                                                 if (hitInfo.hitEntity != fgChar) {
                                                     audioService.PlayOneShot(hitInfo.position, audioMap["weakHit"]);
-                                                        // This exists to make characters hitting each other async
-                                                    fgService
-                                                        .Hit(hitInfo.hitEntity)
-                                                        .By(hitInfo.hitBox);
+                                                    fgService.Hit(hitInfo.hitEntity, hitInfo.hitBox, (opponent, hitAtSameTimeByAttackPriority) => {
+                                                        opponent.LoseHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
+
+                                                        switch (opponent.GetGroundRelation()) {
+                                                            case GroundRelation.GROUNDED:
+                                                                opponent.Force(
+                                                                    attackPriority: AttackForcePriority.LightAttack,
+                                                                    launch: false,
+                                                                    forceDirection: fgChar.transform.rotation * Vector3.forward,
+                                                                    forceMagnitude: 0.5f);
+                                                                break;
+                                                            case GroundRelation.AIRBORNE:
+                                                                opponent.Force(
+                                                                    attackPriority: AttackForcePriority.LightAttack,
+                                                                    launch: true,
+                                                                    forceDirection: fgChar.transform.rotation * new Vector3(0.0f, 0.1f, 1.0f),
+                                                                    forceMagnitude: 1.0f);
+                                                                break;
+                                                        }
+                                                    });
                                                 }
                                             });
                                         });
@@ -415,6 +560,7 @@ namespace ResonantSpark {
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
                                 .ChainCancellable(false)
+                                .CancellableOnWhiff(false)
                                 .From(1)
                                     .HitBox()
                                 .To(12)
@@ -430,13 +576,17 @@ namespace ResonantSpark {
                                             hb.Point0(new Vector3(0, 0, 0));
                                             hb.Point1(new Vector3(0, 1, 0));
                                             hb.Radius(0.25f);
-                                            hb.Event("onHurtBox", (hitInfo) => {
+                                            hb.Event("onHitFGChar", (hitInfo) => {
                                                 if (hitInfo.hitEntity != fgChar) {
                                                     audioService.PlayOneShot(hitInfo.position, audioMap["weakHit"]);
-                                                        // This exists to make characters hitting each other async
-                                                    fgService
-                                                        .Hit(hitInfo.hitEntity)
-                                                        .By(hitInfo.hitBox);
+                                                    fgService.Hit(hitInfo.hitEntity, hitInfo.hitBox, (opponent, hitAtSameTimeByAttackPriority) => {
+                                                        opponent.LoseHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
+                                                        opponent.Force(
+                                                            attackPriority: AttackForcePriority.LightAttack,
+                                                            launch: false,
+                                                            forceDirection: fgChar.transform.rotation * Vector3.forward,
+                                                            forceMagnitude: 0.5f);
+                                                    });
                                                 }
                                             });
                                         });
@@ -466,10 +616,13 @@ namespace ResonantSpark {
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
-                                .ChainCancellable(false)
+                                .ChainCancellable(true)
+                                .CancellableOnWhiff(true)
                                 .From(1)
                                     .HitBox()
                                 .To(8)
+                                .From(6)
+                                    .CancellableOnWhiff(false)
                                 .From(8)
                                     .Hit(hit => {
                                         hit.HitDamage(700)
@@ -482,13 +635,30 @@ namespace ResonantSpark {
                                             hb.Point0(new Vector3(0, 0, 0));
                                             hb.Point1(new Vector3(0, 1, 0));
                                             hb.Radius(0.25f);
-                                            hb.Event("onHurtBox", (hitInfo) => {
+                                            hb.Event("onHitFGChar", (hitInfo) => {
                                                 if (hitInfo.hitEntity != fgChar) {
-                                                    audioService.PlayOneShot(hitInfo.position, audioMap["weakHit"]);
+                                                    audioService.PlayOneShot(hitInfo.position, audioMap["mediumHit"]);
                                                         // This exists to make characters hitting each other async
-                                                    fgService
-                                                        .Hit(hitInfo.hitEntity)
-                                                        .By(hitInfo.hitBox);
+                                                    fgService.Hit(hitInfo.hitEntity, hitInfo.hitBox, (opponent, hitAtSameTimeByAttackPriority) => {
+                                                        opponent.LoseHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
+
+                                                        switch (opponent.GetGroundRelation()) {
+                                                            case GroundRelation.GROUNDED:
+                                                                opponent.Force(
+                                                                    attackPriority: AttackForcePriority.MediumAttack,
+                                                                    launch: false,
+                                                                    forceDirection: fgChar.transform.rotation * Vector3.forward,
+                                                                    forceMagnitude: 0.5f);
+                                                                break;
+                                                            case GroundRelation.AIRBORNE:
+                                                                opponent.Force(
+                                                                    attackPriority: AttackForcePriority.MediumAttack,
+                                                                    launch: true,
+                                                                    forceDirection: fgChar.transform.rotation * new Vector3(0.0f, 1.0f, 1.0f),
+                                                                    forceMagnitude: 1.0f);
+                                                                break;
+                                                        }
+                                                    });
                                                 }
                                             });
                                         });
@@ -522,6 +692,7 @@ namespace ResonantSpark {
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
                                 .ChainCancellable(false)
+                                .CancellableOnWhiff(false)
                                 .From(1)
                                     .HitBox()
                                 .From(4)
@@ -541,13 +712,30 @@ namespace ResonantSpark {
                                             hb.Point0(new Vector3(0, 0, 0));
                                             hb.Point1(new Vector3(0, 1, 0));
                                             hb.Radius(0.25f);
-                                            hb.Event("onHurtBox", (hitInfo) => {
+                                            hb.Event("onHitFGChar", (hitInfo) => {
                                                 if (hitInfo.hitEntity != fgChar) {
                                                     audioService.PlayOneShot(hitInfo.position, audioMap["mediumHit"]);
                                                         // This exists to make characters hitting each other async
-                                                    fgService
-                                                        .Hit(hitInfo.hitEntity)
-                                                        .By(hitInfo.hitBox);
+                                                    fgService.Hit(hitInfo.hitEntity, hitInfo.hitBox, (opponent, hitAtSameTimeByAttackPriority) => {
+                                                        opponent.LoseHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
+
+                                                        switch (opponent.GetGroundRelation()) {
+                                                            case GroundRelation.GROUNDED:
+                                                                opponent.Force(
+                                                                    attackPriority: AttackForcePriority.MediumAttack,
+                                                                    launch: false,
+                                                                    forceDirection: fgChar.transform.rotation * Vector3.forward,
+                                                                    forceMagnitude: 0.5f);
+                                                                break;
+                                                            case GroundRelation.AIRBORNE:
+                                                                opponent.Force(
+                                                                    attackPriority: AttackForcePriority.MediumAttack,
+                                                                    launch: true,
+                                                                    forceDirection: fgChar.transform.rotation * new Vector3(0.0f, 1.0f, 1.0f),
+                                                                    forceMagnitude: 1.0f);
+                                                                break;
+                                                        }
+                                                    });
                                                 }
                                             });
                                         });
@@ -581,6 +769,7 @@ namespace ResonantSpark {
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
                                 .ChainCancellable(false)
+                                .CancellableOnWhiff(false)
                                 .From(1)
                                     .HitBox()
                                 .From(4)
@@ -593,20 +782,53 @@ namespace ResonantSpark {
                                         hit.HitDamage(2000)
                                             .BlockDamage(0)
                                             .HitStun(40.0f)
-                                            .BlockStun(30.0f);
+                                            .BlockStun(30.0f)
+                                            .Priority(AttackPriority.HeavyAttack)
+                                            .ComboScaling(1.0f);
 
                                         hit.HitBox(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0));
                                             hb.Point1(new Vector3(0, 1, 0));
                                             hb.Radius(0.25f);
-                                            hb.Event("onHurtBox", (hitInfo) => {
+                                            hb.Event("onHitFGChar", (hitInfo) => {
                                                 if (hitInfo.hitEntity != fgChar) {
                                                     audioService.PlayOneShot(hitInfo.position, audioMap["strongHit"]);
                                                         // This exists to make characters hitting each other async
-                                                    fgService
-                                                        .Hit(hitInfo.hitEntity)
-                                                        .By(hitInfo.hitBox);
+                                                    fgService.Hit(hitInfo.hitEntity, hitInfo.hitBox, (opponent, hitAtSameTimeByAttackPriority) => {
+                                                        opponent.LoseHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
+
+                                                        if (hitAtSameTimeByAttackPriority == AttackPriority.HeavyAttack) { // colloquially known as trading
+                                                            cameraService.Perform("zoomIn", 0.5f);
+                                                            timeService.Perform("timeSlow", 0.5f);
+
+                                                            opponent.Force(
+                                                                attackPriority: AttackForcePriority.HeavyAttack,
+                                                                launch: false,
+                                                                forceDirection: fgChar.transform.rotation * Vector3.forward,
+                                                                forceMagnitude: 0.5f);
+                                                        }
+                                                        else {
+                                                            opponent.Force(
+                                                                attackPriority: AttackForcePriority.HeavyAttack,
+                                                                launch: true,
+                                                                forceDirection: fgChar.transform.rotation * new Vector3(0.0f, 1.0f, 1.0f),
+                                                                forceMagnitude: 2.0f);
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                            hb.Event("onHitProjectile", (hitInfo) => {
+                                                Projectile proj = (Projectile) hitInfo.hitEntity;
+                                                if (proj.health <= 2) {
+                                                    fgService.Hit(proj, hitInfo.hitBox, (projectile, hitAtSameTimeByAttackPriority) => {
+                                                        if (hitAtSameTimeByAttackPriority != null) {
+                                                            particleService.PlayOneShot(hitInfo.position, particleMap["destroyParticle"]);
+                                                                // these lines might be redundant
+                                                            particleService.PlayOneShot(projectile.DestroyedParticle());
+                                                            projectile.Destroy();
+                                                        }
+                                                    });
                                                 }
                                             });
                                         });
@@ -637,6 +859,7 @@ namespace ResonantSpark {
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
+                                .CancellableOnWhiff(false)
                                 .ChainCancellable(false)
                                 .From(1)
                                     .HitBox()
@@ -646,24 +869,43 @@ namespace ResonantSpark {
                                     })
                                 .To(10)
                                 .From(10)
+                                    .CancellableOnWhiff(false)
                                     .Hit(hit => {
                                         hit.HitDamage(700)
                                             .BlockDamage(0)
                                             .HitStun(12.0f)
-                                            .BlockStun(12.0f);
+                                            .BlockStun(12.0f)
+                                            .ComboScaling(0.85f);
 
                                         hit.HitBox(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0));
                                             hb.Point1(new Vector3(0, 1, 0));
                                             hb.Radius(0.25f);
-                                            hb.Event("onHurtBox", (hitInfo) => {
+                                            hb.Event("onHitFGChar", (hitInfo) => {
                                                 if (hitInfo.hitEntity != fgChar) {
                                                     audioService.PlayOneShot(hitInfo.position, audioMap["mediumHit"]);
                                                         // This exists to make characters hitting each other async
-                                                    fgService
-                                                        .Hit(hitInfo.hitEntity)
-                                                        .By(hitInfo.hitBox);
+                                                    fgService.Hit(hitInfo.hitEntity, hitInfo.hitBox, (opponent, hitAtSameTimeByAttackPriority) => {
+                                                        opponent.LoseHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
+
+                                                        switch (opponent.GetGroundRelation()) {
+                                                            case GroundRelation.GROUNDED:
+                                                                opponent.Force(
+                                                                    attackPriority: AttackForcePriority.MediumAttack,
+                                                                    launch: false,
+                                                                    forceDirection: fgChar.transform.rotation * Vector3.forward,
+                                                                    forceMagnitude: 0.5f);
+                                                                break;
+                                                            case GroundRelation.AIRBORNE:
+                                                                opponent.Force(
+                                                                    attackPriority: AttackForcePriority.MediumAttack,
+                                                                    launch: true,
+                                                                    forceDirection: fgChar.transform.rotation * new Vector3(0.0f, 1.0f, 1.0f),
+                                                                    forceMagnitude: 1.0f);
+                                                                break;
+                                                        }
+                                                    });
                                                 }
                                             });
                                         });
@@ -696,6 +938,7 @@ namespace ResonantSpark {
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
+                                .CancellableOnWhiff(false)
                                 .ChainCancellable(false)
                                 .From(1)
                                     .HitBox()
@@ -716,13 +959,18 @@ namespace ResonantSpark {
                                             hb.Point0(new Vector3(0, 0, 0));
                                             hb.Point1(new Vector3(0, 1, 0));
                                             hb.Radius(0.25f);
-                                            hb.Event("onHurtBox", (hitInfo) => {
+                                            hb.Event("onHitFGChar", (hitInfo) => {
                                                 if (hitInfo.hitEntity != fgChar) {
                                                     audioService.PlayOneShot(hitInfo.position, audioMap["mediumHit"]);
                                                         // This exists to make characters hitting each other async
-                                                    fgService
-                                                        .Hit(hitInfo.hitEntity)
-                                                        .By(hitInfo.hitBox);
+                                                    fgService.Hit(hitInfo.hitEntity, hitInfo.hitBox, (opponent, hitAtSameTimeByAttackPriority) => {
+                                                        opponent.LoseHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
+                                                        opponent.Force(
+                                                            attackPriority: AttackForcePriority.MediumAttack,
+                                                            launch: true,
+                                                            forceDirection: fgChar.transform.rotation * new Vector3(0.0f, 1.0f, 1.0f),
+                                                            forceMagnitude: 1.0f);
+                                                    });
                                                 }
                                             });
                                         });
