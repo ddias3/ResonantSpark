@@ -11,6 +11,8 @@ namespace ResonantSpark {
     namespace Gamemode {
         public class OneOnOneRoundBased : MonoBehaviour, IGamemode {
 
+            public StateMachine stateMachine;
+
             public float roundTime = 60.0f;
             private PlayerService playerService;
             private UiService uiService;
@@ -155,6 +157,8 @@ namespace ResonantSpark {
                     EndRound();
                 }
                 currRoundTime -= gameTimeManager.Layer("gameTime");
+
+                // gameTime.Layer("gameTime") is Time.deltaTime
             }
 
             public int GetMaxPlayers() {
