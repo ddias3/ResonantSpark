@@ -40,10 +40,10 @@ namespace ResonantSpark {
                 states.Register(this, "stand");
 
                 RegisterInputCallbacks()
-                    //.On<DirectionPress>(OnDirectionPress)
                     .On<DoubleTap>(OnDoubleTap)
                     .On<ButtonsCurrent>(OnButtonsCurrent)
                     .On<ButtonPress>(OnButtonPress)
+                    .On<Button2Press>(OnButton2Press)
                     .On<DirectionCurrent>(OnDirectionCurrent);
 
                 RegisterEnterCallbacks()
@@ -168,10 +168,19 @@ namespace ResonantSpark {
             }
 
             private void OnDoubleTap(Action stop, Combination combo) {
-                var doubleTap = (DoubleTap) combo;
-                //doubleTap.inUse = true;
-                //stop.Invoke();
-                //changeState(states.Get("run").Message(combo));
+                var doubleTap = (DoubleTap)combo;
+                FightingGameInputCodeDir relDir = fgChar.MapAbsoluteToRelative(doubleTap.direction);
+
+                if (relDir == FightingGameInputCodeDir.Forward) {
+                    fgChar.UseCombination(doubleTap);
+                    stop();
+                    changeState(states.Get("forwardDash"));
+                }
+                else if (relDir == FightingGameInputCodeDir.Back) {
+                    fgChar.UseCombination(doubleTap);
+                    stop();
+                    changeState(states.Get("backDash"));
+                }
             }
 
             private void OnDirectionCurrent(Action stop, Combination combo) {
@@ -185,17 +194,22 @@ namespace ResonantSpark {
             private void OnButtonPress(Action stop, Combination combo) {
                 var buttonPress = (ButtonPress) combo;
 
-                if (buttonPress.button0 != FightingGameInputCodeBut.S) {
+                if (buttonPress.button0 != FightingGameInputCodeBut.D) {
                         // TODO: I need to change the input buffer to look further into the future than the input delay for a direction press.
                     fgChar.ChooseAttack(this, null, buttonPress.button0, this.dirPress);
                     stop();
                 }
             }
 
+            private void OnButton2Press(Action stop, Combination combo) {
+                var but2Press = (Button2Press)combo;
+                Debug.Log("Crouch received 2 button press");
+            }
+
             private void OnButtonsCurrent(Action stop, Combination combo) {
                 ButtonsCurrent curr = (ButtonsCurrent) combo;
 
-                this.upJump = !curr.butS;
+                this.upJump = !curr.butD;
             }
 
             private void GivenDirectionPress(Action stop, Combination combo) {
