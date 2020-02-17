@@ -17,6 +17,8 @@ namespace ResonantSpark {
             [Tooltip("These many frames of the start of the dash may not be cancelled into an attack")]
             public int attackDisallowed = 16;
 
+            public AnimationCurve dashSpeedCurve;
+
             private Utility.AttackTracker tracker;
 
             private FightingGameInputCodeDir dashDir;
@@ -56,9 +58,13 @@ namespace ResonantSpark {
             public override void Execute(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
 
+                fgChar.AddRelativeVelocity(Gameplay.VelocityPriority.Dash, new Vector3(0.0f, 0.0f, dashSpeedCurve.Evaluate(tracker.frameCount)));
+
                 if (tracker.frameCount > dashLength) {
                     changeState(states.Get("stand"));
                 }
+
+                fgChar.CalculateFinalVelocity();
 
                 tracker.Increment();
             }
