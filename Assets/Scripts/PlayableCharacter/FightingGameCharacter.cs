@@ -15,6 +15,7 @@ namespace ResonantSpark {
 
             public Animator animator;
             public StateMachine stateMachine;
+            public CharacterStates.StateDict states;
 
             public Text charVelocity;
 
@@ -51,9 +52,6 @@ namespace ResonantSpark {
 
             private CharacterData charData;
 
-            private CharacterStates.Attack attackState;
-            private CharacterStates.Block blockState;
-
             public float gameTime {
                 get { return gameTimeManager.Layer("gameTime"); }
             }
@@ -80,8 +78,6 @@ namespace ResonantSpark {
 
                 onHealthChangeCallbacks = new List<Action<int, int>>();
                 onEmptyHealthCallbacks = new List<Action<FightingGameCharacter>>();
-
-                attackState = stateMachine.gameObject.GetComponentInChildren<CharacterStates.Attack>();
 
                 gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
             }
@@ -111,7 +107,7 @@ namespace ResonantSpark {
                 CharacterProperties.Attack attack = charData.ChooseAttackFromSelectability(attackCandidates, currState, currAttack);
 
                 if (attack != null) {
-                    attackState.SetActiveAttack(attack);
+                    ((CharacterStates.Attack) states.Get("attack")).SetActiveAttack(attack);
                 }
             }
 
@@ -228,12 +224,12 @@ namespace ResonantSpark {
 
             public void FixedUpdate() {
                 //if (id == 0) Debug.Log(screenOrientation.ToString("F2"));
-                //try {
-                //    charVelocity.text = "Vel = " + (Quaternion.Inverse(rigidbody.rotation) * rigidbody.velocity).ToString("F3");
-                //}
-                //catch (System.NullReferenceException) {
-                //    // do nothing
-                //}
+                try {
+                    charVelocity.text = "Vel = " + (Quaternion.Inverse(rigidbody.rotation) * rigidbody.velocity).ToString("F3");
+                }
+                catch (System.NullReferenceException) {
+                    // do nothing
+                }
             }
 
             public bool Grounded(out Vector3 groundPoint) {
@@ -273,35 +269,6 @@ namespace ResonantSpark {
                 rigidbody.AddForce(force, ForceMode.Force);
             }
 
-            //protected void StickToGroundHelper(float downwardDistance) {
-            //    RaycastHit hitInfo;
-            //    if (Physics.SphereCast(rigidbody.position + player.legsCollider.center + (Vector3.up * (0.02f - 0.5f * player.legsCollider.height + player.legsCollider.radius)),
-            //            player.legsCollider.radius,
-            //            Vector3.down,
-            //            out hitInfo,
-            //            downwardDistance,
-            //            player.raycastMask,
-            //            QueryTriggerInteraction.Ignore)) {
-            //        if (Vector3.Angle(hitInfo.normal, Vector3.up) < maxGroundedMoveAngle) {
-            //            if (rigidbody.velocity.y < 0f) {
-            //                rigidbody.velocity = Vector3.ProjectOnPlane(rigidbody.velocity, hitInfo.normal) + Vector3.up * rigidbody.velocity.y;
-            //            }
-            //            else {
-            //                rigidbody.velocity = Vector3.ProjectOnPlane(rigidbody.velocity, hitInfo.normal);
-            //            }
-            //        }
-            //        // TODO: Fix the code for slopes that are too steep.
-            //        //else {
-            //        //    Debug.Log("Push Away on slope angle = " + Vector3.Angle(hitInfo.normal, Vector3.up));
-            //        //    //Vector3 slidingDownForce = Vector3.ProjectOnPlane(hitInfo.normal, Vector3.up) - Vector3.Project(hitInfo.normal, Vector3.up);
-            //        //    Vector3 slidingDownForce = Quaternion.AngleAxis(90f, Vector3.Cross(hitInfo.normal, Vector3.ProjectOnPlane(hitInfo.normal, Vector3.up))) * hitInfo.normal;
-            //        //    Debug.DrawLine(rigidbody.position, rigidbody.position + hitInfo.normal, Color.white);
-            //        //    Debug.DrawLine(rigidbody.position, rigidbody.position + slidingDownForce, Color.black);
-            //        //    rigidbody.AddForce(slidingDownForce * 10f);
-            //        //}
-            //    }
-            //}
-
             public float LookToMoveAngle() {
                 return Vector3.SignedAngle(rigidbody.transform.forward, opponentChar.transform.position - rigidbody.position, Vector3.up);
             }
@@ -310,6 +277,10 @@ namespace ResonantSpark {
             public void SetLocalMoveDirection(float x, float z) {
                 animator.SetFloat("charX", x);
                 animator.SetFloat("charZ", z);
+            }
+
+            public void SetState(CharacterStates.BaseState nextState) {
+                stateMachine.ChangeState(nextState);
             }
 
             public void UseCombination(Combination combo) {

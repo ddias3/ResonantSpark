@@ -50,10 +50,6 @@ namespace ResonantSpark {
 
         public void Enable(IState startState, FrameEnforcer frame) {
             nextStates = new List<IState>();
-            changeStateCallback = (IState nextState) => {
-                changeState = true;
-                nextStates.Add(nextState);
-            };
             //this.enabled = true;
 
             frame.AddUpdate((int) FramePriority.StateMachine, new Action<int>(Execute));
@@ -61,7 +57,7 @@ namespace ResonantSpark {
             initState = startState;
 
             stateDict.Each(state => {
-                state.OnStateMachineEnable(changeStateCallback);
+                state.OnStateMachineEnable(new Action<IState>(ChangeState));
             });
 
             startState.Enter(-1, null);
@@ -70,6 +66,13 @@ namespace ResonantSpark {
         public void Reset() {
             //TODO: Reset StateMachine
             //   I'm not sure I like this design, so far
+        }
+
+        public void ChangeState(IState nextState) {
+            if (nextStates.Count != 0) Debug.LogWarning("Next State isn't empty, multiple ChangeState calls on the same frame");
+
+            changeState = true;
+            nextStates.Add(nextState);
         }
 
         private void ChangeState(int frameIndex) {

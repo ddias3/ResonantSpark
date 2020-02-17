@@ -76,7 +76,6 @@ namespace ResonantSpark {
                 //Debug.Log("FGInput = " + dirPress + " (" + ((int) dirPress) + ") | Char X = " + charX + ", Char Z = " + charZ);
 
                 Vector3 localVelocity = fgChar.GetLocalVelocity();
-                //Vector3 localInput = fgChar.CameraToChar(new Vector3(cameraX, 0, upJump ? 0 : cameraZ));
                 Vector3 localInput = fgChar.RelativeInputToLocal(dirPress, upJump);
 
                     // Move the character
