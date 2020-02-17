@@ -39,9 +39,10 @@ namespace ResonantSpark {
 
                 RegisterInputCallbacks()
                     .On<DoubleTap>(OnDoubleTap)
-                    .On<ButtonsCurrent>(OnButtonsCurrent)
-                    .On<ButtonPress>(OnButtonPress)
+                    .On<DirectionPlusButton>(OnDirectionPlusButton)
                     .On<Button2Press>(OnButton2Press)
+                    .On<ButtonPress>(OnButtonPress)
+                    .On<ButtonsCurrent>(OnButtonsCurrent)
                     .On<DirectionCurrent>(OnDirectionCurrent);
 
                 RegisterEnterCallbacks()
@@ -225,15 +226,28 @@ namespace ResonantSpark {
                 }
             }
 
-            private void OnButton2Press(Action stop, Combination combo) {
-                var but2Press = (Button2Press)combo;
-                Debug.Log("Crouch received 2 button press");
+            private void OnDirectionPlusButton(Action stop, Combination combo) {
+                var dirPlusBut = (DirectionPlusButton)combo;
+
+                dirPress = fgChar.MapAbsoluteToRelative(dirPlusBut.direction);
+
+                if (dirPlusBut.button0 == FightingGameInputCodeBut.D &&
+                    (dirPress == FightingGameInputCodeDir.Up || dirPress == FightingGameInputCodeDir.Down)) {
+                    stop();
+                    fgChar.UseCombination(dirPlusBut);
+                    changeState(states.Get("dodge"));
+                }
             }
 
             private void OnButtonsCurrent(Action stop, Combination combo) {
                 ButtonsCurrent curr = (ButtonsCurrent) combo;
 
                 this.upJump = !curr.butD;
+            }
+
+            private void OnButton2Press(Action stop, Combination combo) {
+                var but2Press = (Button2Press)combo;
+                Debug.Log("Crouch received 2 button press");
             }
 
             private void GivenDirectionPress(Action stop, Combination combo) {
