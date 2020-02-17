@@ -18,7 +18,6 @@ public class TestBuilder : MonoBehaviour {
         FightingGameCharacter char0 = buildService.Build(male0Builder0.GetComponent<ICharacterBuilder>());
         FightingGameCharacter char1 = buildService.Build(male0Builder1.GetComponent<ICharacterBuilder>());
 
-        char0.charVelocity = charVelocity;
         char0.SetInputBuffer(inputBuffer);
 
         EventManager.TriggerEvent<ResonantSpark.Events.FightingGameCharsReady>();

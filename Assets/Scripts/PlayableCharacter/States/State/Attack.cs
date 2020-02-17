@@ -5,6 +5,7 @@ using UnityEngine;
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Input;
 using ResonantSpark.Character;
+using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -16,6 +17,8 @@ namespace ResonantSpark {
 
             private FightingGameInputCodeBut button;
             private FightingGameInputCodeDir direction;
+
+            private FightingGameInputCodeDir currDir;
 
             private CharacterProperties.Attack activeAttack;
             private CharacterProperties.Attack queuedUpAttack;
@@ -60,15 +63,11 @@ namespace ResonantSpark {
 
             public void OnCompleteAttack() {
                 //TODO: Choose a new attack, which is also possible.
-                switch (direction) {
-                    case FightingGameInputCodeDir.DownBack:
-                    case FightingGameInputCodeDir.Down:
-                    case FightingGameInputCodeDir.DownForward:
-                        changeState(states.Get("crouch"));
-                        break;
-                    default:
-                        changeState(states.Get("stand"));
-                        break;
+                if (GameInputUtil.Down(currDir)) {
+                    changeState(states.Get("crouch"));
+                }
+                else {
+                    changeState(states.Get("stand"));
                 }
 
                 activeAttack = null;
@@ -105,7 +104,7 @@ namespace ResonantSpark {
             }
 
             private void OnDirectionCurrent(Action stop, Combination combo) {
-                direction = fgChar.MapAbsoluteToRelative(((DirectionCurrent) combo).direction);
+                currDir = fgChar.MapAbsoluteToRelative(((DirectionCurrent) combo).direction);
             }
         }
     }

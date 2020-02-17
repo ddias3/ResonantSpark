@@ -15,13 +15,18 @@ namespace ResonantSpark {
             public WalkSlow walkSlow;
             public Still still;
 
-            public float maxForwardForce;
-            public float maxBackwardForce;
-            public float maxHorizontalForce;
+            public float maxForwardSpeed;
+            public float maxBackwardSpeed;
+            public float maxHorizontalSpeed;
 
-            public AnimationCurve forwardForce;
-            public AnimationCurve horizontalForce;
+            public AnimationCurve smoothedInputDiffModifier;
+            public AnimationCurve forwardInputToSpeedCurve;
 
+            public AnimationCurve forwardSpeedCurve;
+            public AnimationCurve backwardSpeedCurve;
+            public AnimationCurve horizontalSpeedCurve;
+
+            public float velocityChangeDampTime;
             public float movementChangeDampTime;
             public Vector3 deadZone;
 
@@ -84,6 +89,8 @@ namespace ResonantSpark {
 
                     // Use helper states to animate the character
                 AnimateCharacter(localVelocity, localInput);
+
+                fgChar.CalculateFinalVelocity();
             }
 
             public override void Exit(int frameIndex) {
@@ -95,21 +102,44 @@ namespace ResonantSpark {
 
                 if (smoothedInput.sqrMagnitude > deadZone.sqrMagnitude) {
 
-                    Vector3 movementForce = new Vector3 {
-                        x = smoothedInput.x,
-                        y = smoothedInput.y,
-                        z = smoothedInput.z,
-                    };
-                    movementForce.Scale(new Vector3 {
-                        x = maxHorizontalForce * horizontalForce.Evaluate(localVelocity.x),
-                        y = 1.0f,
-                        z = (localVelocity.z > 0 ? maxForwardForce : maxBackwardForce) * forwardForce.Evaluate(localVelocity.z)
-                    });
+                    float zMaxSpeed;
+                    if (localVelocity.z > 0) {
+                        zMaxSpeed = maxForwardSpeed;
+                    }
+                    else {
+                        zMaxSpeed = maxBackwardSpeed;
+                    }
 
-                    //Debug.Log("Local Velocity: " + localVelocity.ToString("F3"));
-                    //Debug.Log("Smoothed Input: " + smoothedInput.ToString("F3"));
-                    //Debug.Log("Adding local force to character: " + movementForce.ToString("F3"));
-                    fgChar.rigidbody.AddRelativeForce(movementForce);
+                    //Vector3 normalizedLocalVelocity = new Vector3(localVelocity.x / maxHorizontalSpeed, 0.0f, localVelocity.z / zMaxSpeed);
+                    //Vector3 delta = smoothedInput - normalizedLocalVelocity;
+
+                    Vector3 newVelocity = default;
+                    Vector3 velocityTarget = new Vector3 {
+                        x = smoothedInput.x * maxHorizontalSpeed,
+                        y = smoothedInput.y,
+                        z = smoothedInput.z * (smoothedInput.z > 0 ? maxForwardSpeed : maxBackwardSpeed)
+                    };
+
+                    if (Vector3.Dot(velocityTarget, localVelocity) > 0) {
+                        if (localVelocity.sqrMagnitude > velocityTarget.sqrMagnitude) {
+                            // let friction slow us down
+                            //Debug.Log("Local Velocity: " + localVelocity.ToString("F3") + " Friction slowing us down");
+                        }
+                        else {
+                            newVelocity = Vector3.Lerp(velocityTarget, localVelocity, velocityChangeDampTime * fgChar.gameTime);
+                            fgChar.AddRelativeVelocity(Gameplay.VelocityPriority.Movement, newVelocity);
+                        }
+                    }
+                    else {
+                        //Debug.Log("Smoothed Input: " + smoothedInput.ToString("F3") + ", velTarget=" + velocityTarget.ToString("F3"));
+                        newVelocity = Vector3.Lerp(velocityTarget, localVelocity, movementChangeDampTime * fgChar.gameTime);
+                        fgChar.AddRelativeVelocity(Gameplay.VelocityPriority.Movement, newVelocity);
+                    }
+
+                    //Debug.Log("=====================================================");
+                    //Debug.Log("Local Velocity: " + localVelocity.ToString("F3") + ", norm=" + normalizedLocalVelocity.ToString("F3"));
+                    //Debug.Log("Smoothed Input: " + smoothedInput.ToString("F3") + ", velTarget=" + velocityTarget.ToString("F3"));
+                    //Debug.Log("Changing velocity to: " + newVelocity.ToString("F3"));
                 }
             }
 
@@ -118,7 +148,8 @@ namespace ResonantSpark {
                     if (localInput.sqrMagnitude > 0.0f) {
                         charRotation = fgChar.LookToMoveAngle() / fgChar.gameTime;
                         if (charRotation != 0.0f) {
-                            fgChar.rigidbody.MoveRotation(Quaternion.AngleAxis(Mathf.Clamp(charRotation, -maxRotation, maxRotation) * fgChar.realTime, Vector3.up) * fgChar.rigidbody.rotation);
+                            //fgChar.rigidbody.MoveRotation(Quaternion.AngleAxis(Mathf.Clamp(charRotation, -maxRotation, maxRotation) * fgChar.realTime, Vector3.up) * fgChar.rotation);
+                            fgChar.Rotate(Quaternion.AngleAxis(Mathf.Clamp(charRotation, -maxRotation, maxRotation) * fgChar.realTime, Vector3.up));
                         }
                     }
                 }

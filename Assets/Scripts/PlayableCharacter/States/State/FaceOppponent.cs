@@ -72,10 +72,7 @@ namespace ResonantSpark {
                         z = 1.0f, //(localVelocity.z > 0 ? maxForwardForce : maxBackwardForce) * forwardForce.Evaluate(localVelocity.z)
                     });
 
-                    //Debug.Log("Local Velocity: " + localVelocity.ToString("F3"));
-                    //Debug.Log("Smoothed Input: " + smoothedInput.ToString("F3"));
-                    //Debug.Log("Adding local force to character: " + movementForce.ToString("F3"));
-                    fgChar.rigidbody.AddRelativeForce(movementForce);
+                    //fgChar.rigidbody.AddRelativeForce(movementForce);
                 }
             }
 
@@ -84,7 +81,7 @@ namespace ResonantSpark {
                     if (localInput.sqrMagnitude > 0.0f) {
                         charRotation = fgChar.LookToMoveAngle() / fgChar.gameTime;
                         if (charRotation != 0.0f) {
-                            fgChar.rigidbody.MoveRotation(Quaternion.AngleAxis(Mathf.Clamp(charRotation, -maxRotation, maxRotation) * fgChar.realTime, Vector3.up) * fgChar.rigidbody.rotation);
+                            //fgChar.rigidbody.MoveRotation(Quaternion.AngleAxis(Mathf.Clamp(charRotation, -maxRotation, maxRotation) * fgChar.realTime, Vector3.up) * fgChar.rigidbody.rotation);
                         }
                     }
                 }

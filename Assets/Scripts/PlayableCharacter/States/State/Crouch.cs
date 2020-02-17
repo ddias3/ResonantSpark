@@ -62,16 +62,27 @@ namespace ResonantSpark {
                 }
             }
 
-            private void OnButton2Press(Action stop, Combination combo) {
-                var but2Press = (Button2Press) combo;
-                Debug.Log("Crouch received 2 button press");
-            }
-
             private void OnDirectionCurrent(Action stop, Combination combo) {
                 var curr = (DirectionCurrent) combo;
-                if (!GameInputUtil.Down(fgChar.MapAbsoluteToRelative(curr.direction))) {
+                dirPress = fgChar.MapAbsoluteToRelative(curr.direction);
+
+                if (!GameInputUtil.Down(dirPress)) {
                     changeState(states.Get("stand"));
                 }
+            }
+
+            private void OnButtonPress(Action stop, Combination combo) {
+                var buttonPress = (ButtonPress)combo;
+
+                if (buttonPress.button0 != FightingGameInputCodeBut.D) {
+                    fgChar.ChooseAttack(this, null, buttonPress.button0, this.dirPress);
+                    stop();
+                }
+            }
+
+            private void OnButton2Press(Action stop, Combination combo) {
+                var but2Press = (Button2Press)combo;
+                Debug.Log("Crouch received 2 button press");
             }
 
             private void OnDoubleTap(Action stop, Combination combo) {
@@ -83,15 +94,6 @@ namespace ResonantSpark {
                     fgChar.UseCombination(doubleTap);
                     stop();
                     changeState(states.Get("backDash"));
-                }
-            }
-
-            private void OnButtonPress(Action stop, Combination combo) {
-                var buttonPress = (ButtonPress)combo;
-
-                if (buttonPress.button0 != FightingGameInputCodeBut.D) {
-                    fgChar.ChooseAttack(this, null, buttonPress.button0, this.dirPress);
-                    stop();
                 }
             }
 

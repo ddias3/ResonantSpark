@@ -11,9 +11,9 @@ namespace ResonantSpark {
     namespace CharacterStates {
         public class Jump : BaseState {
 
-            public Vector3 jump8Impulse;
-            public Vector3 jump7Impulse;
-            public Vector3 jump9Impulse;
+            public Vector3 jump8Velocity;
+            public Vector3 jump7Velocity;
+            public Vector3 jump9Velocity;
             public Vector3 gravityExtra;
 
             public float maxSpeed;
@@ -24,7 +24,7 @@ namespace ResonantSpark {
             private bool leavingGround;
 
             private FightingGameInputCodeDir jumpDir;
-            private Vector3 jumpImpulse;
+            private Vector3 jumpVelocity;
 
             public new void Awake() {
                 base.Awake();
@@ -45,16 +45,16 @@ namespace ResonantSpark {
 
                 switch (jumpDir) {
                     case FightingGameInputCodeDir.UpBack:
-                        Debug.Log("Jump Impulse:(7) " + jumpImpulse);
-                        jumpImpulse = jump7Impulse;
+                        Debug.Log("Jump Impulse:(7) " + jumpVelocity);
+                        jumpVelocity = jump7Velocity;
                         break;
                     case FightingGameInputCodeDir.Up:
-                        Debug.Log("Jump Impulse:(8) " + jumpImpulse);
-                        jumpImpulse = jump8Impulse;
+                        Debug.Log("Jump Impulse:(8) " + jumpVelocity);
+                        jumpVelocity = jump8Velocity;
                         break;
                     case FightingGameInputCodeDir.UpForward:
-                        Debug.Log("Jump Impulse:(9) " + jumpImpulse);
-                        jumpImpulse = jump9Impulse;
+                        Debug.Log("Jump Impulse:(9) " + jumpVelocity);
+                        jumpVelocity = jump9Velocity;
                         break;
                     default:
                         Debug.Log("Jump didn't have a dirPress");
@@ -72,13 +72,15 @@ namespace ResonantSpark {
                 if (frameCount == 4) {
                     Vector3 localVelocity = fgChar.GetLocalVelocity();
 
-                    jumpImpulse.z = jumpImpulse.z * (1 - (localVelocity.z / maxSpeed));
+                        // TODO: fix this to be a more useful function.
+                    //jumpVelocity.z = jumpVelocity.z * (1 - (localVelocity.z / maxSpeed));
+                    jumpVelocity.z = Mathf.Lerp(jumpVelocity.z, localVelocity.z, Mathf.Abs(localVelocity.z) / maxSpeed);
 
-                    fgChar.rigidbody.AddRelativeForce(jumpImpulse, ForceMode.Impulse);
+                    fgChar.AddRelativeVelocity(Gameplay.VelocityPriority.Jump, jumpVelocity);
                     fgChar.Play("jump");
                 }
                 else if (frameCount > 4) {
-                    fgChar.rigidbody.AddForce(gravityExtra, ForceMode.Acceleration);
+                    fgChar.AddForce(gravityExtra, ForceMode.Acceleration);
                 }
 
                 if (leavingGround) {
@@ -96,6 +98,7 @@ namespace ResonantSpark {
                     }
                 }
 
+                fgChar.CalculateFinalVelocity();
                 ++frameCount;
             }
 
