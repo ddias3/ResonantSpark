@@ -121,7 +121,7 @@ namespace ResonantSpark {
 
                     Attack atkReg2A = new Attack(atkBuilder => { atkBuilder
                         .Name("regular_2A")
-                        .Orientation(Orientation.GOOFY)
+                        .Orientation(Orientation.REGULAR)
                         .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._2A)
                         .AnimationState("regular_2A")
