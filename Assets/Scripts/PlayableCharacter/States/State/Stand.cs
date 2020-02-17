@@ -19,13 +19,6 @@ namespace ResonantSpark {
             public float maxBackwardSpeed;
             public float maxHorizontalSpeed;
 
-            public AnimationCurve smoothedInputDiffModifier;
-            public AnimationCurve forwardInputToSpeedCurve;
-
-            public AnimationCurve forwardSpeedCurve;
-            public AnimationCurve backwardSpeedCurve;
-            public AnimationCurve horizontalSpeedCurve;
-
             public float velocityChangeDampTime;
             public float movementChangeDampTime;
             public Vector3 deadZone;
