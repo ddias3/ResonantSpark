@@ -8,7 +8,7 @@ using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class Run : BaseState {
+        public class Run : CharacterBaseState {
 
             public new void Awake() {
                 base.Awake();

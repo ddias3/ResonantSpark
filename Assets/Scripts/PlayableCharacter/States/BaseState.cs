@@ -8,7 +8,7 @@ using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public abstract class BaseState : MonoBehaviour, IState {
+        public abstract class CharacterBaseState : MonoBehaviour, IState {
 
             protected StateDict states;
 

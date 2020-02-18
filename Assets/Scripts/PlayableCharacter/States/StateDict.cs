@@ -6,18 +6,18 @@ namespace ResonantSpark {
     namespace CharacterStates {
         public class StateDict : MonoBehaviour {
 
-            private Dictionary<string, BaseState> dict = new Dictionary<string, BaseState>();
+            private Dictionary<string, CharacterBaseState> dict = new Dictionary<string, CharacterBaseState>();
 
-            public void Register(BaseState state, string id) {
+            public void Register(CharacterBaseState state, string id) {
                 dict.Add(id, state);
             }
 
-            public BaseState Get(string id) {
+            public CharacterBaseState Get(string id) {
                 return dict[id];
             }
 
-            public StateDict Each(Action<BaseState> action) {
-                foreach (KeyValuePair<string, BaseState> entry in dict) {
+            public StateDict Each(Action<CharacterBaseState> action) {
+                foreach (KeyValuePair<string, CharacterBaseState> entry in dict) {
                     action(entry.Value);
                 }
                 return this;

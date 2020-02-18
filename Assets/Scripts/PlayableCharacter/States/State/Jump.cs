@@ -9,7 +9,7 @@ using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class Jump : BaseState {
+        public class Jump : CharacterBaseState {
 
             public Vector3 jump8Impulse;
             public Vector3 jump7Impulse;

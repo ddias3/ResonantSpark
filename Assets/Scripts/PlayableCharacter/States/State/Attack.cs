@@ -8,7 +8,7 @@ using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class Attack : BaseState {
+        public class Attack : CharacterBaseState {
 
             private Action onCompleteAttack;
 

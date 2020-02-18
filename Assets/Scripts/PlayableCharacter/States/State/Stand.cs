@@ -9,7 +9,7 @@ using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class Stand : BaseState {
+        public class Stand : CharacterBaseState {
 
             public Walk walk;
             public WalkSlow walkSlow;

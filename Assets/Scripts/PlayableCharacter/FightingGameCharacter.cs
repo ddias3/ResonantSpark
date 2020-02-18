@@ -100,7 +100,7 @@ namespace ResonantSpark {
                 stateMachine.Reset(); // TODO: Complete this functionality.
             }
 
-            public void ChooseAttack(CharacterStates.BaseState currState, CharacterProperties.Attack currAttack, FightingGameInputCodeBut button, FightingGameInputCodeDir direction = FightingGameInputCodeDir.None) {
+            public void ChooseAttack(CharacterStates.CharacterBaseState currState, CharacterProperties.Attack currAttack, FightingGameInputCodeBut button, FightingGameInputCodeDir direction = FightingGameInputCodeDir.None) {
                 InputNotation notation = SelectInputNotation(button, direction);
 
                 List<CharacterProperties.Attack> attackCandidates = charData.SelectAttacks(GetOrientation(), GetGroundRelation(), notation);
@@ -279,7 +279,7 @@ namespace ResonantSpark {
                 animator.SetFloat("charZ", z);
             }
 
-            public void SetState(CharacterStates.BaseState nextState) {
+            public void SetState(CharacterStates.CharacterBaseState nextState) {
                 stateMachine.ChangeState(nextState);
             }
 
@@ -318,7 +318,7 @@ namespace ResonantSpark {
             }
 
             public GroundRelation GetGroundRelation() {
-                return ((CharacterStates.BaseState) stateMachine.GetCurrentState()).GetGroundRelation();
+                return ((CharacterStates.CharacterBaseState) stateMachine.GetCurrentState()).GetGroundRelation();
             }
 
             public void Play(string animationState) {
