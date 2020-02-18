@@ -6,12 +6,14 @@ using UnityEngine.InputSystem;
 
 using ResonantSpark.Gameplay;
 using ResonantSpark.Service;
+using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace Gamemode {
         public class OneOnOneRoundBased : MonoBehaviour, IGamemode {
 
             public StateMachine stateMachine;
+            public StateDict stateDict;
 
             public float roundTime = 60.0f;
             private PlayerService playerService;
@@ -69,6 +71,7 @@ namespace ResonantSpark {
 
                 char0.GetComponent<CharacterStates.Init>().StartStateMachine(frame);
                 char1.GetComponent<CharacterStates.Init>().StartStateMachine(frame);
+                GetComponent<CharacterStates.Init>().StartStateMachine(frame);
             }
 
             private float GameTime(float input) {
@@ -82,7 +85,7 @@ namespace ResonantSpark {
                 char1RoundWins = 1;
             }
 
-            private void ResetRound() {
+            public void ResetRound() {
                 currRoundTime = 20.0f; //roundTime;
                 uiService.SetTime(currRoundTime);
 
@@ -142,6 +145,7 @@ namespace ResonantSpark {
                 EndRound();
             }
 
+            // todo(Nathan): put this inside of FIghtingMOde.cs
             private void FrameUpdate(int frameIndex) {
                 if (Keyboard.current.digit0Key.wasPressedThisFrame) {
                     ResetRound();
