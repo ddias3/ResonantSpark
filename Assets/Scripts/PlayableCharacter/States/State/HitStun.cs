@@ -9,7 +9,7 @@ using ResonantSpark.Character;
 namespace ResonantSpark {
     namespace CharacterStates {
             //TODO: Create a HitStunStanding, and a HitStunAirborne
-        public class HitStun : BaseState {
+        public class HitStun : CharacterBaseState {
 
             public new void Awake() {
                 base.Awake();

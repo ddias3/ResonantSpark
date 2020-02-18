@@ -8,7 +8,7 @@ using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class Land : BaseState {
+        public class Land : CharacterBaseState {
 
             private int startFrame;
             private int frameCount = 0;

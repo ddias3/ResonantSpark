@@ -8,7 +8,7 @@ using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class BlockStun : BaseState {
+        public class BlockStun : CharacterBaseState {
 
             public new void Awake() {
                 base.Awake();
