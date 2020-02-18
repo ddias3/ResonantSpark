@@ -15,7 +15,7 @@ namespace ResonantSpark {
 
             public Animator animator;
             public StateMachine stateMachine;
-            public CharacterStates.StateDict states;
+            public Utility.StateDict states;
 
             public Text charVelocity;
 

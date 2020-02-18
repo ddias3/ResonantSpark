@@ -5,7 +5,7 @@ using UnityEngine;
 namespace ResonantSpark {
     public class StateMachine : MonoBehaviour {
 
-        public CharacterStates.StateDict stateDict;
+        public Utility.StateDict stateDict;
 
 #if UNITY_EDITOR
         public string currStateName;
