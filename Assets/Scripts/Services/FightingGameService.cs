@@ -18,8 +18,9 @@ namespace ResonantSpark {
             public Transform outOfBounds;
             public Transform cameraStart;
 
+            public List<Transform> levelBoundaries;
+
             private PlayerService playerService;
-            private FightingGameService fgService;
             private PersistenceService persistenceService;
             private UiService uiService;
 
@@ -33,7 +34,6 @@ namespace ResonantSpark {
                 frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
                 frame.AddUpdate((int)FramePriority.Service, new System.Action<int>(FrameUpdate));
                 playerService = GetComponent<PlayerService>();
-                fgService = GetComponent<FightingGameService>();
                 persistenceService = GetComponent<PersistenceService>();
                 uiService = GetComponent<UiService>();
 
@@ -55,8 +55,8 @@ namespace ResonantSpark {
             }
 
             public void SetUpGamemode() {
-                gamemode.SetUp(playerService, fgService, uiService);
-                camera.SetUpCamera(cameraStart);
+                gamemode.SetUp(playerService, this, uiService);
+                camera.SetUpCamera(this);
             }
 
             private void FrameUpdate(int frameIndex) {
@@ -87,6 +87,14 @@ namespace ResonantSpark {
 
             public Vector2 ScreenOrientation(FightingGameCharacter fgChar) {
                 return camera.ScreenOrientation(fgChar.transform);
+            }
+
+            public Transform GetCameraStart() {
+                return cameraStart;
+            }
+
+            public List<Transform> GetLevelBoundaries() {
+                return levelBoundaries;
             }
         }
     }

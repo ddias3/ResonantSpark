@@ -9,6 +9,8 @@ namespace ResonantSpark {
     namespace Camera {
         public class StageLeakCamera : MonoBehaviour {
 
+            public new UnityEngine.Camera camera;
+
             public float cameraHeightClosest;
             public float cameraHeightFarthest;
             public float heightLook;
@@ -30,15 +32,21 @@ namespace ResonantSpark {
             public float raycastDirectionScaling = 1.5f;
             public float raycastDistance = 4.0f;
 
+            public AnimationCurve outOfBoundsMovementFuncY;
+            public float outOfBoundsMaxHeight = 3.0f;
+            public float maxOutOfBoundsDistance = 6.0f;
+
+            private Transform cameraTransform;
+            private new Rigidbody rigidbody;
+
             private Transform char0;
             private Transform char1;
-
-            private new UnityEngine.Camera camera;
 
             private LayerMask staticLevel;
             private LayerMask cameraLeak;
 
             private Transform startTransform;
+            private List<Transform> levelBoundaries;
 
             private List<MeshRenderer> currDisabledRenderers;
             private List<MeshRenderer> prevDisabledRenderers;
@@ -60,14 +68,17 @@ namespace ResonantSpark {
                 currDisabledRenderers = new List<MeshRenderer>();
                 prevDisabledRenderers = new List<MeshRenderer>();
 
+                rigidbody = GetComponent<Rigidbody>();
+
                 staticLevel = LayerMask.NameToLayer("StaticLevelGeometry");
                 cameraLeak = LayerMask.NameToLayer("CameraLeakGeometry");
             }
 
-            public void SetUpCamera(Transform startTransform) {
-                this.startTransform = startTransform;
+            public void SetUpCamera(FightingGameService fgService) {
+                this.startTransform = fgService.GetCameraStart();
+                this.levelBoundaries = fgService.GetLevelBoundaries();
 
-                camera = GetComponent<UnityEngine.Camera>();
+                cameraTransform = camera.transform;
                 camera.fieldOfView = cameraFov;
 
                 GameObject serviceObj = GameObject.FindGameObjectWithTag("rspService");
@@ -92,8 +103,8 @@ namespace ResonantSpark {
 
             public void ResetCameraPosition() {
                 this.enabled = true;
-                transform.position = startTransform.position;
-                transform.rotation = startTransform.rotation;
+                rigidbody.position = startTransform.position;
+                rigidbody.rotation = startTransform.rotation;
             }
 
             //TODO: Validate that this math is correct.
@@ -102,11 +113,11 @@ namespace ResonantSpark {
                 Vector3 playerToPlayer;
 
                 if (candidateTransform == char0) {
-                    camToPlayer = char0.position - transform.position;
+                    camToPlayer = char0.position - rigidbody.position;
                     playerToPlayer = char1.position - char0.position;
                 }
                 else {
-                    camToPlayer = char1.position - transform.position;
+                    camToPlayer = char1.position - rigidbody.position;
                     playerToPlayer = char0.position - char1.position;
                 }
 
@@ -140,7 +151,7 @@ namespace ResonantSpark {
                 Vector3 direction = char1.position - char0.position;
                 Vector3 midPoint = char0.position + (direction / 2);
 
-                Vector3 currPosition = transform.position;
+                Vector3 currPosition = rigidbody.position;
 
                 testTransform0.transform.position = midPoint;
 
@@ -149,11 +160,11 @@ namespace ResonantSpark {
 
                 float charsDistanceNorm = Vector3.Distance(char1.position, char0.position) / maxCharacterDistanceApart;
 
-                float cameraDistance = Mathf.Lerp(cameraDistanceClosest, cameraDistanceFarthest, cameraDistanceFunc.Evaluate(charsDistanceNorm));
                 float cameraHeight = Mathf.Lerp(cameraHeightClosest, cameraHeightFarthest, cameraDistanceFunc.Evaluate(charsDistanceNorm));
+                float cameraDistance = Mathf.Lerp(cameraDistanceClosest, cameraDistanceFarthest, cameraDistanceFunc.Evaluate(charsDistanceNorm));
 
                 Vector3 desiredPosition;
-                if (((midPoint + dirLeft) - transform.position).sqrMagnitude < ((midPoint + dirRight) - transform.position).sqrMagnitude) {
+                if (((midPoint + dirLeft) - rigidbody.position).sqrMagnitude < ((midPoint + dirRight) - rigidbody.position).sqrMagnitude) {
                     testTransform1.transform.position = midPoint + dirLeft;
                     desiredPosition = midPoint + dirLeft * cameraDistance + Vector3.up * cameraHeight;
                 }
@@ -165,6 +176,66 @@ namespace ResonantSpark {
                 Vector3 newPosition = Vector3.Lerp(currPosition, desiredPosition, dampTime * Time.deltaTime);
                 Vector3 characterCenterPoint = midPoint + (cameraHeightClosest - raycastVerticalOffset) * Vector3.up;
 
+                rigidbody.position = newPosition;
+
+                Vector3 cameraTransformPosition = cameraTransform.position;
+                if (!InBoundary(desiredPosition, levelBoundaries, out float distanceOutOfBounds)) {
+                    float outOfBoundaryCameraHeight = outOfBoundsMaxHeight * outOfBoundsMovementFuncY.Evaluate(distanceOutOfBounds / maxOutOfBoundsDistance);
+
+                    cameraTransform.localPosition = new Vector3(0.0f, outOfBoundaryCameraHeight, 0.0f);
+                    cameraTransform.localRotation = Quaternion.Euler(20f * outOfBoundsMovementFuncY.Evaluate(distanceOutOfBounds / maxOutOfBoundsDistance), 0.0f, 0.0f);
+
+                    cameraTransformPosition = cameraTransform.position;
+                }
+                else {
+                    cameraTransform.localPosition = Vector3.zero;
+                    cameraTransform.localRotation = Quaternion.identity;
+                }
+
+                PerformRaycasts(newPosition, characterCenterPoint, direction);
+                ResetActivePolling();
+
+                //cameraTransform.LookAt(midPoint + Vector3.up * heightLook);
+                transform.LookAt(midPoint + Vector3.up * heightLook);   // This moves the local Transform if it's offset.
+                cameraTransform.position = cameraTransformPosition;     // Reset it back to where it used to be.
+            }
+
+            private bool InBoundary(Vector3 cameraPos, List<Transform> boundaries, out float distanceOutOfBounds) {
+                for (int n = 0; n < boundaries.Count; ++n) {
+                    //currLine = boundaries[n].right;
+                    Vector3 currLine;
+                    Vector3 centerPoint;
+                    if (n == 0) {
+                        currLine = (-boundaries[0].position + boundaries[boundaries.Count - 1].position).normalized;
+                        centerPoint = (boundaries[0].position + boundaries[boundaries.Count - 1].position) / 2;
+                    }
+                    else {
+                        currLine = (boundaries[n - 1].position - boundaries[n].position).normalized;
+                        centerPoint = (boundaries[n - 1].position + boundaries[n].position) / 2;
+                    }
+                    currLine.y = 0;
+
+                    Vector3 dir = cameraPos - centerPoint;
+                    dir.y = 0;
+                    Vector3 cross = Vector3.Cross(currLine, dir);
+                    if (cross.y > 0) {
+                        Vector3 point;
+                        if (n == 0) {
+                            point = cameraPos - boundaries[boundaries.Count - 1].position;
+                        }
+                        else {
+                            point = cameraPos - boundaries[n - 1].position;
+                        }
+                        point.y = 0;
+                        distanceOutOfBounds = Vector3.Cross(currLine, point).magnitude;
+                        return false;
+                    }
+                }
+                distanceOutOfBounds = 0.0f;
+                return true;
+            }
+
+            private void PerformRaycasts(Vector3 newPosition, Vector3 characterCenterPoint, Vector3 direction) {
                 Vector3 cameraCheckDirection;
                 RaycastHit[] currHits;
 
@@ -228,11 +299,6 @@ namespace ResonantSpark {
                         }
                     }
                 }
-
-                ResetActivePolling();
-
-                transform.position = newPosition;
-                transform.LookAt(midPoint + Vector3.up * heightLook);
             }
 
             private void ResetActivePolling() {
