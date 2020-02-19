@@ -23,6 +23,8 @@ namespace ResonantSpark {
 
             public float landAnimationFrameTarget = 3f;
 
+            public TMPro.TextMeshPro __debugState;
+
             public int fgCharId { get; private set; }
             private int teamId;
 
@@ -343,6 +345,11 @@ namespace ResonantSpark {
 
             public GroundRelation GetGroundRelation() {
                 return ((CharacterStates.BaseState) stateMachine.GetCurrentState()).GetGroundRelation();
+            }
+
+            public void __debugSetStateText(string text, Color color) {
+                __debugState.text = text;
+                __debugState.color = color == null ? Color.white : color;
             }
 
             public void Play(string animationState) {
