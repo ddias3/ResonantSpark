@@ -125,6 +125,7 @@ namespace ResonantSpark {
                 }
             }
 
+                // Not using OnTriggerEnter/Exit because it doesn't pair nicely with the raycast method
             public void OnTriggerStay(Collider other) {
                 if (other.gameObject.layer == cameraLeak) {
                     MeshRenderer rend = other.gameObject.GetComponent<MeshRenderer>();
@@ -134,16 +135,6 @@ namespace ResonantSpark {
                     }
                 }
             }
-
-            //public void OnTriggerExit(Collider other) {
-            //    if (other.gameObject.layer == cameraLeak) {
-            //        MeshRenderer mesh = other.gameObject.GetComponent<MeshRenderer>();
-
-            //        if (mesh != null) {
-            //            mesh.enabled = true;
-            //        }
-            //    }
-            //}
 
             private void LateUpdate() {
                 Vector3 direction = char1.position - char0.position;
@@ -172,16 +163,9 @@ namespace ResonantSpark {
                 }
 
                 Vector3 newPosition = Vector3.Lerp(currPosition, desiredPosition, dampTime * Time.deltaTime);
-                Vector3 cameraCheckDirection;
-
-                //Vector3 cameraCheckDirection = (newPosition) - (midPoint + cameraHeightClosest * Vector3.up);
-                //RaycastHit cameraHit;
-                //if (Physics.Raycast(midPoint + cameraHeightClosest * Vector3.up, cameraCheckDirection, out cameraHit, cameraCheckDirection.magnitude, cameraLeak)) {
-                //    newPosition = cameraHit.point + cameraCheckDirection.normalized * 0.2f;
-                //}
-
                 Vector3 characterCenterPoint = midPoint + (cameraHeightClosest - raycastVerticalOffset) * Vector3.up;
 
+                Vector3 cameraCheckDirection;
                 RaycastHit[] currHits;
 
                 for (int n = 0; n < raycastNumSubdivisions; ++n) {
@@ -245,22 +229,13 @@ namespace ResonantSpark {
                     }
                 }
 
-                //RaycastHit[] cameraHits = Physics.RaycastAll(
-                //    midPoint + cameraHeightClosest * Vector3.up,
-                //    cameraCheckDirection,
-                //    cameraCheckDirection.magnitude,
-                //    LayerMask.GetMask("CameraLeakGeometry", "StaticLevelGeometry"),
-                //    QueryTriggerInteraction.Ignore);
-
-                //for (int n = 0; n < cameraHits.Length; ++n) {
-                //    if (cameraHits[n].collider.gameObject.layer == staticLevel || cameraHits[n].collider.gameObject.layer == cameraLeak) {
-                //        currDisabledRenderers.Add(cameraHits[n].collider.gameObject.GetComponent<MeshRenderer>());
-                //    }
-                //}
+                ResetActivePolling();
 
                 transform.position = newPosition;
                 transform.LookAt(midPoint + Vector3.up * heightLook);
+            }
 
+            private void ResetActivePolling() {
                 foreach (MeshRenderer rend in currDisabledRenderers) {
                     if (!prevDisabledRenderers.Contains(rend)) {
                         rend.enabled = false;
