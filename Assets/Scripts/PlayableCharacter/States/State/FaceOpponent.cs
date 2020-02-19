@@ -6,6 +6,7 @@ using UnityEngine;
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Input;
 using ResonantSpark.Character;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -30,6 +31,7 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
+                fgChar.__debugSetStateText("Face Opponent", Color.blue);
                 GivenInput(fgChar.GivenCombinations());
 
                 //smoothedInput = fgChar.RelativeInputToLocal(dirPress, upJump);
@@ -97,6 +99,10 @@ namespace ResonantSpark {
 
             public override GroundRelation GetGroundRelation() {
                 return GroundRelation.GROUNDED;
+            }
+
+            public override void GetHitBy(HitBox hitBox) {
+                changeState(states.Get("hitStunStand"));
             }
 
             private void OnDirectionCurrent(Action stop, Combination combo) {

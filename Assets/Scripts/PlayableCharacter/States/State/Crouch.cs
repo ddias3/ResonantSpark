@@ -5,6 +5,7 @@ using ResonantSpark.Input.Combinations;
 using ResonantSpark.Input;
 using ResonantSpark.Character;
 using ResonantSpark.Utility;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -32,6 +33,7 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
+                fgChar.__debugSetStateText("Crouch", new Color(0.3f, 0.65f, 0.3f));
                 dirPress = FightingGameInputCodeDir.Neutral;
 
                 GivenInput(fgChar.GivenCombinations());
@@ -50,6 +52,18 @@ namespace ResonantSpark {
 
             public override GroundRelation GetGroundRelation() {
                 return GroundRelation.GROUNDED;
+            }
+
+            public override void GetHitBy(HitBox hitBox) {
+                if (dirPress == FightingGameInputCodeDir.DownBack) {
+                    changeState(states.Get("blockStunCrouch"));
+                }
+                else if (dirPress == FightingGameInputCodeDir.Down) {
+                    changeState(states.Get("blockStunStand"));
+                }
+                else {
+                    changeState(states.Get("hitStunCrouch"));
+                }
             }
 
             private void OnDirectionPress(Action stop, Combination combo) {

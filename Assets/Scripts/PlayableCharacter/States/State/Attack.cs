@@ -6,6 +6,7 @@ using ResonantSpark.Input.Combinations;
 using ResonantSpark.Input;
 using ResonantSpark.Character;
 using ResonantSpark.Utility;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -41,7 +42,7 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
-                fgChar.__debugSetStateText("Back Dash", Color.red);
+                fgChar.__debugSetStateText("Attack", Color.red);
                     // Start OnEnter with this
                 GivenInput(fgChar.GivenCombinations());
 
@@ -81,6 +82,24 @@ namespace ResonantSpark {
 
             public override GroundRelation GetGroundRelation() {
                 return GroundRelation.GROUNDED;
+            }
+
+            public override void GetHitBy(HitBox hitBox) {
+                if (activeAttack != null) {
+                        // TODO: Change this to be activeAttack.onHitStandState
+                    if (activeAttack.groundRelation == GroundRelation.GROUNDED) {
+                        changeState(states.Get("hitStunStand"));
+                    }
+                    else {
+                        changeState(states.Get("hitStunCrouch"));
+                    }
+                    // else if (activeAttack.groundRelation == GroundRelation.GROUNDED) {
+                    //      changeState(states.Get("hitStunAirborne"));
+                    //}
+                }
+                else {
+                    changeState(states.Get("hitStunStand"));
+                }
             }
 
             private void OnDirectionPress(Action stop, Combination combo) {

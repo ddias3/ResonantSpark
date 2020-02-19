@@ -6,6 +6,7 @@ using UnityEngine;
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Input;
 using ResonantSpark.Character;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -40,7 +41,7 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
-                fgChar.__debugSetStateText("Jump", Color.green);
+                fgChar.__debugSetStateText("Jump", Color.yellow);
 
                 jumpDir = FightingGameInputCodeDir.None;
                 GivenInput(fgChar.GivenCombinations());
@@ -115,6 +116,15 @@ namespace ResonantSpark {
                 }
                 else {
                     return GroundRelation.GROUNDED;
+                }
+            }
+
+            public override void GetHitBy(HitBox hitBox) {
+                if (frameCount > 4) {
+                    changeState(states.Get("hitStunAirborne"));
+                }
+                else {
+                    changeState(states.Get("hitStunStand"));
                 }
             }
 

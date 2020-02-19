@@ -52,6 +52,10 @@ namespace ResonantSpark {
 
         public void Enable(IState startState, FrameEnforcer frame) {
             nextStates = new List<IState>();
+            if (onChangeState == null) {
+                onChangeState = new List<Action<IState>>();
+            }
+
             //this.enabled = true;
 
             frame.AddUpdate((int) FramePriority.StateMachine, new Action<int>(Execute));
@@ -66,7 +70,9 @@ namespace ResonantSpark {
         }
 
         public void RegisterOnChangeStateCallback(Action<IState> callback) {
-            if (onChangeState == null) onChangeState = new List<Action<IState>>();
+            if (onChangeState == null) {
+                onChangeState = new List<Action<IState>>();
+            }
 
             onChangeState.Add(callback);
         }

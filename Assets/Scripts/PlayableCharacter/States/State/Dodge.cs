@@ -6,6 +6,7 @@ using UnityEngine;
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Character;
 using ResonantSpark.Input;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -51,13 +52,13 @@ namespace ResonantSpark {
                 dodgeDir = FightingGameInputCodeDir.None;
                 GivenInput(fgChar.GivenCombinations());
 
-                if (dodgeDir == FightingGameInputCodeDir.Up) {
-                    localScaling = new Vector3(-1.0f, 0.0f, 0.0f);
-                    fgChar.Play("step_chest");
+                localScaling = fgChar.RelativeInputToLocal(dodgeDir, false);
+
+                if (localScaling.x > 0) {
+                    fgChar.Play("step_spine");
                 }
                 else {
-                    localScaling = new Vector3(1.0f, 0.0f, 0.0f);
-                    fgChar.Play("step_spine");
+                    fgChar.Play("step_chest");
                 }
 
                 tracker.Track(frameIndex);
@@ -66,7 +67,12 @@ namespace ResonantSpark {
             public override void Execute(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
 
-                Vector3 localVelocity = new Vector3(localScaling.x * dodgeSpeedCurve.Evaluate(tracker.frameCount), 0.0f, 0.0f);
+                Vector3 localVelocity = new Vector3 {
+                    x = localScaling.x * dodgeSpeedCurve.Evaluate(tracker.frameCount),
+                    y = 0.0f,
+                        // TODO: Figure out the actual function here to get to the correct new location
+                    z = 0.3f / fgChar.OpponentPosition().magnitude,
+                };
 
                 fgChar.AddRelativeVelocity(Gameplay.VelocityPriority.Dash, localVelocity);
 
@@ -105,6 +111,10 @@ namespace ResonantSpark {
 
             public override GroundRelation GetGroundRelation() {
                 return GroundRelation.GROUNDED;
+            }
+
+            public override void GetHitBy(HitBox hitBox) {
+                changeState(states.Get("blockStunStand"));
             }
 
             private void GivenDirectionPlusButton(Action stop, Combination combo) {

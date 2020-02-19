@@ -11,13 +11,10 @@ namespace ResonantSpark {
         public abstract class BaseState : MonoBehaviour, IState {
 
             protected StateDict states;
-
             protected FrameEnforcer frame;
-
             protected Action<IState> changeState;
 
             public void Awake() {
-
                 states = gameObject.GetComponentInParent<StateDict>();
                 frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
             }
