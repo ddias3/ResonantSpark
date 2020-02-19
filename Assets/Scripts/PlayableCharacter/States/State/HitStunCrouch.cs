@@ -5,14 +5,16 @@ using UnityEngine;
 
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Character;
+using ResonantSpark.Gameplay;
+using ResonantSpark.Input;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class BlockStun : CharacterBaseState {
+        public class HitStunCrouch : CharacterBaseState {
 
             public new void Awake() {
                 base.Awake();
-                states.Register(this, "blockStun");
+                states.Register(this, "hitStunCrouch");
 
                 RegisterInputCallbacks()
                     .On<DirectionPress>(OnDirectionPress)
@@ -20,12 +22,9 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
-                //if (messages.Count > 0) {
-                //    Combination combo = messages.Dequeue();
-                //    combo.inUse = false;
-                //}
+                fgChar.__debugSetStateText("Hit Stun", Color.red);
 
-                fgChar.Play("idle");
+                fgChar.Play("idle_crouch");
             }
 
             public override void Execute(int frameIndex) {
@@ -38,6 +37,10 @@ namespace ResonantSpark {
 
             public override GroundRelation GetGroundRelation() {
                 return GroundRelation.GROUNDED;
+            }
+
+            public override void GetHitBy(HitBox hitBox) {
+                changeState(states.Get("hitStunCrouch"));
             }
 
             private void OnDirectionPress(Action stop, Combination combo) {

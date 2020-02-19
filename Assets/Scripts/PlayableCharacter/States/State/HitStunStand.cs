@@ -5,28 +5,44 @@ using UnityEngine;
 
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Character;
+using ResonantSpark.Gameplay;
+using ResonantSpark.Input;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class HitStunStanding : CharacterBaseState {
+        public class HitStunStand : CharacterBaseState {
+
+            private int testLength = 20;
+
+            private Utility.AttackTracker tracker;
 
             public new void Awake() {
                 base.Awake();
-                states.Register(this, "hitStunStanding");
+                states.Register(this, "hitStunStand");
 
                 RegisterInputCallbacks()
                     .On<DirectionPress>(OnDirectionPress)
                     .On<DoubleTap>(OnDoubleTap);
+
+                tracker = new Utility.AttackTracker(testLength);
             }
 
             public override void Enter(int frameIndex, IState previousState) {
                 fgChar.__debugSetStateText("Hit Stun", Color.red);
+
+                tracker.Track(frameIndex);
 
                 fgChar.Play("idle");
             }
 
             public override void Execute(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
+
+                if (tracker.frameCount > testLength) {
+                    changeState(states.Get("stand"));
+                }
+
+                tracker.Increment();
             }
 
             public override void Exit(int frameIndex) {
@@ -35,6 +51,10 @@ namespace ResonantSpark {
 
             public override GroundRelation GetGroundRelation() {
                 return GroundRelation.GROUNDED;
+            }
+
+            public override void GetHitBy(HitBox hitBox) {
+                changeState(states.Get("hitStunStand"));
             }
 
             private void OnDirectionPress(Action stop, Combination combo) {

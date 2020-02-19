@@ -49,6 +49,10 @@ namespace ResonantSpark {
                 get { return rigidbody.rotation; }
             }
 
+            public Vector3 position {
+                get { return rigidbody.position; }
+            }
+
             public int maxHealth {
                 get { return charData.maxHealth; }
             }
@@ -231,6 +235,10 @@ namespace ResonantSpark {
                 return Quaternion.Euler(0.0f, -90.0f, 0.0f) * worldInput;
             }
 
+            public Vector3 OpponentPosition() {
+                return opponentChar.position - position;
+            }
+
             public bool Grounded(out Vector3 groundPoint) {
                 RaycastHit hitInfo;
 
@@ -348,6 +356,13 @@ namespace ResonantSpark {
             }
 
             public void __debugSetStateText(string text, Color color) {
+                if (screenOrientation.x > 0) {
+                    __debugState.transform.rotation = rigidbody.rotation * Quaternion.Euler(0.0f, -90.0f, 0.0f);
+                }
+                else {
+                    __debugState.transform.rotation = rigidbody.rotation * Quaternion.Euler(0.0f, 90.0f, 0.0f);
+                }
+
                 __debugState.text = text;
                 __debugState.color = color == null ? Color.white : color;
             }
@@ -370,10 +385,15 @@ namespace ResonantSpark {
             }
 
             public override void GetHitBy(HitBox hitBox) {
-                health -= maxHealth / 10;
+                ((CharacterStates.CharacterBaseState) stateMachine.GetCurrentState()).GetHitBy(hitBox);
+            }
+
+            public void ChangeHealth(int amount) {
+                amount = maxHealth / 10;
+                health -= amount;
 
                 for (int n = 0; n < onHealthChangeCallbacks.Count; ++n) {
-                    onHealthChangeCallbacks[n].Invoke(maxHealth / 10, health);
+                    onHealthChangeCallbacks[n].Invoke(amount, health);
                 }
 
                 if (health <= 0) {

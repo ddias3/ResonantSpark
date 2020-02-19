@@ -10,20 +10,20 @@ using ResonantSpark.Input;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class Block : CharacterBaseState {
+        public class BlockStunStand : CharacterBaseState {
 
             private FightingGameInputCodeDir dirCurr;
 
             public new void Awake() {
                 base.Awake();
-                states.Register(this, "block");
+                states.Register(this, "blockStunStand");
 
                 RegisterInputCallbacks()
                     .On<DirectionCurrent>(OnDirectionCurrent);
             }
 
             public override void Enter(int frameIndex, IState previousState) {
-                fgChar.__debugSetStateText("Back Dash", Color.gray);
+                fgChar.__debugSetStateText("Block Stun", Color.white);
 
                 fgChar.Play("idle");
             }
@@ -48,7 +48,7 @@ namespace ResonantSpark {
                     changeState(states.Get("blockStunCrouch"));
                 }
                 else {
-                    throw new InvalidOperationException("In Block State while pressing a direction other than back or down-back");
+                    changeState(states.Get("hitStunStand"));
                 }
             }
 

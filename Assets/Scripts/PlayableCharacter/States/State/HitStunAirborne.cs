@@ -5,10 +5,11 @@ using UnityEngine;
 
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Character;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class HitStun : CharacterBaseState {
+        public class HitStunAirborne : CharacterBaseState {
 
             public new void Awake() {
                 base.Awake();
@@ -35,6 +36,10 @@ namespace ResonantSpark {
 
             public override GroundRelation GetGroundRelation() {
                 return GroundRelation.GROUNDED;
+            }
+
+            public override void GetHitBy(HitBox hitBox) {
+                changeState(states.Get("hitStunAirborne"));
             }
 
             private void OnDirectionPress(Action stop, Combination combo) {
