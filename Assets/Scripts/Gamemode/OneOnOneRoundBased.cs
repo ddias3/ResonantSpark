@@ -86,7 +86,7 @@ namespace ResonantSpark {
             }
 
             public void ResetRound() {
-                currRoundTime = 20.0f; //roundTime;
+                currRoundTime = roundTime;
                 uiService.SetTime(currRoundTime);
 
                 Vector3 spawnMid = fgService.GetSpawnPoint().position;
