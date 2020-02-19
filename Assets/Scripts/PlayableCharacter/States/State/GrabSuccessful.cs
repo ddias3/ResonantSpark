@@ -8,7 +8,7 @@ using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class GrabSuccessful : BaseState {
+        public class GrabSuccessful : CharacterBaseState {
 
             public new void Awake() {
                 base.Awake();

@@ -5,17 +5,13 @@ using UnityEngine;
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Gameplay;
 using ResonantSpark.Character;
+using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public abstract class BaseState : MonoBehaviour, IState {
-
-            protected StateDict states;
+        public abstract class CharacterBaseState : BaseState {
 
             protected FightingGameCharacter fgChar;
-            protected FrameEnforcer frame;
-
-            protected Action<IState> changeState;
 
             private bool continueInputSearch = true;
             private Action stopInputSearch;
@@ -26,15 +22,14 @@ namespace ResonantSpark {
             private Dictionary<Type, Action<Action, Combination>> enterCallbacks;
 
             public void Awake() {
+                base.Awake();
                 inputCallbacks = new Dictionary<Type, Action<Action, Combination>>();
                 enterCallbacks = new Dictionary<Type, Action<Action, Combination>>();
                 inputRegistry = new CallbackRegistry(inputCallbacks);
                 enterRegistry = new CallbackRegistry(enterCallbacks);
                 stopInputSearch = new Action(StopInputSearch);
 
-                states = gameObject.GetComponentInParent<StateDict>();
                 fgChar = gameObject.GetComponentInParent<FightingGameCharacter>();
-                frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
             }
 
             public CallbackRegistry RegisterInputCallbacks() {
@@ -73,14 +68,6 @@ namespace ResonantSpark {
                 }
                 inputCombos.Clear();
             }
-
-            public void OnStateMachineEnable(Action<IState> changeState) {
-                this.changeState = changeState;
-            }
-
-            public abstract void Enter(int frameIndex, IState previousState);
-            public abstract void Execute(int frameIndex);
-            public abstract void Exit(int frameIndex);
 
             public abstract GroundRelation GetGroundRelation();
 

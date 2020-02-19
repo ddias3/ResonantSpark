@@ -9,7 +9,7 @@ using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class Attack : BaseState {
+        public class Attack : CharacterBaseState {
 
             private Action onCompleteAttack;
 
@@ -41,6 +41,7 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
+                fgChar.__debugSetStateText("Back Dash", Color.red);
                     // Start OnEnter with this
                 GivenInput(fgChar.GivenCombinations());
 

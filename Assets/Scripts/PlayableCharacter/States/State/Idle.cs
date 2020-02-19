@@ -9,7 +9,7 @@ using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class Idle : BaseState {
+        public class Idle : CharacterBaseState {
 
             public new void Awake() {
                 base.Awake();
