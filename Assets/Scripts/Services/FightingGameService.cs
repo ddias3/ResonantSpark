@@ -5,6 +5,7 @@ using UnityEngine;
 using ResonantSpark.Gameplay;
 using ResonantSpark.Utility;
 using ResonantSpark.Gamemode;
+using ResonantSpark.Camera;
 
 namespace ResonantSpark {
     namespace Service {
@@ -22,7 +23,7 @@ namespace ResonantSpark {
             private PersistenceService persistenceService;
             private UiService uiService;
 
-            private new FightingGameCamera camera;
+            private new StageLeakCamera camera;
 
             private FrameEnforcer frame;
 
@@ -46,7 +47,7 @@ namespace ResonantSpark {
 
                 GameObject newCamera = GameObject.Instantiate(persistenceService.GetCamera());
                 newCamera.name = "FightingGameCamera";
-                this.camera = newCamera.GetComponent<FightingGameCamera>();
+                this.camera = newCamera.GetComponent<StageLeakCamera>();
 
                 mapCamera.SetActive(false);
 
