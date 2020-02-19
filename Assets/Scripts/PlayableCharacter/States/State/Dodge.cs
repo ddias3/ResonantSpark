@@ -9,7 +9,7 @@ using ResonantSpark.Input;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class Dodge : BaseState {
+        public class Dodge : CharacterBaseState {
 
             [Tooltip("The dodge length in frames")]
             public int dodgeLength = 30;
@@ -46,6 +46,8 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
+                fgChar.__debugSetStateText("Dodge", Color.green);
+
                 dodgeDir = FightingGameInputCodeDir.None;
                 GivenInput(fgChar.GivenCombinations());
 

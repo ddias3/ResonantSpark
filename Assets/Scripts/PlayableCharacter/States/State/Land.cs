@@ -8,7 +8,7 @@ using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class Land : BaseState {
+        public class Land : CharacterBaseState {
 
             private int startFrame;
             private int frameCount = 0;
@@ -24,6 +24,8 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
+                fgChar.__debugSetStateText("Land", Color.cyan);
+
                 fgChar.GivenCombinations();
                 fgChar.Play("jump_land");
 

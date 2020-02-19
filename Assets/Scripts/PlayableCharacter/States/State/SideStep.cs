@@ -7,7 +7,7 @@ using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class SideStep : BaseState {
+        public class SideStep : CharacterBaseState {
 
             public new void Awake() {
                 base.Awake();

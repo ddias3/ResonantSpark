@@ -9,7 +9,7 @@ using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class Jump : BaseState {
+        public class Jump : CharacterBaseState {
 
             public Vector3 jump8Velocity;
             public Vector3 jump7Velocity;
@@ -40,6 +40,8 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
+                fgChar.__debugSetStateText("Jump", Color.green);
+
                 jumpDir = FightingGameInputCodeDir.None;
                 GivenInput(fgChar.GivenCombinations());
 
@@ -80,6 +82,7 @@ namespace ResonantSpark {
                     fgChar.Play("jump");
                 }
                 else if (frameCount > 4) {
+                        // TODO: Change this to airborne state
                     fgChar.AddForce(gravityExtra, ForceMode.Acceleration);
                 }
 

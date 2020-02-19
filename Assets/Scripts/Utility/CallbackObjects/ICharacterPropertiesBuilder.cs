@@ -10,12 +10,12 @@ namespace ResonantSpark {
             ICharacterPropertiesCallbackObj Version(string version);
             ICharacterPropertiesCallbackObj MaxHealth(int maxHealth);
             ICharacterPropertiesCallbackObj WalkSpeed(float speed);
-            ICharacterPropertiesCallbackObj WalkSpeed(Func<CharacterStates.BaseState, float> callback);
+            ICharacterPropertiesCallbackObj WalkSpeed(Func<CharacterStates.CharacterBaseState, float> callback);
             ICharacterPropertiesCallbackObj RunSpeed(float speed);
-            ICharacterPropertiesCallbackObj RunSpeed(Func<CharacterStates.BaseState, float> callback);
+            ICharacterPropertiesCallbackObj RunSpeed(Func<CharacterStates.CharacterBaseState, float> callback);
             ICharacterPropertiesCallbackObj MaxJumpHeight(float maxJumpHeight);
-            ICharacterPropertiesCallbackObj MaxJumpHeight(Func<CharacterStates.BaseState, float> callback);
-            ICharacterPropertiesCallbackObj Attack(Attack attack, Func<CharacterStates.BaseState, Attack, bool> callback);
+            ICharacterPropertiesCallbackObj MaxJumpHeight(Func<CharacterStates.CharacterBaseState, float> callback);
+            ICharacterPropertiesCallbackObj Attack(Attack attack, Func<CharacterStates.CharacterBaseState, Attack, bool> callback);
         }
     }
 }

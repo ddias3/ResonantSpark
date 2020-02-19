@@ -8,7 +8,7 @@ using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class Crouch : BaseState {
+        public class Crouch : CharacterBaseState {
 
             private bool crouchDodge = false;
             private Input.FightingGameInputCodeDir dirPress = Input.FightingGameInputCodeDir.None;

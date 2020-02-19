@@ -9,7 +9,7 @@ using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class FaceOpponent : BaseState {
+        public class FaceOpponent : CharacterBaseState {
 
             public float maxRotation;
 

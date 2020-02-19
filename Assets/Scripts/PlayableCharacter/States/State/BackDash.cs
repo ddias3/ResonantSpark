@@ -8,7 +8,7 @@ using ResonantSpark.Input;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class BackDash : BaseState {
+        public class BackDash : CharacterBaseState {
 
             [Tooltip("The dash length in frames")]
             public int dashLength = 25;
@@ -42,6 +42,8 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
+                fgChar.__debugSetStateText("Back Dash", Color.green);
+
                 dashDir = FightingGameInputCodeDir.None;
                 GivenInput(fgChar.GivenCombinations());
 
