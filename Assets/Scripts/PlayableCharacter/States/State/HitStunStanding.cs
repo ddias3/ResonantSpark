@@ -8,12 +8,11 @@ using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-            //TODO: Create a HitStunStanding, and a HitStunAirborne
-        public class HitStun : BaseState {
+        public class HitStunStanding : BaseState {
 
             public new void Awake() {
                 base.Awake();
-                states.Register(this, "hitStun");
+                states.Register(this, "hitStunStanding");
 
                 RegisterInputCallbacks()
                     .On<DirectionPress>(OnDirectionPress)
@@ -21,10 +20,7 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
-                //if (messages.Count > 0) {
-                //    Combination combo = messages.Dequeue();
-                //    combo.inUse = false;
-                //}
+                fgChar.__debugSetStateText("Hit Stun", Color.red);
 
                 fgChar.Play("idle");
             }
