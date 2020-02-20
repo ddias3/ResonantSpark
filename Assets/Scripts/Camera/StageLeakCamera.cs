@@ -239,6 +239,7 @@ namespace ResonantSpark {
                 Vector3 cameraCheckDirection;
                 RaycastHit[] currHits;
 
+                    // Check for small objects in the scene.
                 for (int n = 0; n < raycastNumSubdivisions; ++n) {
 
                     for (int leftRight = 0; leftRight < 2; ++leftRight) {
@@ -254,23 +255,62 @@ namespace ResonantSpark {
                             newPosition,
                             currCameraCheckDirection,
                             raycastDistance,
-                            LayerMask.GetMask("CameraLeakGeometry", "StaticLevelGeometry"),
+                            LayerMask.GetMask("CameraLeakGeometry"),
                             QueryTriggerInteraction.Ignore);
 
                         Debug.DrawLine(newPosition + currCameraCheckDirection.normalized * raycastDistance, newPosition + currCameraCheckDirection.normalized * raycastDistance + Vector3.up * 0.1f, Color.red);
                         Debug.DrawLine(newPosition, newPosition + currCameraCheckDirection.normalized * raycastDistance, Color.cyan);
 
                         for (int hitCounter = 0; hitCounter < currHits.Length; ++hitCounter) {
-                            if (currHits[hitCounter].collider.gameObject.layer == staticLevel || currHits[hitCounter].collider.gameObject.layer == cameraLeak) {
+                            if (currHits[hitCounter].collider.gameObject.layer == cameraLeak) {
                                 MeshRenderer rend = currHits[hitCounter].collider.gameObject.GetComponent<MeshRenderer>();
                                 if (!currDisabledRenderers.Contains(rend)) {
                                     currDisabledRenderers.Add(rend);
                                 }
                             }
+                            else {
+                                Debug.LogError("THIS IS NEVER CALLED, remove the if-statement above");
+                            }
                         }
                     }
                 }
 
+                    // Check for walls/ side objects in the way.
+                for (int n = 0; n < raycastNumSubdivisions; ++n) {
+
+                    for (int leftRight = 0; leftRight < 2; ++leftRight) {
+                        if (n == 0 && leftRight != 0) continue;
+
+                        int counter = n;
+                        if (leftRight == 0) {
+                            counter = -n;
+                        }
+
+                        float wallCheckBetweenCharsScalar = 0.8f;
+                        Vector3 currCameraCheckDirection = (characterCenterPoint + counter * direction * wallCheckBetweenCharsScalar * 0.5f / raycastNumSubdivisions) - newPosition;
+
+                        currHits = Physics.RaycastAll(
+                            newPosition + currCameraCheckDirection * 1.1f,
+                            -currCameraCheckDirection,
+                            currCameraCheckDirection.magnitude,
+                            LayerMask.GetMask("StaticLevelGeometry"),
+                            QueryTriggerInteraction.Ignore);
+
+                        for (int hitCounter = 0; hitCounter < currHits.Length; ++hitCounter) {
+                            if (currHits[hitCounter].collider.gameObject.layer == staticLevel) {
+                                MeshRenderer rend = currHits[hitCounter].collider.gameObject.GetComponent<MeshRenderer>();
+                                if (!currDisabledRenderers.Contains(rend)) {
+                                    currDisabledRenderers.Add(rend);
+                                }
+                            }
+                            else {
+                                Debug.LogError("THIS IS NEVER CALLED, remove the if-statement above");
+                            }
+                        }
+                    }
+                }
+
+                    // Check for small objects directly in front of the playable characters.
                 for (int charId = 0; charId < 2; ++charId) {
 
                     if (charId == 0) {
@@ -285,7 +325,7 @@ namespace ResonantSpark {
                         0.25f,
                         cameraCheckDirection,
                         cameraCheckDirection.magnitude,
-                        LayerMask.GetMask("CameraLeakGeometry", "StaticLevelGeometry"),
+                        LayerMask.GetMask("CameraLeakGeometry"),
                         QueryTriggerInteraction.Ignore);
 
                     Debug.DrawLine(newPosition, newPosition + cameraCheckDirection, Color.blue);
