@@ -22,7 +22,7 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
-                fgChar.__debugSetStateText("Hit Stun", Color.red);
+                fgChar.__debugSetStateText("Hit Stun", Color.magenta);
 
                 fgChar.Play("idle_crouch");
             }
