@@ -13,10 +13,11 @@ public class Water : MonoBehaviour
         Mesh mesh;
         MeshFilter meshFilter;
         Vector3[] verts;
-
+        public Camera mainCamera;
+    
         void Start()
         {
-            Camera.main.depthTextureMode |= DepthTextureMode.Depth;
+            mainCamera.depthTextureMode |= DepthTextureMode.Depth;
             meshFilter = GetComponent<MeshFilter>();
             makeMeshLowPoly(meshFilter);
         }
@@ -69,6 +70,9 @@ public class Water : MonoBehaviour
 
         void CalcWave()
         {
+            if (verts == null) {
+            Debug.Log("VERTS IS NULL FOR SOME REASON!!!");
+            }
             for (int i = 0; i < verts.Length; i++)
             {
                 Vector3 v = verts[i];
