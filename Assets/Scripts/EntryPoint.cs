@@ -13,9 +13,6 @@ using ResonantSpark.Gameplay;
 namespace ResonantSpark {
     public class EntryPoint : MonoBehaviour {
 
-        public GameObject char0Builder;
-        public GameObject char1Builder;
-
         public FightingGameService fgService;
         public PlayerService playerService;
         public InputService inputService;

@@ -258,7 +258,7 @@ namespace ResonantSpark {
                             LayerMask.GetMask("CameraLeakGeometry"),
                             QueryTriggerInteraction.Ignore);
 
-                        Debug.DrawLine(newPosition + currCameraCheckDirection.normalized * raycastDistance, newPosition + currCameraCheckDirection.normalized * raycastDistance + Vector3.up * 0.1f, Color.red);
+                        //Debug.DrawLine(newPosition + currCameraCheckDirection.normalized * raycastDistance, newPosition + currCameraCheckDirection.normalized * raycastDistance + Vector3.up * 0.1f, Color.red);
                         Debug.DrawLine(newPosition, newPosition + currCameraCheckDirection.normalized * raycastDistance, Color.cyan);
 
                         for (int hitCounter = 0; hitCounter < currHits.Length; ++hitCounter) {
