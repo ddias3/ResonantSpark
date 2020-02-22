@@ -5,14 +5,15 @@ using UnityEngine;
 
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Character;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class BlockStun : BaseState {
+        public class HitStunAirborne : CharacterBaseState {
 
             public new void Awake() {
                 base.Awake();
-                states.Register(this, "blockStun");
+                states.Register(this, "hitStunAirborne");
 
                 RegisterInputCallbacks()
                     .On<DirectionPress>(OnDirectionPress)
@@ -20,10 +21,7 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
-                //if (messages.Count > 0) {
-                //    Combination combo = messages.Dequeue();
-                //    combo.inUse = false;
-                //}
+                fgChar.__debugSetStateText("Hit Stun Air", Color.magenta);
 
                 fgChar.Play("idle");
             }
@@ -38,6 +36,10 @@ namespace ResonantSpark {
 
             public override GroundRelation GetGroundRelation() {
                 return GroundRelation.GROUNDED;
+            }
+
+            public override void GetHitBy(HitBox hitBox) {
+                changeState(states.Get("hitStunAirborne"));
             }
 
             private void OnDirectionPress(Action stop, Combination combo) {
