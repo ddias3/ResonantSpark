@@ -9642,6 +9642,11 @@ PrefabInstance:
       propertyPath: fpsCounter
       value: 
       objectReference: {fileID: 1291450621}
+    - target: {fileID: 1184226375514141020, guid: d03c2386161e21a4da4259c13f291978,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 48
+      objectReference: {fileID: 0}
     - target: {fileID: 1184226376347560038, guid: d03c2386161e21a4da4259c13f291978,
         type: 3}
       propertyPath: m_LocalPosition.x
