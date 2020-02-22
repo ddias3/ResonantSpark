@@ -5,32 +5,44 @@ using UnityEngine;
 
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Character;
+using ResonantSpark.Gameplay;
+using ResonantSpark.Input;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-            //TODO: Create a HitStunStanding, and a HitStunAirborne
-        public class HitStun : BaseState {
+        public class HitStunStand : CharacterBaseState {
+
+            private int testLength = 20;
+
+            private Utility.AttackTracker tracker;
 
             public new void Awake() {
                 base.Awake();
-                states.Register(this, "hitStun");
+                states.Register(this, "hitStunStand");
 
                 RegisterInputCallbacks()
                     .On<DirectionPress>(OnDirectionPress)
                     .On<DoubleTap>(OnDoubleTap);
+
+                tracker = new Utility.AttackTracker(testLength);
             }
 
             public override void Enter(int frameIndex, IState previousState) {
-                //if (messages.Count > 0) {
-                //    Combination combo = messages.Dequeue();
-                //    combo.inUse = false;
-                //}
+                fgChar.__debugSetStateText("Hit Stun", Color.magenta);
+
+                tracker.Track(frameIndex);
 
                 fgChar.Play("idle");
             }
 
             public override void Execute(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
+
+                if (tracker.frameCount > testLength) {
+                    changeState(states.Get("stand"));
+                }
+
+                tracker.Increment();
             }
 
             public override void Exit(int frameIndex) {
@@ -39,6 +51,10 @@ namespace ResonantSpark {
 
             public override GroundRelation GetGroundRelation() {
                 return GroundRelation.GROUNDED;
+            }
+
+            public override void GetHitBy(HitBox hitBox) {
+                changeState(states.Get("hitStunStand"));
             }
 
             private void OnDirectionPress(Action stop, Combination combo) {
