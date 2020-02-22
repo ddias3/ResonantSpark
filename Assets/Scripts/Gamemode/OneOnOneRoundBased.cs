@@ -89,11 +89,10 @@ namespace ResonantSpark {
                 currRoundTime = roundTime;
                 uiService.SetTime(currRoundTime);
 
-                Vector3 spawnMid = fgService.GetSpawnPoint().position;
-                Quaternion rotation = Quaternion.Euler(0, 180, 0); //Quaternion.Euler(0, UnityEngine.Random.Range(0, 360), 0);
+                Transform spawnTransform = fgService.GetSpawnPoint();
 
-                char0.transform.position = spawnMid + rotation * new Vector3(0, 0, fgService.GetSpawnPointOffset());
-                char1.transform.position = spawnMid + rotation * Quaternion.Euler(0, 180, 0) * new Vector3(0, 0, fgService.GetSpawnPointOffset());
+                char0.transform.position = spawnTransform.position + spawnTransform.rotation * new Vector3(0, 0, fgService.GetSpawnPointOffset());
+                char1.transform.position = spawnTransform.position + spawnTransform.rotation * Quaternion.Euler(0, 180, 0) * new Vector3(0, 0, fgService.GetSpawnPointOffset());
 
                 char0.transform.LookAt(char1.transform);
                 char1.transform.LookAt(char0.transform);
