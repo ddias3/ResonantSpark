@@ -13,11 +13,11 @@ namespace ResonantSpark {
             public int maxHealth { get; private set; }
 
             private Dictionary<string, Attack> attacks;
-            private Dictionary<Attack, Func<CharacterStates.BaseState, Attack, bool>> attackSelectableCallbackMap;
+            private Dictionary<Attack, Func<CharacterStates.CharacterBaseState, Attack, bool>> attackSelectableCallbackMap;
 
             public void Init(int maxHealth) {
                 attacks = new Dictionary<string, Attack>();
-                attackSelectableCallbackMap = new Dictionary<Attack, Func<CharacterStates.BaseState, Attack, bool>>();
+                attackSelectableCallbackMap = new Dictionary<Attack, Func<CharacterStates.CharacterBaseState, Attack, bool>>();
 
                 this.maxHealth = maxHealth;
             }
@@ -26,11 +26,11 @@ namespace ResonantSpark {
                 attacks.Add(attack.name, attack);
             }
 
-            public void AddAttackSelectablilityCallback(Attack attack, Func<CharacterStates.BaseState, Attack, bool> callback) {
+            public void AddAttackSelectablilityCallback(Attack attack, Func<CharacterStates.CharacterBaseState, Attack, bool> callback) {
                 attackSelectableCallbackMap.Add(attack, callback);
             }
 
-            public Attack ChooseAttackFromSelectability(List<Attack> attacks, CharacterStates.BaseState currState, Attack currAttack) {
+            public Attack ChooseAttackFromSelectability(List<Attack> attacks, CharacterStates.CharacterBaseState currState, Attack currAttack) {
 
                 List<Attack> validAttacks = attacks
                     .Where(atk => attackSelectableCallbackMap[atk].Invoke(currState, currAttack))

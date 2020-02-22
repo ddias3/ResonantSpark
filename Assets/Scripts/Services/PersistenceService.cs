@@ -45,7 +45,7 @@ namespace ResonantSpark {
 
             private Persistence() {
                 playerSelection = new List<string>();
-                controllerIndex = new List<int>();
+                controllerIndex = new List<int> { 0, -1 };
             }
         }
 

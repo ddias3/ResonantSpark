@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace CharacterStates {
