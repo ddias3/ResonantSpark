@@ -8,9 +8,8 @@ namespace ResonantSpark
 {
     namespace GamemodeStates
     {
-        public class FightingMode : BaseState
+        public class FightingMode : GamemodeBaseState
         {
-            private OneOnOneRoundBased oneOnOne;
             private GameTimeManager gameTimeManager;
             float elapsedTime;
 
@@ -18,18 +17,22 @@ namespace ResonantSpark
             void Awake()
             {
                 base.Awake();
-                oneOnOne = gameObject.GetComponentInParent<OneOnOneRoundBased>();
                 gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
+                states.Register(this, "fightingMode");
             }
 
             public override void Enter(int frameIndex, IState previousState)
             {
                 elapsedTime = 0;
+                Debug.Log("Entered Fighting mode state");
             }
 
             public override void Execute(int frameIndex)
             {
                 elapsedTime += gameTimeManager.Layer("gameTime");
+
+                // todo: once one of the characters dies, switch to roundEnd mode
+                //changeState(states.Get("roundEndMode"));
             }
 
             public override void Exit(int frameIndex)

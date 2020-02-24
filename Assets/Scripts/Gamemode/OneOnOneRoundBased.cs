@@ -13,7 +13,7 @@ namespace ResonantSpark {
         public class OneOnOneRoundBased : MonoBehaviour, IGamemode {
 
             public StateMachine stateMachine;
-            public StateDict stateDict;
+            public Utility.StateDict states;
 
             public float roundTime = 60.0f;
             private PlayerService playerService;
@@ -141,7 +141,12 @@ namespace ResonantSpark {
             }
 
             private void OnPlayerEmptyHealth(FightingGameCharacter fgChar) {
-                    // TODO: this might result in a race condition that needs to be resolved for double K.O.s
+                // TODO: this might result in a race condition that needs to be resolved for double K.O.s
+
+                // todo: end game
+                ((GamemodeStates.RoundEndMode) states.Get("roundEndMode")).RoundEnd();
+                
+
                 EndRound();
             }
 
@@ -167,6 +172,16 @@ namespace ResonantSpark {
 
             public int GetMaxPlayers() {
                 return 2;
+            }
+
+            public int GetChar0NumWins()
+            {
+                return char0RoundWins;
+            }
+
+            public int GetChar1NumWins()
+            {
+                return char1RoundWins;
             }
         }
     }

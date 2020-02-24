@@ -8,9 +8,8 @@ namespace ResonantSpark
 {
     namespace GamemodeStates
     {
-        public class LoadInMode : BaseState
+        public class LoadInMode : GamemodeBaseState
         {
-            private OneOnOneRoundBased oneOnOne;
             private GameTimeManager gameTimeManager;
             float elapsedTime;
 
@@ -18,7 +17,6 @@ namespace ResonantSpark
             void Awake()
             {
                 base.Awake();
-                oneOnOne = gameObject.GetComponentInParent<OneOnOneRoundBased>();
                 gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
             }
 

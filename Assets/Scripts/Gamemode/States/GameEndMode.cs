@@ -8,9 +8,8 @@ namespace ResonantSpark
 {
     namespace GamemodeStates
     {
-        public class GameEndMode : BaseState
+        public class GameEndMode : GamemodeBaseState
         {
-            private OneOnOneRoundBased oneOnOne;
             private GameTimeManager gameTimeManager;
             float elapsedTime;
 
@@ -18,13 +17,14 @@ namespace ResonantSpark
             void Awake()
             {
                 base.Awake();
-                oneOnOne = gameObject.GetComponentInParent<OneOnOneRoundBased>();
                 gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
+                states.Register(this, "gameEndMode");
             }
 
             public override void Enter(int frameIndex, IState previousState)
             {
                 elapsedTime = 0;
+                Debug.Log("Entered Game End mode state");
             }
 
             public override void Execute(int frameIndex)
