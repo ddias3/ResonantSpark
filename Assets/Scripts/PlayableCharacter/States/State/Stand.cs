@@ -6,6 +6,8 @@ using UnityEngine;
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Input;
 using ResonantSpark.Character;
+using ResonantSpark.Gameplay;
+using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -15,13 +17,11 @@ namespace ResonantSpark {
             public WalkSlow walkSlow;
             public Still still;
 
-            public float maxForwardForce;
-            public float maxBackwardForce;
-            public float maxHorizontalForce;
+            public float maxForwardSpeed;
+            public float maxBackwardSpeed;
+            public float maxHorizontalSpeed;
 
-            public AnimationCurve forwardForce;
-            public AnimationCurve horizontalForce;
-
+            public float velocityChangeDampTime;
             public float movementChangeDampTime;
             public Vector3 deadZone;
 
@@ -40,10 +40,11 @@ namespace ResonantSpark {
                 states.Register(this, "stand");
 
                 RegisterInputCallbacks()
-                    //.On<DirectionPress>(OnDirectionPress)
                     .On<DoubleTap>(OnDoubleTap)
-                    .On<ButtonsCurrent>(OnButtonsCurrent)
+                    .On<DirectionPlusButton>(OnDirectionPlusButton)
+                    .On<Button2Press>(OnButton2Press)
                     .On<ButtonPress>(OnButtonPress)
+                    .On<ButtonsCurrent>(OnButtonsCurrent)
                     .On<DirectionCurrent>(OnDirectionCurrent);
 
                 RegisterEnterCallbacks()
@@ -54,6 +55,7 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
+                fgChar.__debugSetStateText("Stand", new Color(0.3f, 0.65f, 0.3f));
                 dirPress = FightingGameInputCodeDir.Neutral;
 
                 GivenInput(fgChar.GivenCombinations());
@@ -84,6 +86,8 @@ namespace ResonantSpark {
 
                     // Use helper states to animate the character
                 AnimateCharacter(localVelocity, localInput);
+
+                fgChar.CalculateFinalVelocity();
             }
 
             public override void Exit(int frameIndex) {
@@ -95,21 +99,44 @@ namespace ResonantSpark {
 
                 if (smoothedInput.sqrMagnitude > deadZone.sqrMagnitude) {
 
-                    Vector3 movementForce = new Vector3 {
-                        x = smoothedInput.x,
-                        y = smoothedInput.y,
-                        z = smoothedInput.z,
-                    };
-                    movementForce.Scale(new Vector3 {
-                        x = maxHorizontalForce * horizontalForce.Evaluate(localVelocity.x),
-                        y = 1.0f,
-                        z = (localVelocity.z > 0 ? maxForwardForce : maxBackwardForce) * forwardForce.Evaluate(localVelocity.z)
-                    });
+                    float zMaxSpeed;
+                    if (localVelocity.z > 0) {
+                        zMaxSpeed = maxForwardSpeed;
+                    }
+                    else {
+                        zMaxSpeed = maxBackwardSpeed;
+                    }
 
-                    //Debug.Log("Local Velocity: " + localVelocity.ToString("F3"));
-                    //Debug.Log("Smoothed Input: " + smoothedInput.ToString("F3"));
-                    //Debug.Log("Adding local force to character: " + movementForce.ToString("F3"));
-                    fgChar.rigidbody.AddRelativeForce(movementForce);
+                    //Vector3 normalizedLocalVelocity = new Vector3(localVelocity.x / maxHorizontalSpeed, 0.0f, localVelocity.z / zMaxSpeed);
+                    //Vector3 delta = smoothedInput - normalizedLocalVelocity;
+
+                    Vector3 newVelocity = default;
+                    Vector3 velocityTarget = new Vector3 {
+                        x = smoothedInput.x * maxHorizontalSpeed,
+                        y = smoothedInput.y,
+                        z = smoothedInput.z * (smoothedInput.z > 0 ? maxForwardSpeed : maxBackwardSpeed)
+                    };
+
+                    if (Vector3.Dot(velocityTarget, localVelocity) > 0) {
+                        if (localVelocity.sqrMagnitude > velocityTarget.sqrMagnitude) {
+                            // let friction slow us down
+                            //Debug.Log("Local Velocity: " + localVelocity.ToString("F3") + " Friction slowing us down");
+                        }
+                        else {
+                            newVelocity = Vector3.Lerp(velocityTarget, localVelocity, velocityChangeDampTime * fgChar.gameTime);
+                            fgChar.AddRelativeVelocity(Gameplay.VelocityPriority.Movement, newVelocity);
+                        }
+                    }
+                    else {
+                        //Debug.Log("Smoothed Input: " + smoothedInput.ToString("F3") + ", velTarget=" + velocityTarget.ToString("F3"));
+                        newVelocity = Vector3.Lerp(velocityTarget, localVelocity, movementChangeDampTime * fgChar.gameTime);
+                        fgChar.AddRelativeVelocity(Gameplay.VelocityPriority.Movement, newVelocity);
+                    }
+
+                    //Debug.Log("=====================================================");
+                    //Debug.Log("Local Velocity: " + localVelocity.ToString("F3") + ", norm=" + normalizedLocalVelocity.ToString("F3"));
+                    //Debug.Log("Smoothed Input: " + smoothedInput.ToString("F3") + ", velTarget=" + velocityTarget.ToString("F3"));
+                    //Debug.Log("Changing velocity to: " + newVelocity.ToString("F3"));
                 }
             }
 
@@ -118,7 +145,8 @@ namespace ResonantSpark {
                     if (localInput.sqrMagnitude > 0.0f) {
                         charRotation = fgChar.LookToMoveAngle() / fgChar.gameTime;
                         if (charRotation != 0.0f) {
-                            fgChar.rigidbody.MoveRotation(Quaternion.AngleAxis(Mathf.Clamp(charRotation, -maxRotation, maxRotation) * fgChar.realTime, Vector3.up) * fgChar.rigidbody.rotation);
+                            //fgChar.rigidbody.MoveRotation(Quaternion.AngleAxis(Mathf.Clamp(charRotation, -maxRotation, maxRotation) * fgChar.realTime, Vector3.up) * fgChar.rotation);
+                            fgChar.Rotate(Quaternion.AngleAxis(Mathf.Clamp(charRotation, -maxRotation, maxRotation) * fgChar.realTime, Vector3.up));
                         }
                     }
                 }
@@ -134,6 +162,18 @@ namespace ResonantSpark {
 
             public override GroundRelation GetGroundRelation() {
                 return GroundRelation.GROUNDED;
+            }
+
+            public override void GetHitBy(HitBox hitBox) {
+                if (dirPress == FightingGameInputCodeDir.DownBack) {
+                    changeState(states.Get("blockStunCrouch"));
+                }
+                else if (dirPress == FightingGameInputCodeDir.Down) {
+                    changeState(states.Get("blockStunStand"));
+                }
+                else {
+                    changeState(states.Get("hitStunStand"));
+                }
             }
 
             private void StateSelectOnUpJump(Action stop, Combination combo) {
@@ -168,10 +208,19 @@ namespace ResonantSpark {
             }
 
             private void OnDoubleTap(Action stop, Combination combo) {
-                var doubleTap = (DoubleTap) combo;
-                //doubleTap.inUse = true;
-                //stop.Invoke();
-                //changeState(states.Get("run").Message(combo));
+                var doubleTap = (DoubleTap)combo;
+                FightingGameInputCodeDir relDir = fgChar.MapAbsoluteToRelative(doubleTap.direction);
+
+                if (relDir == FightingGameInputCodeDir.Forward) {
+                    fgChar.UseCombination(doubleTap);
+                    stop();
+                    changeState(states.Get("forwardDash"));
+                }
+                else if (relDir == FightingGameInputCodeDir.Back) {
+                    fgChar.UseCombination(doubleTap);
+                    stop();
+                    changeState(states.Get("backDash"));
+                }
             }
 
             private void OnDirectionCurrent(Action stop, Combination combo) {
@@ -185,17 +234,35 @@ namespace ResonantSpark {
             private void OnButtonPress(Action stop, Combination combo) {
                 var buttonPress = (ButtonPress) combo;
 
-                if (buttonPress.button0 != FightingGameInputCodeBut.S) {
+                if (buttonPress.button0 != FightingGameInputCodeBut.D) {
                         // TODO: I need to change the input buffer to look further into the future than the input delay for a direction press.
                     fgChar.ChooseAttack(this, null, buttonPress.button0, this.dirPress);
                     stop();
                 }
             }
 
+            private void OnDirectionPlusButton(Action stop, Combination combo) {
+                var dirPlusBut = (DirectionPlusButton)combo;
+
+                dirPress = fgChar.MapAbsoluteToRelative(dirPlusBut.direction);
+
+                if (dirPlusBut.button0 == FightingGameInputCodeBut.D &&
+                    (dirPress == FightingGameInputCodeDir.Up || dirPress == FightingGameInputCodeDir.Down)) {
+                    stop();
+                    fgChar.UseCombination(dirPlusBut);
+                    changeState(states.Get("dodge"));
+                }
+            }
+
             private void OnButtonsCurrent(Action stop, Combination combo) {
                 ButtonsCurrent curr = (ButtonsCurrent) combo;
 
-                this.upJump = !curr.butS;
+                this.upJump = !curr.butD;
+            }
+
+            private void OnButton2Press(Action stop, Combination combo) {
+                var but2Press = (Button2Press)combo;
+                Debug.Log("Crouch received 2 button press");
             }
 
             private void GivenDirectionPress(Action stop, Combination combo) {

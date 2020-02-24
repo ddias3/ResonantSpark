@@ -5,6 +5,8 @@ using UnityEngine;
 
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Character;
+using ResonantSpark.Gameplay;
+using ResonantSpark.Input;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -13,17 +15,19 @@ namespace ResonantSpark {
             private int startFrame;
             private int frameCount = 0;
 
+            private FightingGameInputCodeDir dirCurr;
+
             public new void Awake() {
                 base.Awake();
                 states.Register(this, "land");
 
-                    // See note below
-                //RegisterInputCallbacks()
-                //    .On<DirectionPress>(OnDirectionPress)
-                //    .On<DoubleTap>(OnDoubleTap);
+                RegisterInputCallbacks()
+                    .On<DirectionCurrent>(OnDirectionCurrent);
             }
 
             public override void Enter(int frameIndex, IState previousState) {
+                fgChar.__debugSetStateText("Land", Color.cyan);
+
                 fgChar.GivenCombinations();
                 fgChar.Play("jump_land");
 
@@ -47,6 +51,23 @@ namespace ResonantSpark {
 
             public override GroundRelation GetGroundRelation() {
                 return GroundRelation.GROUNDED;
+            }
+
+            public override void GetHitBy(HitBox hitBox) {
+                if (dirCurr == FightingGameInputCodeDir.DownBack) {
+                    changeState(states.Get("blockStunCrouch"));
+                }
+                else if (dirCurr == FightingGameInputCodeDir.Down) {
+                    changeState(states.Get("blockStunStand"));
+                }
+                else {
+                    changeState(states.Get("hitStunStand"));
+                }
+            }
+
+            private void OnDirectionCurrent(Action stop, Combination combo) {
+                var dirPress = (DirectionCurrent) combo;
+                dirCurr = fgChar.MapAbsoluteToRelative(dirPress.direction);
             }
 
             // TODO: Check to make sure this works. I THINK that if these functions are omitted, then the inputs that are in the buffer

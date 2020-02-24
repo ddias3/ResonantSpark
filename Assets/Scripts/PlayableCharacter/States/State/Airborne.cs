@@ -5,6 +5,7 @@ using UnityEngine;
 
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Character;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -20,6 +21,7 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
+                fgChar.__debugSetStateText("Airborne", Color.yellow);
                 //if (messages.Count > 0) {
                 //    Combination combo = messages.Dequeue();
                 //    combo.inUse = false;
@@ -38,6 +40,10 @@ namespace ResonantSpark {
 
             public override GroundRelation GetGroundRelation() {
                 return GroundRelation.AIRBORNE;
+            }
+
+            public override void GetHitBy(HitBox hitBox) {
+                changeState(states.Get("hitStunAirborne"));
             }
 
             private void OnDirectionPress(Action stop, Combination combo) {

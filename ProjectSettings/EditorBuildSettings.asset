@@ -12,10 +12,10 @@ EditorBuildSettings:
     path: Assets/Scenes/Levels/Practice.unity
     guid: c4cc6c3ad986a4448bcf3eb407f20cf7
   - enabled: 1
-    path: Assets/Scenes/Levels/SynCorp.unity
+    path: Assets/Scenes/Levels/Corporation.unity
     guid: 3eb34b1b5fc45294584f1cf3481747e3
   - enabled: 1
-    path: Assets/Scenes/Levels/BackAlley.unity
+    path: Assets/Scenes/Levels/BackAlley_Dawn.unity
     guid: 90efd572233b1304883ea7a837738155
   - enabled: 1
     path: Assets/Scenes/Levels/BackAlley_Sunny.unity

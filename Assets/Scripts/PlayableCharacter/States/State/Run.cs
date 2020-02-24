@@ -5,6 +5,7 @@ using UnityEngine;
 
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Character;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -21,6 +22,7 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
+                fgChar.__debugSetStateText("Run", Color.black);
                 //fgChar.Play("run_forward", 0, 0.0f);
             }
 
@@ -34,6 +36,10 @@ namespace ResonantSpark {
 
             public override GroundRelation GetGroundRelation() {
                 return GroundRelation.GROUNDED;
+            }
+
+            public override void GetHitBy(HitBox hitBox) {
+                changeState(states.Get("hitStunStand"));
             }
 
             private void OnNeutralReturn(Action stop, Combination combo) {

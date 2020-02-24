@@ -9,7 +9,7 @@ namespace ResonantSpark {
             public TMPro.TMP_InputField char1;
             public TMPro.TMP_InputField level;
             public void OnPressLoad() {
-                string strChar0 = "male0", strChar1 = "male0", strLevel = "synCorp";
+                string strChar0 = "male0", strChar1 = "male0", strLevel = "corporation";
 
                 if (char0.text != "") {
                     strChar0 = char0.text;

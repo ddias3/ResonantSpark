@@ -21,7 +21,7 @@ namespace ResonantSpark {
             private Dictionary<Type, Action<Action, Combination>> inputCallbacks;
             private Dictionary<Type, Action<Action, Combination>> enterCallbacks;
 
-            public void Awake() {
+            public new void Awake() {
                 base.Awake();
                 inputCallbacks = new Dictionary<Type, Action<Action, Combination>>();
                 enterCallbacks = new Dictionary<Type, Action<Action, Combination>>();
@@ -70,6 +70,7 @@ namespace ResonantSpark {
             }
 
             public abstract GroundRelation GetGroundRelation();
+            public abstract void GetHitBy(HitBox hitBox);
 
             public struct CallbackRegistry {
                 private Dictionary<Type, Action<Action, Combination>> callbackMap;
