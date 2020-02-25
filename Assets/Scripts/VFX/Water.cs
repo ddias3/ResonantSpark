@@ -13,10 +13,11 @@ public class Water : MonoBehaviour
         Mesh mesh;
         MeshFilter meshFilter;
         Vector3[] verts;
-        public Camera mainCamera;
+        private Camera mainCamera;
     
         void Start()
         {
+        mainCamera = FindObjectOfType<Camera>();
             mainCamera.depthTextureMode |= DepthTextureMode.Depth;
             meshFilter = GetComponent<MeshFilter>();
             makeMeshLowPoly(meshFilter);
