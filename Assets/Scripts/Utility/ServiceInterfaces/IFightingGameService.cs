@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 using ResonantSpark.Gameplay;
 
@@ -10,6 +11,8 @@ namespace ResonantSpark {
             Transform GetSpawnPoint();
             float GetSpawnPointOffset();
             void ResetCamera();
+            Transform GetCameraStart();
+            List<Transform> GetLevelBoundaries();
         }
     }
 }
