@@ -5,10 +5,11 @@ using UnityEngine;
 
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Character;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class Grabbed : BaseState {
+        public class Grabbed : CharacterBaseState {
 
             public new void Awake() {
                 base.Awake();
@@ -20,6 +21,8 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
+                fgChar.__debugSetStateText("Grabbed", new Color(1.0f, 0.0f, 1.0f));
+
                 //if (messages.Count > 0) {
                 //    Combination combo = messages.Dequeue();
                 //    combo.inUse = false;
@@ -38,6 +41,10 @@ namespace ResonantSpark {
 
             public override GroundRelation GetGroundRelation() {
                 return GroundRelation.AMBIGUOUS;
+            }
+
+            public override void GetHitBy(HitBox hitBox) {
+                // TODO: Make it clear that the attack is ignored by displaying a particle
             }
 
             private void OnDirectionPress(Action stop, Combination combo) {

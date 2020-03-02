@@ -6,10 +6,14 @@ using UnityEngine.InputSystem;
 
 using ResonantSpark.Gameplay;
 using ResonantSpark.Service;
+using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace Gamemode {
         public class OneOnOneRoundBased : MonoBehaviour, IGamemode {
+
+            public StateMachine stateMachine;
+            public StateDict stateDict;
 
             public float roundTime = 60.0f;
             private PlayerService playerService;
@@ -67,6 +71,7 @@ namespace ResonantSpark {
 
                 char0.GetComponent<CharacterStates.Init>().StartStateMachine(frame);
                 char1.GetComponent<CharacterStates.Init>().StartStateMachine(frame);
+                GetComponent<CharacterStates.Init>().StartStateMachine(frame);
             }
 
             private float GameTime(float input) {
@@ -80,15 +85,14 @@ namespace ResonantSpark {
                 char1RoundWins = 1;
             }
 
-            private void ResetRound() {
-                currRoundTime = 20.0f; //roundTime;
+            public void ResetRound() {
+                currRoundTime = roundTime;
                 uiService.SetTime(currRoundTime);
 
-                Vector3 spawnMid = fgService.GetSpawnPoint().position;
-                Quaternion rotation = Quaternion.Euler(0, 180, 0); //Quaternion.Euler(0, UnityEngine.Random.Range(0, 360), 0);
+                Transform spawnTransform = fgService.GetSpawnPoint();
 
-                char0.transform.position = spawnMid + rotation * new Vector3(0, 0, fgService.GetSpawnPointOffset());
-                char1.transform.position = spawnMid + rotation * Quaternion.Euler(0, 180, 0) * new Vector3(0, 0, fgService.GetSpawnPointOffset());
+                char0.transform.position = spawnTransform.position + spawnTransform.rotation * new Vector3(0, 0, fgService.GetSpawnPointOffset());
+                char1.transform.position = spawnTransform.position + spawnTransform.rotation * Quaternion.Euler(0, 180, 0) * new Vector3(0, 0, fgService.GetSpawnPointOffset());
 
                 char0.transform.LookAt(char1.transform);
                 char1.transform.LookAt(char0.transform);
@@ -140,6 +144,7 @@ namespace ResonantSpark {
                 EndRound();
             }
 
+            // todo(Nathan): put this inside of FIghtingMOde.cs
             private void FrameUpdate(int frameIndex) {
                 if (Keyboard.current.digit0Key.wasPressedThisFrame) {
                     ResetRound();
@@ -155,6 +160,8 @@ namespace ResonantSpark {
                     EndRound();
                 }
                 currRoundTime -= gameTimeManager.Layer("gameTime");
+
+                // gameTime.Layer("gameTime") is Time.deltaTime
             }
 
             public int GetMaxPlayers() {

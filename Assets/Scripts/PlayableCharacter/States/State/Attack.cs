@@ -5,10 +5,12 @@ using UnityEngine;
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Input;
 using ResonantSpark.Character;
+using ResonantSpark.Utility;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class Attack : BaseState {
+        public class Attack : CharacterBaseState {
 
             private Action onCompleteAttack;
 
@@ -16,6 +18,8 @@ namespace ResonantSpark {
 
             private FightingGameInputCodeBut button;
             private FightingGameInputCodeDir direction;
+
+            private FightingGameInputCodeDir currDir;
 
             private CharacterProperties.Attack activeAttack;
             private CharacterProperties.Attack queuedUpAttack;
@@ -38,6 +42,7 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
+                fgChar.__debugSetStateText("Attack", Color.red);
                     // Start OnEnter with this
                 GivenInput(fgChar.GivenCombinations());
 
@@ -60,15 +65,11 @@ namespace ResonantSpark {
 
             public void OnCompleteAttack() {
                 //TODO: Choose a new attack, which is also possible.
-                switch (direction) {
-                    case FightingGameInputCodeDir.DownBack:
-                    case FightingGameInputCodeDir.Down:
-                    case FightingGameInputCodeDir.DownForward:
-                        changeState(states.Get("crouch"));
-                        break;
-                    default:
-                        changeState(states.Get("stand"));
-                        break;
+                if (GameInputUtil.Down(currDir)) {
+                    changeState(states.Get("crouch"));
+                }
+                else {
+                    changeState(states.Get("stand"));
                 }
 
                 activeAttack = null;
@@ -81,6 +82,24 @@ namespace ResonantSpark {
 
             public override GroundRelation GetGroundRelation() {
                 return GroundRelation.GROUNDED;
+            }
+
+            public override void GetHitBy(HitBox hitBox) {
+                if (activeAttack != null) {
+                        // TODO: Change this to be activeAttack.onHitStandState
+                    if (activeAttack.groundRelation == GroundRelation.GROUNDED) {
+                        changeState(states.Get("hitStunStand"));
+                    }
+                    else {
+                        changeState(states.Get("hitStunCrouch"));
+                    }
+                    // else if (activeAttack.groundRelation == GroundRelation.GROUNDED) {
+                    //      changeState(states.Get("hitStunAirborne"));
+                    //}
+                }
+                else {
+                    changeState(states.Get("hitStunStand"));
+                }
             }
 
             private void OnDirectionPress(Action stop, Combination combo) {
@@ -105,7 +124,7 @@ namespace ResonantSpark {
             }
 
             private void OnDirectionCurrent(Action stop, Combination combo) {
-                direction = fgChar.MapAbsoluteToRelative(((DirectionCurrent) combo).direction);
+                currDir = fgChar.MapAbsoluteToRelative(((DirectionCurrent) combo).direction);
             }
         }
     }
