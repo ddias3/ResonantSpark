@@ -980,6 +980,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: MediumBlockStun
       objectReference: {fileID: 0}
+    - target: {fileID: 5378870065377546083, guid: f43b5406d747d452c965ccce736cd9b7,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5378870065377546083, guid: f43b5406d747d452c965ccce736cd9b7,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5378870065377546083, guid: f43b5406d747d452c965ccce736cd9b7,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5378870065377546083, guid: f43b5406d747d452c965ccce736cd9b7,
+        type: 3}
+      propertyPath: startDelay.scalar
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 7230899904333995417, guid: f43b5406d747d452c965ccce736cd9b7,
         type: 3}
       propertyPath: m_LocalPosition.x
