@@ -258,6 +258,159 @@ namespace ResonantSpark
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Ui"",
+            ""id"": ""4534f6b7-643e-4ff6-a413-9b30c5294103"",
+            ""actions"": [
+                {
+                    ""name"": ""Submit"",
+                    ""type"": ""Button"",
+                    ""id"": ""b09978c4-9158-4790-af35-41176d3eabca"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press""
+                },
+                {
+                    ""name"": ""Cancel"",
+                    ""type"": ""Button"",
+                    ""id"": ""bac3c941-e36a-4104-af3e-23b292050eec"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press""
+                },
+                {
+                    ""name"": ""Navigate"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""1e010719-b9ed-4757-bc00-491059437bd5"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": ""StickDeadzone,NormalizeVector2"",
+                    ""interactions"": """"
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""20fbe52a-9ffa-4cf2-879b-e9976e38a345"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Submit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d4340242-5151-426c-a913-45fba0b053b1"",
+                    ""path"": ""<Keyboard>/j"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Submit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""267f1fa9-a46c-4b9d-8df8-d87b997d0a2f"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ba4409fb-aa58-433d-95fe-9da0192c2c95"",
+                    ""path"": ""<Keyboard>/k"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""a6629720-826c-4ed9-a048-5575252c9a96"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Navigate"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""76bde95b-6f29-4b68-9d29-bc2f524d15a5"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Navigate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""98cb1a71-d174-4939-be96-6a1f8bf73701"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Navigate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""48bb6376-b7a0-4365-ab95-16f048e92424"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Navigate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""8e8b1bb2-6b65-400d-bdb4-8ad2563f205d"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Navigate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b728b0e2-d93d-4b3a-ba47-700034336043"",
+                    ""path"": ""<Gamepad>/leftStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Navigate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9ffc4f7e-63ff-4d4f-91fd-8cb9c728ab91"",
+                    ""path"": ""<Gamepad>/dpad"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Navigate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -293,6 +446,11 @@ namespace ResonantSpark
             m_GamePlay_ButtonC = m_GamePlay.FindAction("Button C", throwIfNotFound: true);
             m_GamePlay_ButtonD = m_GamePlay.FindAction("Button D", throwIfNotFound: true);
             m_GamePlay_ButtonS = m_GamePlay.FindAction("Button S", throwIfNotFound: true);
+            // Ui
+            m_Ui = asset.FindActionMap("Ui", throwIfNotFound: true);
+            m_Ui_Submit = m_Ui.FindAction("Submit", throwIfNotFound: true);
+            m_Ui_Cancel = m_Ui.FindAction("Cancel", throwIfNotFound: true);
+            m_Ui_Navigate = m_Ui.FindAction("Navigate", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -411,6 +569,55 @@ namespace ResonantSpark
             }
         }
         public GamePlayActions @GamePlay => new GamePlayActions(this);
+
+        // Ui
+        private readonly InputActionMap m_Ui;
+        private IUiActions m_UiActionsCallbackInterface;
+        private readonly InputAction m_Ui_Submit;
+        private readonly InputAction m_Ui_Cancel;
+        private readonly InputAction m_Ui_Navigate;
+        public struct UiActions
+        {
+            private @BasicActions m_Wrapper;
+            public UiActions(@BasicActions wrapper) { m_Wrapper = wrapper; }
+            public InputAction @Submit => m_Wrapper.m_Ui_Submit;
+            public InputAction @Cancel => m_Wrapper.m_Ui_Cancel;
+            public InputAction @Navigate => m_Wrapper.m_Ui_Navigate;
+            public InputActionMap Get() { return m_Wrapper.m_Ui; }
+            public void Enable() { Get().Enable(); }
+            public void Disable() { Get().Disable(); }
+            public bool enabled => Get().enabled;
+            public static implicit operator InputActionMap(UiActions set) { return set.Get(); }
+            public void SetCallbacks(IUiActions instance)
+            {
+                if (m_Wrapper.m_UiActionsCallbackInterface != null)
+                {
+                    @Submit.started -= m_Wrapper.m_UiActionsCallbackInterface.OnSubmit;
+                    @Submit.performed -= m_Wrapper.m_UiActionsCallbackInterface.OnSubmit;
+                    @Submit.canceled -= m_Wrapper.m_UiActionsCallbackInterface.OnSubmit;
+                    @Cancel.started -= m_Wrapper.m_UiActionsCallbackInterface.OnCancel;
+                    @Cancel.performed -= m_Wrapper.m_UiActionsCallbackInterface.OnCancel;
+                    @Cancel.canceled -= m_Wrapper.m_UiActionsCallbackInterface.OnCancel;
+                    @Navigate.started -= m_Wrapper.m_UiActionsCallbackInterface.OnNavigate;
+                    @Navigate.performed -= m_Wrapper.m_UiActionsCallbackInterface.OnNavigate;
+                    @Navigate.canceled -= m_Wrapper.m_UiActionsCallbackInterface.OnNavigate;
+                }
+                m_Wrapper.m_UiActionsCallbackInterface = instance;
+                if (instance != null)
+                {
+                    @Submit.started += instance.OnSubmit;
+                    @Submit.performed += instance.OnSubmit;
+                    @Submit.canceled += instance.OnSubmit;
+                    @Cancel.started += instance.OnCancel;
+                    @Cancel.performed += instance.OnCancel;
+                    @Cancel.canceled += instance.OnCancel;
+                    @Navigate.started += instance.OnNavigate;
+                    @Navigate.performed += instance.OnNavigate;
+                    @Navigate.canceled += instance.OnNavigate;
+                }
+            }
+        }
+        public UiActions @Ui => new UiActions(this);
         private int m_KeyboardSchemeIndex = -1;
         public InputControlScheme KeyboardScheme
         {
@@ -437,6 +644,12 @@ namespace ResonantSpark
             void OnButtonC(InputAction.CallbackContext context);
             void OnButtonD(InputAction.CallbackContext context);
             void OnButtonS(InputAction.CallbackContext context);
+        }
+        public interface IUiActions
+        {
+            void OnSubmit(InputAction.CallbackContext context);
+            void OnCancel(InputAction.CallbackContext context);
+            void OnNavigate(InputAction.CallbackContext context);
         }
     }
 }
