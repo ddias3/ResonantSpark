@@ -146,7 +146,7 @@ namespace ResonantSpark {
 
             // todo(Nathan): put this inside of FIghtingMOde.cs
             private void FrameUpdate(int frameIndex) {
-                if (Keyboard.current.digit0Key.wasPressedThisFrame) {
+                if (UnityEngine.Input.GetKeyDown(KeyCode.Alpha0)) { // if (Keyboard.current.digit0Key.wasPressedThisFrame) {
                     ResetRound();
                 }
 

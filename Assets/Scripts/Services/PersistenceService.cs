@@ -25,7 +25,7 @@ namespace ResonantSpark {
 
             public void SetCharacterSelected(int index, string characterName) {
                 if (playerSelection.Count <= index) {
-                    for (int n = playerSelection.Count; n > index; ++n) {
+                    for (int n = playerSelection.Count; n < index + 1; ++n) {
                         playerSelection.Add("");
                     }
                 }
@@ -35,7 +35,7 @@ namespace ResonantSpark {
 
             public void SetControllerSelected(int index, int controllerIndex) {
                 if (this.controllerIndex.Count <= index) {
-                    for (int n = this.controllerIndex.Count; n > index; ++n) {
+                    for (int n = this.controllerIndex.Count; n < index + 1; ++n) {
                         this.controllerIndex.Add(-1);
                     }
                 }
