@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 using ResonantSpark.Service;
 
@@ -28,6 +29,8 @@ namespace ResonantSpark {
                 persistence.gamemode = "oneOnOneRoundBased";
                 persistence.SetCharacterSelected(0, strChar0);
                 persistence.SetCharacterSelected(1, strChar1);
+
+                SceneManager.LoadScene(strLevel, LoadSceneMode.Single);
             }
         }
     }
