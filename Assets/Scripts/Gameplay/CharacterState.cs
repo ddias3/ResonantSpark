@@ -15,8 +15,8 @@ namespace ResonantSpark {
         }
 
         public enum Orientation : int {
-            REGULAR,
-            GOOFY,
+            SOUTHPAW,
+            ORTHODOX,
             BACKTURN,
         }
 

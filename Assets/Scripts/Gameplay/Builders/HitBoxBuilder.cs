@@ -9,71 +9,18 @@ using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace CharacterProperties {
-        public class HitBoxBuilder : IHitBoxCallbackObject {
+        public partial class HitBoxBuilder : IHitBoxCallbackObject {
             private const string onHitBoxEventKey = "onHitBox";
             private const string onHurtBoxEventKey = "onHurtBox";
 
             private IHitBoxService hitBoxService;
             private IFightingGameService fgService;
 
-            private HitBox hitBoxPrefab;
-
-            private Dictionary<string, Action<HitInfo>> callbacks;
-
-            private CapsuleCollider collider;
-            private Transform transform;
-
-            private Vector3 point0;
-            private Vector3 point1;
-
-            private float radius = -1;
-            private bool tracking = false;
-
             public HitBoxBuilder(AllServices allServices) {
                 callbacks = new Dictionary<string, Action<HitInfo>>();
                 this.hitBoxService = allServices.GetService<IHitBoxService>();
                 this.fgService = allServices.GetService<IFightingGameService>();
                 this.hitBoxPrefab = this.hitBoxService.DefaultPrefab();
-            }
-
-            public IHitBoxCallbackObject Prefab(HitBox hitBoxPrefab) {
-                this.hitBoxPrefab = hitBoxPrefab;
-                return this;
-            }
-
-            public IHitBoxCallbackObject Point0(Vector3 p0) {
-                this.point0 = p0;
-                return this;
-            }
-
-            public IHitBoxCallbackObject Point1(Vector3 p1) {
-                this.point1 = p1;
-                return this;
-            }
-
-            public IHitBoxCallbackObject Radius(float width) {
-                this.radius = width;
-                return this;
-            }
-
-            public IHitBoxCallbackObject Tracking(bool tracking) {
-                this.tracking = tracking;
-                return this;
-            }
-
-            public IHitBoxCallbackObject Event(string eventName, Action<HitInfo> callback) {
-                callbacks.Add(eventName, callback);
-                return this;
-            }
-
-            public IHitBoxCallbackObject FromCollider(CapsuleCollider collider) {
-                this.collider = collider;
-                return this;
-            }
-
-            public IHitBoxCallbackObject Relative(Transform transform) {
-                this.transform = transform;
-                return this;
             }
 
             public HitBox CreateHitBox(Transform hitBoxEmptyParentTransform) {

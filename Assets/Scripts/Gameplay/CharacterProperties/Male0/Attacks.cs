@@ -11,6 +11,7 @@ using ResonantSpark.Input;
 using ResonantSpark.Character;
 using ResonantSpark.Gameplay;
 using ResonantSpark.Service;
+using ResonantSpark.Particle;
 
 namespace ResonantSpark {
     namespace CharacterProperties {
@@ -26,11 +27,7 @@ namespace ResonantSpark {
 
                 private Dictionary<string, AudioClip> audioMap;
                 private Dictionary<string, ParticleEffect> particleMap;
-                private Dictionary<string, AnimationCurveCallback> attackMovementMap;
-
-                                        // Action<> attackMovementCallback = (frame) => {
-                                        //     return animationCurve.Evaluate(frame);
-                                        // };
+                private Dictionary<string, AnimationCurve> attackMovementMap;
 
                 public Attacks(AllServices services, Dictionary<string, AudioClip> audioMap) {
                     fgService = services.GetService<IFightingGameService>();
@@ -51,18 +48,18 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._4A, InputNotation._5A)
                         .AnimationState("southpaw_5A")
-                        .Movement(attackMovementMap["southpaw_5A.x"], null, attackMovementMap["southpaw_5A.z"])
+                        .Movement(xMoveCb: attackMovementMap["southpaw_5A.x"].Evaluate, zMoveCb: attackMovementMap["southpaw_5A.z"].Evaluate)
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
                                 .CancellableOnWhiff(true)
                                 .ChainCancellable(true)
                                 .From(1)
-                                    .HitBox()
+                                    .Hit()
                                 .From(4)
                                     .Track((target) => {
                                             // the vector that forward should point to, and a max turn speed per frame.
-                                        fgChar.LookTowards(fgChar.rigidbody.position - target.position, 20.0f);
+                                        fgChar.LookTowards(fgChar.position - target.position, 20.0f);
                                     })
                                 .To(8)
                                 .From(7)
@@ -94,7 +91,7 @@ namespace ResonantSpark {
                                     })
                                 .To(10)
                                 .From(10)
-                                    .HitBox()
+                                    .Hit()
                                     .ChainCancellable(true)
                                 .To(22);
                             }))
@@ -107,17 +104,17 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._5A)
                         .AnimationState("southpaw_5AA")
-                        .Movement(attackMovementMap["southpaw_5AA.x"], null, attackMovementMap["southpaw_5AA.z"])
+                        .Movement(xMoveCb: attackMovementMap["southpaw_5AA.x"].Evaluate, zMoveCb: attackMovementMap["southpaw_5AA.z"].Evaluate)
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
                                 .CancellableOnWhiff(false)
                                 .From(1)
-                                    .HitBox()
+                                    .Hit()
                                     .ChainCancellable(false)
                                 .From(4)
                                     .Track((target) => {
-                                        fgChar.LookTowards(fgChar.rigidbody.position - target.position, 30.0f);
+                                        fgChar.LookTowards(fgChar.position - target.position, 30.0f);
                                     })
                                 .To(12)
                                 .From(10)
@@ -153,7 +150,7 @@ namespace ResonantSpark {
                                     })
                                 .To(14)
                                 .From(14)
-                                    .HitBox()
+                                    .Hit()
                                 .To(30);
                             }))
                         .CleanUp(ReturnToPreviousState);
@@ -165,11 +162,11 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._5A)
                         .AnimationState("southpaw_5AAA")
-                        .Movement(attackMovementMap["southpaw_5AAA.x"], null, attackMovementMap["southpaw_5AAA.z"])
+                        .Movement(xMoveCb: attackMovementMap["southpaw_5AAA.x"].Evaluate, zMoveCb: attackMovementMap["southpaw_5AAA.z"].Evaluate)
                         .Rotation((localFrame, target) => {
                             if (localFrame >= 22.0f && localFrame <= 30.0f) {
                                 float p = (localFrame - 22.0f) / 30.0f;
-                                fgChar.SetLookAt(Quaternion.Euler(0.0f, -180f * p, 0.0f) * (fgChar.rigidbody.position - target.position));
+                                fgChar.SetLookAt(Quaternion.Euler(0.0f, -180f * p, 0.0f) * (fgChar.position - target.position));
                                     // fgChar.GetOrientation is done automatically on each frame
                             }
                         })
@@ -178,7 +175,7 @@ namespace ResonantSpark {
                                 .SpecialCancellable(true)
                                 .CancellableOnWhiff(false)
                                 .From(1)
-                                    .HitBox()
+                                    .Hit()
                                     .ChainCancellable(false)
                                 .To(20)
                                 .From(20)
@@ -211,7 +208,7 @@ namespace ResonantSpark {
                                     })
                                 .To(21)
                                 .From(22)
-                                    .HitBox()
+                                    .Hit()
                                 .To(30);
                             }))
                         .CleanUp(ReturnToPreviousState);
@@ -223,17 +220,17 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._4A, InputNotation._5A)
                         .AnimationState("orthodox_5A")
-                        .Movement(attackMovementMap["orthodox_5A.x"], null, attackMovementMap["orthodox_5A.z"])
+                        .Movement(xMoveCb: attackMovementMap["orthodox_5A.x"].Evaluate, zMoveCb: attackMovementMap["orthodox_5A.z"].Evaluate)
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
                                 .CancellableOnWhiff(true)
                                 .ChainCancellable(true)
                                 .From(1)
-                                    .HitBox()
+                                    .Hit()
                                 .From(4)
                                     .Track((target) => {
-                                        fgChar.LookTowards(fgChar.rigidbody.position - target.position, 20.0f);
+                                        fgChar.LookTowards(fgChar.position - target.position, 20.0f);
                                     })
                                 .To(10)
                                 .From(9)
@@ -262,7 +259,7 @@ namespace ResonantSpark {
                                     })
                                 .To(10)
                                 .From(10)
-                                    .HitBox()
+                                    .Hit()
                                     .ChainCancellable(true)
                                 .To(22);
                             }))
@@ -275,11 +272,11 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._5A)
                         .AnimationState("orthodox_5AA")
-                        .Movement(attackMovementMap["orthodox_5AA.x"], null, attackMovementMap["orthodox_5AA.z"])
+                        .Movement(xMoveCb: attackMovementMap["orthodox_5AA.x"].Evaluate, zMoveCb: attackMovementMap["orthodox_5AA.z"].Evaluate)
                         .Rotation((localFrame, target) => {
                             if (localFrame >= 20.0f && localFrame <= 26.0f) {
                                 float p = (localFrame - 20.0f) / 26.0f;
-                                fgChar.SetLookAt(Quaternion.Euler(0.0f, -180f * p, 0.0f) * (fgChar.rigidbody.position - target.position));
+                                fgChar.SetLookAt(Quaternion.Euler(0.0f, -180f * p, 0.0f) * (fgChar.position - target.position));
                                     // fgChar.GetOrientation is done automatically on each frame
                             }
                         })
@@ -289,10 +286,10 @@ namespace ResonantSpark {
                                 .ChainCancellable(false)
                                 .CancellableOnWhiff(false)
                                 .From(1)
-                                    .HitBox()
+                                    .Hit()
                                 .From(4)
                                     .Track((target) => {
-                                        fgChar.LookTowards(fgChar.rigidbody.position - target.position, 20.0f);
+                                        fgChar.LookTowards(fgChar.position - target.position, 20.0f);
                                     })
                                 .To(16)
                                 .From(16)
@@ -325,7 +322,7 @@ namespace ResonantSpark {
                                     })
                                 .To(17)
                                 .From(17)
-                                    .HitBox()
+                                    .Hit()
                                 .To(26);
                             }))
                         .CleanUp(ReturnToPreviousState);
@@ -337,14 +334,14 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._2A)
                         .AnimationState("southpaw_2A")
-                        .Movement(attackMovementMap["southpaw_2A.x"], null, attackMovementMap["southpaw_2A.z"])
+                        .Movement(attackMovementMap["southpaw_2A.x"].Evaluate, null, attackMovementMap["southpaw_2A.z"].Evaluate)
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
                                 .ChainCancellable(false)
                                 .CancellableOnWhiff(false)
                                 .From(1)
-                                    .HitBox()
+                                    .Hit()
                                 .To(8)
                                 .From(8)
                                     .Hit(hit => {
@@ -377,7 +374,7 @@ namespace ResonantSpark {
                                     })
                                 .To(9)
                                 .From(9)
-                                    .HitBox()
+                                    .Hit()
                                 .From(14)
                                     .ChainCancellable(true)
                                 .To(22);
@@ -391,17 +388,17 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._2A)
                         .AnimationState("southpaw_2AA")
-                        .Movement(attackMovementMap["southpaw_2AA.x"], null, attackMovementMap["southpaw_2AA.z"])
+                        .Movement(attackMovementMap["southpaw_2AA.x"].Evaluate, null, attackMovementMap["southpaw_2AA.z"].Evaluate)
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
                                 .ChainCancellable(false)
                                 .CancellableOnWhiff(false)
                                 .From(1)
-                                    .HitBox()
+                                    .Hit()
                                 .From(4)
                                     .Track((target) => {
-                                        fgChar.LookTowards(fgChar.rigidbody.position - target.position, 20.0f);
+                                        fgChar.LookTowards(fgChar.position - target.position, 20.0f);
                                     })
                                 .To(13)
                                 .From(13)
@@ -430,7 +427,7 @@ namespace ResonantSpark {
                                     })
                                 .To(14)
                                 .From(14)
-                                    .HitBox()
+                                    .Hit()
                                 .To(28);
                             }))
                         .CleanUp((prevState) => {
@@ -444,14 +441,14 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._2A)
                         .AnimationState("orthodox_2A")
-                        .Movement(attackMovementMap["orthodox_2A.x"], null, attackMovementMap["orthodox_2A.z"])
+                        .Movement(attackMovementMap["orthodox_2A.x"].Evaluate, null, attackMovementMap["orthodox_2A.z"].Evaluate)
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
                                 .ChainCancellable(false)
                                 .CancellableOnWhiff(false)
                                 .From(1)
-                                    .HitBox()
+                                    .Hit()
                                 .To(12)
                                 .From(12)
                                     .Hit(hit => {
@@ -482,7 +479,7 @@ namespace ResonantSpark {
                                     })
                                 .To(13)
                                 .From(13)
-                                    .HitBox()
+                                    .Hit()
                                 .From(15)
                                     .ChainCancellable(true)
                                 .To(23);
@@ -508,7 +505,7 @@ namespace ResonantSpark {
                                 .ChainCancellable(true)
                                 .CancellableOnWhiff(true)
                                 .From(1)
-                                    .HitBox()
+                                    .Hit()
                                 .To(8)
                                 .From(6)
                                     .CancellableOnWhiff(false)
@@ -535,7 +532,7 @@ namespace ResonantSpark {
                                     })
                                 .To(11)
                                 .From(11)
-                                    .HitBox()
+                                    .Hit()
                                 .From(13)
                                     .ChainCancellable(true)
                                 .To(23);
@@ -564,10 +561,10 @@ namespace ResonantSpark {
                                 .ChainCancellable(false)
                                 .CancellableOnWhiff(false)
                                 .From(1)
-                                    .HitBox()
+                                    .Hit()
                                 .From(4)
                                     .Track((target) => {
-                                        fgChar.LookTowards(fgChar.rigidbody.position - target.position, 20.0f);
+                                        fgChar.LookTowards(fgChar.position - target.position, 20.0f);
                                     })
                                 .To(12)
                                 .From(12)
@@ -593,7 +590,7 @@ namespace ResonantSpark {
                                     })
                                 .To(13)
                                 .From(13)
-                                    .HitBox()
+                                    .Hit()
                                 .From(16)
                                     .ChainCancellable(true)
                                 .To(30);
@@ -622,10 +619,10 @@ namespace ResonantSpark {
                                 .ChainCancellable(false)
                                 .CancellableOnWhiff(false)
                                 .From(1)
-                                    .HitBox()
+                                    .Hit()
                                 .From(4)
                                     .Track((target) => {
-                                        fgChar.LookTowards(fgChar.rigidbody.position - target.position, 20.0f);
+                                        fgChar.LookTowards(fgChar.position - target.position, 20.0f);
                                     })
                                 .To(12)
                                 .From(20)
@@ -650,8 +647,8 @@ namespace ResonantSpark {
                                                         opponent.LoseHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
 
                                                         if (hitAtSameTimeByAttackPriority == AttackPriority.HeavyAttack) { // colloquially known as trading
-                                                            cameraService.PredeterminedActions("zoomIn", 0.5f);
-                                                            timeService.PredeterminedActions("timeSlow", 0.5f);
+                                                            cameraService.PredeterminedActions<float>("zoomIn", 0.5f);
+                                                            timeService.PredeterminedActions<float>("timeSlow", 0.5f);
 
                                                             opponent.Force(
                                                                 attackPriority: AttackForcePriority.HeavyAttack,
@@ -686,7 +683,7 @@ namespace ResonantSpark {
                                     })
                                 .To(21)
                                 .From(21)
-                                    .HitBox()
+                                    .Hit()
                                 .To(40);
                             }))
                         .CleanUp((prevState) => {
@@ -713,10 +710,10 @@ namespace ResonantSpark {
                                 .CancellableOnWhiff(false)
                                 .ChainCancellable(false)
                                 .From(1)
-                                    .HitBox()
+                                    .Hit()
                                 .From(4)
                                     .Track((target) => {
-                                        fgChar.LookTowards(fgChar.rigidbody.position - target.position, 20.0f);
+                                        fgChar.LookTowards(fgChar.position - target.position, 20.0f);
                                     })
                                 .To(10)
                                 .From(10)
@@ -744,7 +741,7 @@ namespace ResonantSpark {
                                     })
                                 .To(13)
                                 .From(13)
-                                    .HitBox()
+                                    .Hit()
                                 .From(16)
                                     .ChainCancellable(true)
                                 .To(30);
@@ -773,10 +770,10 @@ namespace ResonantSpark {
                                 .CancellableOnWhiff(false)
                                 .ChainCancellable(false)
                                 .From(1)
-                                    .HitBox()
+                                    .Hit()
                                 .From(4)
                                     .Track((target) => {
-                                        fgChar.LookTowards(fgChar.rigidbody.position - target.position, 20.0f);
+                                        fgChar.LookTowards(fgChar.position - target.position, 20.0f);
                                     })
                                 .To(12)
                                 .From(12)
@@ -802,7 +799,7 @@ namespace ResonantSpark {
                                     })
                                 .To(13)
                                 .From(13)
-                                    .HitBox()
+                                    .Hit()
                                 .From(16)
                                     .ChainCancellable(true)
                                 .To(30);
@@ -819,13 +816,13 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.GROUNDED)
                         .Input(InputNotation._236C)
                         .AnimationState("hadouken")
-                        .Movement(null, null, attackMovementMap["hadouken.z"])
+                        .Movement(null, null, attackMovementMap["hadouken.z"].Evaluate)
                         .Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(false)
                                 .ChainCancellable(false)
                                 .From(1)
-                                    .HitBox()
+                                    .Hit()
                                 .From(3)
                                     .Sound(audioMap["hadouken"], soundResource => {
                                         soundResource.transform.position = fgChar.GetSpeakPosition();
@@ -951,7 +948,7 @@ namespace ResonantSpark {
                         });
                 }
 
-                private void ReturnToPreviousState(CharacterStates.BaseState prevState) {
+                private void ReturnToPreviousState(CharacterStates.CharacterBaseState prevState) {
                     fgChar.SetState(prevState);
                 }
 

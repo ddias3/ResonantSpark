@@ -10,13 +10,7 @@ using ResonantSpark.Input;
 
 namespace ResonantSpark {
     namespace CharacterProperties {
-        public class AttackBuilder : IAttackCallbackObj {
-            public string name { get; private set; }
-            public Orientation orientation { get; private set; }
-            public GroundRelation groundRelation { get; private set; }
-            public InputNotation input { get; private set; }
-            public string animStateName { get; private set; }
-
+        public partial class AttackBuilder : IAttackCallbackObj {
             private List<FrameStateBuilder> frames;
             private Dictionary<int, Action<IHitBoxCallbackObject>> hitBoxCallbackMap;
 
@@ -64,32 +58,6 @@ namespace ResonantSpark {
 
             public List<HitBox> GetHitBoxes() {
                 return builtHitBoxes;
-            }
-
-            public IAttackCallbackObj Name(string name) {
-                this.name = name;
-                return this;
-            }
-            public IAttackCallbackObj Orientation(Orientation orientation) {
-                this.orientation = orientation;
-                return this;
-            }
-            public IAttackCallbackObj GroundRelation(GroundRelation groundRelation) {
-                this.groundRelation = groundRelation;
-                return this;
-            }
-            public IAttackCallbackObj Input(InputNotation input) {
-                this.input = input;
-                return this;
-            }
-            public IAttackCallbackObj AnimationState(string animStateName) {
-                this.animStateName = animStateName;
-                return this;
-            }
-            public IAttackCallbackObj Frames((List<FrameStateBuilder> frameList, Dictionary<int, Action<IHitBoxCallbackObject>> hitBoxCallbackMap) framesInfo) {
-                this.frames.AddRange(framesInfo.frameList);
-                this.hitBoxCallbackMap = framesInfo.hitBoxCallbackMap;
-                return this;
             }
         }
     }

@@ -59,6 +59,7 @@ namespace ResonantSpark {
         public enum InputNotation : int {
             None = 0,
 
+            _4A,
             _5A,
             _5Ah,
             _2A,

@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Builder;
-using ResonantSpark.Character;
 using ResonantSpark.CharacterProperties;
-using ResonantSpark.Service;
 
 namespace ResonantSpark {
     namespace Utility {
-        public class FrameListBuilder : IFrameListCallbackObj {
+        public partial class FrameListBuilder : IFrameListCallbackObj {
 
             // could've used a Tuple
             private struct FrameUtilMapObject {
@@ -66,12 +64,12 @@ namespace ResonantSpark {
             }
 
             private (List<ListStackFrame>, Dictionary<int, Action<IHitBoxCallbackObject>>) ReadInput(List<FrameUtilMapObject> entries) {
-                bool chainCancellable =   FrameUtil.Default.chainCancellable;
+                bool chainCancellable = FrameUtil.Default.chainCancellable;
                 bool specialCancellable = FrameUtil.Default.specialCancellable;
-                int hitDamage =           FrameUtil.Default.hitDamage;
-                int blockDamage =         FrameUtil.Default.blockDamage;
-                float hitStun =           FrameUtil.Default.hitStun;
-                float blockStun =         FrameUtil.Default.blockStun;
+                int hitDamage = FrameUtil.Default.hitDamage;
+                int blockDamage = FrameUtil.Default.blockDamage;
+                float hitStun = FrameUtil.Default.hitStun;
+                float blockStun = FrameUtil.Default.blockStun;
 
                 int hitBoxCallbackCounter = 0;
                 Dictionary<int, Action<IHitBoxCallbackObject>> hitBoxCallbackMap = new Dictionary<int, Action<IHitBoxCallbackObject>>();
@@ -96,7 +94,7 @@ namespace ResonantSpark {
                     switch (entry.option) {
                         case "startFrame":
                             topStackFrame = new ListStackFrame {
-                                startFrame = ((int) entry.content) - 1,
+                                startFrame = ((int)entry.content) - 1,
                                 endFrame = -1,
                                 chainCancellable = chainCancellable,
                                 specialCancellable = specialCancellable,
@@ -110,33 +108,33 @@ namespace ResonantSpark {
                             break;
                         case "endFrame":
                             do {
-                                topStackFrame.endFrame = ((int) entry.content) - 1;
+                                topStackFrame.endFrame = ((int)entry.content) - 1;
                                 completeStackFrames.Add(stack.Pop());
                                 topStackFrame = stack.Peek();
                             } while (!System.Object.ReferenceEquals(topStackFrame, baseStackFrame));
                             break;
                         case "chainCancellable":
-                            topStackFrame.chainCancellable = chainCancellable = (bool) entry.content;
+                            topStackFrame.chainCancellable = chainCancellable = (bool)entry.content;
                             break;
                         case "specialCancellable":
-                            topStackFrame.specialCancellable = specialCancellable = (bool) entry.content;
+                            topStackFrame.specialCancellable = specialCancellable = (bool)entry.content;
                             break;
                         case "hitDamage":
-                            topStackFrame.hitDamage = hitDamage = (int) entry.content;
+                            topStackFrame.hitDamage = hitDamage = (int)entry.content;
                             break;
                         case "blockDamage":
-                            topStackFrame.blockDamage = blockDamage = (int) entry.content;
+                            topStackFrame.blockDamage = blockDamage = (int)entry.content;
                             break;
                         case "hitStun":
-                            topStackFrame.hitStun = hitStun = (float) entry.content;
+                            topStackFrame.hitStun = hitStun = (float)entry.content;
                             break;
                         case "blockStun":
-                            topStackFrame.blockStun = blockStun = (float) entry.content;
+                            topStackFrame.blockStun = blockStun = (float)entry.content;
                             break;
                         case "hitBox":
                             topStackFrame.hitBoxCallbackIds = new List<int>();
                             if (entry.content != null) {
-                                hitBoxCallbackMap.Add(hitBoxCallbackCounter, (Action<IHitBoxCallbackObject>) entry.content);
+                                hitBoxCallbackMap.Add(hitBoxCallbackCounter, (Action<IHitBoxCallbackObject>)entry.content);
                                 topStackFrame.hitBoxCallbackIds.Add(hitBoxCallbackCounter);
 
                                 hitBoxCallbackCounter++;
@@ -193,86 +191,6 @@ namespace ResonantSpark {
                 }
 
                 return frameList;
-            }
-
-            public IFrameListCallbackObj ChainCancellable(bool chainCancellable) {
-                entries.Add(new FrameUtilMapObject {
-                    option = "chainCancellable",
-                    content = chainCancellable
-                });
-                return this;
-            }
-
-            public IFrameListCallbackObj SpecialCancellable(bool specialCancellable) {
-                entries.Add(new FrameUtilMapObject {
-                    option = "specialCancellable",
-                    content = specialCancellable
-                });
-                return this;
-            }
-
-            public IFrameListCallbackObj HitDamage(int damage) {
-                entries.Add(new FrameUtilMapObject {
-                    option = "hitDamage",
-                    content = damage
-                });
-                return this;
-            }
-
-            public IFrameListCallbackObj BlockDamage(int damage) {
-                entries.Add(new FrameUtilMapObject {
-                    option = "blockDamage",
-                    content = damage
-                });
-                return this;
-            }
-
-            public IFrameListCallbackObj HitBox(Action<IHitBoxCallbackObject> hitBoxCallback) {
-                entries.Add(new FrameUtilMapObject {
-                    option = "hitBox",
-                    content = hitBoxCallback
-                });
-                return this;
-            }
-
-            public IFrameListCallbackObj HitBox() {
-                entries.Add(new FrameUtilMapObject {
-                    option = "hitBox",
-                    content = null
-                });
-                return this;
-            }
-
-            public IFrameListCallbackObj HitStun(float frames) {
-                entries.Add(new FrameUtilMapObject {
-                    option = "hitStun",
-                    content = frames
-                });
-                return this;
-            }
-
-            public IFrameListCallbackObj BlockStun(float frame) {
-                entries.Add(new FrameUtilMapObject {
-                    option = "blockStun",
-                    content = frame
-                });
-                return this;
-            }
-
-            public IFrameListCallbackObj From(int startFrame) {
-                entries.Add(new FrameUtilMapObject {
-                    option = "startFrame",
-                    content = startFrame
-                });
-                return this;
-            }
-
-            public IFrameListCallbackObj To(int endFrame) {
-                entries.Add(new FrameUtilMapObject {
-                    option = "endFrame",
-                    content = endFrame
-                });
-                return this;
             }
         }
     }
