@@ -30,7 +30,12 @@ namespace ResonantSpark {
 
                 private FightingGameCharacter fgChar;
 
-                public Attacks(AllServices services, Dictionary<string, AudioClip> audioMap) {
+                public Attacks(
+                        AllServices services,
+                        Dictionary<string, AudioClip> audioMap,
+                        Dictionary<string, ParticleEffect> particleMap,
+                        Dictionary<string, AnimationCurve> attackMovementMap,
+                        Dictionary<string, Projectile> projectileMap) {
                     fgService = services.GetService<IFightingGameService>();
                     audioService = services.GetService<IAudioService>();
                     projectileService = services.GetService<IProjectileService>();
@@ -39,6 +44,9 @@ namespace ResonantSpark {
                     timeService = services.GetService<ITimeService>();
 
                     this.audioMap = audioMap;
+                    this.particleMap = particleMap;
+                    this.attackMovementMap = attackMovementMap;
+                    this.projectileMap = projectileMap;
                 }
 
                 public void Init(ICharacterPropertiesCallbackObj charBuilder, FightingGameCharacter newFightingGameChar) {
@@ -495,11 +503,11 @@ namespace ResonantSpark {
                     });
 
                     Attack atkJumpSpw5A = new Attack(atkBuilder => { atkBuilder
-                        .Name("jump_orthodox_5A")
+                        .Name("jump_southpaw_5A")
                         .Orientation(Orientation.ORTHODOX)
                         .GroundRelation(GroundRelation.AIRBORNE)
                         .Input(InputNotation._5A)
-                        .AnimationState("jump_orthodox_5A")
+                        .AnimationState("jump_southpaw_5A")
                         .FramesContinuous((localFrame, target) => {
                             if (localFrame >= 8.0f && localFrame <= 11.0f) {
                                 float p = Mathf.Lerp(8.0f, 11.0f, localFrame);

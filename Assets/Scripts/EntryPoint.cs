@@ -5,10 +5,6 @@ using UnityEngine;
 using UnityEngine.Events;
 
 using ResonantSpark.Service;
-using ResonantSpark.Gamemode;
-using ResonantSpark.Input;
-using ResonantSpark.Builder;
-using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     public class EntryPoint : MonoBehaviour {
@@ -20,12 +16,15 @@ namespace ResonantSpark {
         private List<Type> remainingServices = new List<Type> {
             typeof(AudioService),
             typeof(BuildService),
+            typeof(CameraService),
             typeof(FightingGameService),
             typeof(HitBoxService),
             typeof(InputService),
+            typeof(ParticleService),
             typeof(PersistenceService),
             typeof(PlayerService),
             typeof(ProjectileService),
+            typeof(TimeService),
             typeof(UiService),
         };
 

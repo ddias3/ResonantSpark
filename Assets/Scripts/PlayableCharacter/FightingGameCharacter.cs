@@ -23,6 +23,8 @@ namespace ResonantSpark {
 
             public float landAnimationFrameTarget = 3f;
 
+            public Transform standCollider;
+
             public TMPro.TextMeshPro __debugState;
 
             public int fgCharId { get; private set; }
@@ -422,7 +424,7 @@ namespace ResonantSpark {
             }
 
             public void SetStandCollider(Vector3 standColliderOffset) {
-                // standCollider.localPosition = standColliderOffset;
+                standCollider.localPosition = standColliderOffset;
             }
 
             public Vector3 GetSpeakPosition() {

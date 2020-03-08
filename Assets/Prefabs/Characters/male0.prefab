@@ -85,6 +85,7 @@ MonoBehaviour:
   groundCheckDistance: 0.11
   groundCheckDistanceMinimum: 0.11
   landAnimationFrameTarget: 3
+  standCollider: {fileID: 7815051869638082648}
   __debugState: {fileID: 5470453070858454944}
 --- !u!54 &7775834885614478145
 Rigidbody:
@@ -154,7 +155,7 @@ GameObject:
   - component: {fileID: 7815051869638082648}
   - component: {fileID: 5129462896699559660}
   m_Layer: 9
-  m_Name: GroundCollider
+  m_Name: StandCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
