@@ -19,7 +19,7 @@ namespace ResonantSpark {
             public string name { get; private set; }
             public Orientation orientation { get; private set; }
             public GroundRelation groundRelation { get; private set; }
-            public InputNotation input { get; private set; }
+            public List<InputNotation> input { get; private set; }
             public int priority { get; private set; }
             public string animStateName { get; private set; }
             public List<FrameState> frames { get; private set; }

@@ -10,7 +10,7 @@ using ResonantSpark.Service;
 
 namespace ResonantSpark {
     namespace Gameplay {
-        public class FightingGameCharacter : InGameEntity, IEquatable<FightingGameCharacter> {
+        public class FightingGameCharacter : InGameEntity, IPredeterminedActions, IEquatable<FightingGameCharacter> {
             public static int fgCharCounter = 0;
 
             public Animator animator;
@@ -117,10 +117,13 @@ namespace ResonantSpark {
                 InputNotation notation = SelectInputNotation(button, direction);
 
                 List<CharacterProperties.Attack> attackCandidates = charData.SelectAttacks(GetOrientation(), GetGroundRelation(), notation);
-                CharacterProperties.Attack attack = charData.ChooseAttackFromSelectability(attackCandidates, currState, currAttack);
+                CharacterProperties.Attack attack = charData.ChooseAttackFromSelectability(attackCandidates, currState, currAttack, new List<CharacterProperties.Attack>());
 
                 if (attack != null) {
-                    ((CharacterStates.Attack)states.Get("attack")).SetActiveAttack(attack);
+                    CharacterStates.Attack attackState = (CharacterStates.Attack) states.Get("attack");
+
+                    attackState.SetActiveAttack(attack);
+                    SetState(attackState);
                 }
             }
 
@@ -289,6 +292,10 @@ namespace ResonantSpark {
                 rigidbody.MoveRotation(rotation);
             }
 
+            public void SetRotation(Vector3 charDirection) {
+                rigidbody.MoveRotation(Quaternion.Euler(0.0f, Vector3.SignedAngle(Vector3.right, charDirection, Vector3.up), 0.0f));
+            }
+
             public void PushAway(float maxDistance, FightingGameCharacter otherChar) {
                 float oneMinusDistance = maxDistance - Vector3.Distance(otherChar.transform.position, transform.position);
                 Vector3 force = 1000.0f * oneMinusDistance * (otherChar.transform.position - transform.position).normalized;
@@ -315,6 +322,10 @@ namespace ResonantSpark {
 
             public void SetState(CharacterStates.CharacterBaseState nextState) {
                 stateMachine.ChangeState(nextState);
+            }
+
+            public CharacterStates.CharacterBaseState State(string id) {
+                return (CharacterStates.CharacterBaseState) states.Get(id);
             }
 
             public void UseCombination(Combination combo) {
@@ -388,8 +399,11 @@ namespace ResonantSpark {
                 ((CharacterStates.CharacterBaseState) stateMachine.GetCurrentState()).GetHitBy(hitBox);
             }
 
+            public void SetTarget(Vector3 newTargetPos) {
+                // TODO: Set new target position
+            }
+
             public void ChangeHealth(int amount) {
-                amount = maxHealth / 10;
                 health -= amount;
 
                 for (int n = 0; n < onHealthChangeCallbacks.Count; ++n) {
@@ -400,6 +414,37 @@ namespace ResonantSpark {
                     for (int n = 0; n < onEmptyHealthCallbacks.Count; ++n) {
                         onEmptyHealthCallbacks[n].Invoke(this);
                     }
+                }
+            }
+
+            public void KnockBack(bool launch, Vector3 forceDirection, float forceMagnitude) {
+                //AddRelativeVelocity
+            }
+
+            public void SetStandCollider(Vector3 standColliderOffset) {
+                // standCollider.localPosition = standColliderOffset;
+            }
+
+            public Vector3 GetSpeakPosition() {
+                    // TODO: Return the position of the head;
+                return Vector3.zero;
+            }
+
+            public void PredeterminedActions(string actionName) {
+                CharacterStates.Clash clash = (CharacterStates.Clash) states.Get("clash");
+                switch (actionName) {
+                    case "verticalClash":
+                        clash.SetClashAnimation("clash_vertical");
+                        SetState(clash);
+                        break;
+                    case "horizontalClashSwingFromLeft":
+                        clash.SetClashAnimation("clash_horizontalFromLeft");
+                        SetState(clash);
+                        break;
+                    case "horizontalClashSwingFromRight":
+                        clash.SetClashAnimation("clash_horizontalFromRight");
+                        SetState(clash);
+                        break;
                 }
             }
 

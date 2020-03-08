@@ -16,8 +16,7 @@ namespace ResonantSpark {
             IAttackCallbackObj Input(params InputNotation[] input);
             IAttackCallbackObj Movement(Func<float, float> xMoveCb = null, Func<float, float> yMoveCb = null, Func<float, float> zMoveCb = null);
             IAttackCallbackObj AnimationState(string animStateName);
-            IAttackCallbackObj Rotation(Action<float, Transform> callback);
-            IAttackCallbackObj StandCollider(Action<float, Transform> callback);
+            IAttackCallbackObj FramesContinuous(Action<float, Transform> callback);
             IAttackCallbackObj Frames((List<FrameStateBuilder> frameList, Dictionary<int, Action<IHitBoxCallbackObject>> hitBoxCallbackMap) framesInfo);
             IAttackCallbackObj CleanUp(Action<CharacterStates.CharacterBaseState> callback);
         }
@@ -32,8 +31,7 @@ namespace ResonantSpark {
             public Func<float, float> moveX { get; private set; }
             public Func<float, float> moveY { get; private set; }
             public Func<float, float> moveZ { get; private set; }
-            public Action<float, Transform> rotationCallback { get; private set; }
-            public Action<float, Transform> standColliderCallback { get; private set; }
+            public Action<float, Transform> framesCountinuous { get; private set; }
             public Action<CharacterStates.CharacterBaseState> cleanUpCallback { get; private set; }
             public string animStateName { get; private set; }
 
@@ -67,12 +65,8 @@ namespace ResonantSpark {
 
                 return this;
             }
-            public IAttackCallbackObj Rotation(Action<float, Transform> callback) {
-                this.rotationCallback = callback;
-                return this;
-            }
-            public IAttackCallbackObj StandCollider(Action<float, Transform> callback) {
-                this.standColliderCallback = callback;
+            public IAttackCallbackObj FramesContinuous(Action<float, Transform> callback) {
+                this.framesCountinuous = callback;
                 return this;
             }
             public IAttackCallbackObj AnimationState(string animStateName) {

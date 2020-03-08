@@ -5,10 +5,15 @@ using UnityEngine;
 namespace ResonantSpark {
     namespace Character {
         public enum AttackPriority : int {
-            Lowest = 0,
-            LightAttack = 1,
-            MediumAttack = 2,
-            HeavyAttack = 3,
+            None = 0,
+
+            ContinuousLightAttack,
+            ContinuousMediumAttack,
+            ContinuousHeavyAttack,
+
+            LightAttack,
+            MediumAttack,
+            HeavyAttack,
         }
 
         public enum AttackForcePriority : int {

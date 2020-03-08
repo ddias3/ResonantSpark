@@ -1,6 +1,4 @@
-﻿// Attack.cs wishlist
-
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -28,6 +26,9 @@ namespace ResonantSpark {
                 private Dictionary<string, AudioClip> audioMap;
                 private Dictionary<string, ParticleEffect> particleMap;
                 private Dictionary<string, AnimationCurve> attackMovementMap;
+                private Dictionary<string, Projectile> projectileMap;
+
+                private FightingGameCharacter fgChar;
 
                 public Attacks(AllServices services, Dictionary<string, AudioClip> audioMap) {
                     fgService = services.GetService<IFightingGameService>();
@@ -40,7 +41,8 @@ namespace ResonantSpark {
                     this.audioMap = audioMap;
                 }
 
-                public void Init(ICharacterPropertiesCallbackObj charBuilder, FightingGameCharacter fgChar) {
+                public void Init(ICharacterPropertiesCallbackObj charBuilder, FightingGameCharacter newFightingGameChar) {
+                    fgChar = newFightingGameChar;
 
                     Attack atkSpw5A = new Attack(atkBuilder => { atkBuilder
                         .Name("southpaw_5A")
@@ -57,9 +59,10 @@ namespace ResonantSpark {
                                 .From(1)
                                     .Hit()
                                 .From(4)
-                                    .Track((target) => {
-                                            // the vector that forward should point to, and a max turn speed per frame.
-                                        fgChar.LookTowards(fgChar.position - target.position, 20.0f);
+                                    .Track((currTarget, actualTarget) => {
+                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
+                                            // for now, just let the setting of this value be instantaneous once per frame.
+                                        fgChar.SetTarget(newTargetPos);
                                     })
                                 .To(8)
                                 .From(7)
@@ -83,7 +86,6 @@ namespace ResonantSpark {
                                             hb.Event("onHitFGChar", 
                                                 CommonGroundedOnHitFGChar(
                                                     hitSound: audioMap["weakHit"],
-                                                    attackPriority: AttackForcePriority.LightAttack,
                                                     groundedForceMagnitude: 0.5f,
                                                     airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
                                                     airborneForceMagnitude: 1.0f));
@@ -113,8 +115,10 @@ namespace ResonantSpark {
                                     .Hit()
                                     .ChainCancellable(false)
                                 .From(4)
-                                    .Track((target) => {
-                                        fgChar.LookTowards(fgChar.position - target.position, 30.0f);
+                                    .Track((currTarget, actualTarget) => {
+                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
+                                            // for now, just let the setting of this value be instantaneous once per frame.
+                                        fgChar.SetTarget(newTargetPos);
                                     })
                                 .To(12)
                                 .From(10)
@@ -136,7 +140,6 @@ namespace ResonantSpark {
                                             hb.Event("onHitFGChar",
                                                 CommonGroundedOnHitFGChar(
                                                     hitSound: audioMap["mediumHit"],
-                                                    attackPriority: AttackForcePriority.MediumAttack,
                                                     groundedForceMagnitude: 0.5f,
                                                     airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
                                                     airborneForceMagnitude: 1.0f));
@@ -163,10 +166,11 @@ namespace ResonantSpark {
                         .Input(InputNotation._5A)
                         .AnimationState("southpaw_5AAA")
                         .Movement(xMoveCb: attackMovementMap["southpaw_5AAA.x"].Evaluate, zMoveCb: attackMovementMap["southpaw_5AAA.z"].Evaluate)
-                        .Rotation((localFrame, target) => {
+                        .FramesContinuous((localFrame, target) => {
                             if (localFrame >= 22.0f && localFrame <= 30.0f) {
                                 float p = (localFrame - 22.0f) / 30.0f;
-                                fgChar.SetLookAt(Quaternion.Euler(0.0f, -180f * p, 0.0f) * (fgChar.position - target.position));
+                                Quaternion rot = Quaternion.Euler(0.0f, -180f * p + Vector3.SignedAngle(Vector3.right, fgChar.position - target.position, Vector3.up), 0.0f);
+                                fgChar.SetRotation(rot);
                                     // fgChar.GetOrientation is done automatically on each frame
                             }
                         })
@@ -194,7 +198,6 @@ namespace ResonantSpark {
                                             hb.Event("onHitFGChar",
                                                 CommonGroundedOnHitFGChar(
                                                     hitSound: audioMap["mediumHit"],
-                                                    attackPriority: AttackForcePriority.MediumAttack,
                                                     groundedForceMagnitude: 0.5f,
                                                     airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
                                                     airborneForceMagnitude: 1.0f));
@@ -229,8 +232,10 @@ namespace ResonantSpark {
                                 .From(1)
                                     .Hit()
                                 .From(4)
-                                    .Track((target) => {
-                                        fgChar.LookTowards(fgChar.position - target.position, 20.0f);
+                                    .Track((currTarget, actualTarget) => {
+                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
+                                            // for now, just let the setting of this value be instantaneous once per frame.
+                                        fgChar.SetTarget(newTargetPos);
                                     })
                                 .To(10)
                                 .From(9)
@@ -251,7 +256,6 @@ namespace ResonantSpark {
                                             hb.Event("onHitFGChar",
                                                 CommonGroundedOnHitFGChar(
                                                     hitSound: audioMap["weakHit"],
-                                                    attackPriority: AttackForcePriority.LightAttack,
                                                     groundedForceMagnitude: 0.5f,
                                                     airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
                                                     airborneForceMagnitude: 1.0f));
@@ -273,10 +277,11 @@ namespace ResonantSpark {
                         .Input(InputNotation._5A)
                         .AnimationState("orthodox_5AA")
                         .Movement(xMoveCb: attackMovementMap["orthodox_5AA.x"].Evaluate, zMoveCb: attackMovementMap["orthodox_5AA.z"].Evaluate)
-                        .Rotation((localFrame, target) => {
+                        .FramesContinuous((localFrame, target) => {
                             if (localFrame >= 20.0f && localFrame <= 26.0f) {
                                 float p = (localFrame - 20.0f) / 26.0f;
-                                fgChar.SetLookAt(Quaternion.Euler(0.0f, -180f * p, 0.0f) * (fgChar.position - target.position));
+                                Quaternion rot = Quaternion.Euler(0.0f, -180f * p + Vector3.SignedAngle(Vector3.right, fgChar.position - target.position, Vector3.up), 0.0f);
+                                fgChar.SetRotation(rot);
                                     // fgChar.GetOrientation is done automatically on each frame
                             }
                         })
@@ -288,8 +293,10 @@ namespace ResonantSpark {
                                 .From(1)
                                     .Hit()
                                 .From(4)
-                                    .Track((target) => {
-                                        fgChar.LookTowards(fgChar.position - target.position, 20.0f);
+                                    .Track((currTarget, actualTarget) => {
+                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
+                                            // for now, just let the setting of this value be instantaneous once per frame.
+                                        fgChar.SetTarget(newTargetPos);
                                     })
                                 .To(16)
                                 .From(16)
@@ -308,7 +315,6 @@ namespace ResonantSpark {
                                             hb.Event("onHitFGChar",
                                                 CommonGroundedOnHitFGChar(
                                                     hitSound: audioMap["mediumHit"],
-                                                    attackPriority: AttackForcePriority.MediumAttack,
                                                     groundedForceMagnitude: 0.5f,
                                                     airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
                                                     airborneForceMagnitude: 1.0f));
@@ -358,12 +364,12 @@ namespace ResonantSpark {
                                             hb.Point1(new Vector3(0, 1, 0));
                                             hb.Radius(0.25f);
                                             hb.Event("onHitFGChar", (hitInfo) => {
-                                                if (hitInfo.hitEntity != fgChar) {
+                                                FightingGameCharacter opponent = (FightingGameCharacter) hitInfo.hitEntity;
+                                                if (opponent != fgChar) {
                                                     audioService.PlayOneShot(hitInfo.position, audioMap["weakHit"]);
-                                                    fgService.Hit(hitInfo.hitEntity, hitInfo.hitBox, (opponent, hitAtSameTimeByAttackPriority) => {
-                                                        opponent.LoseHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
-                                                        opponent.Force(
-                                                            attackPriority: AttackForcePriority.LightAttack,
+                                                    fgService.Hit(hitInfo.hitEntity, hitInfo.hitBox, (hitAtSameTimeByAttackPriority) => {
+                                                        opponent.ChangeHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
+                                                        opponent.KnockBack(
                                                             launch: false,
                                                             forceDirection: fgChar.transform.rotation * new Vector3(0.0f, 1.0f, 1.0f),
                                                             forceMagnitude: 1.0f);
@@ -397,8 +403,10 @@ namespace ResonantSpark {
                                 .From(1)
                                     .Hit()
                                 .From(4)
-                                    .Track((target) => {
-                                        fgChar.LookTowards(fgChar.position - target.position, 20.0f);
+                                    .Track((currTarget, actualTarget) => {
+                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
+                                            // for now, just let the setting of this value be instantaneous once per frame.
+                                        fgChar.SetTarget(newTargetPos);
                                     })
                                 .To(13)
                                 .From(13)
@@ -419,7 +427,6 @@ namespace ResonantSpark {
                                             hb.Event("onHitFGChar",
                                                 CommonGroundedOnHitFGChar(
                                                     hitSound: audioMap["weakHit"],
-                                                    attackPriority: AttackForcePriority.LightAttack,
                                                     groundedForceMagnitude: 0.5f,
                                                     airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
                                                     airborneForceMagnitude: 1.0f));
@@ -463,12 +470,12 @@ namespace ResonantSpark {
                                             hb.Point1(new Vector3(0, 1, 0));
                                             hb.Radius(0.25f);
                                             hb.Event("onHitFGChar", (hitInfo) => {
-                                                if (hitInfo.hitEntity != fgChar) {
+                                                FightingGameCharacter opponent = (FightingGameCharacter) hitInfo.hitEntity;
+                                                if (opponent != fgChar) {
                                                     audioService.PlayOneShot(hitInfo.position, audioMap["weakHit"]);
-                                                    fgService.Hit(hitInfo.hitEntity, hitInfo.hitBox, (opponent, hitAtSameTimeByAttackPriority) => {
-                                                        opponent.LoseHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
-                                                        opponent.Force(
-                                                            attackPriority: AttackForcePriority.LightAttack,
+                                                    fgService.Hit(hitInfo.hitEntity, hitInfo.hitBox, (hitAtSameTimeByAttackPriority) => {
+                                                        opponent.ChangeHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
+                                                        opponent.KnockBack(
                                                             launch: false,
                                                             forceDirection: fgChar.transform.rotation * Vector3.forward,
                                                             forceMagnitude: 0.5f);
@@ -493,7 +500,7 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.AIRBORNE)
                         .Input(InputNotation._5A)
                         .AnimationState("jump_orthodox_5A")
-                        .StandCollider((localFrame, target) => {
+                        .FramesContinuous((localFrame, target) => {
                             if (localFrame >= 8.0f && localFrame <= 11.0f) {
                                 float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
                                 fgChar.SetStandCollider(p * 0.5f * Vector3.up);
@@ -524,7 +531,6 @@ namespace ResonantSpark {
                                             hb.Event("onHitFGChar",
                                                 CommonGroundedOnHitFGChar(
                                                     hitSound: audioMap["mediumHit"],
-                                                    attackPriority: AttackForcePriority.MediumAttack,
                                                     groundedForceMagnitude: 0.5f,
                                                     airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
                                                     airborneForceMagnitude: 1.0f));
@@ -549,7 +555,7 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.AIRBORNE)
                         .Input(InputNotation._5A)
                         .AnimationState("jump_southpaw_5AA")
-                        .StandCollider((localFrame, target) => {
+                        .FramesContinuous((localFrame, target) => {
                             if (localFrame >= 8.0f && localFrame <= 11.0f) {
                                 float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
                                 fgChar.SetStandCollider(p * 0.5f * Vector3.up);
@@ -563,8 +569,10 @@ namespace ResonantSpark {
                                 .From(1)
                                     .Hit()
                                 .From(4)
-                                    .Track((target) => {
-                                        fgChar.LookTowards(fgChar.position - target.position, 20.0f);
+                                    .Track((currTarget, actualTarget) => {
+                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
+                                            // for now, just let the setting of this value be instantaneous once per frame.
+                                        fgChar.SetTarget(newTargetPos);
                                     })
                                 .To(12)
                                 .From(12)
@@ -582,7 +590,6 @@ namespace ResonantSpark {
                                             hb.Event("onHitFGChar",
                                                 CommonGroundedOnHitFGChar(
                                                     hitSound: audioMap["weakHit"],
-                                                    attackPriority: AttackForcePriority.LightAttack,
                                                     groundedForceMagnitude: 0.5f,
                                                     airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
                                                     airborneForceMagnitude: 1.0f));
@@ -607,7 +614,7 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.AIRBORNE)
                         .Input(InputNotation._5A)
                         .AnimationState("jump_southpaw_5AAA")
-                        .StandCollider((localFrame, target) => {
+                        .FramesContinuous((localFrame, target) => {
                             if (localFrame >= 8.0f && localFrame <= 11.0f) {
                                 float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
                                 fgChar.SetStandCollider(p * 0.5f * Vector3.up);
@@ -621,8 +628,10 @@ namespace ResonantSpark {
                                 .From(1)
                                     .Hit()
                                 .From(4)
-                                    .Track((target) => {
-                                        fgChar.LookTowards(fgChar.position - target.position, 20.0f);
+                                    .Track((currTarget, actualTarget) => {
+                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
+                                            // for now, just let the setting of this value be instantaneous once per frame.
+                                        fgChar.SetTarget(newTargetPos);
                                     })
                                 .To(12)
                                 .From(20)
@@ -640,25 +649,24 @@ namespace ResonantSpark {
                                             hb.Point1(new Vector3(0, 1, 0));
                                             hb.Radius(0.25f);
                                             hb.Event("onHitFGChar", (hitInfo) => {
-                                                if (hitInfo.hitEntity != fgChar) {
+                                                FightingGameCharacter opponent = (FightingGameCharacter) hitInfo.hitEntity;
+                                                if (opponent != fgChar) {
                                                     audioService.PlayOneShot(hitInfo.position, audioMap["strongHit"]);
                                                         // This exists to make characters hitting each other async
-                                                    fgService.Hit(hitInfo.hitEntity, hitInfo.hitBox, (opponent, hitAtSameTimeByAttackPriority) => {
-                                                        opponent.LoseHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
+                                                    fgService.Hit(hitInfo.hitEntity, hitInfo.hitBox, (hitAtSameTimeByAttackPriority) => {
+                                                        opponent.ChangeHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
 
                                                         if (hitAtSameTimeByAttackPriority == AttackPriority.HeavyAttack) { // colloquially known as trading
                                                             cameraService.PredeterminedActions<float>("zoomIn", 0.5f);
                                                             timeService.PredeterminedActions<float>("timeSlow", 0.5f);
 
-                                                            opponent.Force(
-                                                                attackPriority: AttackForcePriority.HeavyAttack,
+                                                            opponent.KnockBack(
                                                                 launch: false,
                                                                 forceDirection: fgChar.transform.rotation * Vector3.forward,
                                                                 forceMagnitude: 0.5f);
                                                         }
                                                         else {
-                                                            opponent.Force(
-                                                                attackPriority: AttackForcePriority.HeavyAttack,
+                                                            opponent.KnockBack(
                                                                 launch: true,
                                                                 forceDirection: fgChar.transform.rotation * new Vector3(0.0f, 1.0f, 1.0f),
                                                                 forceMagnitude: 2.0f);
@@ -667,14 +675,14 @@ namespace ResonantSpark {
                                                 }
                                             });
                                             hb.Event("onHitProjectile", (hitInfo) => {
-                                                Projectile proj = (Projectile) hitInfo.hitEntity;
-                                                if (proj.health <= 2) {
-                                                    fgService.Hit(proj, hitInfo.hitBox, (projectile, hitAtSameTimeByAttackPriority) => {
-                                                        if (hitAtSameTimeByAttackPriority != null) {
+                                                Projectile projectile = (Projectile) hitInfo.hitEntity;
+                                                if (projectile.health <= 2) {
+                                                    fgService.Hit(projectile, hitInfo.hitBox, (hitAtSameTimeByAttackPriority) => {
+                                                        if (hitAtSameTimeByAttackPriority != AttackPriority.None) {
                                                             particleService.PlayOneShot(hitInfo.position, particleMap["destroyParticle"]);
                                                                 // these lines might be redundant
-                                                            particleService.PlayOneShot(projectile.DestroyedParticle());
-                                                            projectile.Destroy();
+                                                            particleService.PlayOneShot(hitInfo.position, projectile.DestroyedParticle());
+                                                            projectile.RemoveSelf();
                                                         }
                                                     });
                                                 }
@@ -698,7 +706,7 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.AIRBORNE)
                         .Input(InputNotation._5A)
                         .AnimationState("jump_orthodox_5A")
-                        .StandCollider((localFrame, target) => {
+                        .FramesContinuous((localFrame, target) => {
                             if (localFrame >= 8.0f && localFrame <= 11.0f) {
                                 float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
                                 fgChar.SetStandCollider(p * 0.5f * Vector3.up);
@@ -712,8 +720,10 @@ namespace ResonantSpark {
                                 .From(1)
                                     .Hit()
                                 .From(4)
-                                    .Track((target) => {
-                                        fgChar.LookTowards(fgChar.position - target.position, 20.0f);
+                                    .Track((currTarget, actualTarget) => {
+                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
+                                            // for now, just let the setting of this value be instantaneous once per frame.
+                                        fgChar.SetTarget(newTargetPos);
                                     })
                                 .To(10)
                                 .From(10)
@@ -733,7 +743,6 @@ namespace ResonantSpark {
                                             hb.Event("onHitFGChar",
                                                 CommonGroundedOnHitFGChar(
                                                     hitSound: audioMap["mediumHit"],
-                                                    attackPriority: AttackForcePriority.MediumAttack,
                                                     groundedForceMagnitude: 0.5f,
                                                     airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
                                                     airborneForceMagnitude: 1.0f));
@@ -758,7 +767,7 @@ namespace ResonantSpark {
                         .GroundRelation(GroundRelation.AIRBORNE)
                         .Input(InputNotation._5A)
                         .AnimationState("jump_orthodox_5AA")
-                        .StandCollider((localFrame, target) => {
+                        .FramesContinuous((localFrame, target) => {
                             if (localFrame >= 8.0f && localFrame <= 11.0f) {
                                 float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
                                 fgChar.SetStandCollider(p * 0.5f * Vector3.up);
@@ -772,8 +781,10 @@ namespace ResonantSpark {
                                 .From(1)
                                     .Hit()
                                 .From(4)
-                                    .Track((target) => {
-                                        fgChar.LookTowards(fgChar.position - target.position, 20.0f);
+                                    .Track((currTarget, actualTarget) => {
+                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
+                                            // for now, just let the setting of this value be instantaneous once per frame.
+                                        fgChar.SetTarget(newTargetPos);
                                     })
                                 .To(12)
                                 .From(12)
@@ -791,7 +802,6 @@ namespace ResonantSpark {
                                             hb.Event("onHitFGChar",
                                                 CommonGroundedOnHitFGChar(
                                                     hitSound: audioMap["mediumHit"],
-                                                    attackPriority: AttackForcePriority.MediumAttack,
                                                     groundedForceMagnitude: 0.5f,
                                                     airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
                                                     airborneForceMagnitude: 1.0f));
@@ -828,14 +838,17 @@ namespace ResonantSpark {
                                         soundResource.transform.position = fgChar.GetSpeakPosition();
                                         audioService.Play(soundResource);
                                     })
-                                    .Track((target) => {
-                                        fgChar.LookTowards(fgChar.rigidbody.position - target.position, 5.0f);
+                                    .Track((currTarget, actualTarget) => {
+                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 5.0f);
+                                            // for now, just let the setting of this value be instantaneous once per frame.
+                                        fgChar.SetTarget(newTargetPos);
                                     })
+                                .To(46)
                                 .From(12)
                                     .Projectile(projectileMap["hadouken"], proj => {
                                         projectileService.FireProjectile(proj.id);
                                     })
-                                .To(46);
+                                .To(13);
                             }))
                         .CleanUp(ReturnToPreviousState);
                     });
@@ -952,25 +965,24 @@ namespace ResonantSpark {
                     fgChar.SetState(prevState);
                 }
 
-                private Action<HitInfo> CommonGroundedOnHitFGChar(AudioClip hitSound, attackPriority, float groundedForceMagnitude, Vector3 airborneForceDirection, float airborneForceMagnitude) {
+                private Action<HitInfo> CommonGroundedOnHitFGChar(AudioClip hitSound, float groundedForceMagnitude, Vector3 airborneForceDirection, float airborneForceMagnitude) {
                     return hitInfo => {
-                        if (hitInfo.hitEntity != fgChar) {
+                        FightingGameCharacter opponent = (FightingGameCharacter) hitInfo.hitEntity;
+                        if (opponent != fgChar) {
                             audioService.PlayOneShot(hitInfo.position, hitSound);
                                 // This exists to make characters hitting each other async
-                            fgService.Hit(hitInfo.hitEntity, hitInfo.hitBox, (opponent, hitAtSameTimeByAttackPriority) => {
-                                opponent.LoseHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
+                            fgService.Hit(hitInfo.hitEntity, hitInfo.hitBox, (hitAtSameTimeByAttackPriority) => {
+                                opponent.ChangeHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
 
                                 switch (opponent.GetGroundRelation()) {
                                     case GroundRelation.GROUNDED:
-                                        opponent.Force(
-                                            attackPriority: attackPriority,
+                                        opponent.KnockBack(
                                             launch: false,
                                             forceDirection: fgChar.transform.rotation * Vector3.forward,
                                             forceMagnitude: groundedForceMagnitude);
                                         break;
                                     case GroundRelation.AIRBORNE:
-                                        opponent.Force(
-                                            attackPriority: AttackForcePriority.LightAttack,
+                                        opponent.KnockBack(
                                             launch: true,
                                             forceDirection: fgChar.transform.rotation * airborneForceDirection,
                                             forceMagnitude: airborneForceMagnitude);
@@ -978,7 +990,7 @@ namespace ResonantSpark {
                                 }
                             });
                         }
-                    }
+                    };
                 }
             }
         }

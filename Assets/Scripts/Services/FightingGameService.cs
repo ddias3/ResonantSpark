@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Gameplay;
-using ResonantSpark.Utility;
 using ResonantSpark.Gamemode;
 using ResonantSpark.Camera;
+using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace Service {
@@ -57,6 +57,10 @@ namespace ResonantSpark {
             public void SetUpGamemode() {
                 gamemode.SetUp(playerService, this, uiService);
                 camera.SetUpCamera(this);
+            }
+
+            public void Hit(InGameEntity hitEntity, HitBox hitBox, Action<AttackPriority> callback) {
+
             }
 
             private void FrameUpdate(int frameIndex) {

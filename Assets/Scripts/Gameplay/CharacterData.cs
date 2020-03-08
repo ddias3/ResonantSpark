@@ -13,11 +13,11 @@ namespace ResonantSpark {
             public int maxHealth { get; private set; }
 
             private Dictionary<string, Attack> attacks;
-            private Dictionary<Attack, Func<CharacterStates.CharacterBaseState, Attack, bool>> attackSelectableCallbackMap;
+            private Dictionary<Attack, Func<CharacterStates.CharacterBaseState, Attack, List<Attack>, bool>> attackSelectableCallbackMap;
 
             public void Init(int maxHealth) {
                 attacks = new Dictionary<string, Attack>();
-                attackSelectableCallbackMap = new Dictionary<Attack, Func<CharacterStates.CharacterBaseState, Attack, bool>>();
+                attackSelectableCallbackMap = new Dictionary<Attack, Func<CharacterStates.CharacterBaseState, Attack, List<Attack>, bool>>();
 
                 this.maxHealth = maxHealth;
             }
@@ -26,14 +26,14 @@ namespace ResonantSpark {
                 attacks.Add(attack.name, attack);
             }
 
-            public void AddAttackSelectablilityCallback(Attack attack, Func<CharacterStates.CharacterBaseState, Attack, bool> callback) {
+            public void AddAttackSelectablilityCallback(Attack attack, Func<CharacterStates.CharacterBaseState, Attack, List<Attack>, bool> callback) {
                 attackSelectableCallbackMap.Add(attack, callback);
             }
 
-            public Attack ChooseAttackFromSelectability(List<Attack> attacks, CharacterStates.CharacterBaseState currState, Attack currAttack) {
+            public Attack ChooseAttackFromSelectability(List<Attack> attacks, CharacterStates.CharacterBaseState currState, Attack currAttack, List<Attack> prevAttacks) {
 
                 List<Attack> validAttacks = attacks
-                    .Where(atk => attackSelectableCallbackMap[atk].Invoke(currState, currAttack))
+                    .Where(atk => attackSelectableCallbackMap[atk].Invoke(currState, currAttack, prevAttacks))
                     .OrderBy(atk => atk.priority)
                     .ToList();
 
@@ -50,7 +50,7 @@ namespace ResonantSpark {
 
                 List<Attack> filteredAttacks = attacks
                     .Select<KeyValuePair<string, Attack>, Attack>(kvp => kvp.Value)
-                    .Where(atk => atk.orientation == orientation && atk.groundRelation == groundRelation && atk.input == attackInput)
+                    .Where(atk => atk.orientation == orientation && atk.groundRelation == groundRelation && atk.input.Contains(attackInput))
                     .ToList();
 
                 return filteredAttacks;

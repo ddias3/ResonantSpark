@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Builder;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace Builder {
         public interface IFrameListCallbackObj {
             IFrameListCallbackObj SpecialCancellable(bool specialCancellable);
-            IFrameListCallbackObj From(int startFrame);
             IFrameListCallbackObj ChainCancellable(bool chainCancellable);
-            IFrameListCallbackObj To(int endFrame);
             IFrameListCallbackObj Hit(Action<IHitCallbackObject> callback);
             IFrameListCallbackObj Hit();
             IFrameListCallbackObj HitDamage(int damage);
@@ -18,7 +17,11 @@ namespace ResonantSpark {
             IFrameListCallbackObj HitStun(float frames);
             IFrameListCallbackObj BlockStun(float frame);
             IFrameListCallbackObj CancellableOnWhiff(bool cancellableOnWhiff);
-            IFrameListCallbackObj Track(Action<Transform> callback);
+            IFrameListCallbackObj Track(Action<Vector3, Transform> callback);
+            IFrameListCallbackObj Sound(AudioClip audioClip, Action<AudioResource> soundCallback);
+            IFrameListCallbackObj Projectile(Projectile projectile, Action<Projectile> projectileCallback);
+            IFrameListCallbackObj From(int startFrame);
+            IFrameListCallbackObj To(int endFrame);
         }
     }
 
@@ -97,10 +100,26 @@ namespace ResonantSpark {
                 return this;
             }
 
-            public IFrameListCallbackObj Track(Action<Transform> callback) {
+            public IFrameListCallbackObj Track(Action<Vector3, Transform> callback) {
                 entries.Add(new FrameUtilMapObject {
                     option = "track",
                     content = callback
+                });
+                return this;
+            }
+
+            public IFrameListCallbackObj Sound(AudioClip clip, Action<AudioResource> callback) {
+                entries.Add(new FrameUtilMapObject {
+                    option = "sound",
+                    content = (clip, callback)
+                });
+                return this;
+            }
+
+            public IFrameListCallbackObj Projectile(Projectile projectile, Action<Projectile> callback) {
+                entries.Add(new FrameUtilMapObject {
+                    option = "projectile",
+                    content = (projectile, callback)
                 });
                 return this;
             }

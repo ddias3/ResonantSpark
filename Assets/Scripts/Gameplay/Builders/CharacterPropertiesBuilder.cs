@@ -12,15 +12,15 @@ namespace ResonantSpark {
             protected AllServices services;
 
             public CharacterPropertiesBuilder(AllServices services) {
-                attacks = new List<(Attack, Func<CharacterStates.CharacterBaseState, Attack, bool>)>();
+                attacks = new List<(Attack, Func<CharacterStates.CharacterBaseState, Attack, List<Attack>, bool>)>();
 
                 this.services = services;
             }
 
             public CharacterData BuildAttacks(CharacterData charData) {
-                foreach ((Attack, Func<CharacterStates.CharacterBaseState, Attack, bool>) atk in attacks) {
+                foreach ((Attack, Func<CharacterStates.CharacterBaseState, Attack, List<Attack>, bool>) atk in attacks) {
                     Attack attack = atk.Item1;
-                    Func<CharacterStates.CharacterBaseState, Attack, bool> callback = atk.Item2;
+                    Func<CharacterStates.CharacterBaseState, Attack, List<Attack>, bool> callback = atk.Item2;
 
                     attack.BuildAttack(services);
 

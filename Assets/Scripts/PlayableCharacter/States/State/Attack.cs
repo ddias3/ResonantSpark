@@ -77,7 +77,6 @@ namespace ResonantSpark {
 
             public void SetActiveAttack(CharacterProperties.Attack atk) {
                 queuedUpAttack = atk;
-                changeState(this);
             }
 
             public override GroundRelation GetGroundRelation() {

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using ResonantSpark.Particle;
+
 namespace ResonantSpark {
     namespace Service {
         public interface IParticleService {

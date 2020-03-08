@@ -16,13 +16,13 @@ namespace ResonantSpark {
             ICharacterPropertiesCallbackObj RunSpeed(Func<CharacterStates.CharacterBaseState, float> callback);
             ICharacterPropertiesCallbackObj MaxJumpHeight(float maxJumpHeight);
             ICharacterPropertiesCallbackObj MaxJumpHeight(Func<CharacterStates.CharacterBaseState, float> callback);
-            ICharacterPropertiesCallbackObj Attack(Attack attack, Func<CharacterStates.CharacterBaseState, Attack, bool> callback);
+            ICharacterPropertiesCallbackObj Attack(Attack attack, Func<CharacterStates.CharacterBaseState, Attack, List<Attack>, bool> callback);
         }
     }
 
     namespace CharacterProperties {
         public partial class CharacterPropertiesBuilder : ICharacterPropertiesCallbackObj {
-            protected List<(Attack, Func<CharacterStates.CharacterBaseState, Attack, bool>)> attacks { get; private set; }
+            protected List<(Attack, Func<CharacterStates.CharacterBaseState, Attack, List<Attack>, bool>)> attacks { get; private set; }
             protected string version;
             protected int maxHealth = 10000;
 
@@ -66,7 +66,7 @@ namespace ResonantSpark {
                 return this;
             }
 
-            public ICharacterPropertiesCallbackObj Attack(Attack attack, Func<CharacterStates.CharacterBaseState, Attack, bool> callback) {
+            public ICharacterPropertiesCallbackObj Attack(Attack attack, Func<CharacterStates.CharacterBaseState, Attack, List<Attack>, bool> callback) {
                 attacks.Add((attack, callback));
                 return this;
             }
