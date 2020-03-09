@@ -30,9 +30,6 @@ namespace ResonantSpark
             public override void Execute(int frameIndex)
             {
                 elapsedTime += gameTimeManager.Layer("gameTime");
-
-                // todo: once one of the characters dies, switch to roundEnd mode
-                //changeState(states.Get("roundEndMode"));
             }
 
             public override void Exit(int frameIndex)

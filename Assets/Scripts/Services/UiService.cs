@@ -11,6 +11,7 @@ namespace ResonantSpark {
             public HealthBar healthBarP0;
             public HealthBar healthBarP1;
             public RoundTimer roundTimer;
+            public OpeningText openingText;
 
             public void Start() {
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(UiService));
@@ -18,6 +19,11 @@ namespace ResonantSpark {
 
             public void SetTime(float time) {
                 roundTimer.SetTime(time);
+            }
+
+            public void SetOpeningText(string text)
+            {
+                openingText.SetOpeningText(text);
             }
 
             public void SetHealth(int playerId, int health) {

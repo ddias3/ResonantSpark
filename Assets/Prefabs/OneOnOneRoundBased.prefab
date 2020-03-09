@@ -190,7 +190,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a7f718226369d3408c13ec23085b352, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initState: {fileID: 6923851647477395684}
+  initState: {fileID: 5759152208771770001}
   stateMachine: {fileID: 4425296836205938801}
 --- !u!1 &5976575351784179997
 GameObject:

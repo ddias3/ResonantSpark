@@ -25,14 +25,21 @@ namespace ResonantSpark
             {
                 elapsedTime = 0;
                 Debug.Log("Entered Opening mode state");
+                uiService.SetOpeningText("Player 1 VS Player 2");
+
+                // todo: remove control from players
             }
 
             public override void Execute(int frameIndex)
             {
                 elapsedTime += gameTimeManager.Layer("gameTime");
 
-                // todo: after the countdown, switch to the RoundStart state
-                changeState(states.Get("roundStartMode"));
+                if (elapsedTime > 3)
+                {
+                    uiService.SetOpeningText("");
+                    // after VS animation, switch to the RoundStart state
+                    changeState(states.Get("roundStartMode"));
+                }
             }
 
             public override void Exit(int frameIndex)

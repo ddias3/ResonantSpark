@@ -40,7 +40,7 @@ namespace ResonantSpark
                 }
                 else
                 {
-                    changeState(states.Get("openingMode"));
+                    changeState(states.Get("roundStartMode"));
                 }
             }
 

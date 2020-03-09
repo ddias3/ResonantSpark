@@ -47,6 +47,7 @@ namespace ResonantSpark {
                                         h.Radius(0.25f);
                                         h.Event("onHurtBox", (hitInfo) => {
                                             if (hitInfo.hitEntity != fgChar) {
+                                                ((FightingGameCharacter)hitInfo.hitEntity).ChangeHealth(1000);
                                                 Debug.Log("Regular 5A hit enemey");
                                                 audioService.PlayOneShot(hitInfo.position, audioMap["regular_5A"]);
                                                 Debug.Log("Regular 5A Hit");
@@ -96,6 +97,7 @@ namespace ResonantSpark {
                                             audioService.PlayOneShot(hitInfo.position, audioMap["regular_5A"]);
                                             hitInfo.hitEntity.GetHitBy(hitInfo.hitBox);
                                             if (hitInfo.hitEntity != fgChar) {
+                                                ((FightingGameCharacter)hitInfo.hitEntity).ChangeHealth(1000);
                                                 hitInfo.hitEntity.GetHitBy(hitInfo.hitBox);
                                             }
                                         });
@@ -141,6 +143,7 @@ namespace ResonantSpark {
                                         h.Event("onHurtBox", (hitInfo) => {
                                             Debug.Log("Regular 2A hit the enemy");
                                             if (hitInfo.hitEntity != fgChar) {
+                                                ((FightingGameCharacter)hitInfo.hitEntity).ChangeHealth(1000);
                                                 hitInfo.hitEntity.GetHitBy(hitInfo.hitBox);
                                             }
                                         });

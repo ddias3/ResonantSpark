@@ -30,6 +30,12 @@ namespace ResonantSpark
             public override void Execute(int frameIndex)
             {
                 elapsedTime += gameTimeManager.Layer("gameTime");
+
+                // change state so that it goes to menu of some kind
+                if (UnityEngine.Input.GetKey(KeyCode.Alpha8))
+                {
+                    changeState(states.Get("openingMode"));
+                }
             }
 
             public override void Exit(int frameIndex)
