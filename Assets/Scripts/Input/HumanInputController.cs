@@ -47,6 +47,8 @@ namespace ResonantSpark {
                 player.AddInputEventDelegate(OnButtonB, UpdateLoopType.Update, "Button B");
                 player.AddInputEventDelegate(OnButtonC, UpdateLoopType.Update, "Button C");
                 player.AddInputEventDelegate(OnButtonD, UpdateLoopType.Update, "Button D");
+
+                player.AddInputEventDelegate(OnPause, UpdateLoopType.Update, "Pause");
             }
 
             public void OnMoveHorizontal(InputActionEventData data) {
@@ -93,6 +95,13 @@ namespace ResonantSpark {
             public void OnButtonD(InputActionEventData data) {
                 if (data.GetButtonDown()) Debug.Log("ButtonD performed: Pressed Down");
                 SetButtonBit(data.GetButton(), FightingGameInputCodeBut.D);
+            }
+
+            public void OnPause(InputActionEventData data) {
+                if (data.GetButtonDown()) {
+                    Debug.Log("Toggle Pause Game");
+                    EventManager.TriggerEvent<Events.TogglePauseGame>();
+                }
             }
 
             private void SetButtonBit(bool buttonValue, FightingGameInputCodeBut bitMask) {
