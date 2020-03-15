@@ -10,13 +10,8 @@ namespace ResonantSpark {
         public interface IFrameListCallbackObj {
             IFrameListCallbackObj SpecialCancellable(bool specialCancellable);
             IFrameListCallbackObj ChainCancellable(bool chainCancellable);
-            IFrameListCallbackObj Hit(Action<IHitCallbackObject> callback);
-            IFrameListCallbackObj Hit();
-            IFrameListCallbackObj HitDamage(int damage);
-            IFrameListCallbackObj BlockDamage(int damage);
-            IFrameListCallbackObj HitStun(float frames);
-            IFrameListCallbackObj BlockStun(float frame);
             IFrameListCallbackObj CancellableOnWhiff(bool cancellableOnWhiff);
+            IFrameListCallbackObj Hit(Action<IHitCallbackObject> callback);
             IFrameListCallbackObj Track(Action<Vector3, Transform> callback);
             IFrameListCallbackObj Sound(AudioClip audioClip, Action<AudioResource> soundCallback);
             IFrameListCallbackObj Projectile(Projectile projectile, Action<Projectile> projectileCallback);
@@ -52,50 +47,10 @@ namespace ResonantSpark {
                 return this;
             }
 
-            public IFrameListCallbackObj HitDamage(int damage) {
-                entries.Add(new FrameUtilMapObject {
-                    option = "hitDamage",
-                    content = damage
-                });
-                return this;
-            }
-
-            public IFrameListCallbackObj BlockDamage(int damage) {
-                entries.Add(new FrameUtilMapObject {
-                    option = "blockDamage",
-                    content = damage
-                });
-                return this;
-            }
-
-            public IFrameListCallbackObj Hit(Action<IHitCallbackObject> hitBoxCallback) {
+            public IFrameListCallbackObj Hit(Action<IHitCallbackObject> hitCallback) {
                 entries.Add(new FrameUtilMapObject {
                     option = "hit",
-                    content = hitBoxCallback
-                });
-                return this;
-            }
-
-            public IFrameListCallbackObj Hit() {
-                entries.Add(new FrameUtilMapObject {
-                    option = "hit",
-                    content = null
-                });
-                return this;
-            }
-
-            public IFrameListCallbackObj HitStun(float frames) {
-                entries.Add(new FrameUtilMapObject {
-                    option = "hitStun",
-                    content = frames
-                });
-                return this;
-            }
-
-            public IFrameListCallbackObj BlockStun(float frame) {
-                entries.Add(new FrameUtilMapObject {
-                    option = "blockStun",
-                    content = frame
+                    content = hitCallback
                 });
                 return this;
             }

@@ -23,7 +23,7 @@ namespace ResonantSpark {
             public int priority { get; private set; }
             public string animStateName { get; private set; }
             public List<FrameState> frames { get; private set; }
-            public List<HitBox> hitBoxes { get; private set; }
+            public List<Hit> hits { get; private set; }
 
             private IFightingGameService fgService;
             private IProjectileService projectServ;
@@ -59,8 +59,8 @@ namespace ResonantSpark {
                 priority = 1;
                 animStateName = attackBuilder.animStateName;
 
+                hits = attackBuilder.GetHits();
                 frames = attackBuilder.GetFrames();
-                hitBoxes = attackBuilder.GetHitBoxes();
 
                 tracker = new AttackTracker(frames.Count);
             }

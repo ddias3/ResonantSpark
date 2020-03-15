@@ -12,10 +12,10 @@ namespace ResonantSpark {
     namespace CharacterProperties {
         public partial class AttackBuilder : IAttackCallbackObj {
             private List<FrameStateBuilder> frames;
-            private Dictionary<int, Action<IHitBoxCallbackObject>> hitBoxCallbackMap;
+            private Dictionary<int, Action<IHitCallbackObject>> hitCallbackMap;
 
             private List<FrameState> builtFrameStates;
-            private List<HitBox> builtHitBoxes;
+            private List<Hit> builtHits;
 
             private AllServices services;
 
@@ -26,29 +26,28 @@ namespace ResonantSpark {
             }
 
             public void BuildAttack() {
-                IHitBoxService hitBoxService = services.GetService<IHitBoxService>();
                 builtFrameStates = new List<FrameState>();
-                builtHitBoxes = new List<HitBox>();
+                builtHits = new List<Hit>();
 
-                Dictionary<int, HitBox> hitBoxMap = new Dictionary<int, HitBox>();
+                Dictionary<int, Hit> hitMap = new Dictionary<int, Hit>();
 
-                foreach (KeyValuePair<int, Action<IHitBoxCallbackObject>> entry in hitBoxCallbackMap) {
-                    Action<IHitBoxCallbackObject> callback = entry.Value;
+                foreach (KeyValuePair<int, Action<IHitCallbackObject>> entry in hitCallbackMap) {
+                    Action<IHitCallbackObject> callback = entry.Value;
 
-                    HitBoxBuilder builder = new HitBoxBuilder(services);
+                    HitBuilder builder = new HitBuilder(services);
 
                     callback(builder);
                     // TODO: Pass along the events
 
-                    HitBox hitBox = builder.CreateHitBox(hitBoxService.GetEmptyHoldTransform());
+                    Hit hit = builder.CreateHit();
 
-                    hitBoxMap.Add(entry.Key, hitBox);
-                    builtHitBoxes.Add(hitBox);
+                    hitMap.Add(entry.Key, hit);
+                    builtHits.Add(hit);
                 }
 
                 for (int n = 0; n < frames.Count; ++n) {
                     FrameStateBuilder frameStateBuilder = frames[n];
-                    builtFrameStates.Add(frameStateBuilder.Build(hitBoxMap));
+                    builtFrameStates.Add(frameStateBuilder.Build(hitMap));
                 }
             }
 
@@ -56,8 +55,8 @@ namespace ResonantSpark {
                 return builtFrameStates;
             }
 
-            public List<HitBox> GetHitBoxes() {
-                return builtHitBoxes;
+            public List<Hit> GetHits() {
+                return builtHits;
             }
         }
     }

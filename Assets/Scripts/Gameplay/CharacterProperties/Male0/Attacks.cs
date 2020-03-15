@@ -52,37 +52,35 @@ namespace ResonantSpark {
                 public void Init(ICharacterPropertiesCallbackObj charBuilder, FightingGameCharacter newFightingGameChar) {
                     fgChar = newFightingGameChar;
 
-                    Attack atkSpw5A = new Attack(atkBuilder => { atkBuilder
-                        .Name("southpaw_5A")
-                        .Orientation(Orientation.SOUTHPAW)
-                        .GroundRelation(GroundRelation.GROUNDED)
-                        .Input(InputNotation._4A, InputNotation._5A)
-                        .AnimationState("southpaw_5A")
-                        .Movement(xMoveCb: attackMovementMap["southpaw_5A.x"].Evaluate, zMoveCb: attackMovementMap["southpaw_5A.z"].Evaluate)
-                        .Frames(
-                            FrameUtil.CreateList(f => { f
-                                .SpecialCancellable(true)
-                                .CancellableOnWhiff(true)
-                                .ChainCancellable(true)
-                                .From(1)
-                                    .Hit()
-                                .From(4)
-                                    .Track((currTarget, actualTarget) => {
+                    Attack atkSpw5A = new Attack(atkBuilder => {
+                        atkBuilder.Name("southpaw_5A");
+                        atkBuilder.Orientation(Orientation.SOUTHPAW);
+                        atkBuilder.GroundRelation(GroundRelation.GROUNDED);
+                        atkBuilder.Input(InputNotation._4A, InputNotation._5A);
+                        atkBuilder.AnimationState("southpaw_5A");
+                        atkBuilder.Movement(xMoveCb: attackMovementMap["southpaw_5A.x"].Evaluate, zMoveCb: attackMovementMap["southpaw_5A.z"].Evaluate);
+                        atkBuilder.Frames(
+                            FrameUtil.CreateList(fl => {
+                                fl.SpecialCancellable(true);
+                                fl.CancellableOnWhiff(true);
+                                fl.ChainCancellable(true);
+                                fl.From(4);
+                                    fl.Track((currTarget, actualTarget) => {
                                         Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
                                             // for now, just let the setting of this value be instantaneous once per frame.
                                         fgChar.SetTarget(newTargetPos);
-                                    })
-                                .To(8)
-                                .From(7)
-                                    .CancellableOnWhiff(false)
-                                .From(8)
-                                    .Hit(hit => {
-                                        hit.HitDamage(800)
-                                            .BlockDamage(0)
-                                            .HitStun(20.0f)
-                                            .BlockStun(8.0f)
-                                            .ComboScaling(0.65f)
-                                            .Priority(AttackPriority.LightAttack);
+                                    });
+                                fl.To(8);
+                                fl.From(7);
+                                    fl.CancellableOnWhiff(false);
+                                fl.From(8);
+                                    fl.Hit(hit => {
+                                        hit.HitDamage(800);
+                                        hit.BlockDamage(0);
+                                        hit.HitStun(20.0f);
+                                        hit.BlockStun(8.0f);
+                                        hit.ComboScaling(0.65f);
+                                        hit.Priority(AttackPriority.LightAttack);
 
                                         // hit.Block(); default is to allow any kind of blocking
 
@@ -98,47 +96,45 @@ namespace ResonantSpark {
                                                     airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
                                                     airborneForceMagnitude: 1.0f));
                                         });
-                                    })
-                                .To(10)
-                                .From(10)
-                                    .Hit()
-                                    .ChainCancellable(true)
-                                .To(22);
-                            }))
-                        .CleanUp(ReturnToPreviousState);
+                                    });
+                                fl.To(10);
+                                fl.From(10);
+                                    fl.ChainCancellable(true);
+                                fl.To(22);
+                            }));
+                        atkBuilder.CleanUp(ReturnToPreviousState);
                     });
 
-                    Attack atkSpw5AA = new Attack(atkBuilder => { atkBuilder
-                        .Name("southpaw_5AA")
-                        .Orientation(Orientation.SOUTHPAW)
-                        .GroundRelation(GroundRelation.GROUNDED)
-                        .Input(InputNotation._5A)
-                        .AnimationState("southpaw_5AA")
-                        .Movement(xMoveCb: attackMovementMap["southpaw_5AA.x"].Evaluate, zMoveCb: attackMovementMap["southpaw_5AA.z"].Evaluate)
-                        .Frames(
-                            FrameUtil.CreateList(f => { f
-                                .SpecialCancellable(true)
-                                .CancellableOnWhiff(false)
-                                .From(1)
-                                    .Hit()
-                                    .ChainCancellable(false)
-                                .From(4)
-                                    .Track((currTarget, actualTarget) => {
+                    Attack atkSpw5AA = new Attack(atkBuilder => {
+                        atkBuilder.Name("southpaw_5AA");
+                        atkBuilder.Orientation(Orientation.SOUTHPAW);
+                        atkBuilder.GroundRelation(GroundRelation.GROUNDED);
+                        atkBuilder.Input(InputNotation._5A);
+                        atkBuilder.AnimationState("southpaw_5AA");
+                        atkBuilder.Movement(xMoveCb: attackMovementMap["southpaw_5AA.x"].Evaluate, zMoveCb: attackMovementMap["southpaw_5AA.z"].Evaluate);
+                        atkBuilder.Frames(
+                            FrameUtil.CreateList(fl => {
+                                fl.SpecialCancellable(true);
+                                fl.CancellableOnWhiff(false);
+                                fl.From(1);
+                                    fl.ChainCancellable(false);
+                                fl.From(4);
+                                    fl.Track((currTarget, actualTarget) => {
                                         Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
-                                            // for now, just let the setting of this value be instantaneous once per frame.
+                                        // for now, just let the setting of this value be instantaneous once per frame.
                                         fgChar.SetTarget(newTargetPos);
-                                    })
-                                .To(12)
-                                .From(10)
-                                    .ChainCancellable(true)
-                                .From(12)
-                                    .Hit(hit => {
-                                        hit.HitDamage(1000)
-                                            .BlockDamage(0)
-                                            .HitStun(30.0f)
-                                            .BlockStun(12.0f)
-                                            .ComboScaling(1.0f)
-                                            .Priority(AttackPriority.LightAttack);
+                                    });
+                                fl.To(12);
+                                fl.From(10);
+                                    fl.ChainCancellable(true);
+                                fl.From(12);
+                                    fl.Hit(hit => {
+                                        hit.HitDamage(1000);
+                                        hit.BlockDamage(0);
+                                        hit.HitStun(30.0f);
+                                        hit.BlockStun(12.0f);
+                                        hit.ComboScaling(1.0f);
+                                        hit.Priority(AttackPriority.LightAttack);
 
                                         hit.HitBox(hb => {
                                             hb.Relative(fgChar.transform);
@@ -158,13 +154,13 @@ namespace ResonantSpark {
                                                 }
                                             });
                                         });
-                                    })
-                                .To(14)
-                                .From(14)
-                                    .Hit()
-                                .To(30);
-                            }))
-                        .CleanUp(ReturnToPreviousState);
+                                    });
+                                fl.To(14);
+                                fl.From(14);
+                                    // Recovery
+                                fl.To(30);
+                            }));
+                        atkBuilder.CleanUp(ReturnToPreviousState);
                     });
 
                     Attack atkSpw5AAA = new Attack(atkBuilder => { atkBuilder
@@ -187,7 +183,6 @@ namespace ResonantSpark {
                                 .SpecialCancellable(true)
                                 .CancellableOnWhiff(false)
                                 .From(1)
-                                    .Hit()
                                     .ChainCancellable(false)
                                 .To(20)
                                 .From(20)
@@ -196,6 +191,7 @@ namespace ResonantSpark {
                                             .BlockDamage(0)
                                             .HitStun(30.0f)
                                             .BlockStun(12.0f)
+                                            .Tracking(true)
                                             .Priority(AttackPriority.MediumAttack);
 
                                         hit.HitBox(hb => {
@@ -219,7 +215,7 @@ namespace ResonantSpark {
                                     })
                                 .To(21)
                                 .From(22)
-                                    .Hit()
+                                    // Recovery
                                 .To(30);
                             }))
                         .CleanUp(ReturnToPreviousState);
@@ -237,8 +233,6 @@ namespace ResonantSpark {
                                 .SpecialCancellable(true)
                                 .CancellableOnWhiff(true)
                                 .ChainCancellable(true)
-                                .From(1)
-                                    .Hit()
                                 .From(4)
                                     .Track((currTarget, actualTarget) => {
                                         Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
@@ -271,7 +265,6 @@ namespace ResonantSpark {
                                     })
                                 .To(10)
                                 .From(10)
-                                    .Hit()
                                     .ChainCancellable(true)
                                 .To(22);
                             }))
@@ -298,8 +291,6 @@ namespace ResonantSpark {
                                 .SpecialCancellable(true)
                                 .ChainCancellable(false)
                                 .CancellableOnWhiff(false)
-                                .From(1)
-                                    .Hit()
                                 .From(4)
                                     .Track((currTarget, actualTarget) => {
                                         Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
@@ -336,7 +327,7 @@ namespace ResonantSpark {
                                     })
                                 .To(17)
                                 .From(17)
-                                    .Hit()
+                                    // Recovery
                                 .To(26);
                             }))
                         .CleanUp(ReturnToPreviousState);
@@ -354,8 +345,6 @@ namespace ResonantSpark {
                                 .SpecialCancellable(true)
                                 .ChainCancellable(false)
                                 .CancellableOnWhiff(false)
-                                .From(1)
-                                    .Hit()
                                 .To(8)
                                 .From(8)
                                     .Hit(hit => {
@@ -387,8 +376,6 @@ namespace ResonantSpark {
                                         });
                                     })
                                 .To(9)
-                                .From(9)
-                                    .Hit()
                                 .From(14)
                                     .ChainCancellable(true)
                                 .To(22);
@@ -408,8 +395,6 @@ namespace ResonantSpark {
                                 .SpecialCancellable(true)
                                 .ChainCancellable(false)
                                 .CancellableOnWhiff(false)
-                                .From(1)
-                                    .Hit()
                                 .From(4)
                                     .Track((currTarget, actualTarget) => {
                                         Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
@@ -441,8 +426,7 @@ namespace ResonantSpark {
                                         });
                                     })
                                 .To(14)
-                                .From(14)
-                                    .Hit()
+                                    //Recovery
                                 .To(28);
                             }))
                         .CleanUp((prevState) => {
@@ -462,8 +446,6 @@ namespace ResonantSpark {
                                 .SpecialCancellable(true)
                                 .ChainCancellable(false)
                                 .CancellableOnWhiff(false)
-                                .From(1)
-                                    .Hit()
                                 .To(12)
                                 .From(12)
                                     .Hit(hit => {
@@ -493,8 +475,6 @@ namespace ResonantSpark {
                                         });
                                     })
                                 .To(13)
-                                .From(13)
-                                    .Hit()
                                 .From(15)
                                     .ChainCancellable(true)
                                 .To(23);
@@ -519,8 +499,6 @@ namespace ResonantSpark {
                                 .SpecialCancellable(true)
                                 .ChainCancellable(true)
                                 .CancellableOnWhiff(true)
-                                .From(1)
-                                    .Hit()
                                 .To(8)
                                 .From(6)
                                     .CancellableOnWhiff(false)
@@ -545,8 +523,6 @@ namespace ResonantSpark {
                                         });
                                     })
                                 .To(11)
-                                .From(11)
-                                    .Hit()
                                 .From(13)
                                     .ChainCancellable(true)
                                 .To(23);
@@ -574,8 +550,6 @@ namespace ResonantSpark {
                                 .SpecialCancellable(true)
                                 .ChainCancellable(false)
                                 .CancellableOnWhiff(false)
-                                .From(1)
-                                    .Hit()
                                 .From(4)
                                     .Track((currTarget, actualTarget) => {
                                         Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
@@ -604,8 +578,6 @@ namespace ResonantSpark {
                                         });
                                     })
                                 .To(13)
-                                .From(13)
-                                    .Hit()
                                 .From(16)
                                     .ChainCancellable(true)
                                 .To(30);
@@ -633,8 +605,6 @@ namespace ResonantSpark {
                                 .SpecialCancellable(true)
                                 .ChainCancellable(false)
                                 .CancellableOnWhiff(false)
-                                .From(1)
-                                    .Hit()
                                 .From(4)
                                     .Track((currTarget, actualTarget) => {
                                         Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
@@ -698,8 +668,7 @@ namespace ResonantSpark {
                                         });
                                     })
                                 .To(21)
-                                .From(21)
-                                    .Hit()
+                                    // Recovery
                                 .To(40);
                             }))
                         .CleanUp((prevState) => {
@@ -725,8 +694,6 @@ namespace ResonantSpark {
                                 .SpecialCancellable(true)
                                 .CancellableOnWhiff(false)
                                 .ChainCancellable(false)
-                                .From(1)
-                                    .Hit()
                                 .From(4)
                                     .Track((currTarget, actualTarget) => {
                                         Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
@@ -757,8 +724,6 @@ namespace ResonantSpark {
                                         });
                                     })
                                 .To(13)
-                                .From(13)
-                                    .Hit()
                                 .From(16)
                                     .ChainCancellable(true)
                                 .To(30);
@@ -786,8 +751,6 @@ namespace ResonantSpark {
                                 .SpecialCancellable(true)
                                 .CancellableOnWhiff(false)
                                 .ChainCancellable(false)
-                                .From(1)
-                                    .Hit()
                                 .From(4)
                                     .Track((currTarget, actualTarget) => {
                                         Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
@@ -816,8 +779,6 @@ namespace ResonantSpark {
                                         });
                                     })
                                 .To(13)
-                                .From(13)
-                                    .Hit()
                                 .From(16)
                                     .ChainCancellable(true)
                                 .To(30);
@@ -839,8 +800,6 @@ namespace ResonantSpark {
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(false)
                                 .ChainCancellable(false)
-                                .From(1)
-                                    .Hit()
                                 .From(3)
                                     .Sound(audioMap["hadouken"], soundResource => {
                                         soundResource.transform.position = fgChar.GetSpeakPosition();

@@ -10,14 +10,14 @@ namespace ResonantSpark {
     namespace CharacterProperties {
         public partial class FrameStateBuilder : IFrameStateBuilder {
 
-            public FrameState Build(Dictionary<int, HitBox> hitBoxMap) {
-                List<HitBox> hitBoxList = new List<HitBox>();
+            public FrameState Build(Dictionary<int, Hit> hitMap) {
+                List<Hit> hitList = new List<Hit>();
 
-                for (int n = 0; n < hitBoxCallbackIds.Count; ++n) {
-                    hitBoxList.Add(hitBoxMap[hitBoxCallbackIds[n]]);
+                for (int n = 0; n < hitCallbackIds.Count; ++n) {
+                    hitList.Add(hitMap[hitCallbackIds[n]]);
                 }
 
-                return new FrameState(hitBoxList, activateHitBox, chainCancellable, specialCancellable, hitDamage, blockDamage, hitStun, blockStun);
+                return new FrameState(hitList, activateHitBox, chainCancellable, specialCancellable);
             }
         }
     }
