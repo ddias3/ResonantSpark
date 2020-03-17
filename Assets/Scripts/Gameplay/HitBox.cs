@@ -106,6 +106,10 @@ namespace ResonantSpark {
                 collider.center = (cylinderHeight / 2 + radius) * Vector3.forward;
             }
 
+            public void InvokeEvent(string eventName, HitInfo hitInfo) {
+                // TODO: Invoke event callbacks
+            }
+
             public void Active() {
                 hitBoxService.Active(this);
             }

@@ -32,6 +32,8 @@ namespace ResonantSpark {
 
             private FightingGameService fgService;
 
+            private Vector3 target;
+
             private Input.InputBuffer inputBuffer;
             private List<Combination> inputDoNothingList;
 
@@ -99,6 +101,7 @@ namespace ResonantSpark {
 
             public FightingGameCharacter SetOpponentCharacter(FightingGameCharacter opponentChar) {
                 this.opponentChar = opponentChar;
+                target = opponentChar.position;
                 return this;
             }
 
@@ -240,7 +243,7 @@ namespace ResonantSpark {
                 return Quaternion.Euler(0.0f, -90.0f, 0.0f) * worldInput;
             }
 
-            public Vector3 OpponentPosition() {
+            public Vector3 OpponentDirection() {
                 return opponentChar.position - position;
             }
 
@@ -401,8 +404,16 @@ namespace ResonantSpark {
                 ((CharacterStates.CharacterBaseState) stateMachine.GetCurrentState()).GetHitBy(hitBox);
             }
 
+            public Vector3 GetTarget() {
+                return target;
+            }
+
             public void SetTarget(Vector3 newTargetPos) {
-                // TODO: Set new target position
+                target = newTargetPos;
+            }
+
+            public Transform GetOpponentTransform() {
+                return opponentChar.transform;
             }
 
             public void ChangeHealth(int amount) {

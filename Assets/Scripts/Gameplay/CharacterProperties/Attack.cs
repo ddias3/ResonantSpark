@@ -25,6 +25,13 @@ namespace ResonantSpark {
             public List<FrameState> frames { get; private set; }
             public List<Hit> hits { get; private set; }
 
+            public Func<float, float> xMoveCb { get; private set; }
+            public Func<float, float> yMoveCb { get; private set; }
+            public Func<float, float> zMoveCb { get; private set; }
+
+            public Action<float, Transform> framesContinuous { get; private set; }
+            public Action<CharacterStates.CharacterBaseState> cleanUpCallback { get; private set; }
+
             private IFightingGameService fgService;
             private IProjectileService projectServ;
             private IAudioService audioServ;
@@ -59,6 +66,13 @@ namespace ResonantSpark {
                 priority = 1;
                 animStateName = attackBuilder.animStateName;
 
+                xMoveCb = attackBuilder.moveX;
+                yMoveCb = attackBuilder.moveY;
+                zMoveCb = attackBuilder.moveZ;
+
+                framesContinuous = attackBuilder.framesCountinuous;
+                cleanUpCallback = attackBuilder.cleanUpCallback;
+
                 hits = attackBuilder.GetHits();
                 frames = attackBuilder.GetFrames();
 
@@ -84,9 +98,13 @@ namespace ResonantSpark {
 
             public void RunFrame() {
                 int frameCount = tracker.frameCount;
-                frames[frameCount].Perform();
+                framesContinuous?.Invoke((float)frameCount, fgChar.GetOpponentTransform());
+                // TODO: what it should be
+                //framesContinuous?.Invoke((float)frameCount, fgChar.GetTarget());
+                frames[frameCount].Perform(fgChar);
 
                 if (frameCount == frames.Count - 1) {
+                    cleanUpCallback?.Invoke(null); // TODO: Get Previous CharacterState to pass in
                     onCompleteCallback();
                 }
 

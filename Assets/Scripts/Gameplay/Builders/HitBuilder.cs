@@ -22,6 +22,7 @@ namespace ResonantSpark {
 
                 this.tracking = false;
                 this.comboScaling = 1.0f;
+                this.eventCallbacks = new Dictionary<string, Action<HitBox, Utility.HitInfo>>();
 
                 hitBoxBuilderCallbacks = new List<Action<IHitBoxCallbackObject>>();
             }

@@ -4,6 +4,8 @@ using UnityEngine;
 
 using ResonantSpark.Builder;
 using ResonantSpark.Character;
+using ResonantSpark.Utility;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace Builder {
@@ -16,6 +18,7 @@ namespace ResonantSpark {
             IHitCallbackObject ComboScaling(float scaling);
             IHitCallbackObject Tracking(bool tracking);
             IHitCallbackObject Priority(AttackPriority priority);
+            IHitCallbackObject Event(string eventName, Action<HitBox, HitInfo> callback);
             IHitCallbackObject HitBox(Action<IHitBoxCallbackObject> callback);
         }
     }
@@ -30,6 +33,7 @@ namespace ResonantSpark {
             public float blockStun { get; private set; }
             public float comboScaling { get; private set; }
             public bool tracking { get; private set; }
+            public Dictionary<string, Action<HitBox, HitInfo>> eventCallbacks { get; private set; }
 
             public IHitCallbackObject Block(params Block[] requiredBlocks) {
                 this.requiredBlocks = new List<Block>(requiredBlocks);
@@ -49,6 +53,10 @@ namespace ResonantSpark {
             }
             public IHitCallbackObject Tracking(bool tracking) {
                 this.tracking = tracking;
+                return this;
+            }
+            public IHitCallbackObject Event(string eventName, Action<HitBox, HitInfo> callback) {
+                this.eventCallbacks.Add(eventName, callback);
                 return this;
             }
             public IHitCallbackObject HitBox(Action<IHitBoxCallbackObject> hitBoxCallback) {

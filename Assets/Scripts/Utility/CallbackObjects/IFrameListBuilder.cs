@@ -4,6 +4,7 @@ using UnityEngine;
 
 using ResonantSpark.Builder;
 using ResonantSpark.Gameplay;
+using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace Builder {
@@ -13,6 +14,7 @@ namespace ResonantSpark {
             IFrameListCallbackObj CancellableOnWhiff(bool cancellableOnWhiff);
             IFrameListCallbackObj Hit(Action<IHitCallbackObject> callback);
             IFrameListCallbackObj Track(Action<Vector3, Transform> callback);
+            IFrameListCallbackObj Armor(Action<HitInfo> callback);
             IFrameListCallbackObj Sound(AudioClip audioClip, Action<AudioResource> soundCallback);
             IFrameListCallbackObj Projectile(Projectile projectile, Action<Projectile> projectileCallback);
             IFrameListCallbackObj From(int startFrame);
@@ -58,6 +60,14 @@ namespace ResonantSpark {
             public IFrameListCallbackObj Track(Action<Vector3, Transform> callback) {
                 entries.Add(new FrameUtilMapObject {
                     option = "track",
+                    content = callback
+                });
+                return this;
+            }
+
+            public IFrameListCallbackObj Armor(Action<HitInfo> callback) {
+                entries.Add(new FrameUtilMapObject {
+                    option = "armor",
                     content = callback
                 });
                 return this;

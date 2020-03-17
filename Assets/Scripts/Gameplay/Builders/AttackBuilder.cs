@@ -37,7 +37,6 @@ namespace ResonantSpark {
                     HitBuilder builder = new HitBuilder(services);
 
                     callback(builder);
-                    // TODO: Pass along the events
 
                     Hit hit = builder.CreateHit();
 

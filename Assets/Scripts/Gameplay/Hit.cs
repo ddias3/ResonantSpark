@@ -11,11 +11,14 @@ namespace ResonantSpark {
             public int id { get; private set; }
 
             private List<HitBox> hitBoxes;
+            private Dictionary<string, Action<HitBox, HitInfo>> hitEventCallbacks;
 
-            public Hit(Dictionary<string, Action<HitInfo>> eventCallbacks) {
+            public Hit(Dictionary<string, Action<HitBox, HitInfo>> hitEventCallbacks) {
                 this.id = Hit.hitCounter++;
+                this.hitBoxes = new List<HitBox>();
+                this.hitEventCallbacks = hitEventCallbacks;
 
-                hitBoxes = new List<HitBox>();
+                PopulateEventCallbacks();
             }
 
             public void AddHitBox(HitBox hitBox) {
@@ -23,8 +26,9 @@ namespace ResonantSpark {
             }
 
             public void Active() {
-                // TODO: Create Active call in Hit
-                //hitBoxService.Active(this);
+                foreach (HitBox hitBox in hitBoxes) {
+                    hitBox.Active();
+                }
             }
 
             public bool Equals(Hit other) {
@@ -34,6 +38,26 @@ namespace ResonantSpark {
             public override int GetHashCode() {
                 return id;
             }
+
+            private void PopulateEventCallbacks() {
+                List<string> eventNames = new List<string> {
+                    "onHitFGChar",
+                    "onEqualPriorityHitBox",
+                    "onHitProjectile",
+                };
+
+                foreach (string eventName in eventNames) {
+                    if (!hitEventCallbacks.ContainsKey(eventName)) {
+                        hitEventCallbacks.Add(eventName, DefaultEventHandler(eventName));
+                    }
+                }
+            }
+
+            private Action<HitBox, HitInfo> DefaultEventHandler(string eventName) {
+                return (HitBox hitBox, HitInfo hitInfo) => {
+                    hitBox.InvokeEvent(eventName, hitInfo);
+                };
+            } 
         }
     }
 }

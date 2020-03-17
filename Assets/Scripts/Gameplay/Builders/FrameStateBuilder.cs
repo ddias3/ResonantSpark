@@ -17,7 +17,17 @@ namespace ResonantSpark {
                     hitList.Add(hitMap[hitCallbackIds[n]]);
                 }
 
-                return new FrameState(hitList, activateHitBox, chainCancellable, specialCancellable);
+                return new FrameState(
+                    chainCancellable,
+                    specialCancellable,
+                    cancellableOnWhiff,
+                    hitList,
+                    armorCallback,
+                    trackCallback,
+                    soundClip,
+                    soundCallback,
+                    projectile,
+                    projectileCallback);
             }
         }
     }

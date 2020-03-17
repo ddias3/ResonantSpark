@@ -136,6 +136,7 @@ namespace ResonantSpark {
                                         hit.ComboScaling(1.0f);
                                         hit.Priority(AttackPriority.LightAttack);
 
+                                        // TODO: make hit.HitBox actually return the hitbox reference similar to Attack
                                         hit.HitBox(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0));
@@ -153,6 +154,13 @@ namespace ResonantSpark {
                                                     fgChar.PredeterminedActions("verticalClash");
                                                 }
                                             });
+                                        });
+
+                                        hit.Event("onHitFGChar", (hitBox, hitInfo) => {
+                                            //if (hitBox == tipperHitBox) {
+                                            //    // do extra stuff.
+                                            //}
+                                            hitBox.InvokeEvent("onHitFGChar", hitInfo);
                                         });
                                     });
                                 fl.To(14);
@@ -345,7 +353,6 @@ namespace ResonantSpark {
                                 .SpecialCancellable(true)
                                 .ChainCancellable(false)
                                 .CancellableOnWhiff(false)
-                                .To(8)
                                 .From(8)
                                     .Hit(hit => {
                                         hit.HitDamage(600)

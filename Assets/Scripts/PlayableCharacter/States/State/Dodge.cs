@@ -71,7 +71,7 @@ namespace ResonantSpark {
                     x = localScaling.x * dodgeSpeedCurve.Evaluate(tracker.frameCount),
                     y = 0.0f,
                         // TODO: Figure out the actual function here to get to the correct new location
-                    z = 0.3f / fgChar.OpponentPosition().magnitude,
+                    z = 0.3f / fgChar.OpponentDirection().magnitude,
                 };
 
                 fgChar.AddRelativeVelocity(Gameplay.VelocityPriority.Dash, localVelocity);

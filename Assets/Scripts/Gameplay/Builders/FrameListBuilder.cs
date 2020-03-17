@@ -74,6 +74,8 @@ namespace ResonantSpark {
                 bool specialCancellable = FrameUtil.Default.specialCancellable;
                 bool cancellableOnWhiff = FrameUtil.Default.cancellableOnWhiff;
 
+                int longestEndFrame = -1;
+
                 int hitCallbackCounter = 0;
                 Dictionary<int, Action<IHitCallbackObject>> hitCallbackMap = new Dictionary<int, Action<IHitCallbackObject>>();
 
@@ -104,11 +106,27 @@ namespace ResonantSpark {
                             stack.Push(topStackFrame);
                             break;
                         case "endFrame":
-                            do {
+                            if (((int)entry.content) - 1 > longestEndFrame) {
+                                longestEndFrame = ((int)entry.content) - 1;
+                            }
+
+                            if (System.Object.ReferenceEquals(topStackFrame, baseStackFrame)) {
+                                int startFrame = topStackFrame.startFrame;
+                                topStackFrame = new ListStackFrame {
+                                    startFrame = startFrame,
+                                    endFrame = ((int)entry.content) - 1,
+                                    chainCancellable = chainCancellable,
+                                    specialCancellable = specialCancellable,
+                                    cancellableOnWhiff = cancellableOnWhiff,
+                                    hitCallbackIds = new List<int>(),
+                                };
+                                stack.Push(topStackFrame);
+                            }
+                            else {
                                 topStackFrame.endFrame = ((int)entry.content) - 1;
                                 completeStackFrames.Add(stack.Pop());
                                 topStackFrame = stack.Peek();
-                            } while (!System.Object.ReferenceEquals(topStackFrame, baseStackFrame));
+                            }
                             break;
                         case "chainCancellable":
                             topStackFrame.chainCancellable = chainCancellable = (bool)entry.content;
@@ -122,6 +140,10 @@ namespace ResonantSpark {
                         case "track":
                             topStackFrame.trackCallback = (Action<Vector3, Transform>)entry.content;
                             break;
+                        // TODO: Create armor callback.
+                        //case "armor":
+                        //    topStackFrame.armorCallback = (Action<HitInfo>)entry.content;
+                        //    break;
                         case "sound":
                             topStackFrame.soundClip = (((AudioClip, Action<AudioResource>))entry.content).Item1;
                             topStackFrame.soundCallback = (((AudioClip, Action<AudioResource>))entry.content).Item2;
@@ -142,11 +164,17 @@ namespace ResonantSpark {
                     }
                 }
 
+                while (!System.Object.ReferenceEquals(topStackFrame, baseStackFrame)) {
+                    topStackFrame.endFrame = longestEndFrame;
+                    completeStackFrames.Add(stack.Pop());
+                    topStackFrame = stack.Peek();
+                }
+
                 if (!System.Object.ReferenceEquals(stack.Peek(), baseStackFrame)) {
                     throw new InvalidProgramException("Frame List inputs are missing an end frame for list creation");
                 }
 
-                baseStackFrame.endFrame = completeStackFrames[completeStackFrames.Count - 1].endFrame;
+                baseStackFrame.endFrame = longestEndFrame;
 
                 completeStackFrames.Sort(new Comparison<ListStackFrame>((ListStackFrame x, ListStackFrame y) => {
                     if (x.startFrame < y.startFrame) {
@@ -183,9 +211,18 @@ namespace ResonantSpark {
 
                 foreach (ListStackFrame stackFrame in completeStackFrames) {
                     for (int frame = stackFrame.startFrame; frame < stackFrame.endFrame; ++frame) {
-                        frameList[frame]
-                            .SupplyAllStaticInfo(stackFrame.chainCancellable, stackFrame.specialCancellable, stackFrame.cancellableOnWhiff)
-                            .HitCallbackIds(stackFrame.hitCallbackIds);
+                        frameList[frame].SupplyAllInfo(
+                            stackFrame.chainCancellable,
+                            stackFrame.specialCancellable,
+                            stackFrame.cancellableOnWhiff,
+                            stackFrame.hitCallbackIds,
+                            null, // TODO: stackFrame.armorCallback,
+                            stackFrame.trackCallback,
+                            stackFrame.soundClip,
+                            stackFrame.soundCallback,
+                            stackFrame.projectile,
+                            stackFrame.projectileCallback
+                        );
                     }
                 }
 
