@@ -178,10 +178,10 @@ namespace ResonantSpark {
                         .Input(InputNotation._5A)
                         .AnimationState("southpaw_5AAA")
                         .Movement(xMoveCb: attackMovementMap["southpaw_5AAA.x"].Evaluate, zMoveCb: attackMovementMap["southpaw_5AAA.z"].Evaluate)
-                        .FramesContinuous((localFrame, target) => {
+                        .FramesContinuous((localFrame, targetPos) => {
                             if (localFrame >= 22.0f && localFrame <= 30.0f) {
                                 float p = (localFrame - 22.0f) / 30.0f;
-                                Quaternion rot = Quaternion.Euler(0.0f, -180f * p + Vector3.SignedAngle(Vector3.right, fgChar.position - target.position, Vector3.up), 0.0f);
+                                Quaternion rot = Quaternion.Euler(0.0f, -180f * p + Vector3.SignedAngle(Vector3.right, fgChar.position - targetPos, Vector3.up), 0.0f);
                                 fgChar.SetRotation(rot);
                                     // fgChar.GetOrientation is done automatically on each frame
                             }
@@ -286,10 +286,10 @@ namespace ResonantSpark {
                         .Input(InputNotation._5A)
                         .AnimationState("orthodox_5AA")
                         .Movement(xMoveCb: attackMovementMap["orthodox_5AA.x"].Evaluate, zMoveCb: attackMovementMap["orthodox_5AA.z"].Evaluate)
-                        .FramesContinuous((localFrame, target) => {
+                        .FramesContinuous((localFrame, targetPos) => {
                             if (localFrame >= 20.0f && localFrame <= 26.0f) {
                                 float p = (localFrame - 20.0f) / 26.0f;
-                                Quaternion rot = Quaternion.Euler(0.0f, -180f * p + Vector3.SignedAngle(Vector3.right, fgChar.position - target.position, Vector3.up), 0.0f);
+                                Quaternion rot = Quaternion.Euler(0.0f, -180f * p + Vector3.SignedAngle(Vector3.right, fgChar.position - targetPos, Vector3.up), 0.0f);
                                 fgChar.SetRotation(rot);
                                     // fgChar.GetOrientation is done automatically on each frame
                             }

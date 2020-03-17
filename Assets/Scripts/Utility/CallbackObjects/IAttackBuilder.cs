@@ -16,7 +16,7 @@ namespace ResonantSpark {
             IAttackCallbackObj Input(params InputNotation[] input);
             IAttackCallbackObj Movement(Func<float, float> xMoveCb = null, Func<float, float> yMoveCb = null, Func<float, float> zMoveCb = null);
             IAttackCallbackObj AnimationState(string animStateName);
-            IAttackCallbackObj FramesContinuous(Action<float, Transform> callback);
+            IAttackCallbackObj FramesContinuous(Action<float, Vector3> callback);
             IAttackCallbackObj Frames((List<FrameStateBuilder> frameList, Dictionary<int, Action<IHitCallbackObject>> hitCallbackMap) framesInfo);
             IAttackCallbackObj CleanUp(Action<CharacterStates.CharacterBaseState> callback);
         }
@@ -31,7 +31,7 @@ namespace ResonantSpark {
             public Func<float, float> moveX { get; private set; }
             public Func<float, float> moveY { get; private set; }
             public Func<float, float> moveZ { get; private set; }
-            public Action<float, Transform> framesCountinuous { get; private set; }
+            public Action<float, Vector3> framesCountinuous { get; private set; }
             public Action<CharacterStates.CharacterBaseState> cleanUpCallback { get; private set; }
             public string animStateName { get; private set; }
 
@@ -65,7 +65,7 @@ namespace ResonantSpark {
 
                 return this;
             }
-            public IAttackCallbackObj FramesContinuous(Action<float, Transform> callback) {
+            public IAttackCallbackObj FramesContinuous(Action<float, Vector3> callback) {
                 this.framesCountinuous = callback;
                 return this;
             }

@@ -29,7 +29,7 @@ namespace ResonantSpark {
             public Func<float, float> yMoveCb { get; private set; }
             public Func<float, float> zMoveCb { get; private set; }
 
-            public Action<float, Transform> framesContinuous { get; private set; }
+            public Action<float, Vector3> framesContinuous { get; private set; }
             public Action<CharacterStates.CharacterBaseState> cleanUpCallback { get; private set; }
 
             private IFightingGameService fgService;
@@ -98,9 +98,7 @@ namespace ResonantSpark {
 
             public void RunFrame() {
                 int frameCount = tracker.frameCount;
-                framesContinuous?.Invoke((float)frameCount, fgChar.GetOpponentTransform());
-                // TODO: what it should be
-                //framesContinuous?.Invoke((float)frameCount, fgChar.GetTarget());
+                framesContinuous?.Invoke((float)frameCount, fgChar.GetTarget());
                 frames[frameCount].Perform(fgChar);
 
                 if (frameCount == frames.Count - 1) {

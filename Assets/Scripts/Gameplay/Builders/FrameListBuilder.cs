@@ -170,11 +170,13 @@ namespace ResonantSpark {
                     topStackFrame = stack.Peek();
                 }
 
-                if (!System.Object.ReferenceEquals(stack.Peek(), baseStackFrame)) {
-                    throw new InvalidProgramException("Frame List inputs are missing an end frame for list creation");
-                }
-
                 baseStackFrame.endFrame = longestEndFrame;
+
+                for (int n = 0; n < completeStackFrames.Count; ++n) {
+                    if (completeStackFrames[n].endFrame < 0) {
+                        completeStackFrames[n].endFrame = longestEndFrame;
+                    }
+                }
 
                 completeStackFrames.Sort(new Comparison<ListStackFrame>((ListStackFrame x, ListStackFrame y) => {
                     if (x.startFrame < y.startFrame) {
