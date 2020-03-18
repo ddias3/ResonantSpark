@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using ResonantSpark.CharacterProperties;
 using ResonantSpark.Utility;
 
 namespace ResonantSpark {
@@ -29,6 +29,15 @@ namespace ResonantSpark {
                 foreach (HitBox hitBox in hitBoxes) {
                     hitBox.Active();
                 }
+            }
+
+            public void InvokeEvent(string eventName, HitBox hitBox, HitInfo hitInfo) {
+                if (!hitBoxes.Contains(hitBox)) {
+                    throw new InvalidOperationException("Attempting to invoke a hitbox event to a hit it doesn't belongs to");
+                }
+
+                Action<HitBox, HitInfo> callback = this.hitEventCallbacks[eventName];
+                callback(hitBox, hitInfo);
             }
 
             public bool Equals(Hit other) {

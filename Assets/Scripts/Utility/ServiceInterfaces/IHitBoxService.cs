@@ -5,7 +5,7 @@ using ResonantSpark.Gameplay;
 namespace ResonantSpark {
     namespace Service {
         public interface IHitBoxService {
-            HitBox DefaultPrefab();
+            HitBoxComponent DefaultPrefab();
             Transform GetEmptyHoldTransform();
             void Active(HitBox hitBox);
 

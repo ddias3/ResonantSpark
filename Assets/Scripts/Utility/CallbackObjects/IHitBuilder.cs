@@ -19,7 +19,7 @@ namespace ResonantSpark {
             IHitCallbackObject Tracking(bool tracking);
             IHitCallbackObject Priority(AttackPriority priority);
             IHitCallbackObject Event(string eventName, Action<HitBox, HitInfo> callback);
-            IHitCallbackObject HitBox(Action<IHitBoxCallbackObject> callback);
+            IHitCallbackObject HitBox(HitBox hitBox);
         }
     }
 
@@ -59,8 +59,8 @@ namespace ResonantSpark {
                 this.eventCallbacks.Add(eventName, callback);
                 return this;
             }
-            public IHitCallbackObject HitBox(Action<IHitBoxCallbackObject> hitBoxCallback) {
-                hitBoxBuilderCallbacks.Add(hitBoxCallback);
+            public IHitCallbackObject HitBox(HitBox hitBox) {
+                hitBoxes.Add(hitBox);
                 return this;
             }
             public IHitCallbackObject HitDamage(int hitDamage) {

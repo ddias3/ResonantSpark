@@ -9,10 +9,11 @@ using ResonantSpark.Builder;
 namespace ResonantSpark {
     namespace Builder {
         public interface IHitBoxCallbackObject {
-            IHitBoxCallbackObject Prefab(HitBox hitBoxPrefab);
+            IHitBoxCallbackObject Prefab(HitBoxComponent hitBoxPrefab);
             IHitBoxCallbackObject Point0(Vector3 p0);
             IHitBoxCallbackObject Point1(Vector3 p1);
             IHitBoxCallbackObject Radius(float width);
+            IHitBoxCallbackObject HitLocation(Vector3 hitLocation);
             IHitBoxCallbackObject Tracking(bool tracking);
             IHitBoxCallbackObject FromCollider(CapsuleCollider collider);
             IHitBoxCallbackObject Relative(Transform transform);
@@ -22,9 +23,12 @@ namespace ResonantSpark {
 
     namespace CharacterProperties {
         public partial class HitBoxBuilder : IHitBoxCallbackObject {
-            private HitBox hitBoxPrefab;
+            private HitBoxComponent hitBoxPrefab;
 
-            private Dictionary<string, Action<HitInfo>> callbacks;
+            public Dictionary<string, Action<HitInfo>> eventCallbacks { get; private set; }
+            public bool tracking { get; private set; }
+
+            private Vector3 hitLocation = Vector3.up;
 
             private CapsuleCollider collider;
             private Transform transform;
@@ -33,9 +37,8 @@ namespace ResonantSpark {
             private Vector3 point1;
 
             private float radius = -1;
-            private bool tracking = false;
 
-            public IHitBoxCallbackObject Prefab(HitBox hitBoxPrefab) {
+            public IHitBoxCallbackObject Prefab(HitBoxComponent hitBoxPrefab) {
                 this.hitBoxPrefab = hitBoxPrefab;
                 return this;
             }
@@ -55,13 +58,18 @@ namespace ResonantSpark {
                 return this;
             }
 
+            public IHitBoxCallbackObject HitLocation(Vector3 hitLocation) {
+                this.hitLocation = hitLocation;
+                return this;
+            }
+
             public IHitBoxCallbackObject Tracking(bool tracking) {
                 this.tracking = tracking;
                 return this;
             }
 
             public IHitBoxCallbackObject Event(string eventName, Action<HitInfo> callback) {
-                callbacks.Add(eventName, callback);
+                eventCallbacks.Add(eventName, callback);
                 return this;
             }
 

@@ -22,6 +22,7 @@ namespace ResonantSpark {
             }
 
             public abstract void GetHitBy(HitBox hitBox);
+            public abstract string HitBoxEventType(HitBox hitBox);
             public abstract void AddSelf();
             public abstract void RemoveSelf();
         }

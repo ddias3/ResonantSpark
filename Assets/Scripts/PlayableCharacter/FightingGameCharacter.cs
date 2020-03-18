@@ -32,6 +32,8 @@ namespace ResonantSpark {
 
             private FightingGameService fgService;
 
+            private CharacterStates.CharacterBaseState prevState;
+
             private Vector3 target;
 
             private Input.InputBuffer inputBuffer;
@@ -326,11 +328,16 @@ namespace ResonantSpark {
             }
 
             public void SetState(CharacterStates.CharacterBaseState nextState) {
+                prevState = (CharacterStates.CharacterBaseState) stateMachine.GetCurrentState();
                 stateMachine.ChangeState(nextState);
             }
 
             public CharacterStates.CharacterBaseState State(string id) {
                 return (CharacterStates.CharacterBaseState) states.Get(id);
+            }
+
+            public CharacterStates.CharacterBaseState GetPrevState() {
+                return prevState;
             }
 
             public void UseCombination(Combination combo) {
@@ -402,6 +409,10 @@ namespace ResonantSpark {
 
             public override void GetHitBy(HitBox hitBox) {
                 ((CharacterStates.CharacterBaseState) stateMachine.GetCurrentState()).GetHitBy(hitBox);
+            }
+
+            public override string HitBoxEventType(HitBox hitBox) {
+                return "onHitFGChar";
             }
 
             public Vector3 GetTarget() {

@@ -8,7 +8,7 @@ namespace ResonantSpark {
     namespace Service {
         public class HitBoxService : MonoBehaviour, IHitBoxService {
             public Transform hitBoxEmpty;
-            public HitBox hitBoxDefaultPrefab;
+            public HitBoxComponent hitBoxDefaultPrefab;
 
             private FrameEnforcer frame;
 
@@ -84,7 +84,7 @@ namespace ResonantSpark {
                 activeHitBoxes.Add(hitBox);
             }
 
-            public HitBox DefaultPrefab() {
+            public HitBoxComponent DefaultPrefab() {
                 return hitBoxDefaultPrefab;
             }
 

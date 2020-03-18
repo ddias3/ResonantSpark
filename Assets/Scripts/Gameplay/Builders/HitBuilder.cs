@@ -14,7 +14,7 @@ namespace ResonantSpark {
 
             private IHitBoxService hitBoxService;
 
-            private List<Action<IHitBoxCallbackObject>> hitBoxBuilderCallbacks;
+            private List<HitBox> hitBoxes;
 
             public HitBuilder(AllServices allServices) {
                 this.services = allServices;
@@ -24,24 +24,22 @@ namespace ResonantSpark {
                 this.comboScaling = 1.0f;
                 this.eventCallbacks = new Dictionary<string, Action<HitBox, Utility.HitInfo>>();
 
-                hitBoxBuilderCallbacks = new List<Action<IHitBoxCallbackObject>>();
+                hitBoxes = new List<HitBox>();
             }
 
             public Hit CreateHit() {
 
+                Hit hit = new Hit(this.eventCallbacks);
+
                 List<HitBox> hitBoxes = new List<HitBox>();
 
-                for (int n = 0; n < hitBoxBuilderCallbacks.Count; ++n) {
-                    Action<IHitBoxCallbackObject> callback = hitBoxBuilderCallbacks[n];
-
-                    HitBoxBuilder builder = new HitBoxBuilder(services);
-                    callback(builder);
-                    HitBox hitBox = builder.CreateHitBox(hitBoxService.GetEmptyHoldTransform());
-
-                    hitBoxes.Add(hitBox);
+                for (int n = 0; n < hitBoxes.Count; ++n) {
+                    HitBox hitBox = hitBoxes[n];
+                    hitBox.Build(services, hit);
+                    hit.AddHitBox(hitBox);
                 }
 
-                return null;
+                return hit;
             }
         }
     }

@@ -20,6 +20,7 @@ namespace ResonantSpark {
             }
 
             public void OnStateMachineEnable(Action<IState> changeState) {
+                Debug.Log("Base State OnStateMachineEnable");
                 this.changeState = changeState;
             }
 

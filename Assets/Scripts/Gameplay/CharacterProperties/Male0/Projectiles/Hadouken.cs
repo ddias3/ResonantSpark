@@ -43,6 +43,10 @@ namespace ResonantSpark {
                     throw new System.NotImplementedException();
                 }
 
+                public override string HitBoxEventType(HitBox hitBox) {
+                    return "onHitProjectile";
+                }
+
                 public override void AddSelf() {
                     throw new System.NotImplementedException();
                 }

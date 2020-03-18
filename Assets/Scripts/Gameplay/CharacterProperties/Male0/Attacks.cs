@@ -84,7 +84,7 @@ namespace ResonantSpark {
 
                                         // hit.Block(); default is to allow any kind of blocking
 
-                                        hit.HitBox(hb => {
+                                        hit.HitBox(new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0));
                                             hb.Point1(new Vector3(0, 1, 0));
@@ -95,7 +95,7 @@ namespace ResonantSpark {
                                                     groundedForceMagnitude: 0.5f,
                                                     airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
                                                     airborneForceMagnitude: 1.0f));
-                                        });
+                                        }));
                                     });
                                 fl.To(10);
                                 fl.From(10);
@@ -121,7 +121,7 @@ namespace ResonantSpark {
                                 fl.From(4);
                                     fl.Track((currTarget, actualTarget) => {
                                         Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
-                                        // for now, just let the setting of this value be instantaneous once per frame.
+                                            // for now, just let the setting of this value be instantaneous once per frame.
                                         fgChar.SetTarget(newTargetPos);
                                     });
                                 fl.To(12);
@@ -136,8 +136,7 @@ namespace ResonantSpark {
                                         hit.ComboScaling(1.0f);
                                         hit.Priority(AttackPriority.LightAttack);
 
-                                        // TODO: make hit.HitBox actually return the hitbox reference similar to Attack
-                                        hit.HitBox(hb => {
+                                        HitBox tipperHitBox = new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0));
                                             hb.Point1(new Vector3(0, 1, 0));
@@ -156,10 +155,12 @@ namespace ResonantSpark {
                                             });
                                         });
 
+                                        hit.HitBox(tipperHitBox);
+
                                         hit.Event("onHitFGChar", (hitBox, hitInfo) => {
-                                            //if (hitBox == tipperHitBox) {
-                                            //    // do extra stuff.
-                                            //}
+                                            if (hitBox == tipperHitBox) {
+                                                // do extra stuff.
+                                            }
                                             hitBox.InvokeEvent("onHitFGChar", hitInfo);
                                         });
                                     });
@@ -202,7 +203,7 @@ namespace ResonantSpark {
                                             .Tracking(true)
                                             .Priority(AttackPriority.MediumAttack);
 
-                                        hit.HitBox(hb => {
+                                        hit.HitBox(new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0));
                                             hb.Point1(new Vector3(0, 1, 0));
@@ -219,7 +220,7 @@ namespace ResonantSpark {
                                                     fgChar.PredeterminedActions("horizontalClashSwingFromLeft");
                                                 }
                                             });
-                                        });
+                                        }));
                                     })
                                 .To(21)
                                 .From(22)
@@ -258,7 +259,7 @@ namespace ResonantSpark {
                                             .BlockStun(10.0f)
                                             .Priority(AttackPriority.LightAttack);
 
-                                        hit.HitBox(hb => {
+                                        hit.HitBox(new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0));
                                             hb.Point1(new Vector3(0, 1, 0));
@@ -269,7 +270,7 @@ namespace ResonantSpark {
                                                     groundedForceMagnitude: 0.5f,
                                                     airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
                                                     airborneForceMagnitude: 1.0f));
-                                        });
+                                        }));
                                     })
                                 .To(10)
                                 .From(10)
@@ -314,7 +315,7 @@ namespace ResonantSpark {
                                             .BlockStun(10.0f)
                                             .Priority(AttackPriority.MediumAttack);
 
-                                        hit.HitBox(hb => {
+                                        hit.HitBox(new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0));
                                             hb.Point1(new Vector3(0, 1, 0));
@@ -331,7 +332,7 @@ namespace ResonantSpark {
                                                     fgChar.PredeterminedActions("horizontalClashSwingFromRight");
                                                 }
                                             });
-                                        });
+                                        }));
                                     })
                                 .To(17)
                                 .From(17)
@@ -362,7 +363,7 @@ namespace ResonantSpark {
 
                                         hit.Block(Block.LOW);
 
-                                        hit.HitBox(hb => {
+                                        hit.HitBox(new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0));
                                             hb.Point1(new Vector3(0, 1, 0));
@@ -380,7 +381,7 @@ namespace ResonantSpark {
                                                     });
                                                 }
                                             });
-                                        });
+                                        }));
                                     })
                                 .To(9)
                                 .From(14)
@@ -419,7 +420,7 @@ namespace ResonantSpark {
 
                                         hit.Block(Block.LOW);
 
-                                        hit.HitBox(hb => {
+                                        hit.HitBox(new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0));
                                             hb.Point1(new Vector3(0, 1, 0));
@@ -430,7 +431,7 @@ namespace ResonantSpark {
                                                     groundedForceMagnitude: 0.5f,
                                                     airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
                                                     airborneForceMagnitude: 1.0f));
-                                        });
+                                        }));
                                     })
                                 .To(14)
                                     //Recovery
@@ -461,7 +462,7 @@ namespace ResonantSpark {
                                             .HitStun(12.0f)
                                             .BlockStun(8.0f);
 
-                                        hit.HitBox(hb => {
+                                        hit.HitBox(new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0));
                                             hb.Point1(new Vector3(0, 1, 0));
@@ -479,7 +480,7 @@ namespace ResonantSpark {
                                                     });
                                                 }
                                             });
-                                        });
+                                        }));
                                     })
                                 .To(13)
                                 .From(15)
@@ -516,7 +517,7 @@ namespace ResonantSpark {
                                             .HitStun(12.0f)
                                             .BlockStun(30.0f);
 
-                                        hit.HitBox(hb => {
+                                        hit.HitBox(new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0));
                                             hb.Point1(new Vector3(0, 1, 0));
@@ -527,7 +528,7 @@ namespace ResonantSpark {
                                                     groundedForceMagnitude: 0.5f,
                                                     airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
                                                     airborneForceMagnitude: 1.0f));
-                                        });
+                                        }));
                                     })
                                 .To(11)
                                 .From(13)
@@ -571,7 +572,7 @@ namespace ResonantSpark {
                                             .HitStun(12.0f)
                                             .BlockStun(12.0f);
 
-                                        hit.HitBox(hb => {
+                                        hit.HitBox(new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0));
                                             hb.Point1(new Vector3(0, 1, 0));
@@ -582,7 +583,7 @@ namespace ResonantSpark {
                                                     groundedForceMagnitude: 0.5f,
                                                     airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
                                                     airborneForceMagnitude: 1.0f));
-                                        });
+                                        }));
                                     })
                                 .To(13)
                                 .From(16)
@@ -628,7 +629,7 @@ namespace ResonantSpark {
                                             .Priority(AttackPriority.HeavyAttack)
                                             .ComboScaling(1.0f);
 
-                                        hit.HitBox(hb => {
+                                        hit.HitBox(new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0));
                                             hb.Point1(new Vector3(0, 1, 0));
@@ -672,7 +673,7 @@ namespace ResonantSpark {
                                                     });
                                                 }
                                             });
-                                        });
+                                        }));
                                     })
                                 .To(21)
                                     // Recovery
@@ -717,7 +718,7 @@ namespace ResonantSpark {
                                             .BlockStun(12.0f)
                                             .ComboScaling(0.85f);
 
-                                        hit.HitBox(hb => {
+                                        hit.HitBox(new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0));
                                             hb.Point1(new Vector3(0, 1, 0));
@@ -728,7 +729,7 @@ namespace ResonantSpark {
                                                     groundedForceMagnitude: 0.5f,
                                                     airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
                                                     airborneForceMagnitude: 1.0f));
-                                        });
+                                        }));
                                     })
                                 .To(13)
                                 .From(16)
@@ -772,7 +773,7 @@ namespace ResonantSpark {
                                             .HitStun(12.0f)
                                             .BlockStun(12.0f);
 
-                                        hit.HitBox(hb => {
+                                        hit.HitBox(new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0));
                                             hb.Point1(new Vector3(0, 1, 0));
@@ -783,7 +784,7 @@ namespace ResonantSpark {
                                                     groundedForceMagnitude: 0.5f,
                                                     airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
                                                     airborneForceMagnitude: 1.0f));
-                                        });
+                                        }));
                                     })
                                 .To(13)
                                 .From(16)
