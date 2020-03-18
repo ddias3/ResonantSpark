@@ -64,14 +64,6 @@ namespace ResonantSpark {
             }
 
             public void OnCompleteAttack() {
-                //TODO: Choose a new attack, which is also possible.
-                if (GameInputUtil.Down(currDir)) {
-                    changeState(states.Get("crouch"));
-                }
-                else {
-                    changeState(states.Get("stand"));
-                }
-
                 activeAttack = null;
             }
 
@@ -111,6 +103,7 @@ namespace ResonantSpark {
                 if (activeAttack == null || activeAttack.ChainCancellable()) {
                         // TODO: I need to change the input buffer to look further into the future than the input delay for a direction press.
                     fgChar.ChooseAttack(this, activeAttack, button, direction);
+                    stop();
                 }
             }
 

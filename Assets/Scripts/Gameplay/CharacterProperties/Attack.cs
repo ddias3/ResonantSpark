@@ -30,7 +30,7 @@ namespace ResonantSpark {
             public Func<float, float> zMoveCb { get; private set; }
 
             public Action<float, Vector3> framesContinuous { get; private set; }
-            public Action<CharacterStates.CharacterBaseState> cleanUpCallback { get; private set; }
+            public Action cleanUpCallback { get; private set; }
 
             private IFightingGameService fgService;
             private IProjectileService projectServ;
@@ -102,7 +102,7 @@ namespace ResonantSpark {
                 frames[frameCount].Perform(fgChar);
 
                 if (frameCount == frames.Count - 1) {
-                    cleanUpCallback?.Invoke(null); // TODO: Get Previous CharacterState to pass in
+                    cleanUpCallback?.Invoke();
                     onCompleteCallback();
                 }
 

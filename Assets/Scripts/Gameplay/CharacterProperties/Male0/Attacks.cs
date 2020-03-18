@@ -102,7 +102,7 @@ namespace ResonantSpark {
                                     fl.ChainCancellable(true);
                                 fl.To(22);
                             }));
-                        atkBuilder.CleanUp(ReturnToPreviousState);
+                        atkBuilder.CleanUp(ReturnToStand);
                     });
 
                     Attack atkSpw5AA = new Attack(atkBuilder => {
@@ -169,7 +169,7 @@ namespace ResonantSpark {
                                     // Recovery
                                 fl.To(30);
                             }));
-                        atkBuilder.CleanUp(ReturnToPreviousState);
+                        atkBuilder.CleanUp(ReturnToStand);
                     });
 
                     Attack atkSpw5AAA = new Attack(atkBuilder => { atkBuilder
@@ -227,7 +227,7 @@ namespace ResonantSpark {
                                     // Recovery
                                 .To(30);
                             }))
-                        .CleanUp(ReturnToPreviousState);
+                        .CleanUp(ReturnToStand);
                     });
 
                     Attack atkOrt5A = new Attack(atkBuilder => { atkBuilder
@@ -277,7 +277,7 @@ namespace ResonantSpark {
                                     .ChainCancellable(true)
                                 .To(22);
                             }))
-                        .CleanUp(ReturnToPreviousState);
+                        .CleanUp(ReturnToStand);
                     });
 
                     Attack atkOrt5AA = new Attack(atkBuilder => { atkBuilder
@@ -339,7 +339,7 @@ namespace ResonantSpark {
                                     // Recovery
                                 .To(26);
                             }))
-                        .CleanUp(ReturnToPreviousState);
+                        .CleanUp(ReturnToStand);
                     });
 
                     Attack atkSpw2A = new Attack(atkBuilder => { atkBuilder
@@ -388,7 +388,7 @@ namespace ResonantSpark {
                                     .ChainCancellable(true)
                                 .To(22);
                             }))
-                        .CleanUp(ReturnToPreviousState);
+                        .CleanUp(ReturnToCrouch);
                     });
 
                     Attack atkSpw2AA = new Attack(atkBuilder => { atkBuilder
@@ -437,9 +437,7 @@ namespace ResonantSpark {
                                     //Recovery
                                 .To(28);
                             }))
-                        .CleanUp((prevState) => {
-                            fgChar.SetState(fgChar.State("stand"));
-                        });
+                        .CleanUp(ReturnToCrouch);
                     });
 
                     Attack atkOrt2A = new Attack(atkBuilder => { atkBuilder
@@ -487,7 +485,7 @@ namespace ResonantSpark {
                                     .ChainCancellable(true)
                                 .To(23);
                             }))
-                        .CleanUp(ReturnToPreviousState);
+                        .CleanUp(ReturnToCrouch);
                     });
 
                     Attack atkJumpSpw5A = new Attack(atkBuilder => { atkBuilder
@@ -535,10 +533,7 @@ namespace ResonantSpark {
                                     .ChainCancellable(true)
                                 .To(23);
                             }))
-                        .CleanUp((prevState) => {
-                            fgChar.SetStandCollider(Vector3.zero);
-                            fgChar.SetState(prevState);
-                        });
+                        .CleanUp(ReturnToAirborne);
                     });
 
                     Attack atkJumpSpw5AA = new Attack(atkBuilder => { atkBuilder
@@ -590,10 +585,7 @@ namespace ResonantSpark {
                                     .ChainCancellable(true)
                                 .To(30);
                             }))
-                        .CleanUp((prevState) => {
-                            fgChar.SetStandCollider(Vector3.zero);
-                            fgChar.SetState(prevState);
-                        });
+                        .CleanUp(ReturnToAirborne);
                     });
 
                     Attack atkJumpSpw5AAA = new Attack(atkBuilder => { atkBuilder
@@ -679,10 +671,7 @@ namespace ResonantSpark {
                                     // Recovery
                                 .To(40);
                             }))
-                        .CleanUp((prevState) => {
-                            fgChar.SetStandCollider(Vector3.zero);
-                            fgChar.SetState(prevState);
-                        });
+                        .CleanUp(ReturnToAirborne);
                     });
 
                     Attack atkJumpOrt5A = new Attack(atkBuilder => { atkBuilder
@@ -736,10 +725,7 @@ namespace ResonantSpark {
                                     .ChainCancellable(true)
                                 .To(30);
                             }))
-                        .CleanUp((prevState) => {
-                            fgChar.SetStandCollider(Vector3.zero);
-                            fgChar.SetState(prevState);
-                        });
+                        .CleanUp(ReturnToAirborne);
                     });
 
                     Attack atkJumpOrt5AA = new Attack(atkBuilder => { atkBuilder
@@ -791,10 +777,7 @@ namespace ResonantSpark {
                                     .ChainCancellable(true)
                                 .To(30);
                             }))
-                        .CleanUp((prevState) => {
-                            fgChar.SetStandCollider(Vector3.zero);
-                            fgChar.SetState(prevState);
-                        });
+                        .CleanUp(ReturnToAirborne);
                     });
 
                     Attack hadouken = new Attack(atkBuilder => { atkBuilder
@@ -825,7 +808,7 @@ namespace ResonantSpark {
                                     })
                                 .To(13);
                             }))
-                        .CleanUp(ReturnToPreviousState);
+                        .CleanUp(ReturnToStand);
                     });
 
                     charBuilder
@@ -936,8 +919,17 @@ namespace ResonantSpark {
                         });
                 }
 
-                private void ReturnToPreviousState(CharacterStates.CharacterBaseState prevState) {
-                    fgChar.SetState(prevState);
+                private void ReturnToStand() {
+                    fgChar.SetState(fgChar.State("stand"));
+                }
+
+                private void ReturnToCrouch() {
+                    fgChar.SetState(fgChar.State("crouch"));
+                }
+
+                private void ReturnToAirborne() {
+                    fgChar.SetStandCollider(Vector3.zero);
+                    fgChar.SetState(fgChar.State("airborne"));
                 }
 
                 private Action<HitInfo> CommonGroundedOnHitFGChar(AudioClip hitSound, float groundedForceMagnitude, Vector3 airborneForceDirection, float airborneForceMagnitude) {

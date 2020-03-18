@@ -32,8 +32,7 @@ namespace ResonantSpark {
                 fgChar = gameObject.GetComponentInParent<FightingGameCharacter>();
             }
 
-            public new void OnStateMachineEnable(Action<IState> changeState) {
-                Debug.Log("CHARACTER Base State OnStateMachineEnable");
+            public override void OnStateMachineEnable(Action<IState> changeState) {
                 this.changeState = (newState) => {
                     fgChar.SetState((CharacterBaseState) newState);
                 };

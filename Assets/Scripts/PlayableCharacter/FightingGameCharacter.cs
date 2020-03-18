@@ -32,6 +32,8 @@ namespace ResonantSpark {
 
             private FightingGameService fgService;
 
+            private List<CharacterProperties.Attack> prevAttacks;
+
             private CharacterStates.CharacterBaseState prevState;
 
             private Vector3 target;
@@ -87,6 +89,8 @@ namespace ResonantSpark {
 
                 fgService = GameObject.FindGameObjectWithTag("rspService").GetComponent<FightingGameService>();
 
+                prevAttacks = new List<CharacterProperties.Attack>();
+
                 inputDoNothingList = new List<Combination> { ScriptableObject.CreateInstance<DirectionCurrent>().Init(0, Input.FightingGameAbsInputCodeDir.Neutral) };
 
                 rigidbody = gameObject.GetComponent<Rigidbody>();
@@ -120,99 +124,32 @@ namespace ResonantSpark {
                 stateMachine.Reset(); // TODO: Complete this functionality.
             }
 
-            public void ChooseAttack(CharacterStates.CharacterBaseState currState, CharacterProperties.Attack currAttack, FightingGameInputCodeBut button, FightingGameInputCodeDir direction = FightingGameInputCodeDir.None) {
-                InputNotation notation = SelectInputNotation(button, direction);
-
-                List<CharacterProperties.Attack> attackCandidates = charData.SelectAttacks(GetOrientation(), GetGroundRelation(), notation);
-                CharacterProperties.Attack attack = charData.ChooseAttackFromSelectability(attackCandidates, currState, currAttack, new List<CharacterProperties.Attack>());
-
-                if (attack != null) {
-                    CharacterStates.Attack attackState = (CharacterStates.Attack) states.Get("attack");
-
-                    attackState.SetActiveAttack(attack);
-                    SetState(attackState);
-                }
-            }
-
-            private InputNotation SelectInputNotation(FightingGameInputCodeBut button, FightingGameInputCodeDir direction) {
-                InputNotation notation = InputNotation.None;
-
-                switch (button) {
-                    case FightingGameInputCodeBut.A:
-                        switch (direction) {
-                            case FightingGameInputCodeDir.Neutral:
-                            case FightingGameInputCodeDir.None:
-                                notation = InputNotation._5A;
-                                break;
-                            case FightingGameInputCodeDir.DownBack:
-                            case FightingGameInputCodeDir.Down:
-                            case FightingGameInputCodeDir.DownForward:
-                                notation = InputNotation._2A;
-                                break;
-                            default:
-                                notation = InputNotation._5A;
-                                break;
-                        }
-                        break;
-                    case FightingGameInputCodeBut.B:
-                        switch (direction) {
-                            case FightingGameInputCodeDir.Neutral:
-                            case FightingGameInputCodeDir.None:
-                                notation = InputNotation._5B;
-                                break;
-                            case FightingGameInputCodeDir.DownBack:
-                            case FightingGameInputCodeDir.Down:
-                            case FightingGameInputCodeDir.DownForward:
-                                notation = InputNotation._2B;
-                                break;
-                            default:
-                                notation = InputNotation._5B;
-                                break;
-                        }
-                        break;
-                    case FightingGameInputCodeBut.C:
-                        switch (direction) {
-                            case FightingGameInputCodeDir.Neutral:
-                            case FightingGameInputCodeDir.None:
-                                notation = InputNotation._5C;
-                                break;
-                            case FightingGameInputCodeDir.DownBack:
-                            case FightingGameInputCodeDir.Down:
-                            case FightingGameInputCodeDir.DownForward:
-                                notation = InputNotation._2C;
-                                break;
-                            default:
-                                notation = InputNotation._5C;
-                                break;
-                        }
-                        break;
-                    case FightingGameInputCodeBut.D:
-                        switch (direction) {
-                            case FightingGameInputCodeDir.Neutral:
-                            case FightingGameInputCodeDir.None:
-                                notation = InputNotation._5D;
-                                break;
-                            case FightingGameInputCodeDir.DownBack:
-                            case FightingGameInputCodeDir.Down:
-                            case FightingGameInputCodeDir.DownForward:
-                                notation = InputNotation._2D;
-                                break;
-                            default:
-                                notation = InputNotation._5D;
-                                break;
-                        }
-                        break;
-                }
-
-                return notation;
-            }
-
             public void CalculateScreenOrientation() {
                 Vector2 newScreenOrientation = fgService.ScreenOrientation(this);
                 if (newScreenOrientation.x == 0) {
                     newScreenOrientation = screenOrientation;
                 }
                 screenOrientation = newScreenOrientation;
+            }
+
+            public void ChooseAttack(CharacterStates.CharacterBaseState currState, CharacterProperties.Attack currAttack, FightingGameInputCodeBut button, FightingGameInputCodeDir direction = FightingGameInputCodeDir.None) {
+                InputNotation notation = Utility.GameInputUtil.SelectInputNotation(button, direction);
+
+                List<CharacterProperties.Attack> attackCandidates = charData.SelectAttacks(GetOrientation(), GetGroundRelation(), notation);
+                CharacterProperties.Attack attack = charData.ChooseAttackFromSelectability(attackCandidates, currState, currAttack, prevAttacks);
+
+                if (attack != null) {
+                    CharacterStates.Attack attackState = (CharacterStates.Attack)states.Get("attack");
+
+                    attackState.SetActiveAttack(attack);
+                    SetState(attackState);
+
+                    prevAttacks.Add(attack);
+                }
+            }
+
+            public void ClearPrevAttacks() {
+                prevAttacks.Clear();
             }
 
             public FightingGameInputCodeDir MapAbsoluteToRelative(FightingGameAbsInputCodeDir absInput) {
@@ -329,6 +266,9 @@ namespace ResonantSpark {
 
             public void SetState(CharacterStates.CharacterBaseState nextState) {
                 prevState = (CharacterStates.CharacterBaseState) stateMachine.GetCurrentState();
+                if (nextState.GetType() != typeof(CharacterStates.Attack) && nextState.GetType() != typeof(CharacterStates.AttackAirborne)) {
+                    prevAttacks.Clear();
+                }
                 stateMachine.ChangeState(nextState);
             }
 

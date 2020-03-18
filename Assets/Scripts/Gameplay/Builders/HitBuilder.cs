@@ -31,8 +31,6 @@ namespace ResonantSpark {
 
                 Hit hit = new Hit(this.eventCallbacks);
 
-                List<HitBox> hitBoxes = new List<HitBox>();
-
                 for (int n = 0; n < hitBoxes.Count; ++n) {
                     HitBox hitBox = hitBoxes[n];
                     hitBox.Build(services, hit);

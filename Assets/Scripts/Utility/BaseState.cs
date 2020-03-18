@@ -19,8 +19,7 @@ namespace ResonantSpark {
                 frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
             }
 
-            public void OnStateMachineEnable(Action<IState> changeState) {
-                Debug.Log("Base State OnStateMachineEnable");
+            public virtual void OnStateMachineEnable(Action<IState> changeState) {
                 this.changeState = changeState;
             }
 
