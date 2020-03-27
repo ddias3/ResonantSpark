@@ -7,13 +7,14 @@ using ResonantSpark.Input.Combinations;
 using ResonantSpark.Character;
 using ResonantSpark.Input;
 using ResonantSpark.Service;
+using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace Gameplay {
         public class FightingGameCharacter : InGameEntity, IPredeterminedActions, IEquatable<FightingGameCharacter> {
             public static int fgCharCounter = 0;
 
-            public Animator animator;
+            public AnimatorAdapter animator;
             public StateMachine stateMachine;
             public Utility.StateDict states;
 

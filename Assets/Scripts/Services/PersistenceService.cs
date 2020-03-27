@@ -64,6 +64,7 @@ namespace ResonantSpark {
 
             public GameObject male0BuilderPrefab;
             public GameObject female0BuilderPrefab;
+            public GameObject lawrenceBuilderPrefab;
 
             private Persistence persObj;
 
@@ -104,6 +105,8 @@ namespace ResonantSpark {
                 switch (characterSelections[playerIndex]) {
                     case "male0":
                         return male0BuilderPrefab;
+                    case "lawrence":
+                        return lawrenceBuilderPrefab;
                     default:
                         return null;
                 }

@@ -812,6 +812,8 @@ MonoBehaviour:
   male0BuilderPrefab: {fileID: 2424264271135548662, guid: 6869695df3ddd1447a77ff07b613adec,
     type: 3}
   female0BuilderPrefab: {fileID: 0}
+  lawrenceBuilderPrefab: {fileID: 8557177467078201262, guid: 880c011c99fbc664296a31457b717cd6,
+    type: 3}
 --- !u!114 &1184226376533119850
 MonoBehaviour:
   m_ObjectHideFlags: 0
