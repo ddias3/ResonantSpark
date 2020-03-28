@@ -1,12 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 namespace ResonantSpark {
     namespace Utility {
         public class AnimationCurveMap : MonoBehaviour {
             public List<string> keys;
             public List<AnimationCurve> values;
+
+            public Dictionary<string, AnimationCurve> dict;
 
             public Dictionary<string, AnimationCurve> BuildDictionary() {
                 Dictionary<string, AnimationCurve> dict = new Dictionary<string, AnimationCurve>();

@@ -18,6 +18,8 @@ namespace ResonantSpark {
             public StateMachine stateMachine;
             public Utility.StateDict states;
 
+            public AnimatorRootMotion animatorRootMotion;
+
             public LayerMask groundRaycastMask;
             public float groundCheckDistance;
             public float groundCheckDistanceMinimum = 0.11f;
@@ -279,6 +281,12 @@ namespace ResonantSpark {
 
             public CharacterStates.CharacterBaseState GetPrevState() {
                 return prevState;
+            }
+
+            public void AnimatorMoveCallback(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
+                CharacterStates.CharacterBaseState currState = (CharacterStates.CharacterBaseState) stateMachine.GetCurrentState();
+
+
             }
 
             public void UseCombination(Combination combo) {
