@@ -11,6 +11,8 @@ namespace ResonantSpark {
     namespace CharacterStates {
         public class Crouch : CharacterBaseState {
 
+            public CrouchAnimation crouchAnimation;
+
             private bool crouchDodge = false;
             private Input.FightingGameInputCodeDir dirPress = Input.FightingGameInputCodeDir.None;
 
@@ -37,13 +39,13 @@ namespace ResonantSpark {
                 dirPress = FightingGameInputCodeDir.Neutral;
 
                 GivenInput(fgChar.GivenCombinations());
-
-                //fgChar.SetLocalMoveDirection(0.0f, 0.0f);
-                fgChar.Play("idle_crouch");
+                crouchAnimation.FromStand();
             }
 
             public override void Execute(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
+
+                crouchAnimation.IncrementTracker();
             }
 
             public override void Exit(int frameIndex) {

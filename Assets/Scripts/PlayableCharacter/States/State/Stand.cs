@@ -13,9 +13,7 @@ namespace ResonantSpark {
     namespace CharacterStates {
         public class Stand : CharacterBaseState {
 
-            public Walk walk;
-            public WalkSlow walkSlow;
-            public Still still;
+            public StandAnimation standAnimation;
 
             public float maxForwardSpeed;
             public float maxBackwardSpeed;
@@ -59,23 +57,13 @@ namespace ResonantSpark {
                 dirPress = FightingGameInputCodeDir.Neutral;
 
                 GivenInput(fgChar.GivenCombinations());
+                standAnimation.FromCrouch();
 
-                //int forwardBackward = (((int) dirPress) - 1) % 3 - 1;
-                //int upDown          = (((int) dirPress) - 1) / 3 - 1;
-
-                //smoothedInput = fgChar.CameraToWorld(new Vector3(forwardBackward, 0, upJump ? 0 : upDown));
                 smoothedInput = fgChar.RelativeInputToLocal(dirPress, upJump);
-
-                fgChar.SetLocalMoveDirection(0.0f, 0.0f);
-                fgChar.Play("stand");
             }
 
             public override void Execute(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
-
-                //...((FightingGameInputCodeDir)((verticalInput + 1) * 3 + (horizontalInput + 1) + 1));
-
-                //Debug.Log("FGInput = " + dirPress + " (" + ((int) dirPress) + ") | Char X = " + charX + ", Char Z = " + charZ);
 
                 Vector3 localVelocity = fgChar.GetLocalVelocity();
                 Vector3 localInput = fgChar.RelativeInputToLocal(dirPress, upJump);
@@ -85,7 +73,7 @@ namespace ResonantSpark {
                 TurnCharacter(localInput);
 
                     // Use helper states to animate the character
-                AnimateCharacter(localVelocity, localInput);
+                standAnimation.IncrementTracker();
 
                 fgChar.CalculateFinalVelocity();
             }
@@ -106,9 +94,6 @@ namespace ResonantSpark {
                     else {
                         zMaxSpeed = maxBackwardSpeed;
                     }
-
-                    //Vector3 normalizedLocalVelocity = new Vector3(localVelocity.x / maxHorizontalSpeed, 0.0f, localVelocity.z / zMaxSpeed);
-                    //Vector3 delta = smoothedInput - normalizedLocalVelocity;
 
                     Vector3 newVelocity = default;
                     Vector3 velocityTarget = new Vector3 {
@@ -153,11 +138,8 @@ namespace ResonantSpark {
                 else {
                     //TODO: don't turn character while in mid air
                     Debug.LogError("Character not grounded while in 'Stand' character state");
+                    changeState(states.Get("airborne"));
                 }
-            }
-
-            private void AnimateCharacter(Vector3 localVelocity, Vector3 localInput) {
-
             }
 
             public override GroundRelation GetGroundRelation() {

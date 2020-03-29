@@ -16,18 +16,14 @@ namespace ResonantSpark {
                 states.Register(this, "airborne");
 
                 RegisterInputCallbacks()
-                    .On<DirectionPress>(OnDirectionPress)
+                    .On<ButtonPress>(OnButtonPress)
                     .On<DoubleTap>(OnDoubleTap);
             }
 
             public override void Enter(int frameIndex, IState previousState) {
                 fgChar.__debugSetStateText("Airborne", Color.yellow);
-                //if (messages.Count > 0) {
-                //    Combination combo = messages.Dequeue();
-                //    combo.inUse = false;
-                //}
 
-                fgChar.Play("idle");
+                fgChar.Play("airborne");
             }
 
             public override void Execute(int frameIndex) {
@@ -46,22 +42,14 @@ namespace ResonantSpark {
                 changeState(states.Get("hitStunAirborne"));
             }
 
-            private void OnDirectionPress(Action stop, Combination combo) {
-                var dirPress = (DirectionPress)combo;
-                if (!dirPress.Stale(frame.index)) {
-                    dirPress.inUse = true;
-                    stop.Invoke();
-                    changeState(states.Get("walk"));//.Message(dirPress));
-                }
+            private void OnButtonPress(Action stop, Combination combo) {
+                var butPress = (ButtonPress)combo;
+
             }
 
             private void OnDoubleTap(Action stop, Combination combo) {
                 var doubleTap = (DoubleTap)combo;
-                if (!doubleTap.Stale(frame.index)) {
-                    doubleTap.inUse = true;
-                    stop.Invoke();
-                    changeState(states.Get("run"));//.Message(doubleTap));
-                }
+                
             }
         }
     }
