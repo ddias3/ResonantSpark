@@ -93,6 +93,7 @@ namespace ResonantSpark {
 
             public void StartPerformable(int frameIndex) {
                 tracker.Track(frameIndex);
+                Debug.Log("Attack Animation State: " + animStateName);
                 fgChar.Play(animStateName);
             }
 

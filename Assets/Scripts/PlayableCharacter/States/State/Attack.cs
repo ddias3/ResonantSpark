@@ -64,7 +64,8 @@ namespace ResonantSpark {
             }
 
             public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
-                // do nothing
+                Debug.Log(animatorVelocity);
+                fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Dash, animatorVelocity);
             }
 
             public void OnCompleteAttack() {

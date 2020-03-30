@@ -13,7 +13,7 @@ namespace ResonantSpark {
         namespace Lawrence {
             public class CharacterBuilder : MonoBehaviour, ICharacterBuilder {
 
-                public GameObject male0Prefab;
+                public GameObject lawrencePrefab;
 
                 private AudioClipMap audioMap;
                 private ParticleEffectMap particleMap;
@@ -23,8 +23,8 @@ namespace ResonantSpark {
                 private FightingGameCharacter fgChar;
 
                 public FightingGameCharacter CreateCharacter(AllServices services) {
-                    GameObject character = Instantiate<GameObject>(male0Prefab, transform.position, transform.rotation);
-                    character.name = male0Prefab.name;
+                    GameObject character = Instantiate<GameObject>(lawrencePrefab, transform.position, transform.rotation);
+                    character.name = lawrencePrefab.name;
                     fgChar = character.GetComponent<FightingGameCharacter>();
 
                     return fgChar;
@@ -35,13 +35,11 @@ namespace ResonantSpark {
 
                     audioMap = GetComponent<AudioClipMap>();
                     particleMap = GetComponent<ParticleEffectMap>();
-                    attackMovementMap = GetComponent<AnimationCurveMap>();
                     projectileMap = GetComponent<ProjectileMap>();
 
                     Attacks attacks = new Attacks(services,
                         audioMap.BuildDictionary(),
                         particleMap.BuildDictionary(),
-                        attackMovementMap.BuildDictionary(),
                         projectileMap.BuildDictionary());
                     Movement movement = new Movement(services);
 

@@ -27,6 +27,8 @@ namespace ResonantSpark {
 
             public float landAnimationFrameTarget = 3f;
 
+            public Orientation defaultForwardOrientation;
+
             public Transform standCollider;
 
             public TMPro.TextMeshPro __debugState;
@@ -333,7 +335,7 @@ namespace ResonantSpark {
 
             public Orientation GetOrientation() {
                 //TODO: Determine actual orientation programmatically.
-                return Orientation.SOUTHPAW;
+                return defaultForwardOrientation;
             }
 
             public GroundRelation GetGroundRelation() {

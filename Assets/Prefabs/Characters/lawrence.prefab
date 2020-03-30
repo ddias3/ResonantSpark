@@ -137,6 +137,7 @@ MonoBehaviour:
   groundCheckDistance: 0.11
   groundCheckDistanceMinimum: 0.11
   landAnimationFrameTarget: 3
+  defaultForwardOrientation: 1
   standCollider: {fileID: 7426682292546004176}
   __debugState: {fileID: 4651849404587844392}
 --- !u!54 &6957239916241651657
