@@ -49,9 +49,6 @@ namespace ResonantSpark {
                 // Move the character
                 WalkCharacter(localVelocity, localInput);
                 TurnCharacter(localInput);
-
-                // Use helper states to animate the character
-                AnimateCharacter(localVelocity, localInput);
             }
 
             public override void Exit(int frameIndex) {
@@ -93,8 +90,8 @@ namespace ResonantSpark {
                 }
             }
 
-            private void AnimateCharacter(Vector3 localVelocity, Vector3 localInput) {
-
+            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
+                // do nothing
             }
 
             public override GroundRelation GetGroundRelation() {

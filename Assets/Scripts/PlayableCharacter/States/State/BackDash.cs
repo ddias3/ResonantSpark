@@ -12,13 +12,11 @@ namespace ResonantSpark {
         public class BackDash : CharacterBaseState {
 
             [Tooltip("The dash length in frames")]
-            public int dashLength = 25;
+            public int dashLength = 36;
             [Tooltip("These many frames of the start of the dash may not be cancelled into another dash")]
-            public int redashDisallowed = 18;
+            public int redashDisallowed = 36;
             [Tooltip("These many frames of the start of the dash may not be cancelled into an attack")]
-            public int attackDisallowed = 22;
-
-            public AnimationCurve dashSpeedCurve;
+            public int attackDisallowed = 30;
 
             private Utility.AttackTracker tracker;
 
@@ -61,12 +59,11 @@ namespace ResonantSpark {
             public override void Execute(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
 
-                fgChar.AddRelativeVelocity(Gameplay.VelocityPriority.Dash, new Vector3(0.0f, 0.0f, dashSpeedCurve.Evaluate(tracker.frameCount)));
-
                 if (tracker.frameCount > dashLength) {
                     changeState(states.Get("stand"));
                 }
 
+                Debug.Log("Calculate Final Velocity :(" + tracker.frameCount + ")");
                 fgChar.CalculateFinalVelocity();
 
                 tracker.Increment();
@@ -74,6 +71,11 @@ namespace ResonantSpark {
 
             public override void Exit(int frameIndex) {
                 // do nothing
+            }
+
+            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
+                Debug.Log("Animator Move :(" + tracker.frameCount + ")");
+                fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Dash, animatorVelocity);
             }
 
             public override GroundRelation GetGroundRelation() {

@@ -12,7 +12,7 @@ namespace ResonantSpark {
             public new void Awake() {
                 base.Awake();
 
-                crouchTracker = new Utility.Tracker(10, FromStandComplete);
+                crouchTracker = new Utility.Tracker(10, Crouch);
             }
 
             public void IncrementTracker() {
@@ -25,7 +25,7 @@ namespace ResonantSpark {
                 currTracker = crouchTracker;
             }
 
-            private void FromStandComplete() {
+            public void Crouch() {
                 currTracker = null;
                 fgChar.Play("crouch");
             }

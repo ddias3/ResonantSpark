@@ -12,7 +12,7 @@ namespace ResonantSpark {
             public new void Awake() {
                 base.Awake();
 
-                standTracker = new Utility.Tracker(10, FromCrouchComplete);
+                standTracker = new Utility.Tracker(10, Stand);
             }
 
             public void SetInfo(Vector3 currVel, Vector3 currInput) {
@@ -29,7 +29,7 @@ namespace ResonantSpark {
                 currTracker = standTracker;
             }
 
-            private void FromCrouchComplete() {
+            public void Stand() {
                 currTracker = null;
                 fgChar.Play("idle");
             }

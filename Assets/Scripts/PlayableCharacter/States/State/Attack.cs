@@ -63,6 +63,10 @@ namespace ResonantSpark {
                 activeAttack = null;
             }
 
+            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
+                // do nothing
+            }
+
             public void OnCompleteAttack() {
                 activeAttack = null;
             }

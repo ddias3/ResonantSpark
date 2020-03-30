@@ -34,6 +34,11 @@ namespace ResonantSpark {
                 inputs[priority].Add(velocity);
             }
 
+            public void SetVelocity(VelocityPriority priority, Vector3 velocity) {
+                inputs[priority].Clear();
+                inputs[priority].Add(velocity);
+            }
+
             public void ClearVelocities() {
                 foreach (VelocityPriority priority in Enum.GetValues(typeof(VelocityPriority))) {
                     inputs[priority].Clear();

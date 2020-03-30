@@ -35,6 +35,10 @@ namespace ResonantSpark {
                 // do nothing
             }
 
+            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
+                // do nothing
+            }
+
             public override GroundRelation GetGroundRelation() {
                 return GroundRelation.GROUNDED;
             }

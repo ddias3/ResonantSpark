@@ -57,7 +57,13 @@ namespace ResonantSpark {
                 dirPress = FightingGameInputCodeDir.Neutral;
 
                 GivenInput(fgChar.GivenCombinations());
-                standAnimation.FromCrouch();
+
+                if (fgChar.GetPrevState() == states.Get("crouch")) {
+                    standAnimation.FromCrouch();
+                }
+                else {
+                    standAnimation.Stand();
+                }
 
                 smoothedInput = fgChar.RelativeInputToLocal(dirPress, upJump);
             }
@@ -140,6 +146,10 @@ namespace ResonantSpark {
                     Debug.LogError("Character not grounded while in 'Stand' character state");
                     changeState(states.Get("airborne"));
                 }
+            }
+
+            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
+                // do nothing.
             }
 
             public override GroundRelation GetGroundRelation() {
@@ -228,11 +238,18 @@ namespace ResonantSpark {
 
                 dirPress = fgChar.MapAbsoluteToRelative(dirPlusBut.direction);
 
-                if (dirPlusBut.button0 == FightingGameInputCodeBut.D &&
-                    (dirPress == FightingGameInputCodeDir.Up || dirPress == FightingGameInputCodeDir.Down)) {
-                    stop();
-                    fgChar.UseCombination(dirPlusBut);
-                    changeState(states.Get("dodge"));
+                if (dirPlusBut.button0 == FightingGameInputCodeBut.D) {
+
+                    if (dirPress == FightingGameInputCodeDir.Up || dirPress == FightingGameInputCodeDir.Down) {
+                        stop();
+                        fgChar.UseCombination(dirPlusBut);
+                        changeState(states.Get("dodge"));
+                    }
+                    else if (dirPress == FightingGameInputCodeDir.Forward) {
+                        stop();
+                        fgChar.UseCombination(dirPlusBut);
+                        changeState(states.Get("forwardDashLong"));
+                    }
                 }
             }
 

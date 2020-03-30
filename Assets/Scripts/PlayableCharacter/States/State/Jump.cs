@@ -83,8 +83,7 @@ namespace ResonantSpark {
                     fgChar.Play("jump");
                 }
                 else if (frameCount > 4) {
-                        // TODO: Change this to airborne state
-                    fgChar.AddForce(gravityExtra, ForceMode.Acceleration);
+                    changeState(states.Get("airborne"));
                 }
 
                 if (leavingGround) {
@@ -107,6 +106,10 @@ namespace ResonantSpark {
             }
 
             public override void Exit(int frameIndex) {
+                // do nothing
+            }
+
+            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
                 // do nothing
             }
 

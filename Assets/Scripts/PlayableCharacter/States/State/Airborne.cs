@@ -11,6 +11,8 @@ namespace ResonantSpark {
     namespace CharacterStates {
         public class Airborne : CharacterBaseState {
 
+            public Vector3 gravityExtra;
+
             public new void Awake() {
                 base.Awake();
                 states.Register(this, "airborne");
@@ -28,9 +30,25 @@ namespace ResonantSpark {
 
             public override void Execute(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
+
+                fgChar.AddForce(gravityExtra, ForceMode.Acceleration);
+
+                if (fgChar.Grounded(out Vector3 landPoint)) {
+                    changeState(states.Get("land"));
+                }
+
+                if (fgChar.CheckAboutToLand()) {
+                    changeState(states.Get("land"));
+                }
+
+                fgChar.CalculateFinalVelocity();
             }
 
             public override void Exit(int frameIndex) {
+                // do nothing
+            }
+
+            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
                 // do nothing
             }
 

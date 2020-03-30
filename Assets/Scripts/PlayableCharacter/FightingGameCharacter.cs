@@ -19,6 +19,7 @@ namespace ResonantSpark {
             public Utility.StateDict states;
 
             public AnimatorRootMotion animatorRootMotion;
+            //public CrouchStandAnimation crouchStandAnimation;
 
             public LayerMask groundRaycastMask;
             public float groundCheckDistance;
@@ -60,8 +61,13 @@ namespace ResonantSpark {
                 get { return rigidbody.rotation; }
             }
 
+            public Quaternion toLocal {
+                get { return Quaternion.Inverse(rigidbody.rotation); }
+            }
+
             public Vector3 position {
                 get { return rigidbody.position; }
+                set { rigidbody.position = value; }
             }
 
             public int maxHealth {
@@ -99,6 +105,7 @@ namespace ResonantSpark {
                 rigidbody = gameObject.GetComponent<Rigidbody>();
                 charVelocity = new CharacterPrioritizedVelocity();
                 forces = new List<(Vector3, ForceMode)>();
+                animatorRootMotion.SetCallback(AnimatorMoveCallback);
 
                 inUseCombinations = new List<Combination>();
 
@@ -216,6 +223,10 @@ namespace ResonantSpark {
                 charVelocity.AddVelocity(priority, rotation * velocity);
             }
 
+            public void SetRelativeVelocity(VelocityPriority priority, Vector3 velocity) {
+                charVelocity.SetVelocity(priority, rotation * velocity);
+            }
+
             public void AddForce(Vector3 force, ForceMode mode) {
                 forces.Add((force, mode));
             }
@@ -284,9 +295,11 @@ namespace ResonantSpark {
             }
 
             public void AnimatorMoveCallback(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
-                CharacterStates.CharacterBaseState currState = (CharacterStates.CharacterBaseState) stateMachine.GetCurrentState();
-
-
+                if (stateMachine.GetCurrentState() != null) {
+                    CharacterStates.CharacterBaseState currState = (CharacterStates.CharacterBaseState)stateMachine.GetCurrentState();
+                    
+                    currState.AnimatorMove(animatorRootRotation, Quaternion.Euler(-90f, 180f, 0f) * Quaternion.Inverse(rigidbody.rotation) * animatorVelocity);
+                }
             }
 
             public void UseCombination(Combination combo) {

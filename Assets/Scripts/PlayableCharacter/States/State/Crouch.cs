@@ -39,7 +39,13 @@ namespace ResonantSpark {
                 dirPress = FightingGameInputCodeDir.Neutral;
 
                 GivenInput(fgChar.GivenCombinations());
-                crouchAnimation.FromStand();
+
+                if (fgChar.GetPrevState() == states.Get("stand")) {
+                    crouchAnimation.FromStand();
+                }
+                else {
+                    crouchAnimation.Crouch();
+                }
             }
 
             public override void Execute(int frameIndex) {
@@ -50,6 +56,10 @@ namespace ResonantSpark {
 
             public override void Exit(int frameIndex) {
                 // do nothing
+            }
+
+            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
+                // do nothing.
             }
 
             public override GroundRelation GetGroundRelation() {
