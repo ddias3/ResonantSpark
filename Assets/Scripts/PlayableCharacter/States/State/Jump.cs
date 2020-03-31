@@ -44,7 +44,7 @@ namespace ResonantSpark {
                 fgChar.__debugSetStateText("Jump", Color.yellow);
 
                 jumpDir = FightingGameInputCodeDir.None;
-                GivenInput(fgChar.GivenCombinations());
+                GivenInput(fgChar.GetInUseCombinations());
 
                 switch (jumpDir) {
                     case FightingGameInputCodeDir.UpBack:

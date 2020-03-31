@@ -59,6 +59,7 @@ namespace ResonantSpark {
                             FrameUtil.CreateList(fl => {
                                 fl.SpecialCancellable(true);
                                 fl.CancellableOnWhiff(false); // TODO: Change this to true when you fix the input buffer
+                                fl.ChainCancellable(true);
                                 fl.From(7);
                                     fl.Hit(hit => {
                                         hit.HitDamage(800);

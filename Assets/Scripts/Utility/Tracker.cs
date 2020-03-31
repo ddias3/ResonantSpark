@@ -15,8 +15,8 @@ namespace ResonantSpark {
                 this.callback = callback;
             }
 
-            public void Track() {
-                frameCount = 0;
+            public void Track(int startValue = 0) {
+                frameCount = startValue;
             }
 
             public void Increment() {

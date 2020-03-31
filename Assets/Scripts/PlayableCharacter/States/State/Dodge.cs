@@ -48,7 +48,7 @@ namespace ResonantSpark {
                 fgChar.__debugSetStateText("Dodge", Color.green);
 
                 dodgeDir = FightingGameInputCodeDir.None;
-                GivenInput(fgChar.GivenCombinations());
+                GivenInput(fgChar.GetInUseCombinations());
 
                 localScaling = fgChar.RelativeInputToLocal(dodgeDir, false);
 

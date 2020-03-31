@@ -34,8 +34,8 @@ namespace ResonantSpark {
                     .On<ButtonPress>(OnButtonPress)
                     .On<Button2Press>(OnButton2Press);
 
-                RegisterEnterCallbacks()
-                    .On<DoubleTap>(GivenDoubleTap);
+                //RegisterEnterCallbacks()
+                //    .On<DirectionPlusButton>(GivenDirectionPlusButton);
 
                 tracker = new Utility.AttackTracker(dashLength);
             }
@@ -44,7 +44,7 @@ namespace ResonantSpark {
                 fgChar.__debugSetStateText("Frwd Dash", Color.green);
 
                 dashDir = FightingGameInputCodeDir.None;
-                GivenInput(fgChar.GivenCombinations());
+                GivenInput(fgChar.GetInUseCombinations());
 
                 fgChar.Play("dash_forward_long");
 
@@ -130,9 +130,9 @@ namespace ResonantSpark {
                 // TODO: figure out if anything should happen before the dash actually ends.
             }
 
-            private void GivenDoubleTap(Action stop, Combination combo) {
-                this.dashDir = fgChar.MapAbsoluteToRelative(((DoubleTap)combo).direction);
-            }
+            //private void GivenDirectionPlusButton(Action stop, Combination combo) {
+            //    this.dashDir = fgChar.MapAbsoluteToRelative(((DirectionPlusButton) combo).direction);
+            //}
         }
     }
 }

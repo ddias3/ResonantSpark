@@ -32,11 +32,11 @@ namespace ResonantSpark {
 
             public override void Enter(int frameIndex, IState previousState) {
                 fgChar.__debugSetStateText("Face Opponent", Color.blue);
-                GivenInput(fgChar.GivenCombinations());
+                GivenInput(fgChar.GetInUseCombinations());
 
                 //smoothedInput = fgChar.RelativeInputToLocal(dirPress, upJump);
 
-                fgChar.SetLocalMoveDirection(0.0f, 0.0f);
+                fgChar.SetLocalWalkParameters(0.0f, 0.0f);
                 fgChar.Play("faceOpponent");
             }
 

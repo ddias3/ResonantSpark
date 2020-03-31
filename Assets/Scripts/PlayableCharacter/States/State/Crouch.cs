@@ -11,8 +11,6 @@ namespace ResonantSpark {
     namespace CharacterStates {
         public class Crouch : CharacterBaseState {
 
-            public CrouchAnimation crouchAnimation;
-
             private bool crouchDodge = false;
             private Input.FightingGameInputCodeDir dirPress = Input.FightingGameInputCodeDir.None;
 
@@ -38,20 +36,15 @@ namespace ResonantSpark {
                 fgChar.__debugSetStateText("Crouch", new Color(0.3f, 0.65f, 0.3f));
                 dirPress = FightingGameInputCodeDir.Neutral;
 
-                GivenInput(fgChar.GivenCombinations());
+                GivenInput(fgChar.GetInUseCombinations());
 
-                if (fgChar.GetPrevState() == states.Get("stand")) {
-                    crouchAnimation.FromStand();
-                }
-                else {
-                    crouchAnimation.Crouch();
-                }
+                fgChar.AnimationCrouch();
             }
 
             public override void Execute(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
 
-                crouchAnimation.IncrementTracker();
+                fgChar.UpdateCharacterMovement();
             }
 
             public override void Exit(int frameIndex) {
@@ -82,7 +75,7 @@ namespace ResonantSpark {
                 var dirPress = combo as DirectionPress;
 
                 if (GameInputUtil.Up(fgChar.MapAbsoluteToRelative(dirPress.direction))) {
-                    fgChar.UseCombination(dirPress);
+                    fgChar.Use(dirPress);
                     stop();
                     changeState(states.Get("jump"));
                 }
@@ -117,7 +110,7 @@ namespace ResonantSpark {
 
                 if (relDir == FightingGameInputCodeDir.Forward ||
                     relDir == FightingGameInputCodeDir.Back) {
-                    fgChar.UseCombination(doubleTap);
+                    fgChar.Use(doubleTap);
                     stop();
                     changeState(states.Get("backDash"));
                 }

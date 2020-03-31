@@ -56,20 +56,20 @@ namespace ResonantSpark {
                     case FightingGameAbsInputCodeDir.UpLeft:
                     case FightingGameAbsInputCodeDir.Up:
                     case FightingGameAbsInputCodeDir.UpRight:
-                        fgChar.UseCombination(dirPress);
+                        fgChar.Use(dirPress);
                         stop();
                         changeState(states.Get("jump"));
                         break;
                     case FightingGameAbsInputCodeDir.Left:
                     case FightingGameAbsInputCodeDir.Right:
-                        fgChar.UseCombination(dirPress);
+                        fgChar.Use(dirPress);
                         stop();
                         changeState(states.Get("walk"));
                         break;
                     case FightingGameAbsInputCodeDir.DownLeft:
                     case FightingGameAbsInputCodeDir.Down:
                     case FightingGameAbsInputCodeDir.DownRight:
-                        fgChar.UseCombination(dirPress);
+                        fgChar.Use(dirPress);
                         stop();
                         changeState(states.Get("crouch"));
                         break;

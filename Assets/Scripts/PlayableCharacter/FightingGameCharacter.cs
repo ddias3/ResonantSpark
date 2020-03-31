@@ -19,7 +19,6 @@ namespace ResonantSpark {
             public Utility.StateDict states;
 
             public AnimatorRootMotion animatorRootMotion;
-            //public CrouchStandAnimation crouchStandAnimation;
 
             public LayerMask groundRaycastMask;
             public float groundCheckDistance;
@@ -37,6 +36,8 @@ namespace ResonantSpark {
             private int teamId;
 
             private FightingGameService fgService;
+
+            private CharacterMovementAnimation charMovementAnimation;
 
             private List<CharacterProperties.Attack> prevAttacks;
 
@@ -109,7 +110,7 @@ namespace ResonantSpark {
                 forces = new List<(Vector3, ForceMode)>();
                 animatorRootMotion.SetCallback(AnimatorMoveCallback);
 
-                inUseCombinations = new List<Combination>();
+                charMovementAnimation = new CharacterMovementAnimation(this);
 
                 onHealthChangeCallbacks = new List<Action<int, int>>();
                 onEmptyHealthCallbacks = new List<Action<FightingGameCharacter>>();
@@ -151,12 +152,11 @@ namespace ResonantSpark {
                 CharacterProperties.Attack attack = charData.ChooseAttackFromSelectability(attackCandidates, currState, currAttack, prevAttacks);
 
                 if (attack != null) {
-                    CharacterStates.Attack attackState = (CharacterStates.Attack)states.Get("attack");
+                    ((CharacterStates.Attack) currState).SetActiveAttack(attack);
 
-                    attackState.SetActiveAttack(attack);
-                    SetState(attackState);
-
-                    prevAttacks.Add(attack);
+                    if (currAttack != null) {
+                        prevAttacks.Add(currAttack);
+                    }
                 }
             }
 
@@ -274,8 +274,7 @@ namespace ResonantSpark {
                 return Vector3.SignedAngle(rigidbody.transform.forward, opponentChar.transform.position - rigidbody.position, Vector3.up);
             }
 
-            //TODO: Rename this function
-            public void SetLocalMoveDirection(float x, float z) {
+            public void SetLocalWalkParameters(float x, float z) {
                 animator.SetFloat("charX", x);
                 animator.SetFloat("charZ", z);
             }
@@ -304,31 +303,6 @@ namespace ResonantSpark {
                 }
             }
 
-            public void UseCombination(Combination combo) {
-                combo.inUse = true;
-                inUseCombinations.Add(combo);
-                inUseCombinations.Sort();
-            }
-
-            public List<Combination> GivenCombinations() {
-                for (int n = 0; n < inUseCombinations.Count; ++n) {
-                    inUseCombinations[n].inUse = false;
-                }
-                return inUseCombinations;
-            }
-
-            public Combination Given(params Type[] types) {
-                Combination retVal = null;
-                for (int n = 0; n < inUseCombinations.Count; ++n) {
-                    if (Array.Exists(types, type => type == inUseCombinations[n].GetType())) {
-                        retVal = inUseCombinations[n];
-                    }
-                    retVal.inUse = false;
-                }
-                inUseCombinations.Clear();
-                return retVal;
-            }
-
             public Vector3 GetLocalVelocity() {
                 return Quaternion.Inverse(rigidbody.rotation) * rigidbody.velocity;
             }
@@ -354,8 +328,16 @@ namespace ResonantSpark {
                 __debugState.color = color == null ? Color.white : color;
             }
 
-            public void Play(string animationState) {
-                animator.Play(animationState, 0, this.gameTime);
+            public void Play(string animationState, float normalizedTime = 0.0f) {
+                animator.Play(animationState, 0, normalizedTime);
+            }
+
+            public void PlayIfOther(string animationState, float normalizedTime = 0.0f) {
+                AnimatorStateInfo currInfo = animator.GetCurrentAnimatorStateInfo(0, 0);
+
+                if (!currInfo.IsName(animationState)) {
+                    animator.Play(animationState, 0, normalizedTime);
+                }
             }
 
             public List<Input.Combinations.Combination> GetFoundCombinations() {
@@ -365,6 +347,31 @@ namespace ResonantSpark {
 
                 if (inputBuffer != null) {
                     return inputBuffer.GetFoundCombinations();
+                }
+                else {
+                    return inputDoNothingList;
+                }
+            }
+
+            public void Use(Combination combo) {
+                inputBuffer?.Use(combo);
+            }
+
+            public void UseCombination<TCombo>(Action<Combination> callback) {
+                inputBuffer?.ForEach((combo) => {
+                    if (combo.GetType() == typeof(TCombo)) {
+                        callback(combo);
+                    }
+                });
+            }
+
+            public void RemoveInUseCombinations(List<Combination> combos) {
+                inputBuffer?.RemoveInUseCombinations(combos);
+            }
+
+            public List<Combination> GetInUseCombinations() {
+                if (inputBuffer != null) {
+                    return inputBuffer.GetInUseCombinations();
                 }
                 else {
                     return inputDoNothingList;
@@ -434,6 +441,32 @@ namespace ResonantSpark {
                         SetState(clash);
                         break;
                 }
+            }
+
+            public void UpdateCharacterMovement() {
+                charMovementAnimation.Increment();
+            }
+
+            public void AnimationCrouch() {
+                if (prevState == states.Get("stand")) {
+                    charMovementAnimation.FromStand();
+                }
+                else {
+                    charMovementAnimation.Crouch();
+                }
+            }
+
+            public void AnimationStand() {
+                if (prevState == states.Get("crouch")) {
+                    charMovementAnimation.FromCrouch();
+                }
+                else {
+                    charMovementAnimation.Stand();
+                }
+            }
+
+            public void AnimationWalkVelocity() {
+                charMovementAnimation.WalkVelocity(GetLocalVelocity());
             }
 
             public override void AddSelf() {

@@ -44,7 +44,9 @@ namespace ResonantSpark {
             public override void Enter(int frameIndex, IState previousState) {
                 fgChar.__debugSetStateText("Attack", Color.red);
                     // Start OnEnter with this
-                GivenInput(fgChar.GivenCombinations());
+                GivenInput(fgChar.GetInUseCombinations());
+
+                fgChar.ChooseAttack(this, queuedUpAttack, button, direction);
 
                 activeAttack = queuedUpAttack;
                 queuedUpAttack = null;
@@ -64,8 +66,8 @@ namespace ResonantSpark {
             }
 
             public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
-                Debug.Log(animatorVelocity);
-                fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Dash, animatorVelocity);
+                //Debug.Log(animatorVelocity);
+                fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Light, animatorVelocity);
             }
 
             public void OnCompleteAttack() {

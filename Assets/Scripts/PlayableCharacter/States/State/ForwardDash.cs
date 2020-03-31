@@ -44,7 +44,7 @@ namespace ResonantSpark {
                 fgChar.__debugSetStateText("Frwd Dash", Color.green);
 
                 dashDir = FightingGameInputCodeDir.None;
-                GivenInput(fgChar.GivenCombinations());
+                GivenInput(fgChar.GetInUseCombinations());
 
                 if (dashDir == FightingGameInputCodeDir.Forward) {
                     fgChar.Play("dash_forward");
@@ -91,12 +91,12 @@ namespace ResonantSpark {
                     FightingGameInputCodeDir relDir = fgChar.MapAbsoluteToRelative(doubleTap.direction);
 
                     if (relDir == FightingGameInputCodeDir.Forward) {
-                        fgChar.UseCombination(doubleTap);
+                        fgChar.Use(doubleTap);
                         stop();
                         changeState(states.Get("forwardDash"));
                     }
                     else if (relDir == FightingGameInputCodeDir.Back) {
-                        fgChar.UseCombination(doubleTap);
+                        fgChar.Use(doubleTap);
                         stop();
                         changeState(states.Get("backDash"));
                     }

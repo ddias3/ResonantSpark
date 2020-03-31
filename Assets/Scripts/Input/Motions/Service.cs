@@ -8,33 +8,34 @@ using ResonantSpark.Input.Combinations;
 namespace ResonantSpark {
     namespace Input {
         public class Service {
-            public static void FindCombinations(InputBufferReader reader, Factory inputFactory, List<Combination> activeInputs) {
-                int test0 = FindDirectionPresses(reader, inputFactory, activeInputs);
-                int test1 = FindNeutralReturns(reader, inputFactory, activeInputs);
-                int test2 = FindDoubleTaps(reader, inputFactory, activeInputs);
-                int test3 = FindDirectionCurrent(reader, inputFactory, activeInputs);
-                int testD = FindButtonsCurrent(reader, inputFactory, activeInputs);
-                //int test4 = FindDirectionLongHolds(reader, inputFactory, activeInputs);   // TODO: Fix this, but the feature may not even exist.
-                int test6 = FindButtonPresses(reader, inputFactory, activeInputs);
-                int test7 = FindButton2Presses(reader, inputFactory, activeInputs);
-                //int test8 = FindButton3Presses(reader, inputFactory, activeInputs);       // TODO: Fix this, but the feature may not even exist.
-                int testC = FindButtonReleases(reader, inputFactory, activeInputs);
-                int test9 = FindDirectionPlusButtons(reader, inputFactory, activeInputs);
-                int testA = FindQuarterCircles(reader, inputFactory, activeInputs);
-                int testB = FindQuarterCircleButtonPresses(reader, inputFactory, activeInputs);
+            public static void FindCombinations(InputBufferReader reader, Factory inputFactory, List<Combination> servedInputs, List<Combination> foundInputs) {
+                int test0 = FindDirectionPresses(reader, inputFactory, servedInputs, foundInputs);
+                int test1 = FindNeutralReturns(reader, inputFactory, servedInputs, foundInputs);
+                int test2 = FindDoubleTaps(reader, inputFactory, servedInputs, foundInputs);
+                //int test4 = FindDirectionLongHolds(reader, inputFactory, foundInputs);   // TODO: Fix this, but the feature may not even exist.
+                int test6 = FindButtonPresses(reader, inputFactory, servedInputs, foundInputs);
+                int test7 = FindButton2Presses(reader, inputFactory, servedInputs, foundInputs);
+                //int test8 = FindButton3Presses(reader, inputFactory, foundInputs);       // TODO: Fix this, but the feature may not even exist.
+                int testC = FindButtonReleases(reader, inputFactory, servedInputs, foundInputs);
+                int test9 = FindDirectionPlusButtons(reader, inputFactory, servedInputs, foundInputs);
+                int testA = FindQuarterCircles(reader, inputFactory, servedInputs, foundInputs);
+                int testB = FindQuarterCircleButtonPresses(reader, inputFactory, servedInputs, foundInputs);
 
                 //int x = test0 + test1 + test2 + test3 + test4 + test6 + test7 + test8 + test9 + testA + testB;
-                activeInputs.Sort();
+                foundInputs.Sort();
             }
 
-            private static T_Combo AddToActiveInputs<T_Combo>(List<Combination> activeInputs, Factory inputFactory, int frameCurrent, Action<T_Combo> initCallback) where T_Combo : Combination, new() {
+            private static T_Combo AddToActiveInputs<T_Combo>(List<Combination> servedInputs, List<Combination> foundInputs, Factory inputFactory, int frameCurrent, Action<T_Combo> initCallback) where T_Combo : Combination, new() {
                 T_Combo newInput = inputFactory.CreateCombination<T_Combo>(frameCurrent);
                 initCallback.Invoke(newInput);
-                foreach (var cmb in activeInputs) {
+                foreach (var cmb in servedInputs) {
+                    if (cmb.Equals(newInput)) return (T_Combo) cmb;
+                }
+                foreach (var cmb in foundInputs) {
                     if (cmb.Equals(newInput)) return (T_Combo) cmb;
                 }
                 if (!newInput.Stale(frameCurrent)) {
-                    activeInputs.Add(newInput);
+                    foundInputs.Add(newInput);
                 }
                 return newInput;
             }
@@ -49,8 +50,35 @@ namespace ResonantSpark {
                 return buttonIndex;
             }
 
+            public static DirectionCurrent FindDirectionCurrent(InputBufferReader reader, Factory inputFactory, List<Combination> servedInputs, List<Combination> foundInputs) {
+                int numFound = 0;
+                reader.ResetCurrIndex();
+                reader.SetReadIndex(-1);
+                reader.ReadBuffer(out GameInputStruct curr);
+                FightingGameAbsInputCodeDir direction = curr.direction;
+                DirectionCurrent input = AddToActiveInputs<DirectionCurrent>(servedInputs, foundInputs, inputFactory, reader.currentFrame, newInput => {
+                    numFound++;
+                    newInput.Init(reader.currentFrame, direction);
+                });
+                //FightingGameInputCodeDir direction = (FightingGameInputCodeDir) int.Parse(buffer[buffer.Length - 1].ToString());
+                return input;
+            }
+
+            public static ButtonsCurrent FindButtonsCurrent(InputBufferReader reader, Factory inputFactory, List<Combination> servedInputs, List<Combination> foundInputs) {
+                int numFound = 0;
+                reader.ResetCurrIndex();
+                reader.SetReadIndex(-1);
+                reader.ReadBuffer(out GameInputStruct curr);
+                ButtonsCurrent input = AddToActiveInputs<ButtonsCurrent>(servedInputs, foundInputs, inputFactory, reader.currentFrame, newInput => {
+                    numFound++;
+                    newInput.Init(reader.currentFrame, curr.butA, curr.butB, curr.butC, curr.butD, curr.butS);
+                });
+                //FightingGameInputCodeDir direction = (FightingGameInputCodeDir) int.Parse(buffer[buffer.Length - 1].ToString());
+                return input;
+            }
+
             // regex = /(?<=([^5]))(?=[5])/g
-            public static int FindNeutralReturns(InputBufferReader reader, Factory inputFactory, List<Combination> activeInputs) {
+            public static int FindNeutralReturns(InputBufferReader reader, Factory inputFactory, List<Combination> servedInputs, List<Combination> foundInputs) {
                 int numFound = 0;
                 reader.ResetCurrIndex();
 
@@ -62,7 +90,7 @@ namespace ResonantSpark {
                         notNeutral = true;
                     }
                     else if (notNeutral) {
-                        AddToActiveInputs<NeutralReturn>(activeInputs, inputFactory, reader.currentFrame, newInput => {
+                        AddToActiveInputs<NeutralReturn>(servedInputs, foundInputs, inputFactory, reader.currentFrame, newInput => {
                             numFound++;
                             newInput.Init(inputFrameIndex);
                         });
@@ -74,7 +102,7 @@ namespace ResonantSpark {
             }
 
             // regex = /(?<=([1-9]))(?=([^5]))(?!\1)/g
-            public static int FindDirectionPresses(InputBufferReader reader, Factory inputFactory, List<Combination> activeInputs) {
+            public static int FindDirectionPresses(InputBufferReader reader, Factory inputFactory, List<Combination> servedInputs, List<Combination> foundInputs) {
                 int numFound = 0;
                 reader.ResetCurrIndex();
 
@@ -83,7 +111,7 @@ namespace ResonantSpark {
                     int inputFrameIndex = reader.ReadBuffer(out GameInputStruct curr);
 
                     if (curr.direction != FightingGameAbsInputCodeDir.Neutral && prevDir != curr.direction) {
-                        AddToActiveInputs<DirectionPress>(activeInputs, inputFactory, reader.currentFrame, newInput => {
+                        AddToActiveInputs<DirectionPress>(servedInputs, foundInputs, inputFactory, reader.currentFrame, newInput => {
                             numFound++;
                             newInput.Init(inputFrameIndex, curr.direction);
                         });
@@ -97,7 +125,7 @@ namespace ResonantSpark {
             // regex = /(?<=([1-9]))(?=([^5])\2{19,})(?!\1)|^([^5])\3+$/g
 
                 // This one is for 40 frames
-            public static int FindDirectionLongHolds(InputBufferReader reader, Factory inputFactory, List<Combination> activeInputs) {
+            public static int FindDirectionLongHolds(InputBufferReader reader, Factory inputFactory, List<Combination> servedInputs, List<Combination> foundInputs) {
                 int numFound = 0;
                 reader.ResetCurrIndex();
 
@@ -130,14 +158,14 @@ namespace ResonantSpark {
                         }
 
                         if (inputFrameIndex - horizontalStart >= 40) {
-                            DirectionLongHold input = AddToActiveInputs<DirectionLongHold>(activeInputs, inputFactory, reader.currentFrame, (newInput) => {
+                            DirectionLongHold input = AddToActiveInputs<DirectionLongHold>(servedInputs, foundInputs, inputFactory, reader.currentFrame, (newInput) => {
                                 numFound++;
                                 newInput.Init(inputFrameIndex, FightingGameAbsInputCodeDir.Neutral + horizontalHold, inputFrameIndex - horizontalStart);
                             });
                         }
 
                         if (inputFrameIndex - verticalStart >= 40) {
-                            DirectionLongHold input = AddToActiveInputs<DirectionLongHold>(activeInputs, inputFactory, reader.currentFrame, (newInput) => {
+                            DirectionLongHold input = AddToActiveInputs<DirectionLongHold>(servedInputs, foundInputs, inputFactory, reader.currentFrame, (newInput) => {
                                 numFound++;
                                 newInput.Init(inputFrameIndex, FightingGameAbsInputCodeDir.Neutral + 3 * verticalHold, inputFrameIndex - verticalStart);
                             });
@@ -148,35 +176,8 @@ namespace ResonantSpark {
                 return numFound;
             }
 
-            public static int FindDirectionCurrent(InputBufferReader reader, Factory inputFactory, List<Combination> activeInputs) {
-                int numFound = 0;
-                reader.ResetCurrIndex();
-                reader.SetReadIndex(-1);
-                reader.ReadBuffer(out GameInputStruct curr);
-                FightingGameAbsInputCodeDir direction = curr.direction;
-                DirectionCurrent input = AddToActiveInputs<DirectionCurrent>(activeInputs, inputFactory, reader.currentFrame, newInput => {
-                    numFound++;
-                    newInput.Init(reader.currentFrame, direction);
-                });
-                //FightingGameInputCodeDir direction = (FightingGameInputCodeDir) int.Parse(buffer[buffer.Length - 1].ToString());
-                return numFound;
-            }
-
-            public static int FindButtonsCurrent(InputBufferReader reader, Factory inputFactory, List<Combination> activeInputs) {
-                int numFound = 0;
-                reader.ResetCurrIndex();
-                reader.SetReadIndex(-1);
-                reader.ReadBuffer(out GameInputStruct curr);
-                AddToActiveInputs<ButtonsCurrent>(activeInputs, inputFactory, reader.currentFrame, newInput => {
-                    numFound++;
-                    newInput.Init(reader.currentFrame, curr.butA, curr.butB, curr.butC, curr.butD, curr.butS);
-                });
-                //FightingGameInputCodeDir direction = (FightingGameInputCodeDir) int.Parse(buffer[buffer.Length - 1].ToString());
-                return numFound;
-            }
-
             // regex = /(?<=([^5])[^5\1]{0,4}5{1,7})(?=[^5\1]{0,3}\1)/g
-            public static int FindDoubleTaps(InputBufferReader reader, Factory inputFactory, List<Combination> activeInputs) {
+            public static int FindDoubleTaps(InputBufferReader reader, Factory inputFactory, List<Combination> servedInputs, List<Combination> foundInputs) {
                 int numFound = 0;
                 reader.ResetCurrIndex();
                 FightingGameAbsInputCodeDir currDir = FightingGameAbsInputCodeDir.None;
@@ -228,7 +229,7 @@ namespace ResonantSpark {
                                     int lookBehindFrameIndex = reader.LookBehind(out GameInputStruct lb);
 
                                     if (lb.direction == direction) {
-                                        DoubleTap input = AddToActiveInputs<DoubleTap>(activeInputs, inputFactory, reader.currentFrame, newInput => {
+                                        DoubleTap input = AddToActiveInputs<DoubleTap>(servedInputs, foundInputs, inputFactory, reader.currentFrame, newInput => {
                                             numFound++;
                                             newInput.Init(inputFrameIndex, lookBehindFrameIndex, direction);
                                         });
@@ -258,7 +259,7 @@ namespace ResonantSpark {
                 if (ignoreBut != FightingGameInputCodeBut.S && !butSPrev && curr.butS) callback.Invoke(FightingGameInputCodeBut.S);
             }
 
-            public static int FindButtonPresses(InputBufferReader reader, Factory inputFactory, List<Combination> activeInputs) {
+            public static int FindButtonPresses(InputBufferReader reader, Factory inputFactory, List<Combination> servedInputs, List<Combination> foundInputs) {
                 int numFound = 0;
                 reader.ResetCurrIndex();
 
@@ -272,7 +273,7 @@ namespace ResonantSpark {
                     int inputFrameIndex = reader.ReadBuffer(out GameInputStruct curr);
 
                     FindSingleButtonPress(butAPrev, butBPrev, butCPrev, butDPrev, butSPrev, curr, ignoreBut: FightingGameInputCodeBut.None, callback: buttonCode => {
-                        AddToActiveInputs<ButtonPress>(activeInputs, inputFactory, reader.currentFrame, newInput => {
+                        AddToActiveInputs<ButtonPress>(servedInputs, foundInputs, inputFactory, reader.currentFrame, newInput => {
                             numFound++;
                             newInput.Init(inputFrameIndex, buttonCode);
                         });
@@ -288,7 +289,7 @@ namespace ResonantSpark {
                 return numFound;
             }
 
-            public static int FindButtonReleases(InputBufferReader reader, Factory inputFactory, List<Combination> activeInputs) {
+            public static int FindButtonReleases(InputBufferReader reader, Factory inputFactory, List<Combination> servedInputs, List<Combination> foundInputs) {
                 int numFound = 0;
                 reader.ResetCurrIndex();
 
@@ -302,7 +303,7 @@ namespace ResonantSpark {
                     int inputFrameIndex = reader.ReadBuffer(out GameInputStruct curr);
 
                     FindSingleButtonRelease(butAPrev, butBPrev, butCPrev, butDPrev, butSPrev, curr, ignoreBut: FightingGameInputCodeBut.None, callback: buttonCode => {
-                        AddToActiveInputs<ButtonRelease>(activeInputs, inputFactory, reader.currentFrame, newInput => {
+                        AddToActiveInputs<ButtonRelease>(servedInputs, foundInputs, inputFactory, reader.currentFrame, newInput => {
                             numFound++;
                             newInput.Init(inputFrameIndex, buttonCode);
                         });
@@ -318,7 +319,7 @@ namespace ResonantSpark {
                 return numFound;
             }
 
-            public static int FindButton2Presses(InputBufferReader reader, Factory inputFactory, List<Combination> activeInputs) {
+            public static int FindButton2Presses(InputBufferReader reader, Factory inputFactory, List<Combination> servedInputs, List<Combination> foundInputs) {
                 int numFound = 0;
                 reader.ResetCurrIndex();
 
@@ -333,7 +334,7 @@ namespace ResonantSpark {
 
                     FindSingleButtonPress(butAPrev, butBPrev, butCPrev, butDPrev, butSPrev, curr, ignoreBut: FightingGameInputCodeBut.None, callback: buttonCode0 => {
                         FindSingleButtonPress(butAPrev, butBPrev, butCPrev, butDPrev, butSPrev, curr, ignoreBut: buttonCode0, callback: buttonCode1 => {
-                            AddToActiveInputs<Button2Press>(activeInputs, inputFactory, reader.currentFrame, newInput => {
+                            AddToActiveInputs<Button2Press>(servedInputs, foundInputs, inputFactory, reader.currentFrame, newInput => {
                                 numFound++;
                                 newInput.Init(inputFrameIndex, buttonCode1, buttonCode0);
                             });
@@ -344,7 +345,7 @@ namespace ResonantSpark {
 
                             // If you both reverse the order of the 2 frames AND negate both values, it's the same as checking in the correct order
                             FindSingleButtonPress(!butAPrev, !butBPrev, !butCPrev, !butDPrev, !butSPrev, !lb, ignoreBut: buttonCode0, callback: buttonCode1 => {
-                                AddToActiveInputs<Button2Press>(activeInputs, inputFactory, reader.currentFrame, newInput => {
+                                AddToActiveInputs<Button2Press>(servedInputs, foundInputs, inputFactory, reader.currentFrame, newInput => {
                                     numFound++;
                                     //newInput.Init(inputLookBehindFrameIndex + 1, buttonCode0, buttonCode1); // This uses the button press as the trigger
                                     newInput.Init(inputFrameIndex, buttonCode0, buttonCode1);                 // This uses the end of the quarter circle as the trigger
@@ -370,13 +371,13 @@ namespace ResonantSpark {
             }
 
             // TODO: Accept 3 buttons at the same time.
-            public static int FindButton3Presses(InputBufferReader reader, Factory inputFactory, List<Combination> activeInputs) { return 0; }
+            public static int FindButton3Presses(InputBufferReader reader, Factory inputFactory, List<Combination> servedInputs, List<Combination> foundInputs) { return 0; }
 
-            public static int FindDirectionPlusButtons(InputBufferReader reader, Factory inputFactory, List<Combination> activeInputs) {
+            public static int FindDirectionPlusButtons(InputBufferReader reader, Factory inputFactory, List<Combination> servedInputs, List<Combination> foundInputs) {
                 int numFound = 0;
                 reader.ResetCurrIndex();
 
-                List<Combination> buttonPresses = activeInputs.FindAll(combo => {
+                List<Combination> buttonPresses = foundInputs.FindAll(combo => {
                     return combo.GetType() == typeof(ButtonPress);
                 });
 
@@ -400,7 +401,7 @@ namespace ResonantSpark {
                     }
 
                     if (!continueSearch && curr.direction != FightingGameAbsInputCodeDir.Neutral) {
-                        AddToActiveInputs<DirectionPlusButton>(activeInputs, inputFactory, reader.currentFrame, newInput => {
+                        AddToActiveInputs<DirectionPlusButton>(servedInputs, foundInputs, inputFactory, reader.currentFrame, newInput => {
                             numFound++;
                             newInput.Init(bp.GetFrame(), bp.button0, curr.direction);
                         });
@@ -427,7 +428,7 @@ namespace ResonantSpark {
                         }
 
                         if (!continueSearch && holdDir != FightingGameAbsInputCodeDir.Neutral) {
-                            AddToActiveInputs<DirectionPlusButton>(activeInputs, inputFactory, reader.currentFrame, newInput => {
+                            AddToActiveInputs<DirectionPlusButton>(servedInputs, foundInputs, inputFactory, reader.currentFrame, newInput => {
                                 numFound++;
                                 newInput.Init(lookAheadFrameIndex, bp.button0, holdDir);
                             });
@@ -463,7 +464,7 @@ namespace ResonantSpark {
                 return -1;
             }
 
-            public static int FindQuarterCircles(InputBufferReader reader, Factory inputFactory, List<Combination> activeInputs) {
+            public static int FindQuarterCircles(InputBufferReader reader, Factory inputFactory, List<Combination> servedInputs, List<Combination> foundInputs) {
                 int numFound = 0;
                 reader.ResetCurrIndex();
                 FightingGameAbsInputCodeDir currDir = FightingGameAbsInputCodeDir.None;
@@ -476,7 +477,7 @@ namespace ResonantSpark {
 
                         reader.ResetLookAhead();
                         if ((lookAheadFrameIndex = FindMotion(curr, reader, qcLeft, qcSearchLength)) >= 0) {
-                            QuarterCircle input = AddToActiveInputs<QuarterCircle>(activeInputs, inputFactory, reader.currentFrame, newInput => {
+                            QuarterCircle input = AddToActiveInputs<QuarterCircle>(servedInputs, foundInputs, inputFactory, reader.currentFrame, newInput => {
                                 numFound++;
                                 newInput.Init(lookAheadFrameIndex, FightingGameAbsInputCodeDir.Left);
                             });
@@ -484,7 +485,7 @@ namespace ResonantSpark {
 
                         reader.ResetLookAhead();
                         if ((lookAheadFrameIndex = FindMotion(curr, reader, qcRight, qcSearchLength)) >= 0) {
-                            QuarterCircle input = AddToActiveInputs<QuarterCircle>(activeInputs, inputFactory, reader.currentFrame, newInput => {
+                            QuarterCircle input = AddToActiveInputs<QuarterCircle>(servedInputs, foundInputs, inputFactory, reader.currentFrame, newInput => {
                                 numFound++;
                                 newInput.Init(lookAheadFrameIndex, FightingGameAbsInputCodeDir.Right);
                             });
@@ -494,11 +495,11 @@ namespace ResonantSpark {
                 return numFound;
             }
 
-            public static int FindQuarterCircleButtonPresses(InputBufferReader reader, Factory inputFactory, List<Combination> activeInputs) {
+            public static int FindQuarterCircleButtonPresses(InputBufferReader reader, Factory inputFactory, List<Combination> servedInputs, List<Combination> foundInputs) {
                 int numFound = 0;
                 reader.ResetCurrIndex();
 
-                List<Combination> quarterCircles = activeInputs.FindAll(combo => {
+                List<Combination> quarterCircles = foundInputs.FindAll(combo => {
                     return combo.GetType() == typeof(QuarterCircle);
                 });
 
@@ -516,7 +517,7 @@ namespace ResonantSpark {
                         int inputFrameIndex = reader.LookAhead(out GameInputStruct la);
 
                         FindSingleButtonPress(butAPrev, butBPrev, butCPrev, butDPrev, butSPrev, la, ignoreBut: FightingGameInputCodeBut.None, callback: buttonCode => {
-                            AddToActiveInputs<QuarterCircleButtonPress>(activeInputs, inputFactory, reader.currentFrame, newInput => {
+                            AddToActiveInputs<QuarterCircleButtonPress>(servedInputs, foundInputs, inputFactory, reader.currentFrame, newInput => {
                                 numFound++;
                                 newInput.Init(inputFrameIndex, qc.endDirection, buttonCode);
                             });
@@ -540,7 +541,7 @@ namespace ResonantSpark {
 
                         // If you both reverse the order of the 2 frames AND negate both values, it's the same as checking in the correct order
                         FindSingleButtonPress(!butAPrev, !butBPrev, !butCPrev, !butDPrev, !butSPrev, !lb, ignoreBut: FightingGameInputCodeBut.None, callback: buttonCode => {
-                            AddToActiveInputs<QuarterCircleButtonPress>(activeInputs, inputFactory, reader.currentFrame, newInput => {
+                            AddToActiveInputs<QuarterCircleButtonPress>(servedInputs, foundInputs, inputFactory, reader.currentFrame, newInput => {
                                 numFound++;
                                 //newInput.Init(inputFrameIndex + 1, qc.endDirection, buttonCode); // This uses the button press as the trigger
                                 newInput.Init(qc.GetFrame(), qc.endDirection, buttonCode);         // This uses the end of the quarter circle as the trigger

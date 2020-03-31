@@ -13,8 +13,6 @@ namespace ResonantSpark {
     namespace CharacterStates {
         public class Stand : CharacterBaseState {
 
-            public StandAnimation standAnimation;
-
             public float maxForwardSpeed;
             public float maxBackwardSpeed;
             public float maxHorizontalSpeed;
@@ -56,14 +54,9 @@ namespace ResonantSpark {
                 fgChar.__debugSetStateText("Stand", new Color(0.3f, 0.65f, 0.3f));
                 dirPress = FightingGameInputCodeDir.Neutral;
 
-                GivenInput(fgChar.GivenCombinations());
+                GivenInput(fgChar.GetInUseCombinations());
 
-                if (fgChar.GetPrevState() == states.Get("crouch")) {
-                    standAnimation.FromCrouch();
-                }
-                else {
-                    standAnimation.Stand();
-                }
+                fgChar.AnimationStand();
 
                 smoothedInput = fgChar.RelativeInputToLocal(dirPress, upJump);
             }
@@ -78,10 +71,9 @@ namespace ResonantSpark {
                 WalkCharacter(localVelocity, localInput);
                 TurnCharacter(localInput);
 
-                    // Use helper states to animate the character
-                standAnimation.IncrementTracker();
-
+                fgChar.UpdateCharacterMovement();
                 fgChar.CalculateFinalVelocity();
+                fgChar.AnimationWalkVelocity();
             }
 
             public override void Exit(int frameIndex) {
@@ -173,7 +165,7 @@ namespace ResonantSpark {
                     case FightingGameInputCodeDir.UpBack:
                     case FightingGameInputCodeDir.Up:
                     case FightingGameInputCodeDir.UpForward:
-                        fgChar.UseCombination(combo);
+                        fgChar.Use(combo);
                         stop();
                         changeState(states.Get("jump"));
                         break;
@@ -184,7 +176,7 @@ namespace ResonantSpark {
                     case FightingGameInputCodeDir.DownBack:
                     case FightingGameInputCodeDir.Down:
                     case FightingGameInputCodeDir.DownForward:
-                        fgChar.UseCombination(combo);
+                        fgChar.Use(combo);
                         stop();
                         changeState(states.Get("crouch"));
                         break;
@@ -204,12 +196,12 @@ namespace ResonantSpark {
                 FightingGameInputCodeDir relDir = fgChar.MapAbsoluteToRelative(doubleTap.direction);
 
                 if (relDir == FightingGameInputCodeDir.Forward) {
-                    fgChar.UseCombination(doubleTap);
+                    fgChar.Use(doubleTap);
                     stop();
                     changeState(states.Get("forwardDash"));
                 }
                 else if (relDir == FightingGameInputCodeDir.Back) {
-                    fgChar.UseCombination(doubleTap);
+                    fgChar.Use(doubleTap);
                     stop();
                     changeState(states.Get("backDash"));
                 }
@@ -227,8 +219,12 @@ namespace ResonantSpark {
                 var buttonPress = (ButtonPress) combo;
 
                 if (buttonPress.button0 != FightingGameInputCodeBut.D) {
-                        // TODO: I need to change the input buffer to look further into the future than the input delay for a direction press.
-                    fgChar.ChooseAttack(this, null, buttonPress.button0, this.dirPress);
+                    fgChar.Use(buttonPress);
+                    fgChar.UseCombination<DirectionCurrent>(currDir => {
+                        fgChar.Use(currDir);
+                    });
+
+                    changeState(states.Get("attack"));
                     stop();
                 }
             }
@@ -242,12 +238,12 @@ namespace ResonantSpark {
 
                     if (dirPress == FightingGameInputCodeDir.Up || dirPress == FightingGameInputCodeDir.Down) {
                         stop();
-                        fgChar.UseCombination(dirPlusBut);
+                        fgChar.Use(dirPlusBut);
                         changeState(states.Get("dodge"));
                     }
                     else if (dirPress == FightingGameInputCodeDir.Forward) {
                         stop();
-                        fgChar.UseCombination(dirPlusBut);
+                        fgChar.Use(dirPlusBut);
                         changeState(states.Get("forwardDashLong"));
                     }
                 }

@@ -22,10 +22,17 @@ namespace ResonantSpark {
 
             private Input.Factory inputFactory;
 
-            [SerializeField]
-            private List<Input.Combinations.Combination> inputCombinations;
+            private Combinations.DirectionCurrent currDirection;
+            private Combinations.ButtonsCurrent currButtons;
 
-            public void Start() {
+            //[SerializeField]
+            private List<Input.Combinations.Combination> foundInputCombinations;
+            //[SerializeField]
+            private List<Input.Combinations.Combination> servedInputCombinations;
+            //[SerializeField]
+            private List<Input.Combinations.Combination> inUseInputCombinations;
+
+            public void Awake() {
                 frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
                 frame.AddUpdate((int) FramePriority.InputBuffer, new Action<int>(ServeBuffer));
 
@@ -51,7 +58,15 @@ namespace ResonantSpark {
                     };
                 }
 
-                inputCombinations = new List<Input.Combinations.Combination>();
+                currDirection = inputFactory.CreateCombination<Combinations.DirectionCurrent>(0);
+                currButtons = inputFactory.CreateCombination<Combinations.ButtonsCurrent>(0);
+
+                currDirection.Init(0, FightingGameAbsInputCodeDir.Neutral);
+                currButtons.Init(0, false, false, false, false, false);
+
+                foundInputCombinations = new List<Input.Combinations.Combination>();
+                servedInputCombinations = new List<Input.Combinations.Combination>();
+                inUseInputCombinations = new List<Input.Combinations.Combination>();
             }
 
             public void SetCurrentInputState(FightingGameAbsInputCodeDir dirInputCode = FightingGameAbsInputCodeDir.Neutral, int buttonInputCode = 0) {
@@ -82,13 +97,21 @@ namespace ResonantSpark {
 
             private void FindCombinations(int frameIndex) {
                 InputBufferReader reader = new InputBufferReader(inputBuffer, frameIndex, inputBufferSize, inputIndex, inputDelay, bufferLength);
+                if (UnityEngine.Input.GetKeyDown(KeyCode.Backspace)) {
+                    breakPoint = true;
+                }
                 if (breakPoint) {
                     Debug.Log("Manual Pause");
                     Debug.Log(reader.ToDirectionText());
                     Debug.Log(reader.ToString());
-                    breakPoint = false;
+                    Debug.Break();
+                    //breakPoint = false;
                 }
-                Input.Service.FindCombinations(reader, inputFactory, inputCombinations);
+
+                currDirection = Input.Service.FindDirectionCurrent(reader, inputFactory, servedInputCombinations, foundInputCombinations);
+                currButtons = Input.Service.FindButtonsCurrent(reader, inputFactory, servedInputCombinations, foundInputCombinations);
+
+                Input.Service.FindCombinations(reader, inputFactory, servedInputCombinations, foundInputCombinations);
 
                 //int counter = 0;
                 //inputCombinations.ForEach(combo => {
@@ -102,12 +125,52 @@ namespace ResonantSpark {
                 //}
             }
 
+            public void ForEach(Action<Combinations.Combination> callback) {
+                for (int n = 0; n < inUseInputCombinations.Count; ++n) {
+                    callback(inUseInputCombinations[n]);
+                }
+
+                callback(currDirection);
+                callback(currButtons);
+            }
+
+            public void Use(Combinations.Combination combo) {
+                combo.inUse = true;
+
+                inUseInputCombinations.Add(combo);
+                inUseInputCombinations.Sort();
+
+                if (combo.GetType() != typeof(Input.Combinations.DirectionCurrent)
+                    && combo.GetType() != typeof(Input.Combinations.ButtonsCurrent)) {
+                    servedInputCombinations.Add(combo);
+                    servedInputCombinations.Sort();
+
+                    foundInputCombinations.Remove(combo);
+                }
+            }
+
+            public void RemoveInUseCombinations(List<Combinations.Combination> combos) {
+                for (int n = 0; n < combos.Count; ++n) {
+                    combos[n].inUse = false;
+                    inUseInputCombinations.Remove(combos[n]);
+                }
+            }
+
+            public List<Combinations.Combination> GetInUseCombinations() {
+                for (int n = 0; n < inUseInputCombinations.Count; ++n) {
+                    inUseInputCombinations[n].inUse = false;
+                }
+                return inUseInputCombinations;
+            }
+
             public List<Input.Combinations.Combination> GetFoundCombinations() {
-                return inputCombinations;
+                return foundInputCombinations;
             }
 
             public void ClearInputCombinations(int frameIndex) {
-                inputCombinations = inputCombinations.Where(combo => combo.inUse || !combo.Stale(frameIndex - inputDelay)).ToList();
+                foundInputCombinations = foundInputCombinations.Where(combo => !combo.Stale(frameIndex - inputDelay)).ToList();
+                servedInputCombinations = servedInputCombinations.Where(combo => (frameIndex - combo.GetFrame()) < inputBufferSize).ToList();
+                inUseInputCombinations = inUseInputCombinations.Where(combo => (frameIndex - combo.GetFrame()) < inputBufferSize).ToList();
             }
 
             public void ServeInput() {

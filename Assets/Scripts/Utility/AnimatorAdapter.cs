@@ -19,6 +19,10 @@ namespace ResonantSpark {
                     animators[n].Play(stateName, layer, normalizedTime);
                 }
             }
+
+            public AnimatorStateInfo GetCurrentAnimatorStateInfo(int index, int layerIndex) {
+                return animators[index].GetCurrentAnimatorStateInfo(layerIndex);
+            }
         }
 
         [CustomEditor(typeof(AnimatorAdapter))]
