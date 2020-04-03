@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.InputSystem;
+using UnityEngine.Events;
+
 
 public class Pauser : MonoBehaviour
 {
@@ -10,39 +11,35 @@ public class Pauser : MonoBehaviour
 
     public GameObject pauseMenuUI;
 
-    // Update is called once per frame
-    void Update()
+    public void Awake()
     {
-        if(Keyboard.current.escapeKey.isPressed)
+        EventManager.StartListening<ResonantSpark.Events.TogglePauseGame>(new UnityAction(TogglePause));
+    }
+
+    
+
+    public void TogglePause()
+    {
+        if (!isPaused)
         {
-            if (isPaused) {
-                Resume();
-            } else
-            {
-                Pause();
-            }
+            Debug.Log("is this thing on");
+            pauseMenuUI.SetActive(true);
+            Time.timeScale = 0f;
+            isPaused = true;
         }
-    }
-
-    public void Resume()
-    {
-        pauseMenuUI.SetActive(false);
-        Time.timeScale = 1f;
-        isPaused = false;
-    }
-
-    public void Pause()
-    {
-        pauseMenuUI.SetActive(true);
-        Time.timeScale = 0f;
-        isPaused = true;
+        else {
+            pauseMenuUI.SetActive(false);
+            Time.timeScale = 1f;
+            isPaused = false;
+        }
+        
     }
 
     public void LoadMainMenu()
     {
         Time.timeScale = 1f;
         isPaused = false;
-        SceneManager.LoadScene("MainMenu");
+        SceneManager.LoadScene("TestMenu");
     }
 
     public void QuitGame()
