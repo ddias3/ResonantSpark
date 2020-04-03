@@ -34,8 +34,8 @@ namespace ResonantSpark {
                     .On<ButtonPress>(OnButtonPress)
                     .On<Button2Press>(OnButton2Press);
 
-                //RegisterEnterCallbacks()
-                //    .On<DirectionPlusButton>(GivenDirectionPlusButton);
+                RegisterEnterCallbacks()
+                    .On<DirectionPlusButton>(GivenDirectionPlusButton);
 
                 tracker = new Utility.AttackTracker(dashLength);
             }
@@ -130,9 +130,9 @@ namespace ResonantSpark {
                 // TODO: figure out if anything should happen before the dash actually ends.
             }
 
-            //private void GivenDirectionPlusButton(Action stop, Combination combo) {
-            //    this.dashDir = fgChar.MapAbsoluteToRelative(((DirectionPlusButton) combo).direction);
-            //}
+            private void GivenDirectionPlusButton(Action stop, Combination combo) {
+                this.dashDir = fgChar.MapAbsoluteToRelative(((DirectionPlusButton)combo).direction);
+            }
         }
     }
 }

@@ -157,9 +157,6 @@ namespace ResonantSpark {
             }
 
             public List<Combinations.Combination> GetInUseCombinations() {
-                for (int n = 0; n < inUseInputCombinations.Count; ++n) {
-                    inUseInputCombinations[n].inUse = false;
-                }
                 return inUseInputCombinations;
             }
 
@@ -168,9 +165,9 @@ namespace ResonantSpark {
             }
 
             public void ClearInputCombinations(int frameIndex) {
-                foundInputCombinations = foundInputCombinations.Where(combo => !combo.Stale(frameIndex - inputDelay)).ToList();
-                servedInputCombinations = servedInputCombinations.Where(combo => (frameIndex - combo.GetFrame()) < inputBufferSize).ToList();
-                inUseInputCombinations = inUseInputCombinations.Where(combo => (frameIndex - combo.GetFrame()) < inputBufferSize).ToList();
+                foundInputCombinations.RemoveAll(combo => combo.Stale(frameIndex - inputDelay));
+                servedInputCombinations.RemoveAll(combo => (frameIndex - combo.GetFrame()) > inputBufferSize);
+                inUseInputCombinations.RemoveAll(combo => (frameIndex - combo.GetFrame()) > inputBufferSize);
             }
 
             public void ServeInput() {

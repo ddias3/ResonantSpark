@@ -72,9 +72,7 @@ namespace ResonantSpark {
             }
 
             public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
-                //distance += animatorDelta / fgChar.gameTime;
                 fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Dash, animatorVelocity);
-                //fgChar.position += fgChar.toLocal * animatorDelta;
             }
 
             public override GroundRelation GetGroundRelation() {

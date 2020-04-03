@@ -59,6 +59,8 @@ namespace ResonantSpark {
                 FindInput(fgChar.GetFoundCombinations());
 
                 activeAttack?.RunFrame();
+
+                fgChar.CalculateFinalVelocity();
             }
 
             public override void Exit(int frameIndex) {
@@ -66,8 +68,7 @@ namespace ResonantSpark {
             }
 
             public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
-                //Debug.Log(animatorVelocity);
-                fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Light, animatorVelocity);
+                fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Dash, animatorVelocity);
             }
 
             public void OnCompleteAttack() {

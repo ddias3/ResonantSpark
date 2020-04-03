@@ -33,6 +33,7 @@ namespace ResonantSpark {
 
             public override void Execute(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
+                fgChar.CalculateFinalVelocity();
             }
 
             public override void Exit(int frameIndex) {

@@ -45,6 +45,7 @@ namespace ResonantSpark {
                 FindInput(fgChar.GetFoundCombinations());
 
                 fgChar.UpdateCharacterMovement();
+                fgChar.CalculateFinalVelocity();
             }
 
             public override void Exit(int frameIndex) {

@@ -96,7 +96,7 @@ namespace ResonantSpark {
                         atkBuilder.Name("orthodox_5AA");
                         atkBuilder.Orientation(Orientation.ORTHODOX);
                         atkBuilder.GroundRelation(GroundRelation.GROUNDED);
-                        atkBuilder.Input(InputNotation._5A);
+                        atkBuilder.Input(InputNotation._4A, InputNotation._5A);
                         atkBuilder.AnimationState("5AA");
                         atkBuilder.Frames(
                             FrameUtil.CreateList(fl => {
@@ -153,7 +153,7 @@ namespace ResonantSpark {
                         .Name("orthodox_5AAA")
                         .Orientation(Orientation.ORTHODOX)
                         .GroundRelation(GroundRelation.GROUNDED)
-                        .Input(InputNotation._5A)
+                        .Input(InputNotation._4A, InputNotation._5A)
                         .AnimationState("5AAA")
                         .FramesContinuous((localFrame, targetPos) => {
                             if (localFrame >= 22.0f && localFrame <= 30.0f) {
@@ -239,7 +239,7 @@ namespace ResonantSpark {
                         .Name("orthodox_2A")
                         .Orientation(Orientation.ORTHODOX)
                         .GroundRelation(GroundRelation.GROUNDED)
-                        .Input(InputNotation._2A)
+                        .Input(InputNotation._1A, InputNotation._2A, InputNotation._3A)
                         .AnimationState("2A")
                         .Frames(
                             FrameUtil.CreateList(f => { f
@@ -287,7 +287,7 @@ namespace ResonantSpark {
                         .Name("orthodox_2AA")
                         .Orientation(Orientation.ORTHODOX)
                         .GroundRelation(GroundRelation.GROUNDED)
-                        .Input(InputNotation._2A)
+                        .Input(InputNotation._1A, InputNotation._2A, InputNotation._3A)
                         .AnimationState("2AA")
                         .Frames(
                             FrameUtil.CreateList(f => { f
@@ -329,7 +329,7 @@ namespace ResonantSpark {
                         atkBuilder.Name("orthodox_5B");
                         atkBuilder.Orientation(Orientation.ORTHODOX);
                         atkBuilder.GroundRelation(GroundRelation.GROUNDED);
-                        atkBuilder.Input(InputNotation._5B);
+                        atkBuilder.Input(InputNotation._4B, InputNotation._5B);
                         atkBuilder.AnimationState("5B");
                         atkBuilder.Frames(
                             FrameUtil.CreateList(fl => {
@@ -377,7 +377,7 @@ namespace ResonantSpark {
                         atkBuilder.Name("orthodox_5BB");
                         atkBuilder.Orientation(Orientation.ORTHODOX);
                         atkBuilder.GroundRelation(GroundRelation.GROUNDED);
-                        atkBuilder.Input(InputNotation._5B);
+                        atkBuilder.Input(InputNotation._4B, InputNotation._5B);
                         atkBuilder.AnimationState("5BB");
                         atkBuilder.Frames(
                             FrameUtil.CreateList(fl => {
@@ -430,7 +430,7 @@ namespace ResonantSpark {
                         atkBuilder.Name("orthodox_5BBB");
                         atkBuilder.Orientation(Orientation.ORTHODOX);
                         atkBuilder.GroundRelation(GroundRelation.GROUNDED);
-                        atkBuilder.Input(InputNotation._5B);
+                        atkBuilder.Input(InputNotation._4B, InputNotation._5B);
                         atkBuilder.AnimationState("5BBB");
                         atkBuilder.Frames(
                             FrameUtil.CreateList(fl => {
@@ -476,7 +476,7 @@ namespace ResonantSpark {
                         atkBuilder.Name("orthodox_5BBBB");
                         atkBuilder.Orientation(Orientation.ORTHODOX);
                         atkBuilder.GroundRelation(GroundRelation.GROUNDED);
-                        atkBuilder.Input(InputNotation._5B);
+                        atkBuilder.Input(InputNotation._4B, InputNotation._5B);
                         atkBuilder.AnimationState("5BBBB");
                         atkBuilder.Frames(
                             FrameUtil.CreateList(fl => {
@@ -522,7 +522,7 @@ namespace ResonantSpark {
                         .Name("jump_southpaw_5A")
                         .Orientation(Orientation.ORTHODOX)
                         .GroundRelation(GroundRelation.AIRBORNE)
-                        .Input(InputNotation._5A)
+                        .Input(InputNotation._A)
                         .AnimationState("j.A")
                         .FramesContinuous((localFrame, target) => {
                             if (localFrame >= 8.0f && localFrame <= 11.0f) {
@@ -570,7 +570,7 @@ namespace ResonantSpark {
                         .Name("jump_southpaw_5AA")
                         .Orientation(Orientation.ORTHODOX)
                         .GroundRelation(GroundRelation.AIRBORNE)
-                        .Input(InputNotation._5A)
+                        .Input(InputNotation._A)
                         .AnimationState("j.AA")
                         .FramesContinuous((localFrame, target) => {
                             if (localFrame >= 8.0f && localFrame <= 11.0f) {
@@ -622,7 +622,7 @@ namespace ResonantSpark {
                         .Name("jump_southpaw_5AAA")
                         .Orientation(Orientation.ORTHODOX)
                         .GroundRelation(GroundRelation.AIRBORNE)
-                        .Input(InputNotation._5A)
+                        .Input(InputNotation._A)
                         .AnimationState("j.AAA")
                         .FramesContinuous((localFrame, target) => {
                             if (localFrame >= 8.0f && localFrame <= 11.0f) {

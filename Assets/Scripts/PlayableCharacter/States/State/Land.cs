@@ -42,6 +42,7 @@ namespace ResonantSpark {
                     changeState(states.Get("stand"));
                 }
 
+                fgChar.CalculateFinalVelocity();
                 ++frameCount;
             }
 

@@ -49,6 +49,8 @@ namespace ResonantSpark {
                 // Move the character
                 WalkCharacter(localVelocity, localInput);
                 TurnCharacter(localInput);
+
+                fgChar.CalculateFinalVelocity();
             }
 
             public override void Exit(int frameIndex) {
