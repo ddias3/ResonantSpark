@@ -39,7 +39,7 @@ namespace ResonantSpark {
 
             private CharacterMovementAnimation charMovementAnimation;
 
-            private List<CharacterProperties.Attack> prevAttacks;
+            public List<CharacterProperties.Attack> prevAttacks;
 
             private CharacterStates.CharacterBaseState prevState;
 
@@ -152,7 +152,9 @@ namespace ResonantSpark {
                 CharacterProperties.Attack attack = charData.ChooseAttackFromSelectability(attackCandidates, currState, currAttack, prevAttacks);
 
                 if (attack != null) {
-                    ((CharacterStates.Attack) currState).SetActiveAttack(attack);
+                    CharacterStates.Attack attackState = currState.ChooseState(attack);
+
+                    attackState.SetActiveAttack(attack);
 
                     if (currAttack != null) {
                         prevAttacks.Add(currAttack);

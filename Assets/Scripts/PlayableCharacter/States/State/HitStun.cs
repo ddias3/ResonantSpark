@@ -10,7 +10,7 @@ using ResonantSpark.Input;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class HitStunStand : HitStun {
+        public abstract class HitStun : CharacterBaseState {
 
             private int testLength = 20;
 

@@ -10,7 +10,7 @@ using ResonantSpark.Input;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class HitStunCrouch : CharacterBaseState {
+        public class HitStunCrouch : HitStun {
 
             public new void Awake() {
                 base.Awake();

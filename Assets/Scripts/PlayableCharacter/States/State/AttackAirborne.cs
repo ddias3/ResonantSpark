@@ -9,7 +9,7 @@ using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class AttackAirborne : CharacterBaseState {
+        public class AttackAirborne : Attack {
 
             public new void Awake() {
                 base.Awake();
@@ -37,11 +37,7 @@ namespace ResonantSpark {
             }
 
             public override void Exit(int frameIndex) {
-                // do nothing
-            }
-
-            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
-                // do nothing
+                activeAttack = null;
             }
 
             public override GroundRelation GetGroundRelation() {

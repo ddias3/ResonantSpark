@@ -89,6 +89,9 @@ namespace ResonantSpark {
                                     fl.ChainCancellable(true);
                                 fl.To(22);
                             }));
+                        atkBuilder.GetHit((localFrame, target, position) => {
+                            fgChar.SetState(fgChar.State("hitStunStand"));
+                        });
                         atkBuilder.CleanUp(ReturnToStand);
                     });
 
@@ -146,24 +149,28 @@ namespace ResonantSpark {
                                     // Recovery
                                 fl.To(30);
                             }));
+                        atkBuilder.GetHit((localFrame, target, position) => {
+                            fgChar.SetState(fgChar.State("hitStunStand"));
+                        });
                         atkBuilder.CleanUp(ReturnToStand);
                     });
 
-                    Attack atkOrt5AAA = new Attack(atkBuilder => { atkBuilder
-                        .Name("orthodox_5AAA")
-                        .Orientation(Orientation.ORTHODOX)
-                        .GroundRelation(GroundRelation.GROUNDED)
-                        .Input(InputNotation._4A, InputNotation._5A)
-                        .AnimationState("5AAA")
-                        .FramesContinuous((localFrame, targetPos) => {
+                    Attack atkOrt5AAA = new Attack(atkBuilder => {
+                        atkBuilder.Name("orthodox_5AAA");
+                        atkBuilder.Orientation(Orientation.ORTHODOX);
+                        atkBuilder.GroundRelation(GroundRelation.GROUNDED);
+                        atkBuilder.Input(InputNotation._4A, InputNotation._5A);
+                        atkBuilder.AnimationState("5AAA");
+                        atkBuilder.InitCharState(fgChar.State("attackGrounded"));
+                        atkBuilder.FramesContinuous((localFrame, targetPos) => {
                             if (localFrame >= 22.0f && localFrame <= 30.0f) {
                                 float p = (localFrame - 22.0f) / 30.0f;
                                 Quaternion rot = Quaternion.Euler(0.0f, -180f * p + Vector3.SignedAngle(Vector3.right, fgChar.position - targetPos, Vector3.up), 0.0f);
                                 fgChar.SetRotation(rot);
                                     // fgChar.GetOrientation is done automatically on each frame
                             }
-                        })
-                        .Frames(
+                        });
+                        atkBuilder.Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
                                 .CancellableOnWhiff(false)
@@ -171,6 +178,7 @@ namespace ResonantSpark {
                                     .ChainCancellable(false)
                                 .To(20)
                                 .From(14)
+                                    //.ChangeState(fgChar.State("attackAirborne"))
                                     .Hit(hit => {
                                         hit.HitDamage(1000)
                                             .BlockDamage(0)
@@ -231,17 +239,20 @@ namespace ResonantSpark {
                                 .From(22)
                                     // Recovery
                                 .To(30);
-                            }))
-                        .CleanUp(ReturnToStand);
+                            }));
+                        atkBuilder.GetHit((localFrame, target, position) => {
+                            fgChar.SetState(fgChar.State("hitStunStand"));
+                        });
+                        atkBuilder.CleanUp(ReturnToStand);
                     });
 
-                    Attack atkOrt2A = new Attack(atkBuilder => { atkBuilder
-                        .Name("orthodox_2A")
-                        .Orientation(Orientation.ORTHODOX)
-                        .GroundRelation(GroundRelation.GROUNDED)
-                        .Input(InputNotation._1A, InputNotation._2A, InputNotation._3A)
-                        .AnimationState("2A")
-                        .Frames(
+                    Attack atkOrt2A = new Attack(atkBuilder => {
+                        atkBuilder.Name("orthodox_2A");
+                        atkBuilder.Orientation(Orientation.ORTHODOX);
+                        atkBuilder.GroundRelation(GroundRelation.GROUNDED);
+                        atkBuilder.Input(InputNotation._1A, InputNotation._2A, InputNotation._3A);
+                        atkBuilder.AnimationState("2A");
+                        atkBuilder.Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
                                 .ChainCancellable(false)
@@ -279,17 +290,20 @@ namespace ResonantSpark {
                                 .From(14)
                                     .ChainCancellable(true)
                                 .To(22);
-                            }))
-                        .CleanUp(ReturnToCrouch);
+                            }));
+                        atkBuilder.GetHit((localFrame, target, position) => {
+                            fgChar.SetState(fgChar.State("hitStunCrouch"));
+                        });
+                        atkBuilder.CleanUp(ReturnToCrouch);
                     });
 
-                    Attack atkOrt2AA = new Attack(atkBuilder => { atkBuilder
-                        .Name("orthodox_2AA")
-                        .Orientation(Orientation.ORTHODOX)
-                        .GroundRelation(GroundRelation.GROUNDED)
-                        .Input(InputNotation._1A, InputNotation._2A, InputNotation._3A)
-                        .AnimationState("2AA")
-                        .Frames(
+                    Attack atkOrt2AA = new Attack(atkBuilder => {
+                        atkBuilder.Name("orthodox_2AA");
+                        atkBuilder.Orientation(Orientation.ORTHODOX);
+                        atkBuilder.GroundRelation(GroundRelation.GROUNDED);
+                        atkBuilder.Input(InputNotation._1A, InputNotation._2A, InputNotation._3A);
+                        atkBuilder.AnimationState("2AA");
+                        atkBuilder.Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
                                 .ChainCancellable(false)
@@ -321,8 +335,11 @@ namespace ResonantSpark {
                                 .From(16)
                                     .ChainCancellable(true)
                                 .To(28);
-                            }))
-                        .CleanUp(ReturnToCrouch);
+                            }));
+                        atkBuilder.GetHit((localFrame, target, position) => {
+                            fgChar.SetState(fgChar.State("hitStunCrouch"));
+                        });
+                        atkBuilder.CleanUp(ReturnToCrouch);
                     });
 
                     Attack atkOrt5B = new Attack(atkBuilder => {
@@ -370,6 +387,9 @@ namespace ResonantSpark {
                                     fl.ChainCancellable(true);
                                 fl.To(30);
                             }));
+                        atkBuilder.GetHit((localFrame, target, position) => {
+                            fgChar.SetState(fgChar.State("hitStunStand"));
+                        });
                         atkBuilder.CleanUp(ReturnToStand);
                     });
 
@@ -423,6 +443,9 @@ namespace ResonantSpark {
                                     fl.ChainCancellable(true);
                                 fl.To(30);
                             }));
+                        atkBuilder.GetHit((localFrame, target, position) => {
+                            fgChar.SetState(fgChar.State("hitStunStand"));
+                        });
                         atkBuilder.CleanUp(ReturnToStand);
                     });
 
@@ -469,6 +492,9 @@ namespace ResonantSpark {
                                     fl.ChainCancellable(true);
                                 fl.To(47);
                             }));
+                        atkBuilder.GetHit((localFrame, target, position) => {
+                            fgChar.SetState(fgChar.State("hitStunStand"));
+                        });
                         atkBuilder.CleanUp(ReturnToStand);
                     });
 
@@ -515,22 +541,25 @@ namespace ResonantSpark {
                                     fl.ChainCancellable(true);
                                 fl.To(35);
                             }));
+                        atkBuilder.GetHit((localFrame, target, position) => {
+                            fgChar.SetState(fgChar.State("hitStunStand"));
+                        });
                         atkBuilder.CleanUp(ReturnToStand);
                     });
 
-                    Attack atkJumpSpw5A = new Attack(atkBuilder => { atkBuilder
-                        .Name("jump_southpaw_5A")
-                        .Orientation(Orientation.ORTHODOX)
-                        .GroundRelation(GroundRelation.AIRBORNE)
-                        .Input(InputNotation._A)
-                        .AnimationState("j.A")
-                        .FramesContinuous((localFrame, target) => {
+                    Attack atkJumpSpw5A = new Attack(atkBuilder => {
+                        atkBuilder.Name("jump_southpaw_5A");
+                        atkBuilder.Orientation(Orientation.ORTHODOX);
+                        atkBuilder.GroundRelation(GroundRelation.AIRBORNE);
+                        atkBuilder.Input(InputNotation._A);
+                        atkBuilder.AnimationState("j.A");
+                        atkBuilder.FramesContinuous((localFrame, target) => {
                             if (localFrame >= 8.0f && localFrame <= 11.0f) {
                                 float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
                                 fgChar.SetStandCollider(p * 0.5f * Vector3.up);
                             }
-                        })
-                        .Frames(
+                        });
+                        atkBuilder.Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
                                 .ChainCancellable(true)
@@ -562,23 +591,26 @@ namespace ResonantSpark {
                                 .From(13)
                                     .ChainCancellable(true)
                                 .To(23);
-                            }))
-                        .CleanUp(ReturnToAirborne);
+                            }));
+                        atkBuilder.GetHit((localFrame, target, position) => {
+                            fgChar.SetState(fgChar.State("hitStunAirborne"));
+                        });
+                        atkBuilder.CleanUp(ReturnToAirborne);
                     });
 
-                    Attack atkJumpSpw5AA = new Attack(atkBuilder => { atkBuilder
-                        .Name("jump_southpaw_5AA")
-                        .Orientation(Orientation.ORTHODOX)
-                        .GroundRelation(GroundRelation.AIRBORNE)
-                        .Input(InputNotation._A)
-                        .AnimationState("j.AA")
-                        .FramesContinuous((localFrame, target) => {
+                    Attack atkJumpSpw5AA = new Attack(atkBuilder => {
+                        atkBuilder.Name("jump_southpaw_5AA");
+                        atkBuilder.Orientation(Orientation.ORTHODOX);
+                        atkBuilder.GroundRelation(GroundRelation.AIRBORNE);
+                        atkBuilder.Input(InputNotation._A);
+                        atkBuilder.AnimationState("j.AA");
+                        atkBuilder.FramesContinuous((localFrame, target) => {
                             if (localFrame >= 8.0f && localFrame <= 11.0f) {
                                 float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
                                 fgChar.SetStandCollider(p * 0.5f * Vector3.up);
                             }
-                        })
-                        .Frames(
+                        });
+                        atkBuilder.Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
                                 .ChainCancellable(false)
@@ -614,23 +646,26 @@ namespace ResonantSpark {
                                 .From(16)
                                     .ChainCancellable(true)
                                 .To(30);
-                            }))
-                        .CleanUp(ReturnToAirborne);
+                            }));
+                        atkBuilder.GetHit((localFrame, target, position) => {
+                            fgChar.SetState(fgChar.State("hitStunAirborne"));
+                        });
+                        atkBuilder.CleanUp(ReturnToAirborne);
                     });
 
-                    Attack atkJumpSpw5AAA = new Attack(atkBuilder => { atkBuilder
-                        .Name("jump_southpaw_5AAA")
-                        .Orientation(Orientation.ORTHODOX)
-                        .GroundRelation(GroundRelation.AIRBORNE)
-                        .Input(InputNotation._A)
-                        .AnimationState("j.AAA")
-                        .FramesContinuous((localFrame, target) => {
+                    Attack atkJumpSpw5AAA = new Attack(atkBuilder => {
+                        atkBuilder.Name("jump_southpaw_5AAA");
+                        atkBuilder.Orientation(Orientation.ORTHODOX);
+                        atkBuilder.GroundRelation(GroundRelation.AIRBORNE);
+                        atkBuilder.Input(InputNotation._A);
+                        atkBuilder.AnimationState("j.AAA");
+                        atkBuilder.FramesContinuous((localFrame, target) => {
                             if (localFrame >= 8.0f && localFrame <= 11.0f) {
                                 float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
                                 fgChar.SetStandCollider(p * 0.5f * Vector3.up);
                             }
-                        })
-                        .Frames(
+                        });
+                        atkBuilder.Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
                                 .ChainCancellable(false)
@@ -700,17 +735,20 @@ namespace ResonantSpark {
                                 .To(21)
                                     // Recovery
                                 .To(40);
-                            }))
-                        .CleanUp(ReturnToAirborne);
+                            }));
+                        atkBuilder.GetHit((localFrame, target, position) => {
+                            fgChar.SetState(fgChar.State("hitStunAirborne"));
+                        });
+                        atkBuilder.CleanUp(ReturnToAirborne);
                     });
 
-                    Attack hadouken = new Attack(atkBuilder => { atkBuilder
-                        .Name("hadouken")
-                        .Orientation(Orientation.ORTHODOX)
-                        .GroundRelation(GroundRelation.GROUNDED)
-                        .Input(InputNotation._236C)
-                        .AnimationState("hadouken")
-                        .Frames(
+                    Attack hadouken = new Attack(atkBuilder => {
+                        atkBuilder.Name("hadouken");
+                        atkBuilder.Orientation(Orientation.ORTHODOX);
+                        atkBuilder.GroundRelation(GroundRelation.GROUNDED);
+                        atkBuilder.Input(InputNotation._236C);
+                        atkBuilder.AnimationState("hadouken");
+                        atkBuilder.Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(false)
                                 .ChainCancellable(false)
@@ -730,11 +768,32 @@ namespace ResonantSpark {
                                         projectileService.FireProjectile(proj.id);
                                     })
                                 .To(13);
-                            }))
-                        .CleanUp(ReturnToStand);
+                            }));
+                        atkBuilder.GetHit((localFrame, target, position) => {
+                            fgChar.SetState(fgChar.State("hitStunStand"));
+                        });
+                        atkBuilder.CleanUp(ReturnToStand);
                     });
 
+                    List<CharacterStates.CharacterBaseState> validGroundedAttackStates = new List<CharacterStates.CharacterBaseState> {
+                        fgChar.State("stand"),
+                        fgChar.State("crouch"),
+                        fgChar.State("attackGrounded"),
+                        fgChar.State("backDash"),
+                        fgChar.State("forwardDash"),
+                        fgChar.State("forwardDashLong"),
+                        fgChar.State("dodge"),
+                    };
+
+                    List<CharacterStates.CharacterBaseState> validAirborneAttackStates = new List<CharacterStates.CharacterBaseState> {
+                        fgChar.State("airborne"),
+                        fgChar.State("attackAirborne"),
+                    };
+
                     charBuilder.Attack(atkOrt5A, (charState, currAttack, prevAttacks) => { // prevAttacks is a List<Attack>
+                        if (!validGroundedAttackStates.Contains(charState)) {
+                            return false;
+                        }
                         if (currAttack == null ||
                             currAttack == atkOrt2A ||
                             currAttack == atkOrt2AA) {
@@ -743,18 +802,27 @@ namespace ResonantSpark {
                         return false;
                     });
                     charBuilder.Attack(atkOrt5AA, (charState, currAttack, prevAttacks) => {
+                        if (!validGroundedAttackStates.Contains(charState)) {
+                            return false;
+                        }
                         if (currAttack == atkOrt5A) {
                             return true;
                         }
                         return false;
                     });
                     charBuilder.Attack(atkOrt5AAA, (charState, currAttack, prevAttacks) => {
+                        if (!validGroundedAttackStates.Contains(charState)) {
+                            return false;
+                        }
                         if (currAttack == atkOrt5AA) {
                             return true;
                         }
                         return false;
                     });
                     charBuilder.Attack(atkOrt2A, (charState, currAttack, prevAttacks) => {
+                        if (!validGroundedAttackStates.Contains(charState)) {
+                            return false;
+                        }
                         if (prevAttacks.Where(prev => prev == atkOrt5A).Count() > 1 ||
                             prevAttacks.Contains(atkOrt2A)) {
                             return false;
@@ -766,12 +834,18 @@ namespace ResonantSpark {
                         return false;
                     });
                     charBuilder.Attack(atkOrt2AA, (charState, currAttack, prevAttacks) => {
+                        if (!validGroundedAttackStates.Contains(charState)) {
+                            return false;
+                        }
                         if (currAttack == atkOrt2A) {
                             return true;
                         }
                         return false;
                     });
                     charBuilder.Attack(atkOrt5B, (charState, currAttack, prevAttacks) => {
+                        if (!validGroundedAttackStates.Contains(charState)) {
+                            return false;
+                        }
                         if (currAttack == null ||
                             currAttack == atkOrt2A ||
                             currAttack == atkOrt2AA ||
@@ -783,18 +857,27 @@ namespace ResonantSpark {
                         return false;
                     });
                     charBuilder.Attack(atkOrt5BB, (charState, currAttack, prevAttacks) => {
+                        if (!validGroundedAttackStates.Contains(charState)) {
+                            return false;
+                        }
                         if (currAttack == atkOrt5B) {
                             return true;
                         }
                         return false;
                     });
                     charBuilder.Attack(atkOrt5BBB, (charState, currAttack, prevAttacks) => {
+                        if (!validGroundedAttackStates.Contains(charState)) {
+                            return false;
+                        }
                         if (currAttack == atkOrt5BB) {
                             return true;
                         }
                         return false;
                     });
                     charBuilder.Attack(atkOrt5BBBB, (charState, currAttack, prevAttacks) => {
+                        if (!validGroundedAttackStates.Contains(charState)) {
+                            return false;
+                        }
                         if (currAttack == atkOrt5BBB) {
                             return true;
                         }
