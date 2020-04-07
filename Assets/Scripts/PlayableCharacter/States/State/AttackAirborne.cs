@@ -80,11 +80,12 @@ namespace ResonantSpark {
                 if (activeAttack.ChainCancellable()) {
                     if (button != FightingGameInputCodeBut.D) {
                         FightingGameInputCodeDir direction = FightingGameInputCodeDir.Neutral;
+                        fgChar.Use(combo);
                         fgChar.UseCombination<DirectionCurrent>(currDir => {
                             direction = fgChar.MapAbsoluteToRelative(((DirectionCurrent)currDir).direction);
                         });
 
-                        fgChar.ChooseAttack(this, null, button, direction);
+                        fgChar.ChooseAttack(this, activeAttack, button, direction);
                         stop();
                     }
                 }

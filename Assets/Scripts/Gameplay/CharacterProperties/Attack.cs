@@ -96,12 +96,13 @@ namespace ResonantSpark {
 
             public void StartPerformable(int frameIndex) {
                 tracker.Track(frameIndex);
-                Debug.Log("Attack Animation State: " + animStateName);
+                Debug.Log("Start Performable Attack Animation State: " + animStateName + " from attack: " + ToString());
                 fgChar.Play(animStateName);
             }
 
             public void RunFrame() {
                 int frameCount = tracker.frameCount;
+                //Debug.LogWarningFormat("    -- Atk: {0} | Frame#: = {1}/{2}", ToString(), frameCount, frames.Count);
                 framesContinuous?.Invoke((float)frameCount, fgChar.GetTarget());
                 frames[frameCount].Perform(fgChar);
 
@@ -131,6 +132,10 @@ namespace ResonantSpark {
 
             public override int GetHashCode() {
                 return id;
+            }
+
+            public override string ToString() {
+                return string.Format("ATK: {0}.{1}", orientation, name);
             }
         }
     }

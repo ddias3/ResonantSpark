@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,6 +16,7 @@ namespace ResonantSpark {
 
             private List<CharacterProperties.Attack> prevAttacks;
 
+            private CharacterProperties.Attack queuedUpAttack;
             private CharacterProperties.Attack activeAttack;
             private bool startRequired = false;
 
@@ -24,7 +26,11 @@ namespace ResonantSpark {
             }
 
             public void ChooseAttack(CharacterData charData, CharacterStates.CharacterBaseState currState, CharacterProperties.Attack currAttack, FightingGameInputCodeBut button, FightingGameInputCodeDir direction = FightingGameInputCodeDir.None) {
-                Debug.Log(prevAttacks);
+                StringBuilder prevAttackStr = new StringBuilder();
+                prevAttackStr.Append("[");
+                prevAttacks.ForEach(atk => { prevAttackStr.Append(atk.ToString()).Append(","); });
+                prevAttackStr.Append("]");
+                Debug.LogFormat(prevAttackStr.ToString());
 
                 InputNotation notation = GameInputUtil.SelectInputNotation(button, direction);
 
@@ -40,7 +46,7 @@ namespace ResonantSpark {
 
                     attack.SetOnCompleteCallback(new Action(OnCompleteAttack));
 
-                    this.activeAttack = attack;
+                    this.queuedUpAttack = attack;
                     startRequired = true;
                 }
             }
@@ -51,7 +57,11 @@ namespace ResonantSpark {
 
             public void StartAttackIfRequired(int frameIndex) {
                 if (startRequired) {
+                    activeAttack = queuedUpAttack;
                     activeAttack.StartPerformable(frameIndex);
+                }
+                else {
+                    Debug.LogWarning("Start Called without being required");
                 }
             }
 
