@@ -21,14 +21,22 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
-                fgChar.__debugSetStateText("Hit Stun Air", Color.magenta);
+                fgChar.__debugSetStateText("Hit Stun", Color.magenta);
 
-                fgChar.Play("idle");
+                tracker.Track();
+
+                fgChar.Play("hurt_airborne");
             }
 
             public override void Execute(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
+
+                if (tracker.frameCount > testLength) {
+                    changeState(states.Get("airborne"));
+                }
+
                 fgChar.CalculateFinalVelocity();
+                tracker.Increment();
             }
 
             public override void Exit(int frameIndex) {

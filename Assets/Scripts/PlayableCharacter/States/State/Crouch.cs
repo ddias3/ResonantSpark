@@ -95,7 +95,12 @@ namespace ResonantSpark {
                 var buttonPress = (ButtonPress)combo;
 
                 if (buttonPress.button0 != FightingGameInputCodeBut.D) {
-                    fgChar.ChooseAttack(this, null, buttonPress.button0, this.dirPress);
+                    FightingGameInputCodeDir direction = FightingGameInputCodeDir.Neutral;
+                    fgChar.UseCombination<DirectionCurrent>(currDir => {
+                        direction = fgChar.MapAbsoluteToRelative(((DirectionCurrent)currDir).direction);
+                    });
+
+                    fgChar.ChooseAttack(this, null, buttonPress.button0, direction);
                     stop();
                 }
             }

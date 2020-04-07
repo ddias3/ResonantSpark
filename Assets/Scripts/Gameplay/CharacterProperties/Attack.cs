@@ -22,6 +22,8 @@ namespace ResonantSpark {
             public List<InputNotation> input { get; private set; }
             public int priority { get; private set; }
             public string animStateName { get; private set; }
+            public CharacterStates.Attack initCharState { get; private set; }
+            public bool counterHit { get; private set; }
             public List<FrameState> frames { get; private set; }
             public List<Hit> hits { get; private set; }
 
@@ -65,6 +67,7 @@ namespace ResonantSpark {
                 input = attackBuilder.input;
                 priority = 1;
                 animStateName = attackBuilder.animStateName;
+                initCharState = attackBuilder.initAttackState;
 
                 xMoveCb = attackBuilder.moveX;
                 yMoveCb = attackBuilder.moveY;
@@ -108,6 +111,10 @@ namespace ResonantSpark {
                 }
 
                 tracker.Increment();
+            }
+
+            public bool CounterHit() {
+                return frames[tracker.frameCount].counterHit;
             }
 
             public bool ChainCancellable() {

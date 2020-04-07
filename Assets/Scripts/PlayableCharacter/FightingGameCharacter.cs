@@ -20,6 +20,8 @@ namespace ResonantSpark {
 
             public AnimatorRootMotion animatorRootMotion;
 
+            public AttackRunner attackRunner;
+
             public LayerMask groundRaycastMask;
             public float groundCheckDistance;
             public float groundCheckDistanceMinimum = 0.11f;
@@ -38,8 +40,6 @@ namespace ResonantSpark {
             private FightingGameService fgService;
 
             private CharacterMovementAnimation charMovementAnimation;
-
-            public List<CharacterProperties.Attack> prevAttacks;
 
             private CharacterStates.CharacterBaseState prevState;
 
@@ -101,7 +101,7 @@ namespace ResonantSpark {
 
                 fgService = GameObject.FindGameObjectWithTag("rspService").GetComponent<FightingGameService>();
 
-                prevAttacks = new List<CharacterProperties.Attack>();
+                attackRunner.Init(this);
 
                 inputDoNothingList = new List<Combination> { ScriptableObject.CreateInstance<DirectionCurrent>().Init(0, Input.FightingGameAbsInputCodeDir.Neutral) };
 
@@ -146,24 +146,15 @@ namespace ResonantSpark {
             }
 
             public void ChooseAttack(CharacterStates.CharacterBaseState currState, CharacterProperties.Attack currAttack, FightingGameInputCodeBut button, FightingGameInputCodeDir direction = FightingGameInputCodeDir.None) {
-                InputNotation notation = Utility.GameInputUtil.SelectInputNotation(button, direction);
-
-                List<CharacterProperties.Attack> attackCandidates = charData.SelectAttacks(GetOrientation(), GetGroundRelation(), notation);
-                CharacterProperties.Attack attack = charData.ChooseAttackFromSelectability(attackCandidates, currState, currAttack, prevAttacks);
-
-                if (attack != null) {
-                    CharacterStates.Attack attackState = currState.ChooseState(attack);
-
-                    attackState.SetActiveAttack(attack);
-
-                    if (currAttack != null) {
-                        prevAttacks.Add(currAttack);
-                    }
-                }
+                attackRunner.ChooseAttack(charData, currState, currAttack, button, direction);
             }
 
             public void ClearPrevAttacks() {
-                prevAttacks.Clear();
+                attackRunner.ClearPrevAttacks();
+            }
+
+            public void RunAttackFrame() {
+                attackRunner.RunFrame();
             }
 
             public FightingGameInputCodeDir MapAbsoluteToRelative(FightingGameAbsInputCodeDir absInput) {
@@ -283,8 +274,8 @@ namespace ResonantSpark {
 
             public void SetState(CharacterStates.CharacterBaseState nextState) {
                 prevState = (CharacterStates.CharacterBaseState) stateMachine.GetCurrentState();
-                if (nextState.GetType() != typeof(CharacterStates.Attack) && nextState.GetType() != typeof(CharacterStates.AttackAirborne)) {
-                    prevAttacks.Clear();
+                if (nextState.GetType() != typeof(CharacterStates.AttackGrounded) && nextState.GetType() != typeof(CharacterStates.AttackAirborne)) {
+                    attackRunner.ClearPrevAttacks();
                 }
                 stateMachine.ChangeState(nextState);
             }

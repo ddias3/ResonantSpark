@@ -86,6 +86,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5080582916421185792}
   - component: {fileID: 3673679787893929468}
+  - component: {fileID: 111043910640003404}
   - component: {fileID: 6957239916241651657}
   - component: {fileID: 476829354079088110}
   - component: {fileID: 2465652325987101972}
@@ -131,6 +132,7 @@ MonoBehaviour:
   stateMachine: {fileID: 5143546242222647116}
   states: {fileID: 5143546242222647117}
   animatorRootMotion: {fileID: 9044553223200813088}
+  attackRunner: {fileID: 111043910640003404}
   groundRaycastMask:
     serializedVersion: 2
     m_Bits: 256
@@ -140,6 +142,18 @@ MonoBehaviour:
   defaultForwardOrientation: 1
   standCollider: {fileID: 7426682292546004176}
   __debugState: {fileID: 4651849404587844392}
+--- !u!114 &111043910640003404
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2465652325987101973}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58bff11c78b3e8d4b9350a3d6bd72f8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!54 &6957239916241651657
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -508,6 +522,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5080582916421185792}
     m_Modifications:
+    - target: {fileID: 90189820735477452, guid: 171723c362e032245a4cc877619bcc48,
+        type: 3}
+      propertyPath: attackRunner
+      value: 
+      objectReference: {fileID: 111043910640003404}
     - target: {fileID: 2152161314391702300, guid: 171723c362e032245a4cc877619bcc48,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -568,6 +587,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: StateMachine
       objectReference: {fileID: 0}
+    - target: {fileID: 6854511208756239109, guid: 171723c362e032245a4cc877619bcc48,
+        type: 3}
+      propertyPath: attackRunner
+      value: 
+      objectReference: {fileID: 111043910640003404}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 171723c362e032245a4cc877619bcc48, type: 3}
 --- !u!4 &5143546242222647115 stripped

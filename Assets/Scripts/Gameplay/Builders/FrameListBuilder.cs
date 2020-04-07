@@ -23,6 +23,7 @@ namespace ResonantSpark {
                 public bool chainCancellable;
                 public bool specialCancellable;
                 public bool cancellableOnWhiff;
+                public bool counterHit;
 
                 public List<int> hitCallbackIds;
 
@@ -73,6 +74,7 @@ namespace ResonantSpark {
                 bool chainCancellable = FrameUtil.Default.chainCancellable;
                 bool specialCancellable = FrameUtil.Default.specialCancellable;
                 bool cancellableOnWhiff = FrameUtil.Default.cancellableOnWhiff;
+                bool counterHit = FrameUtil.Default.counterHit;
 
                 int longestEndFrame = -1;
 
@@ -88,6 +90,7 @@ namespace ResonantSpark {
                     chainCancellable = chainCancellable,
                     specialCancellable = specialCancellable,
                     cancellableOnWhiff = cancellableOnWhiff,
+                    counterHit = counterHit,
                     hitCallbackIds = new List<int>(),
                 };
                 stack.Push(baseStackFrame);
@@ -101,6 +104,7 @@ namespace ResonantSpark {
                                 chainCancellable = chainCancellable,
                                 specialCancellable = specialCancellable,
                                 cancellableOnWhiff = cancellableOnWhiff,
+                                counterHit = counterHit,
                                 hitCallbackIds = new List<int>(),
                             };
                             stack.Push(topStackFrame);
@@ -118,6 +122,7 @@ namespace ResonantSpark {
                                     chainCancellable = chainCancellable,
                                     specialCancellable = specialCancellable,
                                     cancellableOnWhiff = cancellableOnWhiff,
+                                    counterHit = counterHit,
                                     hitCallbackIds = new List<int>(),
                                 };
                                 stack.Push(topStackFrame);
@@ -136,6 +141,9 @@ namespace ResonantSpark {
                             break;
                         case "cancellableOnWhiff":
                             topStackFrame.cancellableOnWhiff = cancellableOnWhiff = (bool)entry.content;
+                            break;
+                        case "counterHit":
+                            topStackFrame.counterHit = counterHit = (bool)entry.content;
                             break;
                         case "track":
                             topStackFrame.trackCallback = (Action<Vector3, Transform>)entry.content;
@@ -217,6 +225,7 @@ namespace ResonantSpark {
                             stackFrame.chainCancellable,
                             stackFrame.specialCancellable,
                             stackFrame.cancellableOnWhiff,
+                            stackFrame.counterHit,
                             stackFrame.hitCallbackIds,
                             null, // TODO: stackFrame.armorCallback,
                             stackFrame.trackCallback,

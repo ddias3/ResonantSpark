@@ -12,11 +12,13 @@ namespace ResonantSpark {
             IFrameListCallbackObj SpecialCancellable(bool specialCancellable);
             IFrameListCallbackObj ChainCancellable(bool chainCancellable);
             IFrameListCallbackObj CancellableOnWhiff(bool cancellableOnWhiff);
+            IFrameListCallbackObj CounterHit(bool counterHit);
             IFrameListCallbackObj Hit(Action<IHitCallbackObject> callback);
             IFrameListCallbackObj Track(Action<Vector3, Transform> callback);
             IFrameListCallbackObj Armor(Action<HitInfo> callback);
             IFrameListCallbackObj Sound(AudioClip audioClip, Action<AudioResource> soundCallback);
             IFrameListCallbackObj Projectile(Projectile projectile, Action<Projectile> projectileCallback);
+            IFrameListCallbackObj ChangeState(CharacterStates.CharacterBaseState charState);
             IFrameListCallbackObj From(int startFrame);
             IFrameListCallbackObj To(int endFrame);
         }
@@ -45,6 +47,14 @@ namespace ResonantSpark {
                 entries.Add(new FrameUtilMapObject {
                     option = "cancellableOnWhiff",
                     content = cancellableOnWhiff
+                });
+                return this;
+            }
+
+            public IFrameListCallbackObj CounterHit(bool counterHit) {
+                entries.Add(new FrameUtilMapObject {
+                    option = "counterHit",
+                    content = counterHit
                 });
                 return this;
             }
@@ -85,6 +95,14 @@ namespace ResonantSpark {
                 entries.Add(new FrameUtilMapObject {
                     option = "projectile",
                     content = (projectile, callback)
+                });
+                return this;
+            }
+
+            public IFrameListCallbackObj ChangeState(CharacterStates.CharacterBaseState charState) {
+                entries.Add(new FrameUtilMapObject {
+                    option = "changeState",
+                    content = charState
                 });
                 return this;
             }

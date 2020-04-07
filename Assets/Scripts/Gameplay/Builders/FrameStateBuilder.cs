@@ -21,6 +21,7 @@ namespace ResonantSpark {
                     chainCancellable,
                     specialCancellable,
                     cancellableOnWhiff,
+                    counterHit,
                     hitList,
                     armorCallback,
                     trackCallback,

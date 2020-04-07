@@ -25,11 +25,11 @@ namespace ResonantSpark {
             private Combinations.DirectionCurrent currDirection;
             private Combinations.ButtonsCurrent currButtons;
 
-            //[SerializeField]
+            [SerializeField]
             private List<Input.Combinations.Combination> foundInputCombinations;
-            //[SerializeField]
+            [SerializeField]
             private List<Input.Combinations.Combination> servedInputCombinations;
-            //[SerializeField]
+            [SerializeField]
             private List<Input.Combinations.Combination> inUseInputCombinations;
 
             public void Awake() {

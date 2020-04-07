@@ -12,10 +12,6 @@ namespace ResonantSpark {
     namespace CharacterStates {
         public class HitStunStand : HitStun {
 
-            private int testLength = 20;
-
-            private Utility.AttackTracker tracker;
-
             public new void Awake() {
                 base.Awake();
                 states.Register(this, "hitStunStand");
@@ -23,16 +19,19 @@ namespace ResonantSpark {
                 RegisterInputCallbacks()
                     .On<DirectionPress>(OnDirectionPress)
                     .On<DoubleTap>(OnDoubleTap);
-
-                tracker = new Utility.AttackTracker(testLength);
             }
 
             public override void Enter(int frameIndex, IState previousState) {
                 fgChar.__debugSetStateText("Hit Stun", Color.magenta);
 
-                tracker.Track(frameIndex);
+                tracker.Track();
 
-                fgChar.Play("idle");
+                if (UnityEngine.Random.Range(0.0f, 1.0f) < 0.5f) {
+                    fgChar.Play("hurt_stand_0");
+                }
+                else {
+                    fgChar.Play("hurt_stand_1");
+                }
             }
 
             public override void Execute(int frameIndex) {

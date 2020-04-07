@@ -24,12 +24,25 @@ namespace ResonantSpark {
             public override void Enter(int frameIndex, IState previousState) {
                 fgChar.__debugSetStateText("Hit Stun", Color.magenta);
 
-                fgChar.Play("idle_crouch");
+                tracker.Track();
+
+                if (UnityEngine.Random.Range(0.0f, 1.0f) < 0.5f) {
+                    fgChar.Play("hurt_crouch_0");
+                }
+                else {
+                    fgChar.Play("hurt_crouch_1");
+                }
             }
 
             public override void Execute(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
+
+                if (tracker.frameCount > testLength) {
+                    changeState(states.Get("crouch"));
+                }
+
                 fgChar.CalculateFinalVelocity();
+                tracker.Increment();
             }
 
             public override void Exit(int frameIndex) {

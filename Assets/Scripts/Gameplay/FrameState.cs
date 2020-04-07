@@ -12,6 +12,7 @@ namespace ResonantSpark {
             public bool chainCancellable { get; private set; }
             public bool specialCancellable { get; private set; }
             public bool cancellableOnWhiff { get; private set; }
+            public bool counterHit { get; private set; }
 
             public Action<HitInfo> armorCallback { get; private set; }
 
@@ -27,6 +28,7 @@ namespace ResonantSpark {
                     bool chainCancellable,
                     bool specialCancellable,
                     bool cancellableOnWhiff,
+                    bool counterHit,
                     List<Hit> hits,
                     Action<HitInfo> armorCallback,
                     Action<Vector3, Transform> trackCallback,
@@ -37,6 +39,7 @@ namespace ResonantSpark {
                 this.chainCancellable = chainCancellable;
                 this.specialCancellable = specialCancellable;
                 this.cancellableOnWhiff = cancellableOnWhiff;
+                this.counterHit = counterHit;
 
                 this.hits = hits;
 
