@@ -22,6 +22,9 @@ namespace ResonantSpark {
             private new CapsuleCollider collider;
             private Transform colliderTransform;
 
+            private new HitBoxRenderer renderer;
+            private Transform rendererTransform;
+
             private Vector3 localHitLocation;
 
             private Vector3 deactivatedPosition;
@@ -42,8 +45,10 @@ namespace ResonantSpark {
                 localHitLocation = hitLocation;
 
                 collider = GetComponentInChildren<CapsuleCollider>();
+                renderer = GetComponentInChildren<HitBoxRenderer>();
                 rigidbody = GetComponent<Rigidbody>();
                 colliderTransform = collider.transform;
+                rendererTransform = renderer.transform;
 
                 deactivatedPosition = hitBoxService.GetEmptyHoldTransform().position;
                 Deactivate();
@@ -67,14 +72,27 @@ namespace ResonantSpark {
             }
 
             public void SetColliderPosition(Vector3 point0, Vector3 point1, float radius) {
-                colliderTransform.LookAt(point1 - point0, Vector3.up);
+                if (Mathf.Abs(Vector3.Cross(point1 - point0, Vector3.up).sqrMagnitude) > 0.01f) {
+                    colliderTransform.localRotation = Quaternion.LookRotation(point1 - point0, Vector3.up);
+                    rendererTransform.localRotation = Quaternion.LookRotation(point1 - point0, Vector3.up);
+                }
+                else {
+                    colliderTransform.localRotation = Quaternion.LookRotation(point1 - point0, Vector3.right);
+                    rendererTransform.localRotation = Quaternion.LookRotation(point1 - point0, Vector3.right);
+                }
+
+                colliderTransform.localPosition = point0;
+                rendererTransform.localPosition = point0;
 
                 float cylinderHeight = Vector3.Distance(point0, point1);
 
                 collider.radius = radius;
                 collider.direction = 2; // Z-axis
                 collider.height = cylinderHeight + 2 * radius;
-                collider.center = (cylinderHeight / 2 + radius) * Vector3.forward;
+                collider.center = cylinderHeight / 2 * Vector3.forward;
+
+                renderer.radius = radius;
+                renderer.height = cylinderHeight;
             }
 
             public bool IsActive() {

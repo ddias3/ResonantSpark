@@ -13,8 +13,7 @@ namespace ResonantSpark {
             private static int hitBoxCounter = 0;
 
             public int id { get; private set; }
-
-            public Hit hit { get; private set; }
+            public Hit hit { get; set; }
 
             private HitBoxComponent hitBoxMono;
 
@@ -74,13 +73,17 @@ namespace ResonantSpark {
                         hitBox = hitBoxComp.hitBox;
                     }
 
-                    HitInfo hitInfo = new HitInfo(this, gameEntity, hitLocation, -1);
-                    hit.InvokeEvent(gameEntity.HitBoxEventType(this), this, hitInfo);
+                    HitInfo hitInfo = new HitInfo(this, gameEntity, hitLocation, 1000);// -1);
+                    hit.QueueUpEvent(gameEntity.HitBoxEventType(this), this, hitInfo);
+                    //hit.InvokeEvent(gameEntity.HitBoxEventType(this), this, hitInfo);
                 }
             }
 
             public void InvokeEvent(string eventName, HitInfo hitInfo) {
-                // TODO: Invoke event callbacks
+                Action<HitInfo> callback;
+                if (eventCallbacks.TryGetValue(eventName, out callback)) {
+                    callback(hitInfo);
+                }
             }
 
             public void Active() {

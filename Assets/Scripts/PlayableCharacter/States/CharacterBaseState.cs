@@ -92,7 +92,7 @@ namespace ResonantSpark {
             }
 
             public abstract GroundRelation GetGroundRelation();
-            public abstract void GetHitBy(HitBox hitBox);
+            public abstract void GetHit(bool launch);
             public abstract void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity);
 
             public struct CallbackRegistry<Tcallback> {

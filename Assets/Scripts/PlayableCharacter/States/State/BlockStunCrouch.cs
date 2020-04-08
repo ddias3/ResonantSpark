@@ -45,7 +45,7 @@ namespace ResonantSpark {
                 return GroundRelation.GROUNDED;
             }
 
-            public override void GetHitBy(HitBox hitBox) {
+            public override void GetHit(bool launch) {
                 if (dirCurr == FightingGameInputCodeDir.Back) {
                     changeState(states.Get("blockStunStand"));
                 }

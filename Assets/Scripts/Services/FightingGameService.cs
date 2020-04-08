@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -26,9 +27,14 @@ namespace ResonantSpark {
 
             private new StageLeakCamera camera;
 
+            private List<(InGameEntity, InGameEntity, HitBox, Action<AttackPriority>)> hitQueue;
+
             private FrameEnforcer frame;
 
             private IGamemode gamemode;
+
+            private Dictionary<FightingGameCharacter, int> numComboAttacks;
+            private Dictionary<FightingGameCharacter, int> numComboHits;
 
             public void Start() {
                 frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
@@ -36,6 +42,11 @@ namespace ResonantSpark {
                 playerService = GetComponent<PlayerService>();
                 persistenceService = GetComponent<PersistenceService>();
                 uiService = GetComponent<UiService>();
+
+                hitQueue = new List<(InGameEntity, InGameEntity, HitBox, Action<AttackPriority>)>();
+
+                numComboAttacks = new Dictionary<FightingGameCharacter, int>();
+                numComboHits = new Dictionary<FightingGameCharacter, int>();
 
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(FightingGameService));
             }
@@ -59,8 +70,73 @@ namespace ResonantSpark {
                 camera.SetUpCamera(this);
             }
 
-            public void Hit(InGameEntity hitEntity, HitBox hitBox, Action<AttackPriority> callback) {
+            public void Hit(InGameEntity hitEntity, InGameEntity byEntity, HitBox hitBox, Action<AttackPriority> callback) {
+                Debug.Log(hitEntity);
+                hitQueue.Add((hitEntity, byEntity, hitBox, callback));
+            }
 
+            private void ResolveHits() {
+                List<InGameEntity> entities = new List<InGameEntity>();
+                Dictionary<InGameEntity, InGameEntity> hitBy = new Dictionary<InGameEntity, InGameEntity>();
+
+                for (int n = 0; n < hitQueue.Count; ++n) {
+                    InGameEntity hitEntity = hitQueue[n].Item1;
+                    InGameEntity byEntity = hitQueue[n].Item2;
+
+                    hitBy.Add(hitEntity, byEntity);
+                }
+
+                foreach (KeyValuePair<InGameEntity, InGameEntity> kvp in hitBy) {
+                    var hitEntity = kvp.Key;
+                    if (entities.Contains(hitEntity)) continue;
+
+                    if (HitEachOther(hitEntity, hitBy)) {
+                        InGameEntity ent0 = hitEntity;
+                        InGameEntity ent1 = hitBy[hitEntity];
+
+                        entities.Add(hitBy[hitEntity]); //hitBy.Remove(hitBy[hitEntity]);
+                        entities.Add(hitEntity);        //hitBy.Remove(hitEntity);
+
+                        (InGameEntity, InGameEntity, HitBox, Action<AttackPriority>) info0 = hitQueue.Single(tuple => tuple.Item1 == ent0);
+                        (InGameEntity, InGameEntity, HitBox, Action<AttackPriority>) info1 = hitQueue.Single(tuple => tuple.Item1 == ent1);
+
+                        if (info0.Item1.GetType() == typeof(FightingGameCharacter)) {
+                            numComboHits[(FightingGameCharacter)info0.Item1]++;
+                        }
+                        if (info1.Item1.GetType() == typeof(FightingGameCharacter)) {
+                            numComboHits[(FightingGameCharacter)info1.Item1]++;
+                        }
+                        info0.Item4?.Invoke(info1.Item3.hit.priority);
+                        info1.Item4?.Invoke(info0.Item3.hit.priority);
+                    }
+                    else {
+                        InGameEntity ent0 = hitEntity;
+
+                        entities.Add(hitEntity); //hitBy.Remove(hitEntity);
+
+                        (InGameEntity, InGameEntity, HitBox, Action<AttackPriority>) info0 = hitQueue.Single(tuple => tuple.Item1 == ent0);
+
+                        if (info0.Item1.GetType() == typeof(FightingGameCharacter)) {
+                            numComboHits[(FightingGameCharacter)info0.Item1]++;
+                        }
+
+                        info0.Item4?.Invoke(AttackPriority.None);
+                    }
+                }
+
+                hitQueue.Clear();
+            }
+
+            private bool HitEachOther(InGameEntity hitEntity, Dictionary<InGameEntity, InGameEntity> hitBy) {
+                InGameEntity byEntity = hitBy[hitEntity];
+
+                if (hitBy.TryGetValue(byEntity, out InGameEntity byEntityResponse)) {
+                    if (hitEntity == byEntityResponse) {
+                        return true;
+                    }
+                }
+
+                return false;
             }
 
             private void FrameUpdate(int frameIndex) {
@@ -73,6 +149,40 @@ namespace ResonantSpark {
                                 fgChar.PushAway(0.68f, others[n]);
                             }
                         }
+                    }
+                });
+
+                CalculateComboScaling();
+                ResolveHits();
+
+                //if (UnityEngine.Input.GetKeyDown(KeyCode.Keypad1)) {
+                //    player0ComboHits += 1;
+                //    uiService.SetComboCounter(0, player0ComboHits);
+                //}
+                //if (UnityEngine.Input.GetKeyDown(KeyCode.Keypad4)) {
+                //    player0ComboHits = 0;
+                //    uiService.HideComboCounter(0);
+                //}
+
+                //if (UnityEngine.Input.GetKeyDown(KeyCode.Keypad3)) {
+                //    player1ComboHits += 1;
+                //    uiService.SetComboCounter(1, player1ComboHits);
+                //}
+                //if (UnityEngine.Input.GetKeyDown(KeyCode.Keypad6)) {
+                //    player1ComboHits = 0;
+                //    uiService.HideComboCounter(1);
+                //}
+            }
+
+            private List<float> comboScaling = new List<float> { 1.0f, 0.8f, 0.6f, 0.5f, 0.45f, 0.4f, 0.35f, 0.3f, 0.25f };
+
+            private void CalculateComboScaling() {
+                playerService.EachFGChar((id, fgChar) => {
+                    if (!fgChar.InHitStun()) {
+                        numComboHits[fgChar] = 0;
+                        numComboAttacks[fgChar] = 0;
+
+                        //uiService.HideComboCounter(id);
                     }
                 });
             }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -371,8 +372,8 @@ namespace ResonantSpark {
                 }
             }
 
-            public override void GetHitBy(HitBox hitBox) {
-                ((CharacterStates.CharacterBaseState) stateMachine.GetCurrentState()).GetHitBy(hitBox);
+            public void GetHit(bool launch) {
+                ((CharacterStates.CharacterBaseState) stateMachine.GetCurrentState()).GetHit(launch);
             }
 
             public override string HitBoxEventType(HitBox hitBox) {
@@ -405,8 +406,37 @@ namespace ResonantSpark {
                 }
             }
 
-            public void KnockBack(bool launch, Vector3 forceDirection, float forceMagnitude) {
-                //AddRelativeVelocity
+            public void KnockBack(AttackPriority attackPriority, bool launch, Vector3 knockbackDirection, float knockbackMagnitude) {
+
+                //opponent.GetHit();
+
+                VelocityPriority velPriority = VelocityPriority.Light;
+
+                switch (attackPriority) {
+                    case AttackPriority.LightAttack:
+                        velPriority = VelocityPriority.Light;
+                        break;
+                    case AttackPriority.MediumAttack:
+                        velPriority = VelocityPriority.Medium;
+                        break;
+                    case AttackPriority.HeavyAttack:
+                        velPriority = VelocityPriority.Heavy;
+                        break;
+                }
+
+                Vector3 finalVelocity = knockbackDirection.normalized * knockbackMagnitude;
+                if (!launch) {
+                    finalVelocity.y = 0;
+                }
+
+                AddRelativeVelocity(velPriority, finalVelocity);
+                GetHit(launch);
+            }
+
+            public bool InHitStun() {
+                return stateMachine.GetCurrentState().GetType() == typeof(CharacterStates.HitStunStand)
+                    || stateMachine.GetCurrentState().GetType() == typeof(CharacterStates.HitStunCrouch)
+                    || stateMachine.GetCurrentState().GetType() == typeof(CharacterStates.HitStunAirborne);
             }
 
             public void SetStandCollider(Vector3 standColliderOffset) {

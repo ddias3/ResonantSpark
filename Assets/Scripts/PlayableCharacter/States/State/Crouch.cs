@@ -60,15 +60,20 @@ namespace ResonantSpark {
                 return GroundRelation.GROUNDED;
             }
 
-            public override void GetHitBy(HitBox hitBox) {
+            public override void GetHit(bool launch) {
                 if (dirPress == FightingGameInputCodeDir.DownBack) {
                     changeState(states.Get("blockStunCrouch"));
                 }
-                else if (dirPress == FightingGameInputCodeDir.Down) {
+                else if (dirPress == FightingGameInputCodeDir.Back) {
                     changeState(states.Get("blockStunStand"));
                 }
                 else {
-                    changeState(states.Get("hitStunCrouch"));
+                    if (launch) {
+                        changeState(states.Get("hitStunAirborne"));
+                    }
+                    else {
+                        changeState(states.Get("hitStunCrouch"));
+                    }
                 }
             }
 

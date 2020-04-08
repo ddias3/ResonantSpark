@@ -122,12 +122,17 @@ namespace ResonantSpark {
                 }
             }
 
-            public override void GetHitBy(HitBox hitBox) {
+            public override void GetHit(bool launch) {
                 if (frameCount > 4) {
                     changeState(states.Get("hitStunAirborne"));
                 }
                 else {
-                    changeState(states.Get("hitStunStand"));
+                    if (launch) {
+                        changeState(states.Get("hitStunAirborne"));
+                    }
+                    else {
+                        changeState(states.Get("hitStunStand"));
+                    }
                 }
             }
 

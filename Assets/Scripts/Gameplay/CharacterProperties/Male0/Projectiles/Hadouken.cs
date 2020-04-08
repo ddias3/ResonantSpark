@@ -39,10 +39,6 @@ namespace ResonantSpark {
                     throw new System.NotImplementedException();
                 }
 
-                public override void GetHitBy(HitBox hitBox) {
-                    throw new System.NotImplementedException();
-                }
-
                 public override string HitBoxEventType(HitBox hitBox) {
                     return "onHitProjectile";
                 }

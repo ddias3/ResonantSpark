@@ -18,7 +18,7 @@ namespace ResonantSpark {
             }
 
             public void OnAnimatorMove() {
-                callback?.Invoke(animator.rootRotation, animator.velocity);
+                callback?.Invoke(animator.deltaRotation, animator.velocity);
             }
         }
     }

@@ -75,8 +75,8 @@ namespace ResonantSpark {
 
                                         hit.HitBox(new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
-                                            hb.Point0(new Vector3(0, 0, 0));
-                                            hb.Point1(new Vector3(0, 1, 0));
+                                            hb.Point0(new Vector3(0, 0, 0.5f));
+                                            hb.Point1(new Vector3(0, 1.1f, 1.3f));
                                             hb.Radius(0.25f);
                                             hb.Event("onHitFGChar", 
                                                 CommonGroundedOnHitFGChar(
@@ -130,8 +130,8 @@ namespace ResonantSpark {
 
                                         hit.HitBox(new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
-                                            hb.Point0(new Vector3(0, 0, 0));
-                                            hb.Point1(new Vector3(0, 1, 0));
+                                            hb.Point0(new Vector3(0, 0, 0.8f));
+                                            hb.Point1(new Vector3(0, 1, 0.8f));
                                             hb.Radius(0.25f);
                                             hb.Event("onHitFGChar",
                                                 CommonGroundedOnHitFGChar(
@@ -162,14 +162,15 @@ namespace ResonantSpark {
                         atkBuilder.Input(InputNotation._4A, InputNotation._5A);
                         atkBuilder.AnimationState("5AAA");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
-                        atkBuilder.FramesContinuous((localFrame, targetPos) => {
-                            if (localFrame >= 22.0f && localFrame <= 30.0f) {
-                                float p = (localFrame - 22.0f) / 30.0f;
-                                Quaternion rot = Quaternion.Euler(0.0f, -180f * p + Vector3.SignedAngle(Vector3.right, fgChar.position - targetPos, Vector3.up), 0.0f);
-                                fgChar.SetRotation(rot);
-                                    // fgChar.GetOrientation is done automatically on each frame
-                            }
-                        });
+                        //atkBuilder.FramesContinuous((localFrame, targetPos) => {
+                        //    if (localFrame >= 22.0f && localFrame <= 30.0f) {
+                        //        float p = (localFrame - 22.0f) / 30.0f;
+                        //        Quaternion rot = Quaternion.Euler(0.0f, -180f * p + Vector3.SignedAngle(Vector3.right, fgChar.position - targetPos, Vector3.up), 0.0f);
+                        //        Debug.Log(rot);
+                        //        fgChar.SetRotation(rot);
+                        //            // fgChar.GetOrientation is done automatically on each frame
+                        //    }
+                        //});
                         atkBuilder.Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
@@ -189,8 +190,8 @@ namespace ResonantSpark {
 
                                         HitBox farHitBox = new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
-                                            hb.Point0(new Vector3(0, 0, 1));
-                                            hb.Point1(new Vector3(0, 1, 1));
+                                            hb.Point0(new Vector3(0, 0, 0.8f));
+                                            hb.Point1(new Vector3(0, 1, 0.8f));
                                             hb.Radius(0.25f);
                                             hb.Event("onHitFGChar",
                                                 CommonGroundedOnHitFGChar(
@@ -208,9 +209,9 @@ namespace ResonantSpark {
 
                                         HitBox closeHitBox = new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
-                                            hb.Point0(new Vector3(0, 0, 0));
-                                            hb.Point1(new Vector3(0, 1, 0));
-                                            hb.Radius(0.25f);
+                                            hb.Point0(new Vector3(0, 0, 0.6f));
+                                            hb.Point1(new Vector3(0, 1, 0.6f));
+                                            hb.Radius(0.5f);
                                             hb.Event("onHitFGChar",
                                                 CommonGroundedOnHitFGChar(
                                                     hitSound: audioMap["mediumHit"],
@@ -228,11 +229,12 @@ namespace ResonantSpark {
                                         hit.HitBox(farHitBox);
                                         hit.HitBox(closeHitBox);
 
-                                        hit.Event("onHitFGChar", (hitBox, hitInfo) => {
-                                            if (hitBox == farHitBox) {
+                                        hit.Event("onHitFGChar", (hitBoxes, hitInfo) => {
+                                            if (hitBoxes.Count == 1 && hitBoxes.Contains(farHitBox)) {
                                                 // do extra stuff.
                                             }
-                                            hitBox.InvokeEvent("onHitFGChar", hitInfo);
+
+                                            hitBoxes[0].InvokeEvent("onHitFGChar", hitInfo);
                                         });
                                     })
                                 .To(16)
@@ -267,19 +269,20 @@ namespace ResonantSpark {
 
                                         hit.HitBox(new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
-                                            hb.Point0(new Vector3(0, 0, 0));
-                                            hb.Point1(new Vector3(0, 1, 0));
-                                            hb.Radius(0.25f);
+                                            hb.Point0(new Vector3(0, 0.2f, 0.5f));
+                                            hb.Point1(new Vector3(0, 0.2f, 1.3f));
+                                            hb.Radius(0.35f);
                                             hb.Event("onHitFGChar", (hitInfo) => {
                                                 FightingGameCharacter opponent = (FightingGameCharacter) hitInfo.hitEntity;
                                                 if (opponent != fgChar) {
                                                     audioService.PlayOneShot(hitInfo.position, audioMap["weakHit"]);
-                                                    fgService.Hit(hitInfo.hitEntity, hitInfo.hitBox, (hitAtSameTimeByAttackPriority) => {
+                                                    fgService.Hit(hitInfo.hitEntity, fgChar, hitInfo.hitBox, (hitAtSameTimeByAttackPriority) => {
                                                         opponent.ChangeHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
                                                         opponent.KnockBack(
+                                                            hitInfo.hitBox.hit.priority,
                                                             launch: false,
-                                                            forceDirection: fgChar.transform.rotation * new Vector3(0.0f, 1.0f, 1.0f),
-                                                            forceMagnitude: 1.0f);
+                                                            knockbackDirection: fgChar.transform.rotation * new Vector3(0.0f, 1.0f, 1.0f),
+                                                            knockbackMagnitude: 1.0f);
                                                     });
                                                 }
                                             });
@@ -319,8 +322,8 @@ namespace ResonantSpark {
 
                                         hit.HitBox(new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
-                                            hb.Point0(new Vector3(0, 0, 0));
-                                            hb.Point1(new Vector3(0, 1, 0));
+                                            hb.Point0(new Vector3(0, 0.2f, 0.6f));
+                                            hb.Point1(new Vector3(0, 0.2f, 1.4f));
                                             hb.Radius(0.25f);
                                             hb.Event("onHitFGChar",
                                                 CommonGroundedOnHitFGChar(
@@ -364,8 +367,8 @@ namespace ResonantSpark {
 
                                         hit.HitBox(new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
-                                            hb.Point0(new Vector3(0, 0, 0));
-                                            hb.Point1(new Vector3(0, 1, 0));
+                                            hb.Point0(new Vector3(0, 0, 0.8f));
+                                            hb.Point1(new Vector3(0, 1, 0.8f));
                                             hb.Radius(0.25f);
                                             hb.Event("onHitFGChar",
                                                 CommonGroundedOnHitFGChar(
@@ -420,8 +423,8 @@ namespace ResonantSpark {
 
                                         hit.HitBox(new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
-                                            hb.Point0(new Vector3(0, 0, 0));
-                                            hb.Point1(new Vector3(0, 1, 0));
+                                            hb.Point0(new Vector3(0, 0, 0.8f));
+                                            hb.Point1(new Vector3(0, 1, 0.8f));
                                             hb.Radius(0.25f);
                                             hb.Event("onHitFGChar",
                                                 CommonGroundedOnHitFGChar(
@@ -469,8 +472,8 @@ namespace ResonantSpark {
 
                                         hit.HitBox(new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
-                                            hb.Point0(new Vector3(0, 0, 0));
-                                            hb.Point1(new Vector3(0, 1, 0));
+                                            hb.Point0(new Vector3(0, 0, 0.8f));
+                                            hb.Point1(new Vector3(0, 1, 0.8f));
                                             hb.Radius(0.25f);
                                             hb.Event("onHitFGChar",
                                                 CommonGroundedOnHitFGChar(
@@ -518,8 +521,8 @@ namespace ResonantSpark {
 
                                         hit.HitBox(new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
-                                            hb.Point0(new Vector3(0, 0, 0));
-                                            hb.Point1(new Vector3(0, 1, 0));
+                                            hb.Point0(new Vector3(0, 0, 0.8f));
+                                            hb.Point1(new Vector3(0, 1, 0.8f));
                                             hb.Radius(0.25f);
                                             hb.Event("onHitFGChar",
                                                 CommonGroundedOnHitFGChar(
@@ -575,8 +578,8 @@ namespace ResonantSpark {
 
                                         hit.HitBox(new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
-                                            hb.Point0(new Vector3(0, 0, 0));
-                                            hb.Point1(new Vector3(0, 1, 0));
+                                            hb.Point0(new Vector3(0, 0, 0.8f));
+                                            hb.Point1(new Vector3(0, 1, 0.8f));
                                             hb.Radius(0.25f);
                                             hb.Event("onHitFGChar",
                                                 CommonGroundedOnHitFGChar(
@@ -630,8 +633,8 @@ namespace ResonantSpark {
 
                                         hit.HitBox(new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
-                                            hb.Point0(new Vector3(0, 0, 0));
-                                            hb.Point1(new Vector3(0, 1, 0));
+                                            hb.Point0(new Vector3(0, 0, 0.8f));
+                                            hb.Point1(new Vector3(0, 1, 0.8f));
                                             hb.Radius(0.25f);
                                             hb.Event("onHitFGChar",
                                                 CommonGroundedOnHitFGChar(
@@ -687,15 +690,15 @@ namespace ResonantSpark {
 
                                         hit.HitBox(new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
-                                            hb.Point0(new Vector3(0, 0, 0));
-                                            hb.Point1(new Vector3(0, 1, 0));
+                                            hb.Point0(new Vector3(0, 0, 0.8f));
+                                            hb.Point1(new Vector3(0, 1, 0.8f));
                                             hb.Radius(0.25f);
                                             hb.Event("onHitFGChar", (hitInfo) => {
                                                 FightingGameCharacter opponent = (FightingGameCharacter) hitInfo.hitEntity;
                                                 if (opponent != fgChar) {
                                                     audioService.PlayOneShot(hitInfo.position, audioMap["strongHit"]);
                                                         // This exists to make characters hitting each other async
-                                                    fgService.Hit(hitInfo.hitEntity, hitInfo.hitBox, (hitAtSameTimeByAttackPriority) => {
+                                                    fgService.Hit(hitInfo.hitEntity, fgChar, hitInfo.hitBox, (hitAtSameTimeByAttackPriority) => {
                                                         opponent.ChangeHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
 
                                                         if (hitAtSameTimeByAttackPriority == AttackPriority.HeavyAttack) { // colloquially known as trading
@@ -703,15 +706,17 @@ namespace ResonantSpark {
                                                             timeService.PredeterminedActions<float>("timeSlow", 0.5f);
 
                                                             opponent.KnockBack(
+                                                                hitInfo.hitBox.hit.priority,
                                                                 launch: false,
-                                                                forceDirection: fgChar.transform.rotation * Vector3.forward,
-                                                                forceMagnitude: 0.5f);
+                                                                knockbackDirection: fgChar.transform.rotation * Vector3.forward,
+                                                                knockbackMagnitude: 0.5f);
                                                         }
                                                         else {
                                                             opponent.KnockBack(
+                                                                hitInfo.hitBox.hit.priority,
                                                                 launch: true,
-                                                                forceDirection: fgChar.transform.rotation * new Vector3(0.0f, 1.0f, 1.0f),
-                                                                forceMagnitude: 2.0f);
+                                                                knockbackDirection: fgChar.transform.rotation * new Vector3(0.0f, 1.0f, 1.0f),
+                                                                knockbackMagnitude: 2.0f);
                                                         }
                                                     });
                                                 }
@@ -719,7 +724,7 @@ namespace ResonantSpark {
                                             hb.Event("onHitProjectile", (hitInfo) => {
                                                 Projectile projectile = (Projectile) hitInfo.hitEntity;
                                                 if (projectile.health <= 2) {
-                                                    fgService.Hit(projectile, hitInfo.hitBox, (hitAtSameTimeByAttackPriority) => {
+                                                    fgService.Hit(projectile, fgChar, hitInfo.hitBox, (hitAtSameTimeByAttackPriority) => {
                                                         if (hitAtSameTimeByAttackPriority != AttackPriority.None) {
                                                             particleService.PlayOneShot(hitInfo.position, particleMap["destroyParticle"]);
                                                                 // these lines might be redundant
@@ -761,8 +766,8 @@ namespace ResonantSpark {
 
                                         hit.HitBox(new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
-                                            hb.Point0(new Vector3(0, 0, 0));
-                                            hb.Point1(new Vector3(0, 1, 0));
+                                            hb.Point0(new Vector3(0, 0, 0.8f));
+                                            hb.Point1(new Vector3(0, 1, 0.8f));
                                             hb.Radius(0.25f);
                                             hb.Event("onHitFGChar",
                                                 CommonGroundedOnHitFGChar(
@@ -810,8 +815,8 @@ namespace ResonantSpark {
 
                                         hit.HitBox(new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
-                                            hb.Point0(new Vector3(0, 0, 0));
-                                            hb.Point1(new Vector3(0, 1, 0));
+                                            hb.Point0(new Vector3(0, 0, 0.8f));
+                                            hb.Point1(new Vector3(0, 1, 0.8f));
                                             hb.Radius(0.25f);
                                             hb.Event("onHitFGChar",
                                                 CommonGroundedOnHitFGChar(
@@ -859,8 +864,8 @@ namespace ResonantSpark {
 
                                         hit.HitBox(new HitBox(hb => {
                                             hb.Relative(fgChar.transform);
-                                            hb.Point0(new Vector3(0, 0, 0));
-                                            hb.Point1(new Vector3(0, 1, 0));
+                                            hb.Point0(new Vector3(0, 0, 0.8f));
+                                            hb.Point1(new Vector3(0, 1, 0.8f));
                                             hb.Radius(0.25f);
                                             hb.Event("onHitFGChar",
                                                 CommonGroundedOnHitFGChar(
@@ -1090,21 +1095,23 @@ namespace ResonantSpark {
                         if (opponent != fgChar) {
                             audioService.PlayOneShot(hitInfo.position, hitSound);
                                 // This exists to make characters hitting each other async
-                            fgService.Hit(hitInfo.hitEntity, hitInfo.hitBox, (hitAtSameTimeByAttackPriority) => {
+                            fgService.Hit(hitInfo.hitEntity, fgChar, hitInfo.hitBox, (hitAtSameTimeByAttackPriority) => {
                                 opponent.ChangeHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
 
                                 switch (opponent.GetGroundRelation()) {
                                     case GroundRelation.GROUNDED:
                                         opponent.KnockBack(
+                                            hitInfo.hitBox.hit.priority,
                                             launch: false,
-                                            forceDirection: fgChar.transform.rotation * Vector3.forward,
-                                            forceMagnitude: groundedForceMagnitude);
+                                            knockbackDirection: fgChar.transform.rotation * Vector3.forward,
+                                            knockbackMagnitude: groundedForceMagnitude);
                                         break;
                                     case GroundRelation.AIRBORNE:
                                         opponent.KnockBack(
+                                            hitInfo.hitBox.hit.priority,
                                             launch: true,
-                                            forceDirection: fgChar.transform.rotation * airborneForceDirection,
-                                            forceMagnitude: airborneForceMagnitude);
+                                            knockbackDirection: fgChar.transform.rotation * airborneForceDirection,
+                                            knockbackMagnitude: airborneForceMagnitude);
                                         break;
                                 }
                             });

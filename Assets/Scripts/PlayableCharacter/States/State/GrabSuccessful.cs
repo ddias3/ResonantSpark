@@ -49,7 +49,7 @@ namespace ResonantSpark {
                 return GroundRelation.GROUNDED;
             }
 
-            public override void GetHitBy(HitBox hitBox) {
+            public override void GetHit(bool launch) {
                 // TODO: Make it clear that the attack is ignored by displaying a particle.
             }
 

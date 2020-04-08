@@ -54,18 +54,23 @@ namespace ResonantSpark {
                 fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Dash, animatorVelocity);
             }
 
-            public override void GetHitBy(HitBox hitBox) {
+            public override void GetHit(bool launch) {
                 CharacterProperties.Attack activeAttack = attackRunner.GetCurrentAttack();
                 if (activeAttack.CounterHit()) {
-                    if (activeAttack.groundRelation == GroundRelation.GROUNDED) {
-                        changeState(states.Get("hitStunStand"));
+                    if (launch) {
+                        changeState(states.Get("hitStunAirborne"));
                     }
                     else {
-                        changeState(states.Get("hitStunCrouch"));
+                        changeState(states.Get("hitStunStand"));
                     }
                 }
                 else {
-                    changeState(states.Get("hitStunStand"));
+                    if (launch) {
+                        changeState(states.Get("hitStunAirborne"));
+                    }
+                    else {
+                        changeState(states.Get("hitStunStand"));
+                    }
                 }
             }
 

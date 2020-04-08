@@ -18,7 +18,7 @@ namespace ResonantSpark {
             IHitCallbackObject ComboScaling(float scaling);
             IHitCallbackObject Tracking(bool tracking);
             IHitCallbackObject Priority(AttackPriority priority);
-            IHitCallbackObject Event(string eventName, Action<HitBox, HitInfo> callback);
+            IHitCallbackObject Event(string eventName, Action<List<HitBox>, HitInfo> callback);
             IHitCallbackObject HitBox(HitBox hitBox);
         }
     }
@@ -33,7 +33,7 @@ namespace ResonantSpark {
             public float blockStun { get; private set; }
             public float comboScaling { get; private set; }
             public bool tracking { get; private set; }
-            public Dictionary<string, Action<HitBox, HitInfo>> eventCallbacks { get; private set; }
+            public Dictionary<string, Action<List<HitBox>, HitInfo>> eventCallbacks { get; private set; }
 
             public IHitCallbackObject Block(params Block[] requiredBlocks) {
                 this.requiredBlocks = new List<Block>(requiredBlocks);
@@ -55,7 +55,7 @@ namespace ResonantSpark {
                 this.tracking = tracking;
                 return this;
             }
-            public IHitCallbackObject Event(string eventName, Action<HitBox, HitInfo> callback) {
+            public IHitCallbackObject Event(string eventName, Action<List<HitBox>, HitInfo> callback) {
                 this.eventCallbacks.Add(eventName, callback);
                 return this;
             }

@@ -82,8 +82,13 @@ namespace ResonantSpark {
                 return GroundRelation.GROUNDED;
             }
 
-            public override void GetHitBy(HitBox hitBox) {
-                changeState(states.Get("hitStunStand"));
+            public override void GetHit(bool launch) {
+                if (launch) {
+                    changeState(states.Get("hitStunAirborne"));
+                }
+                else {
+                    changeState(states.Get("hitStunStand"));
+                }
             }
 
             private void OnDoubleTap(Action stop, Combination combo) {
@@ -113,7 +118,13 @@ namespace ResonantSpark {
                     var buttonPress = (ButtonPress)combo;
 
                     if (buttonPress.button0 != FightingGameInputCodeBut.D) {
-                        fgChar.ChooseAttack(this, null, buttonPress.button0, this.currDir);
+                        FightingGameInputCodeDir direction = FightingGameInputCodeDir.Neutral;
+                        fgChar.Use(combo);
+                        fgChar.UseCombination<DirectionCurrent>(currDir => {
+                            direction = fgChar.MapAbsoluteToRelative(((DirectionCurrent)currDir).direction);
+                        });
+
+                        fgChar.ChooseAttack(this, null, buttonPress.button0, direction);
                         stop();
                     }
                     else {

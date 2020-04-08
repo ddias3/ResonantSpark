@@ -54,7 +54,7 @@ namespace ResonantSpark {
                 fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Dash, animatorVelocity);
             }
 
-            public override void GetHitBy(HitBox hitBox) {
+            public override void GetHit(bool launch) {
                 CharacterProperties.Attack activeAttack = attackRunner.GetCurrentAttack();
                 if (activeAttack.CounterHit()) {
                     changeState(states.Get("hitStunAirborne"));
