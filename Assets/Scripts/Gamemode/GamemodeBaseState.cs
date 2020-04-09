@@ -2,26 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-using ResonantSpark.Input.Combinations;
-using ResonantSpark.Gameplay;
-using ResonantSpark.Character;
 using ResonantSpark.Utility;
 using ResonantSpark.Gamemode;
+using ResonantSpark.Service;
 
-namespace ResonantSpark
-{
-    namespace GamemodeStates
-    {
-        public abstract class GamemodeBaseState : BaseState
-        {
+namespace ResonantSpark {
+    namespace GamemodeStates {
+        public abstract class GamemodeBaseState : BaseState {
             protected OneOnOneRoundBased oneOnOne;
-            protected ResonantSpark.Service.UiService uiService;
-            public new void Awake()
-            {
+            protected UiService uiService;
+
+            public new void Awake() {
                 base.Awake();
 
                 oneOnOne = gameObject.GetComponentInParent<OneOnOneRoundBased>();
-
                 uiService = GameObject.FindGameObjectWithTag("rspService").GetComponent<ResonantSpark.Service.UiService>();
             }
         }

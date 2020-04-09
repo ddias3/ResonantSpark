@@ -4,25 +4,19 @@ using System;
 using ResonantSpark.Utility;
 using ResonantSpark.Gamemode;
 
-namespace ResonantSpark
-{
-    namespace GamemodeStates
-    {
-        public class OpeningMode : GamemodeBaseState
-        {
+namespace ResonantSpark {
+    namespace GamemodeStates {
+        public class OpeningMode : GamemodeBaseState {
             private GameTimeManager gameTimeManager;
-            float elapsedTime;
+            private float elapsedTime;
 
-            // Use this for initialization
-            void Awake()
-            {
+            public new void Awake() {
                 base.Awake();
                 gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
                 states.Register(this, "openingMode");
             }
 
-            public override void Enter(int frameIndex, IState previousState)
-            {
+            public override void Enter(int frameIndex, IState previousState) {
                 elapsedTime = 0;
                 Debug.Log("Entered Opening mode state");
                 uiService.SetOpeningText("Player 1 VS Player 2");
@@ -30,20 +24,19 @@ namespace ResonantSpark
                 // todo: remove control from players
             }
 
-            public override void Execute(int frameIndex)
-            {
+            public override void Execute(int frameIndex) {
                 elapsedTime += gameTimeManager.Layer("gameTime");
 
-                if (elapsedTime > 3)
-                {
+                if (elapsedTime > 3) {
                     uiService.SetOpeningText("");
                     // after VS animation, switch to the RoundStart state
                     changeState(states.Get("roundStartMode"));
                 }
             }
 
-            public override void Exit(int frameIndex)
-            { }
+            public override void Exit(int frameIndex) {
+                // do nothing
+            }
         }
     }
 }

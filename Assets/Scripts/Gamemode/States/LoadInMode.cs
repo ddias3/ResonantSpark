@@ -4,34 +4,29 @@ using System;
 using ResonantSpark.Utility;
 using ResonantSpark.Gamemode;
 
-namespace ResonantSpark
-{
-    namespace GamemodeStates
-    {
-        public class LoadInMode : GamemodeBaseState
-        {
+namespace ResonantSpark {
+    namespace GamemodeStates {
+        public class LoadInMode : GamemodeBaseState {
             private GameTimeManager gameTimeManager;
-            float elapsedTime;
+            private float elapsedTime;
 
             // Use this for initialization
-            void Awake()
-            {
+            private new void Awake() {
                 base.Awake();
                 gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
             }
 
-            public override void Enter(int frameIndex, IState previousState)
-            {
+            public override void Enter(int frameIndex, IState previousState) {
                 elapsedTime = 0;
             }
 
-            public override void Execute(int frameIndex)
-            {
+            public override void Execute(int frameIndex) {
                 elapsedTime += gameTimeManager.Layer("gameTime");
             }
 
-            public override void Exit(int frameIndex)
-            { }
+            public override void Exit(int frameIndex) {
+                // do nothing
+            }
         }
     }
 }
