@@ -12,6 +12,7 @@ namespace ResonantSpark {
             public HealthBar healthBarP1;
 
             public RoundTimer roundTimer;
+            public OpeningText openingText;
 
             public ComboCounter comboCounterP0;
             public ComboCounter comboCounterP1;
@@ -22,6 +23,11 @@ namespace ResonantSpark {
 
             public void SetTime(float time) {
                 roundTimer.SetTime(time);
+            }
+
+            public void SetOpeningText(string text)
+            {
+                openingText.SetOpeningText(text);
             }
 
             public void SetHealth(int playerId, int health) {
