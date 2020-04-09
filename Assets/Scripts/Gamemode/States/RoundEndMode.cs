@@ -9,37 +9,40 @@ namespace ResonantSpark {
         public class RoundEndMode : GamemodeBaseState {
             private GameTimeManager gameTimeManager;
             private float elapsedTime;
+            private int char0Wins;
+            private int char1Wins;
 
-            // Use this for initialization
             private new void Awake() {
                 base.Awake();
-                gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
                 states.Register(this, "roundEndMode");
+
+                gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
             }
 
             public override void Enter(int frameIndex, IState previousState) {
                 elapsedTime = 0;
-                Debug.Log("Entered Round End mode state");
+                char0Wins = oneOnOne.GetCharNumWins(0);
+                char1Wins = oneOnOne.GetCharNumWins(1);
+
+                uiService.SetRoundWins(0, char0Wins);
+                uiService.SetRoundWins(1, char1Wins);
             }
 
             public override void Execute(int frameIndex) {
-                elapsedTime += gameTimeManager.Layer("gameTime");
+                if (elapsedTime > 2.0f) {
+                    if (char0Wins >= 3 || char1Wins >= 3) {
+                        changeState(states.Get("gameEndMode"));
+                    }
+                    else {
+                        changeState(states.Get("roundStartMode"));
+                    }
+                }
 
-                // logic here for ending a round and transitioning to new state
-                int char0Wins = oneOnOne.GetChar0NumWins();
-                int char1Wins = oneOnOne.GetChar1NumWins();
-                if (char0Wins >= 2 || char1Wins >= 2) {
-                    changeState(states.Get("gameEndMode"));
-                }
-                else {
-                    changeState(states.Get("roundStartMode"));
-                }
+                elapsedTime += gameTimeManager.Layer("gameTime");
             }
 
-            public override void Exit(int frameIndex) { }
-
-            public void RoundEnd() {
-                changeState(this);
+            public override void Exit(int frameIndex) {
+                // do nothing
             }
         }
     }

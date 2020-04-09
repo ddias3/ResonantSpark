@@ -10,25 +10,40 @@ namespace ResonantSpark {
             private GameTimeManager gameTimeManager;
             private float elapsedTime;
 
-            // Use this for initialization
+            private int char0Wins;
+            private int char1Wins;
+
             private new void Awake() {
                 base.Awake();
-                gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
                 states.Register(this, "gameEndMode");
+
+                gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
             }
 
             public override void Enter(int frameIndex, IState previousState) {
                 elapsedTime = 0;
-                Debug.Log("Entered Game End mode state");
+
+                char0Wins = oneOnOne.GetCharNumWins(0);
+                char1Wins = oneOnOne.GetCharNumWins(1);
             }
 
             public override void Execute(int frameIndex) {
-                elapsedTime += gameTimeManager.Layer("gameTime");
-
-                // change state so that it goes to menu of some kind
-                if (UnityEngine.Input.GetKey(KeyCode.Alpha8)) {
-                    changeState(states.Get("openingMode"));
+                if (elapsedTime > 4.0f) {
+                    changeState(states.Get("gameCompleteMode"));
                 }
+                else if (elapsedTime > 1.2f) {
+                    if (char0Wins > char1Wins) {
+                        uiService.SetMainScreenText("Player 1 Wins");
+                    }
+                    else if (char1Wins > char0Wins) {
+                        uiService.SetMainScreenText("Player 2 Wins");
+                    }
+                    else {
+                        uiService.SetMainScreenText("Draw");
+                    }
+                }
+
+                elapsedTime += gameTimeManager.Layer("gameTime");
             }
 
             public override void Exit(int frameIndex) {

@@ -3,22 +3,19 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-namespace ResonantSpark
-{
-    namespace UI
-    {
-        public class OpeningText : GameUiElement
-        {
-            public TextMeshProUGUI roundTimer;
+namespace ResonantSpark {
+    namespace UI {
+        public class OpeningText : GameUiElement {
+            public TextMeshProUGUI mainScreenText;
 
-            public void SetOpeningText(string str)
-            {
-                roundTimer.text = str;
+            public void SetOpeningText(string str) {
+                gameObject.SetActive(true);
+                mainScreenText.text = str;
             }
 
-            //public void Update() {
-            //
-            //}
+            public void Hide() {
+                gameObject.SetActive(false);
+            }
         }
     }
 }

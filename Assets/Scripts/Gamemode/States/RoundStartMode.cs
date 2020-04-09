@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 using System;
 using ResonantSpark.Utility;
 using ResonantSpark.Gamemode;
@@ -11,40 +11,44 @@ namespace ResonantSpark {
             private float elapsedTime;
             private int frameCount;
 
-            private string[] countdownArr = { "3", "2", "1", "GO!" };
+            private List<string> countdownArr;
+            private List<float> elapsedDisplayTime;
 
-            // Use this for initialization
             private new void Awake() {
                 base.Awake();
-                gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
                 states.Register(this, "roundStartMode");
+
+                countdownArr = new List<string> { "Ready" };
+                elapsedDisplayTime = new List<float> { 0.8f };
+
+                gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
             }
 
             public override void Enter(int frameIndex, IState previousState) {
                 elapsedTime = 0;
-                Debug.Log("Entered Round Start mode state");
+
+                fgService.DisableControl();
+                uiService.SetTime(oneOnOne.GetRoundLength());
+
+                oneOnOne.FightingGameMode();
                 oneOnOne.ResetRound();
                 frameCount = 0;
             }
 
             public override void Execute(int frameIndex) {
-                elapsedTime += gameTimeManager.Layer("gameTime");
-                int idx = Convert.ToInt32(Math.Truncate(elapsedTime));
-
-                // after start mode animation, switch to fighting mode
-                if (idx >= countdownArr.Length) {
-                    uiService.SetOpeningText("");
+                if (elapsedTime > elapsedDisplayTime[0]) {
                     changeState(states.Get("fightingMode"));
                 }
                 else {
-                    uiService.SetOpeningText(countdownArr[idx]);
+                    uiService.SetMainScreenText(countdownArr[0]);
                 }
 
+                elapsedTime += gameTimeManager.Layer("gameTime");
                 ++frameCount;
             }
 
             public override void Exit(int frameIndex) {
-                // do nothing
+                uiService.HideMainScreenText();
             }
         }
     }

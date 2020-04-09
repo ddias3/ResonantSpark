@@ -32,20 +32,14 @@ namespace ResonantSpark {
             private FrameEnforcer frame;
             private GameTimeManager gameTimeManager;
 
-            private float currRoundTime;
-
-            private int testHP0;
-            private int testHP1;
-
             public void Awake() {
                 frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
-                frame.AddUpdate((int) FramePriority.Gamemode, new Action<int>(FrameUpdate));
-                gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
 
+                gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
                 gameTimeManager.AddLayer(new Func<float, float>(GameTime), "gameTime");
 
                 EventManager.StartListening<Events.FrameEnforcerReady>(new UnityAction(EnablePlayers));
-                EventManager.StartListening<Events.StartGame>(new UnityAction(StartGame));
+                EventManager.StartListening<Events.StartGame>(new UnityAction(ResetGame));
             }
 
             public void SetUp(PlayerService playerService, FightingGameService fgService, UiService uiService) {
@@ -78,17 +72,23 @@ namespace ResonantSpark {
                 return input * gameTime;
             }
 
-            private void StartGame() {
-                ResetRound();
+            public void OpeningMode() {
+                fgService.OpeningCamera();
+            }
 
+            public void FightingGameMode() {
+                fgService.FightingGameCamera();
+            }
+
+            public void ResetGame() {
                 char0RoundWins = 0;
-                char1RoundWins = 1;
+                char1RoundWins = 0;
+
+                uiService.SetRoundWins(0, char0RoundWins);
+                uiService.SetRoundWins(1, char1RoundWins);
             }
 
             public void ResetRound() {
-                currRoundTime = roundTime;
-                uiService.SetTime(currRoundTime);
-
                 Transform spawnTransform = fgService.GetSpawnPoint();
 
                 char0.transform.position = spawnTransform.position + spawnTransform.rotation * new Vector3(0, 0, fgService.GetSpawnPointOffset());
@@ -101,35 +101,42 @@ namespace ResonantSpark {
                     fgChar.RoundReset();
                     uiService.SetMaxHealth(id, fgChar.maxHealth);
                     uiService.SetHealth(id, fgChar.maxHealth);
-
-                    if (id == 0) testHP0 = fgChar.maxHealth;
-                    else if (id == 1) testHP1 = fgChar.maxHealth;
                 });
 
                 fgService.ResetCamera();
             }
 
+            public float GetRoundLength() {
+                return roundTime;
+            }
+
             private void OnRoundEnd() {
-                uiService.SetTime(0.0f);
+                stateMachine.ChangeState(states.Get("roundEndMode"));
 
                 if (char0.health > char1.health) {
                     char0RoundWins += 1;
+                    uiService.SetMainScreenText("K.O.");
                 }
                 else if (char1.health > char0.health) {
                     char1RoundWins += 1;
+                    uiService.SetMainScreenText("K.O.");
                 }
                 else {
                     // double K.O.
                     char0RoundWins += 1;
                     char1RoundWins += 1;
-                }
 
-                // TODO: Remove this and replace it with a state-machine.
-                //ResetRound();
+                    uiService.SetMainScreenText("Double K.O.");
+                }
             }
 
-            private void EndRound() {
-                //TODO: Stop inputs from both players, or don't not sure.
+            public void TimeOutRound() {
+                EndRound();
+                uiService.SetMainScreenText("Time");
+            }
+
+            public void EndRound() {
+                fgService.DisableControl();
                 OnRoundEnd();
             }
 
@@ -143,43 +150,32 @@ namespace ResonantSpark {
                 // TODO: this might result in a race condition that needs to be resolved for double K.O.s
 
                 EndRound();
-
-                // end game
-                ((GamemodeStates.RoundEndMode)states.Get("roundEndMode")).RoundEnd();
             }
 
-            // todo(Nathan): put this inside of FIghtingMOde.cs
-            private void FrameUpdate(int frameIndex) {
-                if (UnityEngine.Input.GetKeyDown(KeyCode.Alpha0)) { // if (Keyboard.current.digit0Key.wasPressedThisFrame) {
-                    ResetRound();
-                }
-
+            public void CalculateScreenOrientation() {
                 playerService.EachFGChar((id, fgChar) => {
                     fgChar.CalculateScreenOrientation();
                 });
+            }
 
+            public void SetDisplayTime(float currRoundTime) {
                 uiService.SetTime(currRoundTime);
-
-                if (currRoundTime < 0) {
-                    EndRound();
-                }
-                currRoundTime -= gameTimeManager.Layer("gameTime");
-
-                // gameTime.Layer("gameTime") is Time.deltaTime
             }
 
             public int GetMaxPlayers() {
                 return 2;
             }
 
-            public int GetChar0NumWins()
-            {
-                return char0RoundWins;
-            }
-
-            public int GetChar1NumWins()
-            {
-                return char1RoundWins;
+            public int GetCharNumWins(int id) {
+                if (id == 0) {
+                    return char0RoundWins;
+                }
+                else if (id == 1) {
+                    return char1RoundWins;
+                }
+                else {
+                    throw new InvalidOperationException("One-on-one game mode only has 2 players allowed");
+                }
             }
         }
     }

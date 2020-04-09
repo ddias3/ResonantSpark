@@ -6,36 +6,26 @@ using ResonantSpark.Gamemode;
 
 namespace ResonantSpark {
     namespace GamemodeStates {
-        public class OpeningMode : GamemodeBaseState {
+        public class GameCompleteMode : GamemodeBaseState {
             private GameTimeManager gameTimeManager;
             private float elapsedTime;
 
-            public new void Awake() {
+            private int char0Wins;
+            private int char1Wins;
+
+            private new void Awake() {
                 base.Awake();
-                states.Register(this, "openingMode");
+                states.Register(this, "gameCompleteMode");
 
                 gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
             }
 
             public override void Enter(int frameIndex, IState previousState) {
-                oneOnOne.OpeningMode();
-                oneOnOne.ResetGame();
-                oneOnOne.ResetRound();
-
-                elapsedTime = 0;
-                uiService.SetMainScreenText("Versus");
-                fgService.DisableControl();
+                uiService.HideMainScreenText();
             }
 
             public override void Execute(int frameIndex) {
-                elapsedTime += gameTimeManager.Layer("gameTime");
-
-                if (elapsedTime > 3.0f) {
-                    uiService.HideMainScreenText();
-
-                    // after VS animation, switch to the RoundStart state
-                    changeState(states.Get("roundStartMode"));
-                }
+                // do nothing
             }
 
             public override void Exit(int frameIndex) {

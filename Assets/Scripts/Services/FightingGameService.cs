@@ -187,6 +187,28 @@ namespace ResonantSpark {
                 });
             }
 
+            public void DisableControl() {
+                playerService.EachFGChar((id, fgChar) => {
+                    fgChar.SetControlEnable(false);
+                });
+            }
+
+            public void EnableControl() {
+                playerService.EachFGChar((id, fgChar) => {
+                    fgChar.SetControlEnable(true);
+                });
+            }
+
+            public void OpeningCamera() {
+                camera.gameObject.SetActive(false);
+                mapCamera.SetActive(true);
+            }
+
+            public void FightingGameCamera() {
+                mapCamera.SetActive(false);
+                camera.gameObject.SetActive(true);
+            }
+
             public Transform GetSpawnPoint() {
                 return spawnPoint;
             }

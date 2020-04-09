@@ -13,6 +13,8 @@ namespace ResonantSpark {
             // Use this for initialization
             private new void Awake() {
                 base.Awake();
+                states.Register(this, "LoadInMode");
+
                 gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
             }
 
@@ -21,6 +23,9 @@ namespace ResonantSpark {
             }
 
             public override void Execute(int frameIndex) {
+                if (elapsedTime > 0.5f) {
+                    changeState(states.Get("openingMode"));
+                }
                 elapsedTime += gameTimeManager.Layer("gameTime");
             }
 

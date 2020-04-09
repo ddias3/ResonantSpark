@@ -61,6 +61,8 @@ namespace ResonantSpark {
             private CharacterPrioritizedVelocity charVelocity;
             private List<(Vector3, ForceMode)> forces;
 
+            private bool controlEnable = false;
+
             public Quaternion rotation {
                 get { return rigidbody.rotation; }
             }
@@ -339,7 +341,7 @@ namespace ResonantSpark {
                     //   If this is an NPC, it won't have an input buffer with it.
                 //return inputBuffer?.GetFoundCombinations();
 
-                if (inputBuffer != null) {
+                if (inputBuffer != null && controlEnable) {
                     return inputBuffer.GetFoundCombinations();
                 }
                 else {
@@ -490,6 +492,14 @@ namespace ResonantSpark {
 
             public void AnimationWalkVelocity() {
                 charMovementAnimation.WalkVelocity(GetLocalVelocity());
+            }
+
+            public void SetControlEnable(bool controlEnable) {
+                this.controlEnable = controlEnable;
+            }
+
+            public bool GetControlEnable() {
+                return this.controlEnable;
             }
 
             public override void AddSelf() {

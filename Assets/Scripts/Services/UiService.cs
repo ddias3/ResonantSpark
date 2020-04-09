@@ -14,6 +14,9 @@ namespace ResonantSpark {
             public RoundTimer roundTimer;
             public OpeningText openingText;
 
+            public RoundCounter roundCounterP0;
+            public RoundCounter roundCounterP1;
+
             public ComboCounter comboCounterP0;
             public ComboCounter comboCounterP1;
 
@@ -25,9 +28,12 @@ namespace ResonantSpark {
                 roundTimer.SetTime(time);
             }
 
-            public void SetOpeningText(string text)
-            {
+            public void SetMainScreenText(string text) {
                 openingText.SetOpeningText(text);
+            }
+
+            public void HideMainScreenText() {
+                openingText.Hide();
             }
 
             public void SetHealth(int playerId, int health) {
@@ -63,6 +69,15 @@ namespace ResonantSpark {
                 }
                 else if (playerId == 1) {
                     comboCounterP1.Hide();
+                }
+            }
+
+            public void SetRoundWins(int playerId, int numWins) {
+                if (playerId == 0) {
+                    roundCounterP0.SetRoundCount(numWins);
+                }
+                else if (playerId == 1) {
+                    roundCounterP1.SetRoundCount(numWins);
                 }
             }
         }

@@ -11,12 +11,14 @@ namespace ResonantSpark {
         public abstract class GamemodeBaseState : BaseState {
             protected OneOnOneRoundBased oneOnOne;
             protected UiService uiService;
+            protected FightingGameService fgService;
 
             public new void Awake() {
                 base.Awake();
 
                 oneOnOne = gameObject.GetComponentInParent<OneOnOneRoundBased>();
-                uiService = GameObject.FindGameObjectWithTag("rspService").GetComponent<ResonantSpark.Service.UiService>();
+                uiService = GameObject.FindGameObjectWithTag("rspService").GetComponent<UiService>();
+                fgService = GameObject.FindGameObjectWithTag("rspService").GetComponent<FightingGameService>();
             }
         }
     }

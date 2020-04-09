@@ -8,22 +8,42 @@ namespace ResonantSpark {
     namespace GamemodeStates {
         public class FightingMode : GamemodeBaseState {
             private GameTimeManager gameTimeManager;
+            private float currRoundTime;
             private float elapsedTime;
 
-            // Use this for initialization
+            private bool clearedMainScreenText = false;
+
             private new void Awake() {
                 base.Awake();
-                gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
                 states.Register(this, "fightingMode");
+
+                gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
             }
 
             public override void Enter(int frameIndex, IState previousState) {
-                elapsedTime = 0;
-                Debug.Log("Entered Fighting mode state");
+                elapsedTime = 0.0f;
+                clearedMainScreenText = false;
+                uiService.SetMainScreenText("Fight");
+
+                currRoundTime = oneOnOne.GetRoundLength();
+                fgService.EnableControl();
             }
 
             public override void Execute(int frameIndex) {
+                if (elapsedTime > 1.2f && !clearedMainScreenText) {
+                    uiService.HideMainScreenText();
+                    clearedMainScreenText = true;
+                }
+
+                oneOnOne.CalculateScreenOrientation();
+                oneOnOne.SetDisplayTime(currRoundTime);
+
+                if (currRoundTime < 0) {
+                    oneOnOne.TimeOutRound();
+                }
+
                 elapsedTime += gameTimeManager.Layer("gameTime");
+                currRoundTime -= gameTimeManager.Layer("gameTime");
             }
 
             public override void Exit(int frameIndex) {
