@@ -11,7 +11,7 @@ namespace ResonantSpark {
         Service = 512,
         StateMachine = 1024,
         InputBuffer = 2048,
-
+        CameraShake = 4000,
         UpdateInput = 9999999,
     }
 

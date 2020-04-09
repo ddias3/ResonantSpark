@@ -15,11 +15,13 @@ namespace ResonantSpark {
             public class Attacks {
 
                 private IAudioService audioService;
+                private ICameraService cameraService;
                 private IProjectileService projectileService;
                 private Dictionary<string, AudioClip> audioMap;
 
                 public Attacks(AllServices services, Dictionary<string, AudioClip> audioMap) {
                     audioService = services.GetService<IAudioService>();
+                    cameraService = services.GetService<ICameraService>();
                     projectileService = services.GetService<IProjectileService>();
                     this.audioMap = audioMap;
                 }
@@ -55,6 +57,9 @@ namespace ResonantSpark {
                                                 //                   .At(hitInfo.position); or .Follow(/*supply a trasform*/);
                                                 //          change it to -> audioService.Play(soundMap.Get("regular_5A"));
                                                 hitInfo.hitEntity.GetHitBy(hitInfo.hitBox);
+
+                                                // camera shake
+                                                cameraService.CameraShake(0.05f, 0.1f);
                                             }
                                         });
                                     })
@@ -99,12 +104,14 @@ namespace ResonantSpark {
                                             if (hitInfo.hitEntity != fgChar) {
                                                 ((FightingGameCharacter)hitInfo.hitEntity).ChangeHealth(1000);
                                                 hitInfo.hitEntity.GetHitBy(hitInfo.hitBox);
+                                                cameraService.CameraShake(0.05f, 0.1f);
                                             }
                                         });
                                         h.Event("onHitBox", (hitInfo) => {
                                             Debug.Log("Regular 5AA hit another hitbox");
                                             if (hitInfo.hitEntity != fgChar) {
                                                 hitInfo.hitEntity.GetHitBy(hitInfo.hitBox);
+                                                cameraService.CameraShake(0.05f, 0.1f);
                                             }
                                         });
                                     })
@@ -145,6 +152,7 @@ namespace ResonantSpark {
                                             if (hitInfo.hitEntity != fgChar) {
                                                 ((FightingGameCharacter)hitInfo.hitEntity).ChangeHealth(1000);
                                                 hitInfo.hitEntity.GetHitBy(hitInfo.hitBox);
+                                                cameraService.CameraShake(0.05f, 0.1f);
                                             }
                                         });
                                     })

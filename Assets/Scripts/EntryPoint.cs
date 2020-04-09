@@ -27,6 +27,7 @@ namespace ResonantSpark {
             typeof(PlayerService),
             typeof(ProjectileService),
             typeof(UiService),
+            typeof(CameraService)
         };
 
         public void Start() {
