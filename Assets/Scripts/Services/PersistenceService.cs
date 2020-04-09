@@ -20,17 +20,29 @@ namespace ResonantSpark {
             }
 
             public string gamemode { get; set; }
-            public List<string> playerSelection { get; private set; }
+            public Dictionary<string, float> optionValues { get; private set; }
+            public List<string> characterSelection { get; private set; }
+            public List<int> colorSelection { get; private set; }
             public List<int> controllerIndex { get; private set; }
 
             public void SetCharacterSelected(int index, string characterName) {
-                if (playerSelection.Count <= index) {
-                    for (int n = playerSelection.Count; n < index + 1; ++n) {
-                        playerSelection.Add("");
+                if (characterSelection.Count <= index) {
+                    for (int n = characterSelection.Count; n < index + 1; ++n) {
+                        characterSelection.Add("");
                     }
                 }
 
-                playerSelection[index] = characterName;
+                characterSelection[index] = characterName;
+            }
+
+            public void SetColorSelected(int index, int colorIndex) {
+                if (colorSelection.Count <= index) {
+                    for (int n = colorSelection.Count; n < index + 1; ++n) {
+                        colorSelection.Add(0);
+                    }
+                }
+
+                colorSelection[index] = colorIndex;
             }
 
             public void SetControllerSelected(int index, int controllerIndex) {
@@ -43,8 +55,22 @@ namespace ResonantSpark {
                 this.controllerIndex[index] = controllerIndex;
             }
 
+            public void SetOptionValue(string key, float value) {
+                optionValues[key] = value;
+            }
+
+            public float GetOptionValue(string key) {
+                return optionValues[key];
+            }
+
             private Persistence() {
-                playerSelection = new List<string>();
+                optionValues = new Dictionary<string, float> {
+                    { "masterVolume", 1.0f },
+                    { "effectsVolume", 1.0f },
+                    { "musicVolume", 1.0f },
+                };
+                characterSelection = new List<string>();
+                colorSelection = new List<int> { 0, 0 };
                 controllerIndex = new List<int> { 0, -1 };
             }
         }
@@ -73,7 +99,7 @@ namespace ResonantSpark {
                     persObj = Persistence.GetPersistence();
 
                     gamemodeStr         = persObj.gamemode;
-                    characterSelections = persObj.playerSelection;
+                    characterSelections = persObj.characterSelection;
                     controllerIndex     = persObj.controllerIndex;
                 }
 
