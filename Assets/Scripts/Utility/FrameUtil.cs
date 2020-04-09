@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 
 using ResonantSpark.Builder;
-using ResonantSpark.Character;
 using ResonantSpark.CharacterProperties;
 
 namespace ResonantSpark {
@@ -10,18 +9,16 @@ namespace ResonantSpark {
         public static class FrameUtil {
 
             public static class Default {
-                public static bool chainCancellable = true;
                 public static bool specialCancellable = true;
-                public static int hitDamage = 800;
-                public static int blockDamage = 0;
-                public static float hitStun = 20.0f;
-                public static float blockStun = 10.0f;
+                public static bool chainCancellable = true;
+                public static bool cancellableOnWhiff = false;
+                public static bool counterHit = true;
                 public static int startFrame = 0;
 
                 public static int counter = 0;
             }
 
-            public static (List<FrameStateBuilder>, Dictionary<int, Action<IHitBoxCallbackObject>>) CreateList(Action<IFrameListCallbackObj> callback) {
+            public static (List<FrameStateBuilder>, Dictionary<int, Action<IHitCallbackObject>>) CreateList(Action<IFrameListCallbackObj> callback) {
                 FrameListBuilder builder = new FrameListBuilder();
                 callback(builder);
                 return builder.CreateFrameList();

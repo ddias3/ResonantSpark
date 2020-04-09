@@ -8,7 +8,7 @@ namespace ResonantSpark {
     namespace Service {
         public class HitBoxService : MonoBehaviour, IHitBoxService {
             public Transform hitBoxEmpty;
-            public HitBox hitBoxDefaultPrefab;
+            public HitBoxComponent hitBoxDefaultPrefab;
 
             private FrameEnforcer frame;
 
@@ -20,6 +20,7 @@ namespace ResonantSpark {
                 frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
                 frame.AddUpdate((int) FramePriority.Service, new System.Action<int>(FrameUpdate));
                 frame.AddUpdate((int) FramePriority.ActivePollingReset, new System.Action<int>(ResetActivePolling));
+                frame.AddUpdate((int) FramePriority.LateService, new System.Action<int>(FrameLateUpdate));
 
                 hitBoxMap = new Dictionary<int, HitBox>();
                 activeHitBoxes = new List<HitBox>();
@@ -52,6 +53,8 @@ namespace ResonantSpark {
                             hitBox.Activate();
                         }
                     }
+
+                   
                 }
 
                 foreach (HitBox hitBox in previousActiveHitBoxes) {
@@ -60,6 +63,13 @@ namespace ResonantSpark {
                             hitBox.Deactivate();
                         }
                     }
+                }
+            }
+
+            private void FrameLateUpdate(int frameIndex) {
+                foreach (KeyValuePair<int, HitBox> kvp in hitBoxMap) {
+                    HitBox hitBox = kvp.Value;
+                    hitBox.hit.InvokeQueuedEvents();
                 }
             }
 
@@ -84,7 +94,7 @@ namespace ResonantSpark {
                 activeHitBoxes.Add(hitBox);
             }
 
-            public HitBox DefaultPrefab() {
+            public HitBoxComponent DefaultPrefab() {
                 return hitBoxDefaultPrefab;
             }
 

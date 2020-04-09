@@ -33,9 +33,14 @@ namespace ResonantSpark {
 
             public override void Execute(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
+                fgChar.CalculateFinalVelocity();
             }
 
             public override void Exit(int frameIndex) {
+                // do nothing
+            }
+
+            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
                 // do nothing
             }
 
@@ -43,7 +48,7 @@ namespace ResonantSpark {
                 return GroundRelation.AMBIGUOUS;
             }
 
-            public override void GetHitBy(HitBox hitBox) {
+            public override void GetHit(bool launch) {
                 // TODO: Make it clear that the attack is ignored by displaying a particle
             }
 

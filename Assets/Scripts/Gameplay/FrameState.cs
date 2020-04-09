@@ -1,39 +1,64 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Gameplay;
+using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace Character {
         public class FrameState {
-            public List<HitBox> hitBoxes { get; private set; }
-            public bool activateHitBox { get; private set; }
+            public List<Hit> hits { get; private set; }
             public bool chainCancellable { get; private set; }
             public bool specialCancellable { get; private set; }
-            public int hitDamage { get; private set; }
-            public int blockDamage { get; private set; }
-            public float hitStun { get; private set; }
-            public float blockStun { get; private set; }
+            public bool cancellableOnWhiff { get; private set; }
+            public bool counterHit { get; private set; }
 
-            public FrameState(List<HitBox> hitBoxes, bool activateHitBox, bool chainCancellable, bool specialCancellable, int hitDamage, int blockDamage, float hitStun, float blockStun) {
-                this.hitBoxes = hitBoxes;
+            public Action<HitInfo> armorCallback { get; private set; }
 
-                this.activateHitBox = activateHitBox;
+            public Action<Vector3, Transform> trackCallback { get; private set; }
+
+            public AudioClip soundClip { get; private set; }
+            public Action<AudioResource> soundCallback { get; private set; }
+
+            public Projectile projectile { get; private set; }
+            public Action<Projectile> projectileCallback { get; private set; }
+
+            public FrameState(
+                    bool chainCancellable,
+                    bool specialCancellable,
+                    bool cancellableOnWhiff,
+                    bool counterHit,
+                    List<Hit> hits,
+                    Action<HitInfo> armorCallback,
+                    Action<Vector3, Transform> trackCallback,
+                    AudioClip soundClip,
+                    Action<AudioResource> soundCallback,
+                    Projectile projectile,
+                    Action<Projectile> projectileCallback) {
                 this.chainCancellable = chainCancellable;
                 this.specialCancellable = specialCancellable;
-                this.hitDamage = hitDamage;
-                this.blockDamage = blockDamage;
-                this.hitStun = hitStun;
-                this.blockStun = blockStun;
+                this.cancellableOnWhiff = cancellableOnWhiff;
+                this.counterHit = counterHit;
+
+                this.hits = hits;
+
+                this.armorCallback = armorCallback;
+                this.trackCallback = trackCallback;
+                this.soundClip = soundClip;
+                this.soundCallback = soundCallback;
+                this.projectile = projectile;
+                this.projectileCallback = projectileCallback;
             }
 
-            public void Perform() {
-                for (int n = 0; n < hitBoxes.Count; ++n) {
-                    hitBoxes[n].Active();
+            public void Perform(FightingGameCharacter fgChar) {
+                foreach (Hit hit in hits) {
+                    hit.Active();
                 }
-
-                // TODO: Add call to turn on the sound effect
+                armorCallback?.Invoke(default);
+                trackCallback?.Invoke(fgChar.GetTarget(), fgChar.GetOpponentTransform());
+                soundCallback?.Invoke(null);
+                projectileCallback?.Invoke(projectile);
             }
         }
     }

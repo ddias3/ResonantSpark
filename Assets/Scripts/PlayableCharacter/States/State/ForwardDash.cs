@@ -12,13 +12,11 @@ namespace ResonantSpark {
         public class ForwardDash : CharacterBaseState {
 
             [Tooltip("The dash length in frames")]
-            public int dashLength = 18;
+            public int dashLength = 14;
             [Tooltip("These many frames of the start of the dash may not be cancelled into another dash")]
             public int redashDisallowed = 10;
             [Tooltip("These many frames of the start of the dash may not be cancelled into an attack")]
-            public int attackDisallowed = 16;
-
-            public AnimationCurve dashSpeedCurve;
+            public int attackDisallowed = 14;
 
             private Utility.AttackTracker tracker;
 
@@ -46,7 +44,7 @@ namespace ResonantSpark {
                 fgChar.__debugSetStateText("Frwd Dash", Color.green);
 
                 dashDir = FightingGameInputCodeDir.None;
-                GivenInput(fgChar.GivenCombinations());
+                GivenInput(fgChar.GetInUseCombinations());
 
                 if (dashDir == FightingGameInputCodeDir.Forward) {
                     fgChar.Play("dash_forward");
@@ -61,14 +59,11 @@ namespace ResonantSpark {
             public override void Execute(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
 
-                fgChar.AddRelativeVelocity(Gameplay.VelocityPriority.Dash, new Vector3(0.0f, 0.0f, dashSpeedCurve.Evaluate(tracker.frameCount)));
-
                 if (tracker.frameCount > dashLength) {
                     changeState(states.Get("stand"));
                 }
 
                 fgChar.CalculateFinalVelocity();
-
                 tracker.Increment();
             }
 
@@ -76,12 +71,21 @@ namespace ResonantSpark {
                 // do nothing
             }
 
+            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
+                fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Dash, animatorVelocity);
+            }
+
             public override GroundRelation GetGroundRelation() {
                 return GroundRelation.GROUNDED;
             }
 
-            public override void GetHitBy(HitBox hitBox) {
-                changeState(states.Get("hitStunStand"));
+            public override void GetHit(bool launch) {
+                if (launch) {
+                    changeState(states.Get("hitStunAirborne"));
+                }
+                else {
+                    changeState(states.Get("hitStunStand"));
+                }
             }
 
             private void OnDoubleTap(Action stop, Combination combo) {
@@ -90,12 +94,12 @@ namespace ResonantSpark {
                     FightingGameInputCodeDir relDir = fgChar.MapAbsoluteToRelative(doubleTap.direction);
 
                     if (relDir == FightingGameInputCodeDir.Forward) {
-                        fgChar.UseCombination(doubleTap);
+                        fgChar.Use(doubleTap);
                         stop();
                         changeState(states.Get("forwardDash"));
                     }
                     else if (relDir == FightingGameInputCodeDir.Back) {
-                        fgChar.UseCombination(doubleTap);
+                        fgChar.Use(doubleTap);
                         stop();
                         changeState(states.Get("backDash"));
                     }
@@ -111,7 +115,13 @@ namespace ResonantSpark {
                     var buttonPress = (ButtonPress)combo;
 
                     if (buttonPress.button0 != FightingGameInputCodeBut.D) {
-                        fgChar.ChooseAttack(this, null, buttonPress.button0, this.currDir);
+                        FightingGameInputCodeDir direction = FightingGameInputCodeDir.Neutral;
+                        fgChar.Use(combo);
+                        fgChar.UseCombination<DirectionCurrent>(currDir => {
+                            direction = fgChar.MapAbsoluteToRelative(((DirectionCurrent)currDir).direction);
+                        });
+
+                        fgChar.ChooseAttack(this, null, buttonPress.button0, direction);
                         stop();
                     }
                     else {

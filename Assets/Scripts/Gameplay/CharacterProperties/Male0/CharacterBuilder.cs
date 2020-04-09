@@ -6,6 +6,7 @@ using ResonantSpark.Builder;
 using ResonantSpark.Gameplay;
 using ResonantSpark.Service;
 using ResonantSpark.Character;
+using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace CharacterProperties {
@@ -13,7 +14,11 @@ namespace ResonantSpark {
             public class CharacterBuilder : MonoBehaviour, ICharacterBuilder {
 
                 public GameObject male0Prefab;
-                public AudioMap audioMap;
+
+                private AudioClipMap audioMap;
+                private ParticleEffectMap particleMap;
+                private AnimationCurveMap attackMovementMap;
+                private ProjectileMap projectileMap;
 
                 private FightingGameCharacter fgChar;
 
@@ -28,7 +33,16 @@ namespace ResonantSpark {
                 public void Build(AllServices services) {
                     Male0Builder charBuilder = new Male0Builder(services);
 
-                    Attacks attacks = new Attacks(services, audioMap.BuildDictionary());
+                    audioMap = GetComponent<AudioClipMap>();
+                    particleMap = GetComponent<ParticleEffectMap>();
+                    attackMovementMap = GetComponent<AnimationCurveMap>();
+                    projectileMap = GetComponent<ProjectileMap>();
+
+                    Attacks attacks = new Attacks(services,
+                        audioMap.BuildDictionary(),
+                        particleMap.BuildDictionary(),
+                        attackMovementMap.BuildDictionary(),
+                        projectileMap.BuildDictionary());
                     Movement movement = new Movement(services);
 
                     charBuilder.Version("0.1");

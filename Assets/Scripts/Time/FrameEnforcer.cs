@@ -12,6 +12,8 @@ namespace ResonantSpark {
         StateMachine = 1024,
         InputBuffer = 2048,
 
+        LateService = 0x1000 + 512,
+
         UpdateInput = 9999999,
     }
 

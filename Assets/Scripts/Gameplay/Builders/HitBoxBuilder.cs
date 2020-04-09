@@ -9,106 +9,52 @@ using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace CharacterProperties {
-        public class HitBoxBuilder : IHitBoxCallbackObject {
+        public partial class HitBoxBuilder : IHitBoxCallbackObject {
             private const string onHitBoxEventKey = "onHitBox";
             private const string onHurtBoxEventKey = "onHurtBox";
 
             private IHitBoxService hitBoxService;
             private IFightingGameService fgService;
 
-            private HitBox hitBoxPrefab;
-
-            private Dictionary<string, Action<HitInfo>> callbacks;
-
-            private CapsuleCollider collider;
-            private Transform transform;
-
-            private Vector3 point0;
-            private Vector3 point1;
-
-            private float radius = -1;
-            private bool tracking = false;
-
             public HitBoxBuilder(AllServices allServices) {
-                callbacks = new Dictionary<string, Action<HitInfo>>();
+                eventCallbacks = new Dictionary<string, Action<HitInfo>>();
+
                 this.hitBoxService = allServices.GetService<IHitBoxService>();
                 this.fgService = allServices.GetService<IFightingGameService>();
                 this.hitBoxPrefab = this.hitBoxService.DefaultPrefab();
+
+                tracking = false;
             }
 
-            public IHitBoxCallbackObject Prefab(HitBox hitBoxPrefab) {
-                this.hitBoxPrefab = hitBoxPrefab;
-                return this;
-            }
-
-            public IHitBoxCallbackObject Point0(Vector3 p0) {
-                this.point0 = p0;
-                return this;
-            }
-
-            public IHitBoxCallbackObject Point1(Vector3 p1) {
-                this.point1 = p1;
-                return this;
-            }
-
-            public IHitBoxCallbackObject Radius(float width) {
-                this.radius = width;
-                return this;
-            }
-
-            public IHitBoxCallbackObject Tracking(bool tracking) {
-                this.tracking = tracking;
-                return this;
-            }
-
-            public IHitBoxCallbackObject Event(string eventName, Action<HitInfo> callback) {
-                callbacks.Add(eventName, callback);
-                return this;
-            }
-
-            public IHitBoxCallbackObject FromCollider(CapsuleCollider collider) {
-                this.collider = collider;
-                return this;
-            }
-
-            public IHitBoxCallbackObject Relative(Transform transform) {
-                this.transform = transform;
-                return this;
-            }
-
-            public HitBox CreateHitBox(Transform hitBoxEmptyParentTransform) {
+            public HitBoxComponent CreateHitBox(HitBox hitBox, Transform hitBoxEmptyParentTransform, Action<InGameEntity, Collider, Vector3> hitBoxCallback) {
                     // default means Vector3.zero in this case
                 if (collider != null) {
-                    HitBox hitBox = GameObject.Instantiate<HitBox>(hitBoxPrefab, hitBoxEmptyParentTransform.position, Quaternion.identity, hitBoxEmptyParentTransform);
-                    callbacks.TryGetValue(onHurtBoxEventKey, out Action<HitInfo> onHurtBoxCallback);
-                    callbacks.TryGetValue(onHitBoxEventKey, out Action<HitInfo> onHitBoxCallback);
+                    HitBoxComponent hitBoxComp = GameObject.Instantiate<HitBoxComponent>(hitBoxPrefab, hitBoxEmptyParentTransform.position, Quaternion.identity, hitBoxEmptyParentTransform);
 
-                    hitBox.SetServices(hitBoxService, fgService);
-                    hitBox.Init(transform, tracking, onHurtBoxCallback, onHitBoxCallback);
+                    hitBoxComp.SetServices(hitBoxService, fgService);
+                    hitBoxComp.Init(hitBox, transform, hitLocation, hitBoxCallback);
 
                     switch (collider.direction) {
                         case 0: // X-axis
-                            hitBox.SetColliderPosition(collider.transform.position, collider.transform.position + collider.transform.right * collider.height, collider.radius);
+                            hitBoxComp.SetColliderPosition(collider.transform.position, collider.transform.position + collider.transform.right * collider.height, collider.radius);
                             break;
                         case 1: // Y-axis
-                            hitBox.SetColliderPosition(collider.transform.position, collider.transform.position + collider.transform.up * collider.height, collider.radius);
+                            hitBoxComp.SetColliderPosition(collider.transform.position, collider.transform.position + collider.transform.up * collider.height, collider.radius);
                             break;
                         case 2: // Z-axis
-                            hitBox.SetColliderPosition(collider.transform.position, collider.transform.position + collider.transform.forward * collider.height, collider.radius);
+                            hitBoxComp.SetColliderPosition(collider.transform.position, collider.transform.position + collider.transform.forward * collider.height, collider.radius);
                             break;
                     }
-                    return hitBox;
+                    return hitBoxComp;
                 }
                 else if (radius > 0) {
-                    HitBox hitBox = GameObject.Instantiate<HitBox>(hitBoxPrefab, hitBoxEmptyParentTransform.position, Quaternion.identity, hitBoxEmptyParentTransform);
-                    callbacks.TryGetValue(onHurtBoxEventKey, out Action<HitInfo> onHurtBoxCallback);
-                    callbacks.TryGetValue(onHitBoxEventKey, out Action<HitInfo> onHitBoxCallback);
+                    HitBoxComponent hitBoxComp = GameObject.Instantiate<HitBoxComponent>(hitBoxPrefab, hitBoxEmptyParentTransform.position, Quaternion.identity, hitBoxEmptyParentTransform);
 
-                    hitBox.SetServices(hitBoxService, fgService);
-                    hitBox.Init(transform, tracking, onHurtBoxCallback, onHitBoxCallback);
+                    hitBoxComp.SetServices(hitBoxService, fgService);
+                    hitBoxComp.Init(hitBox, transform, hitLocation, hitBoxCallback);
 
-                    hitBox.SetColliderPosition(point0, point1, radius);
-                    return hitBox;
+                    hitBoxComp.SetColliderPosition(point0, point1, radius);
+                    return hitBoxComp;
                 }
                 else {
                     throw new NotSupportedException("Attempting to create a hitbox with no collider to base on or no values provided");
@@ -116,7 +62,7 @@ namespace ResonantSpark {
             }
 
             public Dictionary<string, Action<HitInfo>> GetEvents() {
-                return callbacks;
+                return eventCallbacks;
             }
         }
     }

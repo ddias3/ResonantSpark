@@ -24,8 +24,6 @@ namespace ResonantSpark {
 
             public int maxRotation;
 
-            public AnimationCurve dodgeSpeedCurve;
-
             private Utility.AttackTracker tracker;
 
             private FightingGameInputCodeDir dodgeDir;
@@ -50,15 +48,15 @@ namespace ResonantSpark {
                 fgChar.__debugSetStateText("Dodge", Color.green);
 
                 dodgeDir = FightingGameInputCodeDir.None;
-                GivenInput(fgChar.GivenCombinations());
+                GivenInput(fgChar.GetInUseCombinations());
 
                 localScaling = fgChar.RelativeInputToLocal(dodgeDir, false);
 
                 if (localScaling.x > 0) {
-                    fgChar.Play("step_spine");
+                    fgChar.Play("dodge_right");
                 }
                 else {
-                    fgChar.Play("step_chest");
+                    fgChar.Play("dodge_left");
                 }
 
                 tracker.Track(frameIndex);
@@ -68,13 +66,11 @@ namespace ResonantSpark {
                 FindInput(fgChar.GetFoundCombinations());
 
                 Vector3 localVelocity = new Vector3 {
-                    x = localScaling.x * dodgeSpeedCurve.Evaluate(tracker.frameCount),
+                    x = 1.0f,
                     y = 0.0f,
                         // TODO: Figure out the actual function here to get to the correct new location
-                    z = 0.3f / fgChar.OpponentPosition().magnitude,
+                    z = 0.3f / fgChar.OpponentDirection().magnitude,
                 };
-
-                fgChar.AddRelativeVelocity(Gameplay.VelocityPriority.Dash, localVelocity);
 
                 if (tracker.frameCount > dodgeLength) {
                     changeState(states.Get("stand"));
@@ -109,12 +105,21 @@ namespace ResonantSpark {
                 }
             }
 
+            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorDelta) {
+                fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Dash, animatorDelta);
+            }
+
             public override GroundRelation GetGroundRelation() {
                 return GroundRelation.GROUNDED;
             }
 
-            public override void GetHitBy(HitBox hitBox) {
-                changeState(states.Get("blockStunStand"));
+            public override void GetHit(bool launch) {
+                if (launch) {
+                    changeState(states.Get("hitStunAirborne"));
+                }
+                else {
+                    changeState(states.Get("hitStunStand"));
+                }
             }
 
             private void GivenDirectionPlusButton(Action stop, Combination combo) {

@@ -11,30 +11,44 @@ namespace ResonantSpark {
     namespace CharacterStates {
         public class Airborne : CharacterBaseState {
 
+            public Vector3 gravityExtra;
+
             public new void Awake() {
                 base.Awake();
                 states.Register(this, "airborne");
 
                 RegisterInputCallbacks()
-                    .On<DirectionPress>(OnDirectionPress)
+                    .On<ButtonPress>(OnButtonPress)
                     .On<DoubleTap>(OnDoubleTap);
             }
 
             public override void Enter(int frameIndex, IState previousState) {
                 fgChar.__debugSetStateText("Airborne", Color.yellow);
-                //if (messages.Count > 0) {
-                //    Combination combo = messages.Dequeue();
-                //    combo.inUse = false;
-                //}
 
-                fgChar.Play("idle");
+                fgChar.Play("airborne");
             }
 
             public override void Execute(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
+
+                fgChar.AddForce(gravityExtra, ForceMode.Acceleration);
+
+                if (fgChar.Grounded(out Vector3 landPoint)) {
+                    changeState(states.Get("land"));
+                }
+
+                if (fgChar.CheckAboutToLand()) {
+                    changeState(states.Get("land"));
+                }
+
+                fgChar.CalculateFinalVelocity();
             }
 
             public override void Exit(int frameIndex) {
+                // do nothing
+            }
+
+            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
                 // do nothing
             }
 
@@ -42,26 +56,18 @@ namespace ResonantSpark {
                 return GroundRelation.AIRBORNE;
             }
 
-            public override void GetHitBy(HitBox hitBox) {
+            public override void GetHit(bool launch) {
                 changeState(states.Get("hitStunAirborne"));
             }
 
-            private void OnDirectionPress(Action stop, Combination combo) {
-                var dirPress = (DirectionPress)combo;
-                if (!dirPress.Stale(frame.index)) {
-                    dirPress.inUse = true;
-                    stop.Invoke();
-                    changeState(states.Get("walk"));//.Message(dirPress));
-                }
+            private void OnButtonPress(Action stop, Combination combo) {
+                var butPress = (ButtonPress)combo;
+
             }
 
             private void OnDoubleTap(Action stop, Combination combo) {
                 var doubleTap = (DoubleTap)combo;
-                if (!doubleTap.Stale(frame.index)) {
-                    doubleTap.inUse = true;
-                    stop.Invoke();
-                    changeState(states.Get("run"));//.Message(doubleTap));
-                }
+                
             }
         }
     }

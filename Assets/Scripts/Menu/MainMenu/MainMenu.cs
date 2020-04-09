@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.SceneManagement;
 
 using ResonantSpark.Service;
@@ -6,31 +8,103 @@ using ResonantSpark.Service;
 namespace ResonantSpark {
     namespace Menu {
         public class MainMenu : MonoBehaviour {
-            public TMPro.TMP_InputField char0;
-            public TMPro.TMP_InputField char1;
-            public TMPro.TMP_InputField level;
-            public void OnPressLoad() {
-                string strChar0 = "male0", strChar1 = "male0", strLevel = "corporation";
 
-                if (char0.text != "") {
-                    strChar0 = char0.text;
-                }
+            public GameObject mainMenu;
+            public GameObject optionsMenu;
+            public GameObject soundMenu;
+            public GameObject controllerMenu;
+            public GameObject creditsMenu;
 
-                if (char1.text != "") {
-                    strChar1 = char1.text;
-                }
+            public Selectable mainMenuActive;
+            public Selectable optionsMenuActive;
+            public Selectable soundMenuActive;
+            public Selectable controllerMenuActive;
+            public Selectable creditsMenuActive;
 
-                if (level.text != "") {
-                    strLevel = level.text;
-                }
+            public MultiplayerEventSystem multiplayerEventSystem;
 
-                Persistence persistence = Persistence.GetPersistence();
+            public void OnPressVersus() {
+                Persistence.GetPersistence().gamemode = "oneOnOneRoundBased";
+                //SceneManager.LoadScene("Scenes/Menu/CharacterSelect");
 
-                persistence.gamemode = "oneOnOneRoundBased";
-                persistence.SetCharacterSelected(0, strChar0);
-                persistence.SetCharacterSelected(1, strChar1);
+                SceneManager.LoadScene("Scenes/Levels/Practice");
+                Persistence pers = Persistence.GetPersistence();
+                pers.SetCharacterSelected(0, "lawrence");
+                pers.SetColorSelected(0, 1);
+                pers.SetCharacterSelected(1, "male0");
+                pers.SetColorSelected(1, 0);
+            }
 
-                SceneManager.LoadScene(strLevel, LoadSceneMode.Single);
+            public void OnPressTraining() {
+                Persistence.GetPersistence().gamemode = "training";
+                //SceneManager.LoadScene("Scenes/Menu/CharacterSelect");
+
+                SceneManager.LoadScene("Scenes/Levels/Practice");
+                Persistence pers = Persistence.GetPersistence();
+                pers.SetCharacterSelected(0, "lawrence");
+                pers.SetColorSelected(0, 1);
+                pers.SetCharacterSelected(1, "male0");
+                pers.SetColorSelected(1, 0);
+            }
+
+            public void OnPressOptions() {
+                mainMenu.SetActive(false);
+                optionsMenu.SetActive(true);
+
+                optionsMenuActive.Select();
+            }
+
+            public void OnPressOptionsSounds() {
+                optionsMenu.SetActive(false);
+                soundMenu.SetActive(true);
+
+                soundMenuActive.Select();
+            }
+
+            public void OnPressCredits() {
+                mainMenu.SetActive(false);
+                creditsMenu.SetActive(true);
+
+                creditsMenuActive.Select();
+            }
+
+            public void OnBackCredits() {
+                creditsMenu.SetActive(false);
+                mainMenu.SetActive(true);
+
+                mainMenuActive.Select();
+            }
+
+            public void OnBackOptions() {
+                optionsMenu.SetActive(false);
+                mainMenu.SetActive(true);
+
+                mainMenuActive.Select();
+            }
+
+            public void OnBackOptionsSounds() {
+                soundMenu.SetActive(false);
+                optionsMenu.SetActive(true);
+
+                optionsMenuActive.Select();
+            }
+
+            public void OnPressOptionsController() {
+                optionsMenu.SetActive(false);
+                controllerMenu.SetActive(true);
+
+                controllerMenuActive.Select();
+            }
+
+            public void OnBackOptionsController() {
+                controllerMenu.SetActive(false);
+                optionsMenu.SetActive(true);
+
+                optionsMenuActive.Select();
+            }
+
+            public void OnPressQuit() {
+                Application.Quit();
             }
         }
     }

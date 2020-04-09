@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: 53d3045b21551de45a7fedd36c044614
 ModelImporter:
-  serializedVersion: 25
+  serializedVersion: 19300
   internalIDToNameTable:
   - first:
       74: -2993534804863918692
@@ -77,7 +77,7 @@ ModelImporter:
     second: rig|walk_spineside_start
   externalObjects: {}
   materials:
-    importMaterials: 1
+    materialImportMode: 1
     materialName: 0
     materialSearch: 1
     materialLocation: 1
@@ -162,8 +162,8 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: rig|2A
-      takeName: rig|2A
+      name: 2A
+      takeName: 2A
       internalID: -7923449680651787427
       firstFrame: 0
       lastFrame: 25
@@ -191,8 +191,8 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: rig|5A
-      takeName: rig|5A
+      name: 5A
+      takeName: 5A
       internalID: -1110171267354150760
       firstFrame: 0
       lastFrame: 15
@@ -220,11 +220,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: rig|5AA
-      takeName: rig|5AA
+      name: 5AA
+      takeName: 5AA
       internalID: 906056123318008254
       firstFrame: 0
-      lastFrame: 23
+      lastFrame: 15
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -249,11 +249,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: rig|crouch_to_stand
-      takeName: rig|crouch_to_stand
+      name: crouch_to_stand (1)
+      takeName: crouch_to_stand
       internalID: -3211478262428060934
       firstFrame: 0
-      lastFrame: 12
+      lastFrame: 30
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -278,8 +278,8 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: rig|dash_backward
-      takeName: rig|dash_backward
+      name: dash_backward
+      takeName: dash_backward
       internalID: -1685339150659040735
       firstFrame: 0
       lastFrame: 30
@@ -307,8 +307,8 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: rig|dash_forward
-      takeName: rig|dash_forward
+      name: dash_forward
+      takeName: dash_forward
       internalID: -6641518531357433860
       firstFrame: 0
       lastFrame: 30
@@ -336,8 +336,8 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: rig|idle
-      takeName: rig|idle
+      name: idle
+      takeName: idle
       internalID: 1599155768152908184
       firstFrame: 0
       lastFrame: 120
@@ -365,8 +365,8 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: rig|idle_crouch
-      takeName: rig|idle_crouch
+      name: idle_crouch
+      takeName: idle_crouch
       internalID: -2837747902289978674
       firstFrame: 0
       lastFrame: 120
@@ -394,40 +394,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: rig|jump
-      takeName: rig|jump
-      internalID: -5395354463405799138
-      firstFrame: 0
-      lastFrame: 20
-      wrapMode: 0
-      orientationOffsetY: 0
-      level: 0
-      cycleOffset: 0
-      loop: 0
-      hasAdditiveReferencePose: 0
-      loopTime: 1
-      loopBlend: 1
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
-      loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
-      keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 0
-      heightFromFeet: 0
-      mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events: []
-      transformMask: []
-      maskType: 3
-      maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 0
-    - serializedVersion: 16
-      name: rig|jump_land
-      takeName: rig|jump_land
+      name: jump_stand
+      takeName: jump_land
       internalID: 3363692811491814065
       firstFrame: 0
-      lastFrame: 5
+      lastFrame: 1
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -452,11 +423,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: rig|jump_start
-      takeName: rig|jump_start
+      name: jump_land
+      takeName: jump_start
       internalID: 6040036128810050821
       firstFrame: 0
-      lastFrame: 10
+      lastFrame: 4
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -481,8 +452,8 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: rig|stand_to_crouch
-      takeName: rig|stand_to_crouch
+      name: stand_to_crouch
+      takeName: stand_to_crouch
       internalID: 988066450051915238
       firstFrame: 0
       lastFrame: 12
@@ -510,8 +481,8 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: rig|step_chest
-      takeName: rig|step_chest
+      name: step_chest
+      takeName: step_chest
       internalID: -4978388918591391723
       firstFrame: 0
       lastFrame: 30
@@ -539,11 +510,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: rig|step_spine
-      takeName: rig|step_spine
+      name: step_spine
+      takeName: step_spine
       internalID: -487203004772300091
       firstFrame: 0
-      lastFrame: 30
+      lastFrame: 29
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -568,11 +539,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: rig|walk_backward
-      takeName: rig|walk_backward
+      name: walk_backward
+      takeName: walk_backward
       internalID: 3515284502710230294
       firstFrame: 0
-      lastFrame: 86
+      lastFrame: 70
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -597,8 +568,8 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: rig|walk_backward_start
-      takeName: rig|walk_backward_start
+      name: walk_backward_start
+      takeName: walk_backward_start
       internalID: 6141838506357914858
       firstFrame: 0
       lastFrame: 14
@@ -626,11 +597,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: rig|walk_chestside
-      takeName: rig|walk_chestside
+      name: walk_chestside
+      takeName: walk_chestside
       internalID: 774413780330398394
       firstFrame: 0
-      lastFrame: 90
+      lastFrame: 100
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -655,8 +626,8 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: rig|walk_chestside_start
-      takeName: rig|walk_chestside_start
+      name: walk_chestside_start
+      takeName: walk_chestside_start
       internalID: 1366078989636338672
       firstFrame: 0
       lastFrame: 10
@@ -684,11 +655,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: rig|walk_forward
-      takeName: rig|walk_forward
+      name: walk_forward
+      takeName: walk_forward
       internalID: 2581112595272714419
       firstFrame: 0
-      lastFrame: 138
+      lastFrame: 150
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -713,8 +684,8 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: rig|walk_forward_start
-      takeName: rig|walk_forward_start
+      name: walk_forward_start
+      takeName: walk_forward_start.001
       internalID: 8770269383504592230
       firstFrame: 0
       lastFrame: 12
@@ -742,11 +713,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: rig|walk_spineside
-      takeName: rig|walk_spineside
+      name: walk_spineside
+      takeName: walk_spineside
       internalID: -7004311027596179018
       firstFrame: 0
-      lastFrame: 90
+      lastFrame: 100
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -771,8 +742,8 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: rig|walk_spineside_start
-      takeName: rig|walk_spineside_start
+      name: walk_spineside_start
+      takeName: walk_spineside_start
       internalID: 4251593728611691677
       firstFrame: 0
       lastFrame: 10
@@ -806,6 +777,7 @@ ModelImporter:
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
@@ -836,7 +808,6 @@ ModelImporter:
     normalSmoothingSource: 0
   referencedClips: []
   importAnimation: 1
-  copyAvatar: 0
   humanDescription:
     serializedVersion: 3
     human: []
@@ -854,8 +825,10 @@ ModelImporter:
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 2
   humanoidOversampling: 1
+  avatarSetup: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

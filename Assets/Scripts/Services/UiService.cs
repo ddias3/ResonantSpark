@@ -10,7 +10,11 @@ namespace ResonantSpark {
 
             public HealthBar healthBarP0;
             public HealthBar healthBarP1;
+
             public RoundTimer roundTimer;
+
+            public ComboCounter comboCounterP0;
+            public ComboCounter comboCounterP1;
 
             public void Start() {
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(UiService));
@@ -35,6 +39,24 @@ namespace ResonantSpark {
                 }
                 else if (playerId == 1) {
                     healthBarP1.SetMaxHealth(health);
+                }
+            }
+
+            public void SetComboCounter(int playerId, int comboCounter) {
+                if (playerId == 0) {
+                    comboCounterP0.SetNumHits(comboCounter);
+                }
+                else if (playerId == 1) {
+                    comboCounterP1.SetNumHits(comboCounter);
+                }
+            }
+
+            public void HideComboCounter(int playerId) {
+                if (playerId == 0) {
+                    comboCounterP0.Hide();
+                }
+                else if (playerId == 1) {
+                    comboCounterP1.Hide();
                 }
             }
         }

@@ -13,10 +13,6 @@ namespace ResonantSpark {
     namespace CharacterStates {
         public class Stand : CharacterBaseState {
 
-            public Walk walk;
-            public WalkSlow walkSlow;
-            public Still still;
-
             public float maxForwardSpeed;
             public float maxBackwardSpeed;
             public float maxHorizontalSpeed;
@@ -58,24 +54,15 @@ namespace ResonantSpark {
                 fgChar.__debugSetStateText("Stand", new Color(0.3f, 0.65f, 0.3f));
                 dirPress = FightingGameInputCodeDir.Neutral;
 
-                GivenInput(fgChar.GivenCombinations());
+                GivenInput(fgChar.GetInUseCombinations());
 
-                //int forwardBackward = (((int) dirPress) - 1) % 3 - 1;
-                //int upDown          = (((int) dirPress) - 1) / 3 - 1;
+                fgChar.AnimationStand();
 
-                //smoothedInput = fgChar.CameraToWorld(new Vector3(forwardBackward, 0, upJump ? 0 : upDown));
                 smoothedInput = fgChar.RelativeInputToLocal(dirPress, upJump);
-
-                fgChar.SetLocalMoveDirection(0.0f, 0.0f);
-                fgChar.Play("stand");
             }
 
             public override void Execute(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
-
-                //...((FightingGameInputCodeDir)((verticalInput + 1) * 3 + (horizontalInput + 1) + 1));
-
-                //Debug.Log("FGInput = " + dirPress + " (" + ((int) dirPress) + ") | Char X = " + charX + ", Char Z = " + charZ);
 
                 Vector3 localVelocity = fgChar.GetLocalVelocity();
                 Vector3 localInput = fgChar.RelativeInputToLocal(dirPress, upJump);
@@ -84,10 +71,9 @@ namespace ResonantSpark {
                 WalkCharacter(localVelocity, localInput);
                 TurnCharacter(localInput);
 
-                    // Use helper states to animate the character
-                AnimateCharacter(localVelocity, localInput);
-
+                fgChar.UpdateCharacterMovement();
                 fgChar.CalculateFinalVelocity();
+                fgChar.AnimationWalkVelocity();
             }
 
             public override void Exit(int frameIndex) {
@@ -106,9 +92,6 @@ namespace ResonantSpark {
                     else {
                         zMaxSpeed = maxBackwardSpeed;
                     }
-
-                    //Vector3 normalizedLocalVelocity = new Vector3(localVelocity.x / maxHorizontalSpeed, 0.0f, localVelocity.z / zMaxSpeed);
-                    //Vector3 delta = smoothedInput - normalizedLocalVelocity;
 
                     Vector3 newVelocity = default;
                     Vector3 velocityTarget = new Vector3 {
@@ -153,18 +136,19 @@ namespace ResonantSpark {
                 else {
                     //TODO: don't turn character while in mid air
                     Debug.LogError("Character not grounded while in 'Stand' character state");
+                    changeState(states.Get("airborne"));
                 }
             }
 
-            private void AnimateCharacter(Vector3 localVelocity, Vector3 localInput) {
-
+            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
+                // do nothing.
             }
 
             public override GroundRelation GetGroundRelation() {
                 return GroundRelation.GROUNDED;
             }
 
-            public override void GetHitBy(HitBox hitBox) {
+            public override void GetHit(bool launch) {
                 if (dirPress == FightingGameInputCodeDir.DownBack) {
                     changeState(states.Get("blockStunCrouch"));
                 }
@@ -172,7 +156,12 @@ namespace ResonantSpark {
                     changeState(states.Get("blockStunStand"));
                 }
                 else {
-                    changeState(states.Get("hitStunStand"));
+                    if (launch) {
+                        changeState(states.Get("hitStunAirborne"));
+                    }
+                    else {
+                        changeState(states.Get("hitStunStand"));
+                    }
                 }
             }
 
@@ -181,7 +170,7 @@ namespace ResonantSpark {
                     case FightingGameInputCodeDir.UpBack:
                     case FightingGameInputCodeDir.Up:
                     case FightingGameInputCodeDir.UpForward:
-                        fgChar.UseCombination(combo);
+                        fgChar.Use(combo);
                         stop();
                         changeState(states.Get("jump"));
                         break;
@@ -192,7 +181,7 @@ namespace ResonantSpark {
                     case FightingGameInputCodeDir.DownBack:
                     case FightingGameInputCodeDir.Down:
                     case FightingGameInputCodeDir.DownForward:
-                        fgChar.UseCombination(combo);
+                        fgChar.Use(combo);
                         stop();
                         changeState(states.Get("crouch"));
                         break;
@@ -212,12 +201,12 @@ namespace ResonantSpark {
                 FightingGameInputCodeDir relDir = fgChar.MapAbsoluteToRelative(doubleTap.direction);
 
                 if (relDir == FightingGameInputCodeDir.Forward) {
-                    fgChar.UseCombination(doubleTap);
+                    fgChar.Use(doubleTap);
                     stop();
                     changeState(states.Get("forwardDash"));
                 }
                 else if (relDir == FightingGameInputCodeDir.Back) {
-                    fgChar.UseCombination(doubleTap);
+                    fgChar.Use(doubleTap);
                     stop();
                     changeState(states.Get("backDash"));
                 }
@@ -235,8 +224,13 @@ namespace ResonantSpark {
                 var buttonPress = (ButtonPress) combo;
 
                 if (buttonPress.button0 != FightingGameInputCodeBut.D) {
-                        // TODO: I need to change the input buffer to look further into the future than the input delay for a direction press.
-                    fgChar.ChooseAttack(this, null, buttonPress.button0, this.dirPress);
+                    FightingGameInputCodeDir direction = FightingGameInputCodeDir.Neutral;
+                    fgChar.Use(combo);
+                    fgChar.UseCombination<DirectionCurrent>(currDir => {
+                        direction = fgChar.MapAbsoluteToRelative(((DirectionCurrent)currDir).direction);
+                    });
+
+                    fgChar.ChooseAttack(this, null, buttonPress.button0, direction);
                     stop();
                 }
             }
@@ -246,11 +240,18 @@ namespace ResonantSpark {
 
                 dirPress = fgChar.MapAbsoluteToRelative(dirPlusBut.direction);
 
-                if (dirPlusBut.button0 == FightingGameInputCodeBut.D &&
-                    (dirPress == FightingGameInputCodeDir.Up || dirPress == FightingGameInputCodeDir.Down)) {
-                    stop();
-                    fgChar.UseCombination(dirPlusBut);
-                    changeState(states.Get("dodge"));
+                if (dirPlusBut.button0 == FightingGameInputCodeBut.D) {
+
+                    if (dirPress == FightingGameInputCodeDir.Up || dirPress == FightingGameInputCodeDir.Down) {
+                        stop();
+                        fgChar.Use(dirPlusBut);
+                        changeState(states.Get("dodge"));
+                    }
+                    else if (dirPress == FightingGameInputCodeDir.Forward) {
+                        stop();
+                        fgChar.Use(dirPlusBut);
+                        changeState(states.Get("forwardDashLong"));
+                    }
                 }
             }
 

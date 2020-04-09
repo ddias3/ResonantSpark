@@ -28,9 +28,14 @@ namespace ResonantSpark {
 
             public override void Execute(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
+                fgChar.CalculateFinalVelocity();
             }
 
             public override void Exit(int frameIndex) {
+                // do nothing
+            }
+
+            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
                 // do nothing
             }
 
@@ -38,8 +43,13 @@ namespace ResonantSpark {
                 return GroundRelation.GROUNDED;
             }
 
-            public override void GetHitBy(HitBox hitBox) {
-                changeState(states.Get("hitStunStand"));
+            public override void GetHit(bool launch) {
+                if (launch) {
+                    changeState(states.Get("hitStunAirborne"));
+                }
+                else {
+                    changeState(states.Get("hitStunStand"));
+                }
             }
 
             private void OnNeutralReturn(Action stop, Combination combo) {

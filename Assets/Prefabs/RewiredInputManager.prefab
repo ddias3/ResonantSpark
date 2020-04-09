@@ -231,6 +231,50 @@ MonoBehaviour:
       _controllerMapEnablerSettings:
         _enabled: 1
         _ruleSets: []
+    - _id: 3
+      _name: Player3
+      _descriptiveName: Player 3
+      _startPlaying: 1
+      _defaultJoystickMaps:
+      - _enabled: 1
+        _categoryId: 0
+        _layoutId: 0
+      _defaultMouseMaps: []
+      _defaultKeyboardMaps: []
+      _defaultCustomControllerMaps: []
+      _startingCustomControllers: []
+      _assignMouseOnStart: 0
+      _assignKeyboardOnStart: 0
+      _excludeFromControllerAutoAssignment: 0
+      _controllerMapLayoutManagerSettings:
+        _enabled: 1
+        _loadFromUserDataStore: 1
+        _ruleSets: []
+      _controllerMapEnablerSettings:
+        _enabled: 1
+        _ruleSets: []
+    - _id: 4
+      _name: Player4
+      _descriptiveName: Player 4
+      _startPlaying: 1
+      _defaultJoystickMaps:
+      - _enabled: 1
+        _categoryId: 0
+        _layoutId: 0
+      _defaultMouseMaps: []
+      _defaultKeyboardMaps: []
+      _defaultCustomControllerMaps: []
+      _startingCustomControllers: []
+      _assignMouseOnStart: 0
+      _assignKeyboardOnStart: 0
+      _excludeFromControllerAutoAssignment: 0
+      _controllerMapLayoutManagerSettings:
+        _enabled: 1
+        _loadFromUserDataStore: 1
+        _ruleSets: []
+      _controllerMapEnablerSettings:
+        _enabled: 1
+        _ruleSets: []
     actions:
     - _id: 6
       _name: Move Horizontal
@@ -340,15 +384,6 @@ MonoBehaviour:
       _behaviorId: 1
       _userAssignable: 1
       _categoryId: 2
-    - _id: 20
-      _name: Pause
-      _type: 1
-      _descriptiveName: Pause the game
-      _positiveDescriptiveName: 
-      _negativeDescriptiveName: 
-      _behaviorId: 1
-      _userAssignable: 1
-      _categoryId: 1
     actionCategories:
     - _name: Default
       _descriptiveName: Default
@@ -370,7 +405,7 @@ MonoBehaviour:
       - categoryId: 0
         actionIds: 
       - categoryId: 1
-        actionIds: 0600000007000000080000000b0000000a0000000900000014000000
+        actionIds: 0600000007000000080000000b0000000a00000009000000
       - categoryId: 2
         actionIds: 0d0000000e0000000f000000100000001100000012000000
     inputBehaviors:
@@ -497,7 +532,7 @@ MonoBehaviour:
         _modifierKey2: 0
         _modifierKey3: 0
       - _actionCategoryId: 0
-        _actionId: 10
+        _actionId: 9
         _elementType: 1
         _elementIdentifierId: 4
         _axisRange: 0
@@ -508,7 +543,7 @@ MonoBehaviour:
         _modifierKey2: 0
         _modifierKey3: 0
       - _actionCategoryId: 0
-        _actionId: 9
+        _actionId: 10
         _elementType: 1
         _elementIdentifierId: 5
         _axisRange: 0
@@ -690,17 +725,6 @@ MonoBehaviour:
         _axisRange: 0
         _invert: 0
         _axisContribution: 1
-        _keyboardKeyCode: 0
-        _modifierKey1: 0
-        _modifierKey2: 0
-        _modifierKey3: 0
-      - _actionCategoryId: 0
-        _actionId: 20
-        _elementType: 1
-        _elementIdentifierId: 15
-        _axisRange: 0
-        _invert: 0
-        _axisContribution: 0
         _keyboardKeyCode: 0
         _modifierKey1: 0
         _modifierKey2: 0
@@ -911,24 +935,13 @@ MonoBehaviour:
         _modifierKey1: 0
         _modifierKey2: 0
         _modifierKey3: 0
-      - _actionCategoryId: 0
-        _actionId: 20
-        _elementType: 1
-        _elementIdentifierId: -1
-        _axisRange: 0
-        _invert: 0
-        _axisContribution: 0
-        _keyboardKeyCode: 27
-        _modifierKey1: 0
-        _modifierKey2: 0
-        _modifierKey3: 0
     mouseMaps: []
     customControllerMaps: []
     customControllers: []
     controllerMapLayoutManagerRuleSets: []
     controllerMapEnablerRuleSets: []
-    playerIdCounter: 3
-    actionIdCounter: 21
+    playerIdCounter: 5
+    actionIdCounter: 20
     actionCategoryIdCounter: 3
     inputBehaviorIdCounter: 2
     mapCategoryIdCounter: 1

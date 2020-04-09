@@ -44,7 +44,7 @@ namespace ResonantSpark {
                 fgChar.__debugSetStateText("Jump", Color.yellow);
 
                 jumpDir = FightingGameInputCodeDir.None;
-                GivenInput(fgChar.GivenCombinations());
+                GivenInput(fgChar.GetInUseCombinations());
 
                 switch (jumpDir) {
                     case FightingGameInputCodeDir.UpBack:
@@ -83,8 +83,7 @@ namespace ResonantSpark {
                     fgChar.Play("jump");
                 }
                 else if (frameCount > 4) {
-                        // TODO: Change this to airborne state
-                    fgChar.AddForce(gravityExtra, ForceMode.Acceleration);
+                    changeState(states.Get("airborne"));
                 }
 
                 if (leavingGround) {
@@ -110,6 +109,10 @@ namespace ResonantSpark {
                 // do nothing
             }
 
+            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
+                // do nothing
+            }
+
             public override GroundRelation GetGroundRelation() {
                 if (frameCount > 4) {
                     return GroundRelation.AIRBORNE;
@@ -119,12 +122,17 @@ namespace ResonantSpark {
                 }
             }
 
-            public override void GetHitBy(HitBox hitBox) {
+            public override void GetHit(bool launch) {
                 if (frameCount > 4) {
                     changeState(states.Get("hitStunAirborne"));
                 }
                 else {
-                    changeState(states.Get("hitStunStand"));
+                    if (launch) {
+                        changeState(states.Get("hitStunAirborne"));
+                    }
+                    else {
+                        changeState(states.Get("hitStunStand"));
+                    }
                 }
             }
 

@@ -31,11 +31,15 @@ namespace ResonantSpark {
                 throw new System.NotImplementedException();
             }
 
+            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
+                throw new System.NotImplementedException();
+            }
+
             public override GroundRelation GetGroundRelation() {
                 return GroundRelation.GROUNDED;
             }
 
-            public override void GetHitBy(HitBox hitBox) {
+            public override void GetHit(bool launch) {
                 changeState(states.Get("hitStunStand"));
             }
 

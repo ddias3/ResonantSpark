@@ -2,6 +2,7 @@
 
 using ResonantSpark.Gameplay;
 using ResonantSpark.Service;
+using ResonantSpark.Particle;
 
 namespace ResonantSpark {
     namespace CharacterProperties {
@@ -32,6 +33,22 @@ namespace ResonantSpark {
 
                         OnOutOfBoundsEnter();
                     }
+                }
+
+                public override ParticleEffect DestroyedParticle() {
+                    throw new System.NotImplementedException();
+                }
+
+                public override string HitBoxEventType(HitBox hitBox) {
+                    return "onHitProjectile";
+                }
+
+                public override void AddSelf() {
+                    throw new System.NotImplementedException();
+                }
+
+                public override void RemoveSelf() {
+                    throw new System.NotImplementedException();
                 }
             }
         }

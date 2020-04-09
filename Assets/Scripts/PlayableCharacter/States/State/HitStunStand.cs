@@ -10,11 +10,7 @@ using ResonantSpark.Input;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class HitStunStand : CharacterBaseState {
-
-            private int testLength = 20;
-
-            private Utility.AttackTracker tracker;
+        public class HitStunStand : HitStun {
 
             public new void Awake() {
                 base.Awake();
@@ -23,16 +19,19 @@ namespace ResonantSpark {
                 RegisterInputCallbacks()
                     .On<DirectionPress>(OnDirectionPress)
                     .On<DoubleTap>(OnDoubleTap);
-
-                tracker = new Utility.AttackTracker(testLength);
             }
 
             public override void Enter(int frameIndex, IState previousState) {
                 fgChar.__debugSetStateText("Hit Stun", Color.magenta);
 
-                tracker.Track(frameIndex);
+                tracker.Track();
 
-                fgChar.Play("idle");
+                if (UnityEngine.Random.Range(0.0f, 1.0f) < 0.5f) {
+                    fgChar.Play("hurt_stand_0");
+                }
+                else {
+                    fgChar.Play("hurt_stand_1");
+                }
             }
 
             public override void Execute(int frameIndex) {
@@ -42,6 +41,7 @@ namespace ResonantSpark {
                     changeState(states.Get("stand"));
                 }
 
+                fgChar.CalculateFinalVelocity();
                 tracker.Increment();
             }
 
@@ -49,12 +49,21 @@ namespace ResonantSpark {
                 // do nothing
             }
 
+            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
+                // do nothing
+            }
+
             public override GroundRelation GetGroundRelation() {
                 return GroundRelation.GROUNDED;
             }
 
-            public override void GetHitBy(HitBox hitBox) {
-                changeState(states.Get("hitStunStand"));
+            public override void GetHit(bool launch) {
+                if (launch) {
+                    changeState(states.Get("hitStunAirborne"));
+                }
+                else {
+                    changeState(states.Get("hitStunStand"));
+                }
             }
 
             private void OnDirectionPress(Action stop, Combination combo) {

@@ -4,12 +4,14 @@ using UnityEngine;
 
 using ResonantSpark.Utility;
 using ResonantSpark.Service;
+using ResonantSpark.Particle;
 
 namespace ResonantSpark {
     namespace Gameplay {
-        public abstract class Projectile : MonoBehaviour, IResource, IInGamePerformable {
+        public abstract class Projectile : InGameEntity, IResource, IInGamePerformable {
 
             public bool active { get; private set; }
+            public int health { get; private set; }
 
             // TODO: hook this up
             protected GameTimeManager gameTime;
@@ -79,6 +81,7 @@ namespace ResonantSpark {
             }
 
             public abstract void RunFrame();
+            public abstract ParticleEffect DestroyedParticle();
         }
     }
 }

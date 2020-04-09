@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Builder;
-using ResonantSpark.Character;
 using ResonantSpark.CharacterProperties;
-using ResonantSpark.Service;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace Utility {
-        public class FrameListBuilder : IFrameListCallbackObj {
+        public partial class FrameListBuilder : IFrameListCallbackObj {
 
             // could've used a Tuple
             private struct FrameUtilMapObject {
@@ -23,12 +22,18 @@ namespace ResonantSpark {
 
                 public bool chainCancellable;
                 public bool specialCancellable;
-                public int hitDamage;
-                public int blockDamage;
-                public float hitStun;
-                public float blockStun;
+                public bool cancellableOnWhiff;
+                public bool counterHit;
 
-                public List<int> hitBoxCallbackIds;
+                public List<int> hitCallbackIds;
+
+                public Action<Vector3, Transform> trackCallback = null;
+
+                public AudioClip soundClip = null;
+                public Action<AudioResource> soundCallback = null;
+
+                public Projectile projectile = null;
+                public Action<Projectile> projectileCallback = null;
 
                 public int _counter = FrameUtil.Default.counter++;
 
@@ -59,22 +64,22 @@ namespace ResonantSpark {
                 entries = new List<FrameUtilMapObject>();
             }
 
-            public (List<FrameStateBuilder>, Dictionary<int, Action<IHitBoxCallbackObject>>) CreateFrameList() {
-                (List<ListStackFrame> completeStackFrames, Dictionary<int, Action<IHitBoxCallbackObject>> hitBoxCallbackMaps) = ReadInput(this.entries);
+            public (List<FrameStateBuilder>, Dictionary<int, Action<IHitCallbackObject>>) CreateFrameList() {
+                (List<ListStackFrame> completeStackFrames, Dictionary<int, Action<IHitCallbackObject>> hitCallbackMaps) = ReadInput(this.entries);
                 List<FrameStateBuilder> frameList = CreateFromCompleteStackFrames(completeStackFrames);
-                return (frameList, hitBoxCallbackMaps);
+                return (frameList, hitCallbackMaps);
             }
 
-            private (List<ListStackFrame>, Dictionary<int, Action<IHitBoxCallbackObject>>) ReadInput(List<FrameUtilMapObject> entries) {
-                bool chainCancellable =   FrameUtil.Default.chainCancellable;
+            private (List<ListStackFrame>, Dictionary<int, Action<IHitCallbackObject>>) ReadInput(List<FrameUtilMapObject> entries) {
+                bool chainCancellable = FrameUtil.Default.chainCancellable;
                 bool specialCancellable = FrameUtil.Default.specialCancellable;
-                int hitDamage =           FrameUtil.Default.hitDamage;
-                int blockDamage =         FrameUtil.Default.blockDamage;
-                float hitStun =           FrameUtil.Default.hitStun;
-                float blockStun =         FrameUtil.Default.blockStun;
+                bool cancellableOnWhiff = FrameUtil.Default.cancellableOnWhiff;
+                bool counterHit = FrameUtil.Default.counterHit;
 
-                int hitBoxCallbackCounter = 0;
-                Dictionary<int, Action<IHitBoxCallbackObject>> hitBoxCallbackMap = new Dictionary<int, Action<IHitBoxCallbackObject>>();
+                int longestEndFrame = -1;
+
+                int hitCallbackCounter = 0;
+                Dictionary<int, Action<IHitCallbackObject>> hitCallbackMap = new Dictionary<int, Action<IHitCallbackObject>>();
 
                 List<ListStackFrame> completeStackFrames = new List<ListStackFrame>();
                 Stack<ListStackFrame> stack = new Stack<ListStackFrame>();
@@ -84,11 +89,9 @@ namespace ResonantSpark {
                     endFrame = -1,
                     chainCancellable = chainCancellable,
                     specialCancellable = specialCancellable,
-                    hitDamage = hitDamage,
-                    blockDamage = blockDamage,
-                    hitStun = hitStun,
-                    blockStun = blockStun,
-                    hitBoxCallbackIds = new List<int>(),
+                    cancellableOnWhiff = cancellableOnWhiff,
+                    counterHit = counterHit,
+                    hitCallbackIds = new List<int>(),
                 };
                 stack.Push(baseStackFrame);
 
@@ -96,60 +99,92 @@ namespace ResonantSpark {
                     switch (entry.option) {
                         case "startFrame":
                             topStackFrame = new ListStackFrame {
-                                startFrame = ((int) entry.content) - 1,
+                                startFrame = ((int)entry.content) - 1,
                                 endFrame = -1,
                                 chainCancellable = chainCancellable,
                                 specialCancellable = specialCancellable,
-                                hitDamage = hitDamage,
-                                blockDamage = blockDamage,
-                                hitStun = hitStun,
-                                blockStun = blockStun,
-                                hitBoxCallbackIds = new List<int>(),
+                                cancellableOnWhiff = cancellableOnWhiff,
+                                counterHit = counterHit,
+                                hitCallbackIds = new List<int>(),
                             };
                             stack.Push(topStackFrame);
                             break;
                         case "endFrame":
-                            do {
-                                topStackFrame.endFrame = ((int) entry.content) - 1;
+                            if (((int)entry.content) - 1 > longestEndFrame) {
+                                longestEndFrame = ((int)entry.content) - 1;
+                            }
+
+                            if (System.Object.ReferenceEquals(topStackFrame, baseStackFrame)) {
+                                int startFrame = topStackFrame.startFrame;
+                                topStackFrame = new ListStackFrame {
+                                    startFrame = startFrame,
+                                    endFrame = ((int)entry.content) - 1,
+                                    chainCancellable = chainCancellable,
+                                    specialCancellable = specialCancellable,
+                                    cancellableOnWhiff = cancellableOnWhiff,
+                                    counterHit = counterHit,
+                                    hitCallbackIds = new List<int>(),
+                                };
+                                stack.Push(topStackFrame);
+                            }
+                            else {
+                                topStackFrame.endFrame = ((int)entry.content) - 1;
                                 completeStackFrames.Add(stack.Pop());
                                 topStackFrame = stack.Peek();
-                            } while (!System.Object.ReferenceEquals(topStackFrame, baseStackFrame));
+                            }
                             break;
                         case "chainCancellable":
-                            topStackFrame.chainCancellable = chainCancellable = (bool) entry.content;
+                            topStackFrame.chainCancellable = chainCancellable = (bool)entry.content;
                             break;
                         case "specialCancellable":
-                            topStackFrame.specialCancellable = specialCancellable = (bool) entry.content;
+                            topStackFrame.specialCancellable = specialCancellable = (bool)entry.content;
                             break;
-                        case "hitDamage":
-                            topStackFrame.hitDamage = hitDamage = (int) entry.content;
+                        case "cancellableOnWhiff":
+                            topStackFrame.cancellableOnWhiff = cancellableOnWhiff = (bool)entry.content;
                             break;
-                        case "blockDamage":
-                            topStackFrame.blockDamage = blockDamage = (int) entry.content;
+                        case "counterHit":
+                            topStackFrame.counterHit = counterHit = (bool)entry.content;
                             break;
-                        case "hitStun":
-                            topStackFrame.hitStun = hitStun = (float) entry.content;
+                        case "track":
+                            topStackFrame.trackCallback = (Action<Vector3, Transform>)entry.content;
                             break;
-                        case "blockStun":
-                            topStackFrame.blockStun = blockStun = (float) entry.content;
+                        // TODO: Create armor callback.
+                        //case "armor":
+                        //    topStackFrame.armorCallback = (Action<HitInfo>)entry.content;
+                        //    break;
+                        case "sound":
+                            topStackFrame.soundClip = (((AudioClip, Action<AudioResource>))entry.content).Item1;
+                            topStackFrame.soundCallback = (((AudioClip, Action<AudioResource>))entry.content).Item2;
                             break;
-                        case "hitBox":
-                            topStackFrame.hitBoxCallbackIds = new List<int>();
+                        case "projectile":
+                            topStackFrame.projectile = (((Projectile, Action<Projectile>))entry.content).Item1;
+                            topStackFrame.projectileCallback = (((Projectile, Action<Projectile>))entry.content).Item2;
+                            break;
+                        case "hit":
+                            topStackFrame.hitCallbackIds = new List<int>();
                             if (entry.content != null) {
-                                hitBoxCallbackMap.Add(hitBoxCallbackCounter, (Action<IHitBoxCallbackObject>) entry.content);
-                                topStackFrame.hitBoxCallbackIds.Add(hitBoxCallbackCounter);
+                                hitCallbackMap.Add(hitCallbackCounter, (Action<IHitCallbackObject>)entry.content);
+                                topStackFrame.hitCallbackIds.Add(hitCallbackCounter);
 
-                                hitBoxCallbackCounter++;
+                                hitCallbackCounter++;
                             }
                             break;
                     }
                 }
 
-                if (!System.Object.ReferenceEquals(stack.Peek(), baseStackFrame)) {
-                    throw new InvalidProgramException("Frame List inputs are missing an end frame for list creation");
+                while (!System.Object.ReferenceEquals(topStackFrame, baseStackFrame)) {
+                    topStackFrame.endFrame = longestEndFrame;
+                    completeStackFrames.Add(stack.Pop());
+                    topStackFrame = stack.Peek();
                 }
 
-                baseStackFrame.endFrame = completeStackFrames[completeStackFrames.Count - 1].endFrame;
+                baseStackFrame.endFrame = longestEndFrame;
+
+                for (int n = 0; n < completeStackFrames.Count; ++n) {
+                    if (completeStackFrames[n].endFrame < 0) {
+                        completeStackFrames[n].endFrame = longestEndFrame;
+                    }
+                }
 
                 completeStackFrames.Sort(new Comparison<ListStackFrame>((ListStackFrame x, ListStackFrame y) => {
                     if (x.startFrame < y.startFrame) {
@@ -173,7 +208,7 @@ namespace ResonantSpark {
 
                 completeStackFrames.Insert(0, baseStackFrame);
 
-                return (completeStackFrames, hitBoxCallbackMap);
+                return (completeStackFrames, hitCallbackMap);
             }
 
             private List<FrameStateBuilder> CreateFromCompleteStackFrames(List<ListStackFrame> completeStackFrames) {
@@ -186,93 +221,23 @@ namespace ResonantSpark {
 
                 foreach (ListStackFrame stackFrame in completeStackFrames) {
                     for (int frame = stackFrame.startFrame; frame < stackFrame.endFrame; ++frame) {
-                        frameList[frame]
-                            .SupplyAllStaticInfo(stackFrame.chainCancellable, stackFrame.specialCancellable, stackFrame.hitDamage, stackFrame.blockDamage, stackFrame.hitStun, stackFrame.blockStun)
-                            .HitBoxCallbackIds(stackFrame.hitBoxCallbackIds);
+                        frameList[frame].SupplyAllInfo(
+                            stackFrame.chainCancellable,
+                            stackFrame.specialCancellable,
+                            stackFrame.cancellableOnWhiff,
+                            stackFrame.counterHit,
+                            stackFrame.hitCallbackIds,
+                            null, // TODO: stackFrame.armorCallback,
+                            stackFrame.trackCallback,
+                            stackFrame.soundClip,
+                            stackFrame.soundCallback,
+                            stackFrame.projectile,
+                            stackFrame.projectileCallback
+                        );
                     }
                 }
 
                 return frameList;
-            }
-
-            public IFrameListCallbackObj ChainCancellable(bool chainCancellable) {
-                entries.Add(new FrameUtilMapObject {
-                    option = "chainCancellable",
-                    content = chainCancellable
-                });
-                return this;
-            }
-
-            public IFrameListCallbackObj SpecialCancellable(bool specialCancellable) {
-                entries.Add(new FrameUtilMapObject {
-                    option = "specialCancellable",
-                    content = specialCancellable
-                });
-                return this;
-            }
-
-            public IFrameListCallbackObj HitDamage(int damage) {
-                entries.Add(new FrameUtilMapObject {
-                    option = "hitDamage",
-                    content = damage
-                });
-                return this;
-            }
-
-            public IFrameListCallbackObj BlockDamage(int damage) {
-                entries.Add(new FrameUtilMapObject {
-                    option = "blockDamage",
-                    content = damage
-                });
-                return this;
-            }
-
-            public IFrameListCallbackObj HitBox(Action<IHitBoxCallbackObject> hitBoxCallback) {
-                entries.Add(new FrameUtilMapObject {
-                    option = "hitBox",
-                    content = hitBoxCallback
-                });
-                return this;
-            }
-
-            public IFrameListCallbackObj HitBox() {
-                entries.Add(new FrameUtilMapObject {
-                    option = "hitBox",
-                    content = null
-                });
-                return this;
-            }
-
-            public IFrameListCallbackObj HitStun(float frames) {
-                entries.Add(new FrameUtilMapObject {
-                    option = "hitStun",
-                    content = frames
-                });
-                return this;
-            }
-
-            public IFrameListCallbackObj BlockStun(float frame) {
-                entries.Add(new FrameUtilMapObject {
-                    option = "blockStun",
-                    content = frame
-                });
-                return this;
-            }
-
-            public IFrameListCallbackObj From(int startFrame) {
-                entries.Add(new FrameUtilMapObject {
-                    option = "startFrame",
-                    content = startFrame
-                });
-                return this;
-            }
-
-            public IFrameListCallbackObj To(int endFrame) {
-                entries.Add(new FrameUtilMapObject {
-                    option = "endFrame",
-                    content = endFrame
-                });
-                return this;
             }
         }
     }

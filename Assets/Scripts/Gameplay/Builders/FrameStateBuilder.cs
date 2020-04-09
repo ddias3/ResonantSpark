@@ -8,40 +8,27 @@ using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterProperties {
-        public class FrameStateBuilder : IFrameStateBuilder {
-            public List<int> hitBoxCallbackIds { get; private set; }
-            public bool activateHitBox { get; private set; }
+        public partial class FrameStateBuilder : IFrameStateBuilder {
 
-            public bool chainCancellable { get; private set; }
-            public bool specialCancellable { get; private set; }
-            public int hitDamage { get; private set; }
-            public int blockDamage { get; private set; }
-            public float hitStun { get; private set; }
-            public float blockStun { get; private set; }
+            public FrameState Build(Dictionary<int, Hit> hitMap) {
+                List<Hit> hitList = new List<Hit>();
 
-            public FrameState Build(Dictionary<int, HitBox> hitBoxMap) {
-                List<HitBox> hitBoxList = new List<HitBox>();
-
-                for (int n = 0; n < hitBoxCallbackIds.Count; ++n) {
-                    hitBoxList.Add(hitBoxMap[hitBoxCallbackIds[n]]);
+                for (int n = 0; n < hitCallbackIds.Count; ++n) {
+                    hitList.Add(hitMap[hitCallbackIds[n]]);
                 }
 
-                return new FrameState(hitBoxList, activateHitBox, chainCancellable, specialCancellable, hitDamage, blockDamage, hitStun, blockStun);
-            }
-
-            public IFrameStateBuilder HitBoxCallbackIds(List<int> hitBoxCallbackIds) {
-                this.hitBoxCallbackIds = hitBoxCallbackIds;
-                return this;
-            }
-
-            public IFrameStateBuilder SupplyAllStaticInfo(bool chainCancellable, bool specialCancellable, int hitDamage, int blockDamage, float hitStun, float blockStun) {
-                this.chainCancellable = chainCancellable;
-                this.specialCancellable = specialCancellable;
-                this.hitDamage = hitDamage;
-                this.blockDamage = blockDamage;
-                this.hitStun = hitStun;
-                this.blockStun = blockStun;
-                return this;
+                return new FrameState(
+                    chainCancellable,
+                    specialCancellable,
+                    cancellableOnWhiff,
+                    counterHit,
+                    hitList,
+                    armorCallback,
+                    trackCallback,
+                    soundClip,
+                    soundCallback,
+                    projectile,
+                    projectileCallback);
             }
         }
     }

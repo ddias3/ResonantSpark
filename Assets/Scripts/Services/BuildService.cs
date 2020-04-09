@@ -12,6 +12,9 @@ namespace ResonantSpark {
             private AudioService audioService;
             private HitBoxService hitBoxService;
             private ProjectileService projectileService;
+            private ParticleService particleService;
+            private CameraService cameraService;
+            private TimeService timeService;
 
             private AllServices services;
 
@@ -22,13 +25,19 @@ namespace ResonantSpark {
                 audioService = GetComponent<AudioService>();
                 hitBoxService = GetComponent<HitBoxService>();
                 projectileService = GetComponent<ProjectileService>();
+                particleService = GetComponent<ParticleService>();
+                cameraService = GetComponent<CameraService>();
+                timeService = GetComponent<TimeService>();
 
                 services = new AllServices()
                     .AddServiceAs<IBuildService>(this)
                     .AddServiceAs<IFightingGameService>(fgService)
                     .AddServiceAs<IAudioService>(audioService)
                     .AddServiceAs<IHitBoxService>(hitBoxService)
-                    .AddServiceAs<IProjectileService>(projectileService);
+                    .AddServiceAs<IProjectileService>(projectileService)
+                    .AddServiceAs<IParticleService>(particleService)
+                    .AddServiceAs<ICameraService>(cameraService)
+                    .AddServiceAs<ITimeService>(timeService);
 
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(BuildService));
             }

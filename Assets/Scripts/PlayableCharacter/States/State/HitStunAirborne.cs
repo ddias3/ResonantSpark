@@ -9,7 +9,7 @@ using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class HitStunAirborne : CharacterBaseState {
+        public class HitStunAirborne : HitStun {
 
             public new void Awake() {
                 base.Awake();
@@ -21,16 +21,29 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
-                fgChar.__debugSetStateText("Hit Stun Air", Color.magenta);
+                fgChar.__debugSetStateText("Hit Stun", Color.magenta);
 
-                fgChar.Play("idle");
+                tracker.Track();
+
+                fgChar.Play("hurt_airborne");
             }
 
             public override void Execute(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
+
+                if (tracker.frameCount > testLength) {
+                    changeState(states.Get("airborne"));
+                }
+
+                fgChar.CalculateFinalVelocity();
+                tracker.Increment();
             }
 
             public override void Exit(int frameIndex) {
+                // do nothing
+            }
+
+            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
                 // do nothing
             }
 
@@ -38,7 +51,7 @@ namespace ResonantSpark {
                 return GroundRelation.GROUNDED;
             }
 
-            public override void GetHitBy(HitBox hitBox) {
+            public override void GetHit(bool launch) {
                 changeState(states.Get("hitStunAirborne"));
             }
 

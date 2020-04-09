@@ -32,11 +32,11 @@ namespace ResonantSpark {
 
             public override void Enter(int frameIndex, IState previousState) {
                 fgChar.__debugSetStateText("Face Opponent", Color.blue);
-                GivenInput(fgChar.GivenCombinations());
+                GivenInput(fgChar.GetInUseCombinations());
 
                 //smoothedInput = fgChar.RelativeInputToLocal(dirPress, upJump);
 
-                fgChar.SetLocalMoveDirection(0.0f, 0.0f);
+                fgChar.SetLocalWalkParameters(0.0f, 0.0f);
                 fgChar.Play("faceOpponent");
             }
 
@@ -50,8 +50,7 @@ namespace ResonantSpark {
                 WalkCharacter(localVelocity, localInput);
                 TurnCharacter(localInput);
 
-                // Use helper states to animate the character
-                AnimateCharacter(localVelocity, localInput);
+                fgChar.CalculateFinalVelocity();
             }
 
             public override void Exit(int frameIndex) {
@@ -93,16 +92,21 @@ namespace ResonantSpark {
                 }
             }
 
-            private void AnimateCharacter(Vector3 localVelocity, Vector3 localInput) {
-
+            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
+                // do nothing
             }
 
             public override GroundRelation GetGroundRelation() {
                 return GroundRelation.GROUNDED;
             }
 
-            public override void GetHitBy(HitBox hitBox) {
-                changeState(states.Get("hitStunStand"));
+            public override void GetHit(bool launch) {
+                if (launch) {
+                    changeState(states.Get("hitStunAirborne"));
+                }
+                else {
+                    changeState(states.Get("hitStunStand"));
+                }
             }
 
             private void OnDirectionCurrent(Action stop, Combination combo) {

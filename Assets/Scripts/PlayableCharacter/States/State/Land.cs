@@ -28,7 +28,7 @@ namespace ResonantSpark {
             public override void Enter(int frameIndex, IState previousState) {
                 fgChar.__debugSetStateText("Land", Color.cyan);
 
-                fgChar.GivenCombinations();
+                fgChar.GetInUseCombinations();
                 fgChar.Play("jump_land");
 
                 startFrame = frameIndex;
@@ -42,6 +42,7 @@ namespace ResonantSpark {
                     changeState(states.Get("stand"));
                 }
 
+                fgChar.CalculateFinalVelocity();
                 ++frameCount;
             }
 
@@ -49,11 +50,15 @@ namespace ResonantSpark {
                 // do nothing
             }
 
+            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
+                // do nothing
+            }
+
             public override GroundRelation GetGroundRelation() {
                 return GroundRelation.GROUNDED;
             }
 
-            public override void GetHitBy(HitBox hitBox) {
+            public override void GetHit(bool launch) {
                 if (dirCurr == FightingGameInputCodeDir.DownBack) {
                     changeState(states.Get("blockStunCrouch"));
                 }
@@ -61,7 +66,12 @@ namespace ResonantSpark {
                     changeState(states.Get("blockStunStand"));
                 }
                 else {
-                    changeState(states.Get("hitStunStand"));
+                    if (launch) {
+                        changeState(states.Get("hitStunAirborne"));
+                    }
+                    else {
+                        changeState(states.Get("hitStunStand"));
+                    }
                 }
             }
 

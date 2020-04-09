@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Gameplay;
+using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace Service {
@@ -13,6 +15,7 @@ namespace ResonantSpark {
             void ResetCamera();
             Transform GetCameraStart();
             List<Transform> GetLevelBoundaries();
+            void Hit(InGameEntity hitEntity, InGameEntity byEntity, HitBox hitBox, Action<AttackPriority> callback);
         }
     }
 }

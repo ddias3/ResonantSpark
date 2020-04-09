@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,15 +8,20 @@ using ResonantSpark.Input.Combinations;
 using ResonantSpark.Character;
 using ResonantSpark.Input;
 using ResonantSpark.Service;
+using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace Gameplay {
-        public class FightingGameCharacter : InGameEntity, IEquatable<FightingGameCharacter> {
+        public class FightingGameCharacter : InGameEntity, IPredeterminedActions, IEquatable<FightingGameCharacter> {
             public static int fgCharCounter = 0;
 
-            public Animator animator;
+            public AnimatorAdapter animator;
             public StateMachine stateMachine;
             public Utility.StateDict states;
+
+            public AnimatorRootMotion animatorRootMotion;
+
+            public AttackRunner attackRunner;
 
             public LayerMask groundRaycastMask;
             public float groundCheckDistance;
@@ -23,12 +29,22 @@ namespace ResonantSpark {
 
             public float landAnimationFrameTarget = 3f;
 
+            public Orientation defaultForwardOrientation;
+
+            public Transform standCollider;
+
             public TMPro.TextMeshPro __debugState;
 
             public int fgCharId { get; private set; }
             private int teamId;
 
             private FightingGameService fgService;
+
+            private CharacterMovementAnimation charMovementAnimation;
+
+            private CharacterStates.CharacterBaseState prevState;
+
+            private Vector3 target;
 
             private Input.InputBuffer inputBuffer;
             private List<Combination> inputDoNothingList;
@@ -49,8 +65,13 @@ namespace ResonantSpark {
                 get { return rigidbody.rotation; }
             }
 
+            public Quaternion toLocal {
+                get { return Quaternion.Inverse(rigidbody.rotation); }
+            }
+
             public Vector3 position {
                 get { return rigidbody.position; }
+                set { rigidbody.position = value; }
             }
 
             public int maxHealth {
@@ -81,13 +102,16 @@ namespace ResonantSpark {
 
                 fgService = GameObject.FindGameObjectWithTag("rspService").GetComponent<FightingGameService>();
 
+                attackRunner.Init(this);
+
                 inputDoNothingList = new List<Combination> { ScriptableObject.CreateInstance<DirectionCurrent>().Init(0, Input.FightingGameAbsInputCodeDir.Neutral) };
 
                 rigidbody = gameObject.GetComponent<Rigidbody>();
                 charVelocity = new CharacterPrioritizedVelocity();
                 forces = new List<(Vector3, ForceMode)>();
+                animatorRootMotion.SetCallback(AnimatorMoveCallback);
 
-                inUseCombinations = new List<Combination>();
+                charMovementAnimation = new CharacterMovementAnimation(this);
 
                 onHealthChangeCallbacks = new List<Action<int, int>>();
                 onEmptyHealthCallbacks = new List<Action<FightingGameCharacter>>();
@@ -97,6 +121,7 @@ namespace ResonantSpark {
 
             public FightingGameCharacter SetOpponentCharacter(FightingGameCharacter opponentChar) {
                 this.opponentChar = opponentChar;
+                target = opponentChar.position;
                 return this;
             }
 
@@ -113,96 +138,24 @@ namespace ResonantSpark {
                 stateMachine.Reset(); // TODO: Complete this functionality.
             }
 
-            public void ChooseAttack(CharacterStates.CharacterBaseState currState, CharacterProperties.Attack currAttack, FightingGameInputCodeBut button, FightingGameInputCodeDir direction = FightingGameInputCodeDir.None) {
-                InputNotation notation = SelectInputNotation(button, direction);
-
-                List<CharacterProperties.Attack> attackCandidates = charData.SelectAttacks(GetOrientation(), GetGroundRelation(), notation);
-                CharacterProperties.Attack attack = charData.ChooseAttackFromSelectability(attackCandidates, currState, currAttack);
-
-                if (attack != null) {
-                    ((CharacterStates.Attack)states.Get("attack")).SetActiveAttack(attack);
-                }
-            }
-
-            private InputNotation SelectInputNotation(FightingGameInputCodeBut button, FightingGameInputCodeDir direction) {
-                InputNotation notation = InputNotation.None;
-
-                switch (button) {
-                    case FightingGameInputCodeBut.A:
-                        switch (direction) {
-                            case FightingGameInputCodeDir.Neutral:
-                            case FightingGameInputCodeDir.None:
-                                notation = InputNotation._5A;
-                                break;
-                            case FightingGameInputCodeDir.DownBack:
-                            case FightingGameInputCodeDir.Down:
-                            case FightingGameInputCodeDir.DownForward:
-                                notation = InputNotation._2A;
-                                break;
-                            default:
-                                notation = InputNotation._5A;
-                                break;
-                        }
-                        break;
-                    case FightingGameInputCodeBut.B:
-                        switch (direction) {
-                            case FightingGameInputCodeDir.Neutral:
-                            case FightingGameInputCodeDir.None:
-                                notation = InputNotation._5B;
-                                break;
-                            case FightingGameInputCodeDir.DownBack:
-                            case FightingGameInputCodeDir.Down:
-                            case FightingGameInputCodeDir.DownForward:
-                                notation = InputNotation._2B;
-                                break;
-                            default:
-                                notation = InputNotation._5B;
-                                break;
-                        }
-                        break;
-                    case FightingGameInputCodeBut.C:
-                        switch (direction) {
-                            case FightingGameInputCodeDir.Neutral:
-                            case FightingGameInputCodeDir.None:
-                                notation = InputNotation._5C;
-                                break;
-                            case FightingGameInputCodeDir.DownBack:
-                            case FightingGameInputCodeDir.Down:
-                            case FightingGameInputCodeDir.DownForward:
-                                notation = InputNotation._2C;
-                                break;
-                            default:
-                                notation = InputNotation._5C;
-                                break;
-                        }
-                        break;
-                    case FightingGameInputCodeBut.D:
-                        switch (direction) {
-                            case FightingGameInputCodeDir.Neutral:
-                            case FightingGameInputCodeDir.None:
-                                notation = InputNotation._5D;
-                                break;
-                            case FightingGameInputCodeDir.DownBack:
-                            case FightingGameInputCodeDir.Down:
-                            case FightingGameInputCodeDir.DownForward:
-                                notation = InputNotation._2D;
-                                break;
-                            default:
-                                notation = InputNotation._5D;
-                                break;
-                        }
-                        break;
-                }
-
-                return notation;
-            }
-
             public void CalculateScreenOrientation() {
                 Vector2 newScreenOrientation = fgService.ScreenOrientation(this);
                 if (newScreenOrientation.x == 0) {
                     newScreenOrientation = screenOrientation;
                 }
                 screenOrientation = newScreenOrientation;
+            }
+
+            public void ChooseAttack(CharacterStates.CharacterBaseState currState, CharacterProperties.Attack currAttack, FightingGameInputCodeBut button, FightingGameInputCodeDir direction = FightingGameInputCodeDir.None) {
+                attackRunner.ChooseAttack(charData, currState, currAttack, button, direction);
+            }
+
+            public void ClearPrevAttacks() {
+                attackRunner.ClearPrevAttacks();
+            }
+
+            public void RunAttackFrame() {
+                attackRunner.RunFrame();
             }
 
             public FightingGameInputCodeDir MapAbsoluteToRelative(FightingGameAbsInputCodeDir absInput) {
@@ -235,7 +188,7 @@ namespace ResonantSpark {
                 return Quaternion.Euler(0.0f, -90.0f, 0.0f) * worldInput;
             }
 
-            public Vector3 OpponentPosition() {
+            public Vector3 OpponentDirection() {
                 return opponentChar.position - position;
             }
 
@@ -266,6 +219,10 @@ namespace ResonantSpark {
                 charVelocity.AddVelocity(priority, rotation * velocity);
             }
 
+            public void SetRelativeVelocity(VelocityPriority priority, Vector3 velocity) {
+                charVelocity.SetVelocity(priority, rotation * velocity);
+            }
+
             public void AddForce(Vector3 force, ForceMode mode) {
                 forces.Add((force, mode));
             }
@@ -289,6 +246,10 @@ namespace ResonantSpark {
                 rigidbody.MoveRotation(rotation);
             }
 
+            public void SetRotation(Vector3 charDirection) {
+                rigidbody.MoveRotation(Quaternion.Euler(0.0f, Vector3.SignedAngle(Vector3.right, charDirection, Vector3.up), 0.0f));
+            }
+
             public void PushAway(float maxDistance, FightingGameCharacter otherChar) {
                 float oneMinusDistance = maxDistance - Vector3.Distance(otherChar.transform.position, transform.position);
                 Vector3 force = 1000.0f * oneMinusDistance * (otherChar.transform.position - transform.position).normalized;
@@ -307,39 +268,33 @@ namespace ResonantSpark {
                 return Vector3.SignedAngle(rigidbody.transform.forward, opponentChar.transform.position - rigidbody.position, Vector3.up);
             }
 
-            //TODO: Rename this function
-            public void SetLocalMoveDirection(float x, float z) {
+            public void SetLocalWalkParameters(float x, float z) {
                 animator.SetFloat("charX", x);
                 animator.SetFloat("charZ", z);
             }
 
             public void SetState(CharacterStates.CharacterBaseState nextState) {
+                prevState = (CharacterStates.CharacterBaseState) stateMachine.GetCurrentState();
+                if (nextState.GetType() != typeof(CharacterStates.AttackGrounded) && nextState.GetType() != typeof(CharacterStates.AttackAirborne)) {
+                    attackRunner.ClearPrevAttacks();
+                }
                 stateMachine.ChangeState(nextState);
             }
 
-            public void UseCombination(Combination combo) {
-                combo.inUse = true;
-                inUseCombinations.Add(combo);
-                inUseCombinations.Sort();
+            public CharacterStates.CharacterBaseState State(string id) {
+                return (CharacterStates.CharacterBaseState) states.Get(id);
             }
 
-            public List<Combination> GivenCombinations() {
-                for (int n = 0; n < inUseCombinations.Count; ++n) {
-                    inUseCombinations[n].inUse = false;
-                }
-                return inUseCombinations;
+            public CharacterStates.CharacterBaseState GetPrevState() {
+                return prevState;
             }
 
-            public Combination Given(params Type[] types) {
-                Combination retVal = null;
-                for (int n = 0; n < inUseCombinations.Count; ++n) {
-                    if (Array.Exists(types, type => type == inUseCombinations[n].GetType())) {
-                        retVal = inUseCombinations[n];
-                    }
-                    retVal.inUse = false;
+            public void AnimatorMoveCallback(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
+                if (stateMachine.GetCurrentState() != null) {
+                    CharacterStates.CharacterBaseState currState = (CharacterStates.CharacterBaseState)stateMachine.GetCurrentState();
+                    
+                    currState.AnimatorMove(animatorRootRotation, Quaternion.Euler(-90f, 180f, 0f) * Quaternion.Inverse(rigidbody.rotation) * animatorVelocity);
                 }
-                inUseCombinations.Clear();
-                return retVal;
             }
 
             public Vector3 GetLocalVelocity() {
@@ -348,7 +303,7 @@ namespace ResonantSpark {
 
             public Orientation GetOrientation() {
                 //TODO: Determine actual orientation programmatically.
-                return Orientation.REGULAR;
+                return defaultForwardOrientation;
             }
 
             public GroundRelation GetGroundRelation() {
@@ -367,8 +322,16 @@ namespace ResonantSpark {
                 __debugState.color = color == null ? Color.white : color;
             }
 
-            public void Play(string animationState) {
-                animator.Play(animationState, 0, this.gameTime);
+            public void Play(string animationState, float normalizedTime = 0.0f) {
+                animator.Play(animationState, 0, normalizedTime);
+            }
+
+            public void PlayIfOther(string animationState, float normalizedTime = 0.0f) {
+                AnimatorStateInfo currInfo = animator.GetCurrentAnimatorStateInfo(0, 0);
+
+                if (!currInfo.IsName(animationState)) {
+                    animator.Play(animationState, 0, normalizedTime);
+                }
             }
 
             public List<Input.Combinations.Combination> GetFoundCombinations() {
@@ -384,12 +347,52 @@ namespace ResonantSpark {
                 }
             }
 
-            public override void GetHitBy(HitBox hitBox) {
-                ((CharacterStates.CharacterBaseState) stateMachine.GetCurrentState()).GetHitBy(hitBox);
+            public void Use(Combination combo) {
+                inputBuffer?.Use(combo);
+            }
+
+            public void UseCombination<TCombo>(Action<Combination> callback) {
+                inputBuffer?.ForEach((combo) => {
+                    if (combo.GetType() == typeof(TCombo)) {
+                        callback(combo);
+                    }
+                });
+            }
+
+            public void RemoveInUseCombinations(List<Combination> combos) {
+                inputBuffer?.RemoveInUseCombinations(combos);
+            }
+
+            public List<Combination> GetInUseCombinations() {
+                if (inputBuffer != null) {
+                    return inputBuffer.GetInUseCombinations();
+                }
+                else {
+                    return inputDoNothingList;
+                }
+            }
+
+            public void GetHit(bool launch) {
+                ((CharacterStates.CharacterBaseState) stateMachine.GetCurrentState()).GetHit(launch);
+            }
+
+            public override string HitBoxEventType(HitBox hitBox) {
+                return "onHitFGChar";
+            }
+
+            public Vector3 GetTarget() {
+                return target;
+            }
+
+            public void SetTarget(Vector3 newTargetPos) {
+                target = newTargetPos;
+            }
+
+            public Transform GetOpponentTransform() {
+                return opponentChar.transform;
             }
 
             public void ChangeHealth(int amount) {
-                amount = maxHealth / 10;
                 health -= amount;
 
                 for (int n = 0; n < onHealthChangeCallbacks.Count; ++n) {
@@ -401,6 +404,92 @@ namespace ResonantSpark {
                         onEmptyHealthCallbacks[n].Invoke(this);
                     }
                 }
+            }
+
+            public void KnockBack(AttackPriority attackPriority, bool launch, Vector3 knockbackDirection, float knockbackMagnitude) {
+
+                //opponent.GetHit();
+
+                VelocityPriority velPriority = VelocityPriority.Light;
+
+                switch (attackPriority) {
+                    case AttackPriority.LightAttack:
+                        velPriority = VelocityPriority.Light;
+                        break;
+                    case AttackPriority.MediumAttack:
+                        velPriority = VelocityPriority.Medium;
+                        break;
+                    case AttackPriority.HeavyAttack:
+                        velPriority = VelocityPriority.Heavy;
+                        break;
+                }
+
+                Vector3 finalVelocity = knockbackDirection.normalized * knockbackMagnitude;
+                if (!launch) {
+                    finalVelocity.y = 0;
+                }
+
+                AddRelativeVelocity(velPriority, finalVelocity);
+                GetHit(launch);
+            }
+
+            public bool InHitStun() {
+                return stateMachine.GetCurrentState().GetType() == typeof(CharacterStates.HitStunStand)
+                    || stateMachine.GetCurrentState().GetType() == typeof(CharacterStates.HitStunCrouch)
+                    || stateMachine.GetCurrentState().GetType() == typeof(CharacterStates.HitStunAirborne);
+            }
+
+            public void SetStandCollider(Vector3 standColliderOffset) {
+                standCollider.localPosition = standColliderOffset;
+            }
+
+            public Vector3 GetSpeakPosition() {
+                    // TODO: Return the position of the head;
+                return Vector3.zero;
+            }
+
+            public void PredeterminedActions(string actionName) {
+                CharacterStates.Clash clash = (CharacterStates.Clash) states.Get("clash");
+                switch (actionName) {
+                    case "verticalClash":
+                        clash.SetClashAnimation("clash_vertical");
+                        SetState(clash);
+                        break;
+                    case "horizontalClashSwingFromLeft":
+                        clash.SetClashAnimation("clash_horizontalFromLeft");
+                        SetState(clash);
+                        break;
+                    case "horizontalClashSwingFromRight":
+                        clash.SetClashAnimation("clash_horizontalFromRight");
+                        SetState(clash);
+                        break;
+                }
+            }
+
+            public void UpdateCharacterMovement() {
+                charMovementAnimation.Increment();
+            }
+
+            public void AnimationCrouch() {
+                if (prevState == states.Get("stand")) {
+                    charMovementAnimation.FromStand();
+                }
+                else {
+                    charMovementAnimation.Crouch();
+                }
+            }
+
+            public void AnimationStand() {
+                if (prevState == states.Get("crouch")) {
+                    charMovementAnimation.FromCrouch();
+                }
+                else {
+                    charMovementAnimation.Stand();
+                }
+            }
+
+            public void AnimationWalkVelocity() {
+                charMovementAnimation.WalkVelocity(GetLocalVelocity());
             }
 
             public override void AddSelf() {

@@ -1,37 +1,45 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Input.Combinations;
+using ResonantSpark.Input;
 using ResonantSpark.Character;
+using ResonantSpark.Utility;
 using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class AttackAirborne : CharacterBaseState {
+        public class AttackAirborne : Attack {
+
+            private InputNotation notation;
+
+            private FightingGameInputCodeBut button;
+            private FightingGameInputCodeDir direction;
+
+            private FightingGameInputCodeDir currDir;
 
             public new void Awake() {
                 base.Awake();
                 states.Register(this, "attackAirborne");
 
                 RegisterInputCallbacks()
+                    .On<ButtonPress>(OnButtonPress)
                     .On<DirectionPress>(OnDirectionPress)
-                    .On<DoubleTap>(OnDoubleTap);
+                    .On<DirectionCurrent>(OnDirectionCurrent);
             }
 
             public override void Enter(int frameIndex, IState previousState) {
-                fgChar.__debugSetStateText("Attack Air", Color.red);
-                //if (messages.Count > 0) {
-                //    Combination combo = messages.Dequeue();
-                //    combo.inUse = false;
-                //}
+                fgChar.__debugSetStateText("Attack", Color.red);
 
-                fgChar.Play("idle");
+                attackRunner.StartAttackIfRequired(frameIndex);
             }
 
             public override void Execute(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
+
+                fgChar.RunAttackFrame();
+                fgChar.CalculateFinalVelocity();
             }
 
             public override void Exit(int frameIndex) {
@@ -39,28 +47,47 @@ namespace ResonantSpark {
             }
 
             public override GroundRelation GetGroundRelation() {
-                return GroundRelation.AIRBORNE;
+                return GroundRelation.GROUNDED;
             }
 
-            public override void GetHitBy(HitBox hitBox) {
-                changeState(states.Get("hitStunAirborne"));
+            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
+                fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Dash, animatorVelocity);
             }
 
-            private void OnDirectionPress(Action stop, Combination combo) {
-                var dirPress = (DirectionPress)combo;
-                if (!dirPress.Stale(frame.index)) {
-                    dirPress.inUse = true;
-                    stop.Invoke();
-                    changeState(states.Get("walk"));//.Message(dirPress));
+            public override void GetHit(bool launch) {
+                CharacterProperties.Attack activeAttack = attackRunner.GetCurrentAttack();
+                if (activeAttack.CounterHit()) {
+                    changeState(states.Get("hitStunAirborne"));
+                }
+                else {
+                    changeState(states.Get("hitStunAirborne"));
                 }
             }
 
-            private void OnDoubleTap(Action stop, Combination combo) {
-                var doubleTap = (DoubleTap)combo;
-                if (!doubleTap.Stale(frame.index)) {
-                    doubleTap.inUse = true;
-                    stop.Invoke();
-                    changeState(states.Get("run"));//.Message(doubleTap));
+            private void OnDirectionPress(Action stop, Combination combo) {
+                direction = fgChar.MapAbsoluteToRelative(((DirectionPress)combo).direction);
+            }
+
+            private void OnDirectionCurrent(Action stop, Combination combo) {
+                direction = fgChar.MapAbsoluteToRelative(((DirectionCurrent)combo).direction);
+            }
+
+            private void OnButtonPress(Action stop, Combination combo) {
+                button = ((ButtonPress)combo).button0;
+
+                CharacterProperties.Attack activeAttack = attackRunner.GetCurrentAttack();
+
+                if (activeAttack.ChainCancellable()) {
+                    if (button != FightingGameInputCodeBut.D) {
+                        FightingGameInputCodeDir direction = FightingGameInputCodeDir.Neutral;
+                        fgChar.Use(combo);
+                        fgChar.UseCombination<DirectionCurrent>(currDir => {
+                            direction = fgChar.MapAbsoluteToRelative(((DirectionCurrent)currDir).direction);
+                        });
+
+                        fgChar.ChooseAttack(this, activeAttack, button, direction);
+                        stop();
+                    }
                 }
             }
         }

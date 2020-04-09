@@ -5,27 +5,22 @@ using UnityEngine;
 using ResonantSpark.Builder;
 using ResonantSpark.Character;
 using ResonantSpark.Service;
-using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterProperties {
-        public class CharacterPropertiesBuilder : ICharacterPropertiesCallbackObj {
-            protected string version;
-            protected int maxHealth = 10000;
-            protected List<(Attack, Func<CharacterStates.CharacterBaseState, Attack, bool>)> attacks { get; private set; }
-
+        public partial class CharacterPropertiesBuilder : ICharacterPropertiesCallbackObj {
             protected AllServices services;
 
             public CharacterPropertiesBuilder(AllServices services) {
-                attacks = new List<(Attack, Func<CharacterStates.CharacterBaseState, Attack, bool>)>();
+                attacks = new List<(Attack, Func<CharacterStates.CharacterBaseState, Attack, List<Attack>, bool>)>();
 
                 this.services = services;
             }
 
             public CharacterData BuildAttacks(CharacterData charData) {
-                foreach ((Attack, Func<CharacterStates.CharacterBaseState, Attack, bool>) atk in attacks) {
+                foreach ((Attack, Func<CharacterStates.CharacterBaseState, Attack, List<Attack>, bool>) atk in attacks) {
                     Attack attack = atk.Item1;
-                    Func<CharacterStates.CharacterBaseState, Attack, bool> callback = atk.Item2;
+                    Func<CharacterStates.CharacterBaseState, Attack, List<Attack>, bool> callback = atk.Item2;
 
                     attack.BuildAttack(services);
 
@@ -40,51 +35,6 @@ namespace ResonantSpark {
             //public void BuildMovement() {
             //    
             //}
-
-            public ICharacterPropertiesCallbackObj MaxHealth(int maxHealth) {
-                this.maxHealth = maxHealth;
-                return this;
-            }
-
-            public ICharacterPropertiesCallbackObj MaxJumpHeight(float maxJumpHeight) {
-                //TODO: Figure out how to connect this
-                return this;
-            }
-
-            public ICharacterPropertiesCallbackObj MaxJumpHeight(Func<CharacterStates.CharacterBaseState, float> callback) {
-                //TODO: Figure out how to connect this
-                return this;
-            }
-
-            public ICharacterPropertiesCallbackObj RunSpeed(float speed) {
-                //TODO: Figure out how to connect this
-                return this;
-            }
-
-            public ICharacterPropertiesCallbackObj RunSpeed(Func<CharacterStates.CharacterBaseState, float> callback) {
-                //TODO: Figure out how to connect this
-                return this;
-            }
-
-            public ICharacterPropertiesCallbackObj Version(string version) {
-                this.version = version;
-                return this;
-            }
-
-            public ICharacterPropertiesCallbackObj WalkSpeed(float speed) {
-                //TODO: Figure out how to connect this
-                return this;
-            }
-
-            public ICharacterPropertiesCallbackObj WalkSpeed(Func<CharacterStates.CharacterBaseState, float> callback) {
-                //TODO: Figure out how to connect this
-                return this;
-            }
-
-            public ICharacterPropertiesCallbackObj Attack(Attack attack, Func<CharacterStates.CharacterBaseState, Attack, bool> callback) {
-                attacks.Add((attack, callback));
-                return this;
-            }
         }
     }
 }

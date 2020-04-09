@@ -36,33 +36,44 @@ namespace ResonantSpark {
                 fgChar.__debugSetStateText("Crouch", new Color(0.3f, 0.65f, 0.3f));
                 dirPress = FightingGameInputCodeDir.Neutral;
 
-                GivenInput(fgChar.GivenCombinations());
+                GivenInput(fgChar.GetInUseCombinations());
 
-                //fgChar.SetLocalMoveDirection(0.0f, 0.0f);
-                fgChar.Play("idle_crouch");
+                fgChar.AnimationCrouch();
             }
 
             public override void Execute(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
+
+                fgChar.UpdateCharacterMovement();
+                fgChar.CalculateFinalVelocity();
             }
 
             public override void Exit(int frameIndex) {
                 // do nothing
             }
 
+            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
+                // do nothing.
+            }
+
             public override GroundRelation GetGroundRelation() {
                 return GroundRelation.GROUNDED;
             }
 
-            public override void GetHitBy(HitBox hitBox) {
+            public override void GetHit(bool launch) {
                 if (dirPress == FightingGameInputCodeDir.DownBack) {
                     changeState(states.Get("blockStunCrouch"));
                 }
-                else if (dirPress == FightingGameInputCodeDir.Down) {
+                else if (dirPress == FightingGameInputCodeDir.Back) {
                     changeState(states.Get("blockStunStand"));
                 }
                 else {
-                    changeState(states.Get("hitStunCrouch"));
+                    if (launch) {
+                        changeState(states.Get("hitStunAirborne"));
+                    }
+                    else {
+                        changeState(states.Get("hitStunCrouch"));
+                    }
                 }
             }
 
@@ -70,7 +81,7 @@ namespace ResonantSpark {
                 var dirPress = combo as DirectionPress;
 
                 if (GameInputUtil.Up(fgChar.MapAbsoluteToRelative(dirPress.direction))) {
-                    fgChar.UseCombination(dirPress);
+                    fgChar.Use(dirPress);
                     stop();
                     changeState(states.Get("jump"));
                 }
@@ -89,7 +100,13 @@ namespace ResonantSpark {
                 var buttonPress = (ButtonPress)combo;
 
                 if (buttonPress.button0 != FightingGameInputCodeBut.D) {
-                    fgChar.ChooseAttack(this, null, buttonPress.button0, this.dirPress);
+                    FightingGameInputCodeDir direction = FightingGameInputCodeDir.Neutral;
+                    fgChar.Use(combo);
+                    fgChar.UseCombination<DirectionCurrent>(currDir => {
+                        direction = fgChar.MapAbsoluteToRelative(((DirectionCurrent)currDir).direction);
+                    });
+
+                    fgChar.ChooseAttack(this, null, buttonPress.button0, direction);
                     stop();
                 }
             }
@@ -105,7 +122,7 @@ namespace ResonantSpark {
 
                 if (relDir == FightingGameInputCodeDir.Forward ||
                     relDir == FightingGameInputCodeDir.Back) {
-                    fgChar.UseCombination(doubleTap);
+                    fgChar.Use(doubleTap);
                     stop();
                     changeState(states.Get("backDash"));
                 }

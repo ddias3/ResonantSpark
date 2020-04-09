@@ -15,9 +15,11 @@ namespace ResonantSpark {
 
             private bool continueInputSearch = true;
             private Action stopInputSearch;
+            private Action<Combination> removeComboFromInUse;
+            private List<Combination> toBeRemovedCombosFromInUse;
 
-            private CallbackRegistry inputRegistry;
-            private CallbackRegistry enterRegistry;
+            private CallbackRegistry<Action<Action, Combination>> inputRegistry;
+            private CallbackRegistry<Action<Action, Combination>> enterRegistry;
             private Dictionary<Type, Action<Action, Combination>> inputCallbacks;
             private Dictionary<Type, Action<Action, Combination>> enterCallbacks;
 
@@ -25,23 +27,36 @@ namespace ResonantSpark {
                 base.Awake();
                 inputCallbacks = new Dictionary<Type, Action<Action, Combination>>();
                 enterCallbacks = new Dictionary<Type, Action<Action, Combination>>();
-                inputRegistry = new CallbackRegistry(inputCallbacks);
-                enterRegistry = new CallbackRegistry(enterCallbacks);
+                inputRegistry = new CallbackRegistry<Action<Action, Combination>>(inputCallbacks);
+                enterRegistry = new CallbackRegistry<Action<Action, Combination>>(enterCallbacks);
                 stopInputSearch = new Action(StopInputSearch);
+
+                removeComboFromInUse = new Action<Combination>(RemoveComboFromInUse);
+                toBeRemovedCombosFromInUse = new List<Combination>();
 
                 fgChar = gameObject.GetComponentInParent<FightingGameCharacter>();
             }
 
-            public CallbackRegistry RegisterInputCallbacks() {
+            public override void OnStateMachineEnable(Action<IState> changeState) {
+                this.changeState = (newState) => {
+                    fgChar.SetState((CharacterBaseState) newState);
+                };
+            }
+
+            public CallbackRegistry<Action<Action, Combination>> RegisterInputCallbacks() {
                 return inputRegistry;
             }
 
-            public CallbackRegistry RegisterEnterCallbacks() {
+            public CallbackRegistry<Action<Action, Combination>> RegisterEnterCallbacks() {
                 return enterRegistry;
             }
 
             private void StopInputSearch() {
                 continueInputSearch = false;
+            }
+
+            private void RemoveComboFromInUse(Combination combo) {
+                toBeRemovedCombosFromInUse.Add(combo);
             }
 
             protected void FindInput(List<Combination> inputCombos) {
@@ -64,22 +79,30 @@ namespace ResonantSpark {
 
                     if (enterCallbacks.TryGetValue(combo.GetType(), out callback)) {
                         callback(stopInputSearch, combo);
+                        toBeRemovedCombosFromInUse.Add(combo);
                     }
                 }
-                inputCombos.Clear();
+
+                RemoveCombosFromInUse();
+            }
+
+            private void RemoveCombosFromInUse() {
+                fgChar.RemoveInUseCombinations(toBeRemovedCombosFromInUse);
+                toBeRemovedCombosFromInUse.Clear();
             }
 
             public abstract GroundRelation GetGroundRelation();
-            public abstract void GetHitBy(HitBox hitBox);
+            public abstract void GetHit(bool launch);
+            public abstract void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity);
 
-            public struct CallbackRegistry {
-                private Dictionary<Type, Action<Action, Combination>> callbackMap;
+            public struct CallbackRegistry<Tcallback> {
+                private Dictionary<Type, Tcallback> callbackMap;
 
-                public CallbackRegistry(Dictionary<Type, Action<Action, Combination>> callbackMap) {
+                public CallbackRegistry(Dictionary<Type, Tcallback> callbackMap) {
                     this.callbackMap = callbackMap;
                 }
 
-                public CallbackRegistry On<Tbase>(Action<Action, Combination> callback) where Tbase : Combination {
+                public CallbackRegistry<Tcallback> On<Tbase>(Tcallback callback) where Tbase : Combination {
                     callbackMap.Add(typeof(Tbase), callback);
                     return this;
                 }
