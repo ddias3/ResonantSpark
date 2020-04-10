@@ -940,7 +940,7 @@ MonoBehaviour:
     customControllers: []
     controllerMapLayoutManagerRuleSets: []
     controllerMapEnablerRuleSets: []
-    playerIdCounter: 5
+    playerIdCounter: 6
     actionIdCounter: 20
     actionCategoryIdCounter: 3
     inputBehaviorIdCounter: 2
