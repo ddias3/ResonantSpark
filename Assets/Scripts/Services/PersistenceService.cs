@@ -95,13 +95,13 @@ namespace ResonantSpark {
             private Persistence persObj;
 
             public void Start() {
-                if (Persistence.Exists()) {
-                    persObj = Persistence.GetPersistence();
+                //if (Persistence.Exists()) {
+                //    persObj = Persistence.GetPersistence();
 
-                    gamemodeStr         = persObj.gamemode;
-                    characterSelections = persObj.characterSelection;
-                    controllerIndex     = persObj.controllerIndex;
-                }
+                //    gamemodeStr         = persObj.gamemode;
+                //    characterSelections = persObj.characterSelection;
+                //    controllerIndex     = persObj.controllerIndex;
+                //}
 
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(PersistenceService));
             }

@@ -25,6 +25,7 @@ namespace ResonantSpark {
             }
         }
 
+#if UNITY_EDITOR
         [CustomEditor(typeof(AnimatorAdapter))]
         public class AnimatorAdapterInspector : Editor {
             public override void OnInspectorGUI() {
@@ -43,5 +44,7 @@ namespace ResonantSpark {
                 DrawDefaultInspector();
             }
         }
+#endif
+
     }
 }

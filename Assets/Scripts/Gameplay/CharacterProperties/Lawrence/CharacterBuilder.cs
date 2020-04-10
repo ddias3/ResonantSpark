@@ -15,6 +15,8 @@ namespace ResonantSpark {
 
                 public GameObject lawrencePrefab;
 
+                public List<MaterialMapper> charColors;
+
                 private AudioClipMap audioMap;
                 private ParticleEffectMap particleMap;
                 private AnimationCurveMap attackMovementMap;
@@ -47,9 +49,9 @@ namespace ResonantSpark {
                     attacks.Init(charBuilder, fgChar);
                     movement.Init(charBuilder, fgChar);
 
-                    charBuilder.SetUpCharacter(fgChar);
+                    charBuilder.SetUpCharacter(charColors, fgChar);
 
-                    Destroy(gameObject);
+                    //Destroy(gameObject);
                 }
 
                 private class LawrenceBuilder : CharacterPropertiesBuilder {
@@ -58,7 +60,7 @@ namespace ResonantSpark {
                         // do nothing
                     }
 
-                    public void SetUpCharacter(FightingGameCharacter fgChar) {
+                    public void SetUpCharacter(List<MaterialMapper> charColors, FightingGameCharacter fgChar) {
                         CharacterData charData = ScriptableObject.CreateInstance<CharacterData>();
                         charData.Init(this.maxHealth);
 
@@ -66,6 +68,8 @@ namespace ResonantSpark {
                         //BuildMovement(charData);
 
                         fgChar.Init(charData);
+
+                        fgChar.SetColorMapper(charColors[fgChar.id % 3]);
                     }
                 }
             }

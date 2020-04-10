@@ -12,13 +12,13 @@ namespace ResonantSpark {
     namespace CharacterStates {
         public class HitStunStand : HitStun {
 
+            public int hitStunLength = 10;
+
             public new void Awake() {
                 base.Awake();
                 states.Register(this, "hitStunStand");
 
-                RegisterInputCallbacks()
-                    .On<DirectionPress>(OnDirectionPress)
-                    .On<DoubleTap>(OnDoubleTap);
+                tracker = new Utility.Tracker(hitStunLength, new Action(OnComplete));
             }
 
             public override void Enter(int frameIndex, IState previousState) {
@@ -37,7 +37,7 @@ namespace ResonantSpark {
             public override void Execute(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
 
-                if (tracker.frameCount > testLength) {
+                if (tracker.frameCount > hitStunLength) {
                     changeState(states.Get("stand"));
                 }
 
@@ -63,24 +63,6 @@ namespace ResonantSpark {
                 }
                 else {
                     changeState(states.Get("hitStunStand"));
-                }
-            }
-
-            private void OnDirectionPress(Action stop, Combination combo) {
-                var dirPress = (DirectionPress)combo;
-                if (!dirPress.Stale(frame.index)) {
-                    dirPress.inUse = true;
-                    stop.Invoke();
-                    changeState(states.Get("walk"));//.Message(dirPress));
-                }
-            }
-
-            private void OnDoubleTap(Action stop, Combination combo) {
-                var doubleTap = (DoubleTap)combo;
-                if (!doubleTap.Stale(frame.index)) {
-                    doubleTap.inUse = true;
-                    stop.Invoke();
-                    changeState(states.Get("run"));//.Message(doubleTap));
                 }
             }
         }

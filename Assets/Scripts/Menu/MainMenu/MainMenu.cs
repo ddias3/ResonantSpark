@@ -25,26 +25,12 @@ namespace ResonantSpark {
 
             public void OnPressVersus() {
                 Persistence.GetPersistence().gamemode = "oneOnOneRoundBased";
-                //SceneManager.LoadScene("Scenes/Menu/CharacterSelect");
-
-                SceneManager.LoadScene("Scenes/Levels/Practice");
-                Persistence pers = Persistence.GetPersistence();
-                pers.SetCharacterSelected(0, "lawrence");
-                pers.SetColorSelected(0, 1);
-                pers.SetCharacterSelected(1, "male0");
-                pers.SetColorSelected(1, 0);
+                SceneManager.LoadScene("Scenes/Menu/CharacterSelect");
             }
 
             public void OnPressTraining() {
                 Persistence.GetPersistence().gamemode = "training";
                 //SceneManager.LoadScene("Scenes/Menu/CharacterSelect");
-
-                SceneManager.LoadScene("Scenes/Levels/Practice");
-                Persistence pers = Persistence.GetPersistence();
-                pers.SetCharacterSelected(0, "lawrence");
-                pers.SetColorSelected(0, 1);
-                pers.SetCharacterSelected(1, "male0");
-                pers.SetColorSelected(1, 0);
             }
 
             public void OnPressOptions() {

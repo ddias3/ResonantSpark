@@ -45,6 +45,12 @@ namespace ResonantSpark {
                 controllerIcon.anchoredPosition = multiControllers.SetDisplayIndex(controllerIcon.anchoredPosition, index);
             }
 
+            public void OnDestroy() {
+                player.RemoveInputEventDelegate(OnNavigateHorizontal);
+                player.RemoveInputEventDelegate(OnSubmit);
+                player.RemoveInputEventDelegate(OnCancel);
+            }
+
             public void SetDisplayIndex(int index) {
                 controllerIcon.anchoredPosition = multiControllers.SetDisplayIndex(controllerIcon.anchoredPosition, index);
             }

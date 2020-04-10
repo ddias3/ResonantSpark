@@ -21,7 +21,7 @@ namespace ResonantSpark {
                 tracker = new Utility.Tracker(testLength, new Action(OnComplete));
             }
 
-            private void OnComplete() {
+            protected void OnComplete() {
                 // TODO: Figure out what to do.
             }
         }

@@ -4,6 +4,7 @@ using UnityEngine;
 
 using Rewired;
 using ResonantSpark.Gameplay;
+using UnityEngine.SceneManagement;
 
 namespace ResonantSpark {
     namespace Menu {
@@ -12,6 +13,7 @@ namespace ResonantSpark {
             private enum CharacterSelectMode : int {
                 ControllerSelect,
                 CharacterSelect,
+                Confirm,
             }
 
             public CharacterSelectUiController prefab;
@@ -171,6 +173,10 @@ namespace ResonantSpark {
                         break;
                     case CharacterSelectMode.CharacterSelect:
                         LoadCharacter(selectedPlayerSide);
+                        selectMode = CharacterSelectMode.Confirm;
+                        break;
+                    case CharacterSelectMode.Confirm:
+                        SceneManager.LoadScene("Scenes/Levels/Practice");
                         break;
                 }
             }

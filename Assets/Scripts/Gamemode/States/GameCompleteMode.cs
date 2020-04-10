@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections;
 using System;
 using ResonantSpark.Utility;
@@ -22,6 +23,7 @@ namespace ResonantSpark {
 
             public override void Enter(int frameIndex, IState previousState) {
                 uiService.HideMainScreenText();
+                SceneManager.LoadScene("Scenes/Menu/MainMenu");
             }
 
             public override void Execute(int frameIndex) {
