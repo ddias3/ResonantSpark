@@ -32,14 +32,22 @@ namespace ResonantSpark {
             private FrameEnforcer frame;
             private GameTimeManager gameTimeManager;
 
+            private UnityAction enablePlayersCallback;
+            private UnityAction resetGameCallback;
+
             public void Awake() {
                 frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
 
                 gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
                 gameTimeManager.AddLayer(new Func<float, float>(GameTime), "gameTime");
 
-                EventManager.StartListening<Events.FrameEnforcerReady>(new UnityAction(EnablePlayers));
-                EventManager.StartListening<Events.StartGame>(new UnityAction(ResetGame));
+                EventManager.StartListening<Events.FrameEnforcerReady>(enablePlayersCallback = new UnityAction(EnablePlayers));
+                EventManager.StartListening<Events.StartGame>(enablePlayersCallback = new UnityAction(ResetGame));
+            }
+
+            public void OnDestroy() {
+                EventManager.StopListening<Events.FrameEnforcerReady>(enablePlayersCallback);
+                EventManager.StopListening<Events.StartGame>(enablePlayersCallback);
             }
 
             public void SetUp(PlayerService playerService, FightingGameService fgService, UiService uiService) {

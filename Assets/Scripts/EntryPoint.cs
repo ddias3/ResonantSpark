@@ -13,6 +13,8 @@ namespace ResonantSpark {
         public PlayerService playerService;
         public InputService inputService;
 
+        private UnityAction<Type> serviceReadyCallback;
+
         private List<Type> remainingServices = new List<Type> {
             typeof(AudioService),
             typeof(BuildService),
@@ -29,7 +31,11 @@ namespace ResonantSpark {
         };
 
         public void Start() {
-            EventManager.StartListening<Events.ServiceReady, Type>(new UnityAction<Type>(ServiceReady));
+            EventManager.StartListening<Events.ServiceReady, Type>(serviceReadyCallback = new UnityAction<Type>(ServiceReady));
+        }
+
+        public void OnDestroy() {
+            EventManager.StopListening<Events.ServiceReady, Type>(serviceReadyCallback);
         }
 
         private void ServiceReady(Type serviceType) {
