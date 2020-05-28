@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace ResonantSpark {
@@ -26,6 +27,8 @@ namespace ResonantSpark {
             private float fullHealthWidth;
             private float anchorOffset;
 
+            private UnityAction startGameCallback;
+
             public new void Start() {
                 base.Start();
 
@@ -33,7 +36,11 @@ namespace ResonantSpark {
                 anchorOffset = fillHealth.rectTransform.anchoredPosition.x;
                 fullHealthWidth = fillHealth.rectTransform.sizeDelta.x;
 
-                EventManager.StartListening<Events.StartGame>(new UnityEngine.Events.UnityAction(StartGame));
+                EventManager.StartListening<Events.StartGame>(startGameCallback = new UnityAction(StartGame));
+            }
+
+            public void OnDestroy() {
+                EventManager.StopListening<Events.StartGame>(startGameCallback);
             }
 
             private void StartGame() {

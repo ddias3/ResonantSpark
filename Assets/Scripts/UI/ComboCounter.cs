@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using TMPro;
 
 using ResonantSpark.Utility;
@@ -33,6 +34,8 @@ namespace ResonantSpark {
             private Vector2 displayPos = Vector2.zero;
             private Vector2 hiddenPos;
 
+            public UnityAction startGameCallback;
+
             public new void Start() {
                 base.Start();
 
@@ -50,7 +53,11 @@ namespace ResonantSpark {
                 Debug.LogFormat("   sizeDelta = {0}", rectTransform.sizeDelta.ToString("F3"));
                 rectTransform.anchoredPosition = hiddenPos;
 
-                EventManager.StartListening<Events.StartGame>(new UnityEngine.Events.UnityAction(StartGame));
+                EventManager.StartListening<Events.StartGame>(startGameCallback = new UnityAction(StartGame));
+            }
+
+            public void OnDestroy() {
+                EventManager.StopListening<Events.StartGame>(startGameCallback);
             }
 
             private void StartGame() {
