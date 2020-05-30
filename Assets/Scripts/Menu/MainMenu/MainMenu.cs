@@ -1,110 +1,134 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.InputSystem.UI;
-using UnityEngine.SceneManagement;
-
-using ResonantSpark.Service;
 
 namespace ResonantSpark {
     namespace Menu {
-        public class MainMenu : MonoBehaviour {
+        public class MainMenu : Menu {
+            public Selectable versus;
+            public Selectable training;
+            public Selectable options;
+            public Selectable credits;
 
-            public GameObject mainMenu;
-            public GameObject optionsMenu;
-            public GameObject soundMenu;
-            public GameObject controllerMenu;
-            public GameObject creditsMenu;
+            public Selectable quit;
 
-            public Selectable mainMenuActive;
-            public Selectable optionsMenuActive;
-            public Selectable soundMenuActive;
-            public Selectable controllerMenuActive;
-            public Selectable creditsMenuActive;
+            public Selectable initSelectable;
 
-            public MultiplayerEventSystem multiplayerEventSystem;
+            public Cursor3d cursor3d;
+            public Cursor2d cursor2d;
 
-            public void OnPressVersus() {
-                Persistence.GetPersistence().gamemode = "oneOnOneRoundBased";
-                //SceneManager.LoadScene("Scenes/Menu/CharacterSelect");
+            private Selectable currSelected = null;
 
-                SceneManager.LoadScene("Scenes/Levels/Practice");
-                Persistence pers = Persistence.GetPersistence();
-                pers.SetCharacterSelected(0, "lawrence");
-                pers.SetColorSelected(0, 1);
-                pers.SetCharacterSelected(1, "male0");
-                pers.SetColorSelected(1, 0);
+            private float transitionTime = 0.0f;
+            private MenuState menuState;
+
+            public new void Start() {
+                base.Start();
+
+                menuState = MenuState.Inactive;
+
+                if (currSelected == null) {
+                    currSelected = versus;
+                }
+
+                eventHandler.On("activate", x => {
+                    animator.SetFloat("speed", 1.0f);
+                    animator.Play("appear", 0, 0.0f);
+
+                    cursor3d.Highlight(currSelected);
+                    cursor2d.Fade();
+                });
+                eventHandler.On("deactivate", x => {
+                    animator.SetFloat("speed", -1.0f);
+                    animator.Play("appear", 0, 1.0f);
+                });
+
+                eventHandler.On("down", x => {
+                    currSelected.TriggerEvent("down");
+                });
+                eventHandler.On("up", x => {
+                    currSelected.TriggerEvent("up");
+                });
+                eventHandler.On("left", x => {
+                    currSelected.TriggerEvent("left");
+                });
+                eventHandler.On("right", x => {
+                    currSelected.TriggerEvent("right");
+                });
+                eventHandler.On("submit", x => {
+                    currSelected.TriggerEvent("submit");
+                });
+                eventHandler.On("return", x => {
+                    if (currSelected == quit) {
+                        // TODO: bring up the Exit Game Dialogue.
+                    }
+                    else {
+                        cursor3d.Fade();
+                        cursor2d.Highlight(quit);
+                        currSelected = quit;
+                    }
+                });
+
+                versus.On("down", x => {
+                    cursor3d.Highlight(training);
+
+                    currSelected = training;
+                }).On("up", x => {
+                    cursor3d.Fade();
+                    cursor2d.Highlight(quit);
+
+                    currSelected = quit;
+                }).On("submit", x => {
+
+                });
+
+                training.On("down", x => {
+                    cursor3d.Highlight(options);
+
+                    currSelected = options;
+                }).On("up", x => {
+                    currSelected = versus;
+                });
+
+                options.On("down", x => {
+                    cursor3d.Highlight(credits);
+
+                    currSelected = credits;
+                }).On("up", x => {
+                    cursor3d.Highlight(training);
+
+                    currSelected = training;
+                });
+
+                credits.On("down", x => {
+                    cursor3d.Fade();
+                    cursor2d.Highlight(quit);
+
+                    currSelected = quit;
+                }).On("up", x => {
+                    cursor3d.Highlight(options);
+
+                    currSelected = options;
+                });
+
+                quit.On("down", x => {
+                    cursor2d.Fade();
+                    cursor3d.Highlight(versus);
+
+                    currSelected = versus;
+                }).On("up", x => {
+                    cursor2d.Fade();
+                    cursor3d.Highlight(credits);
+
+                    currSelected = credits;
+                });
             }
 
-            public void OnPressTraining() {
-                Persistence.GetPersistence().gamemode = "training";
-                //SceneManager.LoadScene("Scenes/Menu/CharacterSelect");
-
-                SceneManager.LoadScene("Scenes/Levels/Practice");
-                Persistence pers = Persistence.GetPersistence();
-                pers.SetCharacterSelected(0, "lawrence");
-                pers.SetColorSelected(0, 1);
-                pers.SetCharacterSelected(1, "male0");
-                pers.SetColorSelected(1, 0);
-            }
-
-            public void OnPressOptions() {
-                mainMenu.SetActive(false);
-                optionsMenu.SetActive(true);
-
-                optionsMenuActive.Select();
-            }
-
-            public void OnPressOptionsSounds() {
-                optionsMenu.SetActive(false);
-                soundMenu.SetActive(true);
-
-                soundMenuActive.Select();
-            }
-
-            public void OnPressCredits() {
-                mainMenu.SetActive(false);
-                creditsMenu.SetActive(true);
-
-                creditsMenuActive.Select();
-            }
-
-            public void OnBackCredits() {
-                creditsMenu.SetActive(false);
-                mainMenu.SetActive(true);
-
-                mainMenuActive.Select();
-            }
-
-            public void OnBackOptions() {
-                optionsMenu.SetActive(false);
-                mainMenu.SetActive(true);
-
-                mainMenuActive.Select();
-            }
-
-            public void OnBackOptionsSounds() {
-                soundMenu.SetActive(false);
-                optionsMenu.SetActive(true);
-
-                optionsMenuActive.Select();
-            }
-
-            public void OnPressOptionsController() {
-                optionsMenu.SetActive(false);
-                controllerMenu.SetActive(true);
-
-                controllerMenuActive.Select();
-            }
-
-            public void OnBackOptionsController() {
-                controllerMenu.SetActive(false);
-                optionsMenu.SetActive(true);
-
-                optionsMenuActive.Select();
-            }
-
-            public void OnPressQuit() {
-                Application.Quit();
+            public void Update() {
+                switch (menuState) {
+                    case MenuState.Inactive:
+                        break;
+                    case MenuState.Active:
+                        break;
+                }
             }
         }
     }
