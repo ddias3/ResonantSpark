@@ -3,30 +3,32 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+using ResonantSpark.MenuStates;
+
 namespace ResonantSpark {
     namespace Menu {
         public class MenuInputManager : MonoBehaviour {
-            public Menu activeMenu;
+            private MenuBaseState activeState;
 
             public void Update() {
                 if (Keyboard.current.wKey.wasPressedThisFrame) {
-                    activeMenu.TriggerEvent("up");
+                    activeState.TriggerEvent("up");
                 }
                 if (Keyboard.current.sKey.wasPressedThisFrame) {
-                    activeMenu.TriggerEvent("down");
+                    activeState.TriggerEvent("down");
                 }
                 if (Keyboard.current.aKey.wasPressedThisFrame) {
-                    activeMenu.TriggerEvent("left");
+                    activeState.TriggerEvent("left");
                 }
                 if (Keyboard.current.dKey.wasPressedThisFrame) {
-                    activeMenu.TriggerEvent("right");
+                    activeState.TriggerEvent("right");
                 }
 
                 if (Keyboard.current.jKey.wasPressedThisFrame) {
-                    activeMenu.TriggerEvent("submit");
+                    activeState.TriggerEvent("submit");
                 }
                 if (Keyboard.current.kKey.wasPressedThisFrame) {
-                    activeMenu.TriggerEvent("cancel");
+                    activeState.TriggerEvent("cancel");
                 }
 
                 if (Keyboard.current.uKey.wasPressedThisFrame) {
@@ -35,6 +37,10 @@ namespace ResonantSpark {
                 if (Keyboard.current.iKey.wasPressedThisFrame) {
                     // do nothing
                 }
+            }
+
+            public void SetActiveState(MenuBaseState state) {
+                activeState = state;
             }
         }
     }

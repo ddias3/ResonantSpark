@@ -9,7 +9,7 @@ namespace ResonantSpark {
             public StateMachine stateMachine;
 
             public void StartStateMachine(FrameEnforcer frame) {
-                stateMachine.Enable(initState, frame);
+                frame.AddUpdate((int) FramePriority.StateMachine, stateMachine.Enable(initState));
             }
         }
     }

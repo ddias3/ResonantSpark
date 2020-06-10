@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,21 +10,20 @@ namespace ResonantSpark {
             Inactive,
         }
 
-        [RequireComponent(typeof(Animator))]
         public abstract class Menu : MonoBehaviour {
-            protected Animator animator;
             protected MenuEventHandler eventHandler;
+            protected Action<string> changeState;
 
             public void Awake() {
                 eventHandler = new MenuEventHandler();
             }
 
-            public void Start() {
-                animator = GetComponent<Animator>();
-            }
-
             public void TriggerEvent(string eventName) {
                 eventHandler.TriggerEvent(eventName);
+            }
+
+            public void SetChangeStateCallback(Action<string> callback) {
+                changeState = callback;
             }
         }
     }

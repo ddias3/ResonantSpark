@@ -10,25 +10,19 @@ namespace ResonantSpark {
 
             public new void Start() {
                 base.Start();
+
+                this.enabled = false;
+                StartCoroutine(DelayedStart());
             }
-            
-            public void DelayedStart() {
-                Persistence persistence = Persistence.GetPersistence();
-                if (persistence.firstTimeLoad) {
-                    persistence.MenuLoaded();
 
-                    stateMachine.ChangeState(states.Get("intro"));
+            public void Update() {
+                executeCallback?.Invoke(0);
+            }
 
-                    //animatorDict["camera"].Play("intro");
-                }
-                else {
-                    //animatorDict["camera"].Play("introSkip");
-                    //animatorDict["mainMenu"].Play("activate");
-
-                    //mainMenu.TriggerEvent("activate");
-
-                    stateMachine.ChangeState(states.Get("introSkip"));
-                }
+            public IEnumerator DelayedStart() {
+                yield return new WaitForEndOfFrame();
+                executeCallback = stateMachine.Enable(states.Get("fadeIn"));
+                this.enabled = true;
             }
         }
     }

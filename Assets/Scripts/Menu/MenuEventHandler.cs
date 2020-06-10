@@ -5,31 +5,31 @@ using UnityEngine;
 namespace ResonantSpark {
     namespace Menu {
         public class MenuEventHandler {
-            private List<Action<int>> onDownCallbacks;
-            private List<Action<int>> onUpCallbacks;
-            private List<Action<int>> onLeftCallbacks;
-            private List<Action<int>> onRightCallbacks;
+            private List<Action> onDownCallbacks;
+            private List<Action> onUpCallbacks;
+            private List<Action> onLeftCallbacks;
+            private List<Action> onRightCallbacks;
 
-            private List<Action<int>> onSubmitCallbacks;
-            private List<Action<int>> onCancelCallbacks;
+            private List<Action> onSubmitCallbacks;
+            private List<Action> onCancelCallbacks;
 
-            private List<Action<int>> onActivateCallbacks;
-            private List<Action<int>> onDeactivateCallbacks;
+            private List<Action> onActivateCallbacks;
+            private List<Action> onDeactivateCallbacks;
 
             public MenuEventHandler() {
-                onDownCallbacks = new List<Action<int>>();
-                onUpCallbacks = new List<Action<int>>();
-                onLeftCallbacks = new List<Action<int>>();
-                onRightCallbacks = new List<Action<int>>();
+                onDownCallbacks = new List<Action>();
+                onUpCallbacks = new List<Action>();
+                onLeftCallbacks = new List<Action>();
+                onRightCallbacks = new List<Action>();
 
-                onSubmitCallbacks = new List<Action<int>>();
-                onCancelCallbacks = new List<Action<int>>();
+                onSubmitCallbacks = new List<Action>();
+                onCancelCallbacks = new List<Action>();
 
-                onActivateCallbacks = new List<Action<int>>();
-                onDeactivateCallbacks = new List<Action<int>>();
+                onActivateCallbacks = new List<Action>();
+                onDeactivateCallbacks = new List<Action>();
             }
 
-            public void On(string eventName, Action<int> callback) {
+            public void On(string eventName, Action callback) {
                 switch (eventName) {
                     case "down":
                         onDownCallbacks.Add(callback);
@@ -55,11 +55,13 @@ namespace ResonantSpark {
                     case "deactivate":
                         onDeactivateCallbacks.Add(callback);
                         break;
+                    default:
+                        throw new InvalidOperationException("Invalid menu event binding: " + eventName);
                 }
             }
 
             public void TriggerEvent(string eventName) {
-                List<Action<int>> callbacks = null;
+                List<Action> callbacks = null;
 
                 switch (eventName) {
                     case "down":
@@ -86,11 +88,13 @@ namespace ResonantSpark {
                     case "deactivate":
                         callbacks = onDeactivateCallbacks;
                         break;
+                    default:
+                        throw new InvalidOperationException("Invalid menu event triggered: " + eventName);
                 }
 
                 if (callbacks != null) {
-                    foreach (Action<int> action in callbacks) {
-                        action.Invoke(0);
+                    foreach (Action action in callbacks) {
+                        action.Invoke();
                     }
                 }
             }

@@ -11,7 +11,7 @@ namespace ResonantSpark {
                 eventHandler = new MenuEventHandler();
             }
 
-            public Selectable On(string eventName, Action<int> callback) {
+            public Selectable On(string eventName, Action callback) {
                 eventHandler.On(eventName, callback);
                 return this;
             }
@@ -20,6 +20,10 @@ namespace ResonantSpark {
                 eventHandler.TriggerEvent(eventName);
                 return this;
             }
+
+            public abstract float Width();
+            public abstract Vector3 Offset();
+            public abstract Transform GetTransform();
         }
     }
 }

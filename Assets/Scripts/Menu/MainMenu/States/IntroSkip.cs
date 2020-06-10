@@ -3,38 +3,41 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Utility;
+using ResonantSpark.Menu;
 
 namespace ResonantSpark {
     namespace MenuStates {
-        public class IntroSkip : MonoBehaviour, IState {
+        public class IntroSkip : MenuBaseState {
             public Animator camera;
-            public Menu.Menu mainMenu;
 
-            private StateDict states;
-            private Action<IState> changeState;
+            public float introTime = 0.4f;
+            private float startTime = 0.0f;
 
-            public void Start() {
-                states = gameObject.GetComponentInParent<StateDict>();
+            public new void Start() {
+                base.Start();
 
                 states.Register(this, "introSkip");
 
                 // TODO: camera.onEvent("end intro"); or something like that
             }
 
-            public virtual void OnStateMachineEnable(Action<IState> changeState) {
-                this.changeState = changeState;
+            public override void TriggerEvent(string eventName) {
+                // do nothing
             }
 
-            public void Enter(int frameIndex, IState previousState) {
+            public override void Enter(int frameIndex, IState previousState) {
                 camera.Play("introSkip");
-                mainMenu.TriggerEvent("activate");
+
+                startTime = Time.time;
             }
 
-            public void Execute(int frameIndex) {
-                // TODO: figure this one out.
+            public override void Execute(int frameIndex) {
+                if (Time.time - startTime > introTime) {
+                    changeState(states.Get("mainMenu"));
+                }
             }
 
-            public void Exit(int frameIndex) {
+            public override void Exit(int frameIndex) {
                 // do nothing
             }
         }
