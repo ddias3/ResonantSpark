@@ -3,6 +3,8 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
+using UnityEngine.InputSystem;
+
 namespace ResonantSpark {
     namespace Input {
         public class InputBuffer : MonoBehaviour {
@@ -97,7 +99,7 @@ namespace ResonantSpark {
 
             private void FindCombinations(int frameIndex) {
                 InputBufferReader reader = new InputBufferReader(inputBuffer, frameIndex, inputBufferSize, inputIndex, inputDelay, bufferLength);
-                if (UnityEngine.Input.GetKeyDown(KeyCode.Backspace)) {
+                if (Keyboard.current.backspaceKey.wasPressedThisFrame) {
                     breakPoint = true;
                 }
                 if (breakPoint) {

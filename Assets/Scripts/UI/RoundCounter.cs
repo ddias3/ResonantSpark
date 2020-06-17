@@ -7,10 +7,10 @@ using UnityEngine;
 namespace ResonantSpark {
     namespace UI {
         public class RoundCounter : GameUiElement {
-            public TextMeshProUGUI roundCounterText;
+            //public TextMeshProUGUI roundCounterText;
 
             public void SetRoundCount(int numRounds) {
-                roundCounterText.text = string.Concat(Enumerable.Repeat("X", numRounds));
+                //roundCounterText.text = string.Concat(Enumerable.Repeat("X", numRounds));
             }
         }
     }

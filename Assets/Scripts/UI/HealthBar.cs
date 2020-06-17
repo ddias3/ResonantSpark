@@ -7,7 +7,6 @@ using UnityEngine.UI;
 namespace ResonantSpark {
     namespace UI {
         public class HealthBar : GameUiElement {
-            public Image border;
             public Image fillHealth;
             public Image fillRed;
 
