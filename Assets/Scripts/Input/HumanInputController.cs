@@ -1,25 +1,24 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using ResonantSpark.Gameplay;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-using Rewired;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace Input {
         [RequireComponent(typeof(InputBuffer))]
         public class HumanInputController : MonoBehaviour, ICharacterControlSystem {
-                // These are empirically good numbers
+            // These are empirically good numbers
             public Vector2 deadZone = new Vector2(0.25f, 0.25f);
             public float cardinalOverlap = 0.4f;
             [Tooltip("Buttons will only ever return 0 or 1, but some continuous inputs can be used as buttons, like triggers")]
             public float buttonDeadZone = 0.5f;
 
-                // The Rewired player id of this controller
-            public int playerId = 0;
+            private InputBuffer inputBuffer;
 
-            private Player player;
+            [SerializeField]
+            private BasicActions inputActions;
 
             private int controllerId = -1;
 
@@ -28,42 +27,36 @@ namespace ResonantSpark {
 
             private int buttonInputCode = 0;
 
-            private Vector2 moveVec2 = Vector2.zero;
-
-            private InputBuffer inputBuffer;
-
             public void Awake() {
                 inputBuffer = GetComponent<InputBuffer>();
 
+                inputActions = new BasicActions();
+
+                inputActions.GamePlay.Move.performed += OnMove;
+                inputActions.GamePlay.ButtonA.performed += OnButtonA;
+                inputActions.GamePlay.ButtonB.performed += OnButtonB;
+                inputActions.GamePlay.ButtonC.performed += OnButtonC;
+                inputActions.GamePlay.ButtonD.performed += OnButtonD;
+                inputActions.GamePlay.ButtonS.performed += OnButtonS;
+
                 FrameEnforcer frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
-                frame.AddUpdate((int) FramePriority.InputBuffer, new Action<int>(FrameUpdate));
-
-                player = ReInput.players.GetPlayer(playerId);
-
-                player.AddInputEventDelegate(OnMoveHorizontal, UpdateLoopType.Update, "Move Horizontal");
-                player.AddInputEventDelegate(OnMoveVertical,   UpdateLoopType.Update, "Move Vertical");
-
-                player.AddInputEventDelegate(OnButtonA, UpdateLoopType.Update, "Button A");
-                player.AddInputEventDelegate(OnButtonB, UpdateLoopType.Update, "Button B");
-                player.AddInputEventDelegate(OnButtonC, UpdateLoopType.Update, "Button C");
-                player.AddInputEventDelegate(OnButtonD, UpdateLoopType.Update, "Button D");
+                frame.AddUpdate((int)FramePriority.InputBuffer, new Action<int>(FrameUpdate));
             }
 
-            public void OnMoveHorizontal(InputActionEventData data) {
-                moveVec2.x = data.GetAxis();
-                FinalMoveValues();
+            public void OnEnable() {
+                inputActions.Enable();
             }
 
-            public void OnMoveVertical(InputActionEventData data) {
-                moveVec2.y = data.GetAxis();
-                FinalMoveValues();
+            public void OnDisable() {
+                inputActions.Disable();
             }
 
-            private void FinalMoveValues() {
-                if (moveVec2.sqrMagnitude > deadZone.sqrMagnitude) {
-                    if (Mathf.Abs(moveVec2.x) > cardinalOverlap) horizontalInput = Mathf.Sign(moveVec2.x);
+            public void OnMove(InputAction.CallbackContext context) {
+                Vector2 vec2 = context.ReadValue<Vector2>();
+                if (vec2.sqrMagnitude > deadZone.sqrMagnitude) {
+                    if (Mathf.Abs(vec2.x) > cardinalOverlap) horizontalInput = Mathf.Sign(vec2.x);
                     else horizontalInput = 0f;
-                    if (Mathf.Abs(moveVec2.y) > cardinalOverlap) verticalInput = Mathf.Sign(moveVec2.y);
+                    if (Mathf.Abs(vec2.y) > cardinalOverlap) verticalInput = Mathf.Sign(vec2.y);
                     else verticalInput = 0f;
 
                     // TODO: Also create version with angles for determining input.
@@ -75,28 +68,33 @@ namespace ResonantSpark {
                 }
             }
 
-            public void OnButtonA(InputActionEventData data) {
-                if (data.GetButtonDown()) Debug.Log("ButtonA performed: Pressed Down");
-                SetButtonBit(data.GetButton(), FightingGameInputCodeBut.A);
+            public void OnButtonA(InputAction.CallbackContext context) {
+                Debug.Log("ButtonA performed: " + context.ReadValue<float>() + ")");
+                SetButtonBit(context.ReadValue<float>(), FightingGameInputCodeBut.A);
             }
 
-            public void OnButtonB(InputActionEventData data) {
-                if (data.GetButtonDown()) Debug.Log("ButtonB performed: Pressed Down");
-                SetButtonBit(data.GetButton(), FightingGameInputCodeBut.B);
+            public void OnButtonB(InputAction.CallbackContext context) {
+                Debug.Log("ButtonB performed: " + context.ReadValue<float>() + ")");
+                SetButtonBit(context.ReadValue<float>(), FightingGameInputCodeBut.B);
             }
 
-            public void OnButtonC(InputActionEventData data) {
-                if (data.GetButtonDown()) Debug.Log("ButtonC performed: Pressed Down");
-                SetButtonBit(data.GetButton(), FightingGameInputCodeBut.C);
+            public void OnButtonC(InputAction.CallbackContext context) {
+                Debug.Log("ButtonC performed: " + context.ReadValue<float>() + ")");
+                SetButtonBit(context.ReadValue<float>(), FightingGameInputCodeBut.C);
             }
 
-            public void OnButtonD(InputActionEventData data) {
-                if (data.GetButtonDown()) Debug.Log("ButtonD performed: Pressed Down");
-                SetButtonBit(data.GetButton(), FightingGameInputCodeBut.D);
+            public void OnButtonD(InputAction.CallbackContext context) {
+                Debug.Log("ButtonD performed: " + context.ReadValue<float>() + ")");
+                SetButtonBit(context.ReadValue<float>(), FightingGameInputCodeBut.D);
             }
 
-            private void SetButtonBit(bool buttonValue, FightingGameInputCodeBut bitMask) {
-                buttonInputCode = buttonInputCode & ~((int) bitMask) | (buttonValue ? (int) bitMask : 0);
+            public void OnButtonS(InputAction.CallbackContext context) {
+                Debug.Log("ButtonS performed: " + context.ReadValue<float>() + ")");
+                SetButtonBit(context.ReadValue<float>(), FightingGameInputCodeBut.S);
+            }
+
+            private void SetButtonBit(float buttonValue, FightingGameInputCodeBut bitMask) {
+                buttonInputCode = buttonInputCode & ~((int)bitMask) | ((buttonValue > buttonDeadZone) ? (int)bitMask : 0);
             }
 
             public void SetControllerId(int controllerId) {
@@ -108,18 +106,8 @@ namespace ResonantSpark {
             }
 
             public void FrameUpdate(int frameIndex) {
-                FightingGameAbsInputCodeDir fgInputCodeDir = (FightingGameAbsInputCodeDir) ((verticalInput + 1) * 3 + (horizontalInput + 1) + 1);
+                FightingGameAbsInputCodeDir fgInputCodeDir = (FightingGameAbsInputCodeDir)((verticalInput + 1) * 3 + (horizontalInput + 1) + 1);
                 inputBuffer.SetCurrentInputState(fgInputCodeDir, buttonInputCode);
-            }
-
-            public void OnDestroy() {
-                player.RemoveInputEventDelegate(OnMoveHorizontal);
-                player.RemoveInputEventDelegate(OnMoveVertical);
-
-                player.RemoveInputEventDelegate(OnButtonA);
-                player.RemoveInputEventDelegate(OnButtonB);
-                player.RemoveInputEventDelegate(OnButtonC);
-                player.RemoveInputEventDelegate(OnButtonD);
             }
         }
     }
