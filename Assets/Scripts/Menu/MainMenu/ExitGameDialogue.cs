@@ -29,6 +29,7 @@ namespace ResonantSpark {
                     cursor.Highlight(currSelected);
                 });
                 eventHandler.On("deactivate", () => {
+                    Debug.Log("Deactivate Exit Game Dialogue");
                     animator.SetFloat("speed", -1.0f);
                     animator.Play("appear", 0, 1.0f);
 
@@ -47,7 +48,7 @@ namespace ResonantSpark {
                 });
                 eventHandler.On("cancel", () => {
                     if (currSelected == cancel) {
-                        eventHandler.TriggerEvent("deactivate");
+                        menuStack.Pop(this);
                         changeState("mainMenu");
                     }
                     else {
@@ -57,16 +58,16 @@ namespace ResonantSpark {
                 });
 
                 cancel.On("right", () => {
-                    Debug.Log("Curr Selected =  Quit");
                     cursor.Highlight(quit);
                     currSelected = quit;
                 }).On("submit", () => {
                     cursor.Select(cancel);
+
+                    menuStack.Pop(this);
                     changeState("mainMenu");
                 });
 
                 quit.On("left", () => {
-                    Debug.Log("Curr Selected =  Cancel");
                     cursor.Highlight(cancel);
                     currSelected = cancel;
                 }).On("submit", () => {

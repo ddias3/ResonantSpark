@@ -5,7 +5,6 @@ using UnityEngine;
 namespace ResonantSpark {
     namespace MenuStates {
         public class MainMenu : MenuBaseState {
-            public Animator camera;
             public Menu.MainMenu mainMenu;
 
             public new void Start() {
@@ -15,6 +14,7 @@ namespace ResonantSpark {
                 mainMenu.SetChangeStateCallback(stateName => {
                     changeState(states.Get(stateName));
                 });
+                mainMenu.SetMenuStack(menuStack);
             }
 
             public override void TriggerEvent(string eventName) {
@@ -23,10 +23,7 @@ namespace ResonantSpark {
 
             public override void Enter(int frameIndex, IState previousState) {
                 inputManager.SetActiveState(this);
-                menuStack.AddMenu(mainMenu);
-
                 mainMenu.ShowQuitButton();
-                camera.Play("mainMenu");
             }
 
             public override void Execute(int frameIndex) {

@@ -13,6 +13,7 @@ namespace ResonantSpark {
         public abstract class Menu : MonoBehaviour {
             protected MenuEventHandler eventHandler;
             protected Action<string> changeState;
+            protected MenuStack menuStack;
 
             public void Awake() {
                 eventHandler = new MenuEventHandler();
@@ -24,6 +25,10 @@ namespace ResonantSpark {
 
             public void SetChangeStateCallback(Action<string> callback) {
                 changeState = callback;
+            }
+
+            public void SetMenuStack(MenuStack menuStack) {
+                this.menuStack = menuStack;
             }
         }
     }

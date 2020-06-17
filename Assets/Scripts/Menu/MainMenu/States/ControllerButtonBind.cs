@@ -11,9 +11,9 @@ namespace ResonantSpark {
                 base.Start();
                 states.Register(this, "controllerButtonBind");
 
-                mainMenu.SetChangeStateCallback(stateName => {
-                    changeState(states.Get(stateName));
-                });
+                //mainMenu.SetChangeStateCallback(stateName => {
+                //    changeState(states.Get(stateName));
+                //});
             }
 
             public override void TriggerEvent(string eventName) {

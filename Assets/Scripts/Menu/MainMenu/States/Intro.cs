@@ -9,6 +9,7 @@ namespace ResonantSpark {
     namespace MenuStates {
         public class Intro : MenuBaseState {
             public Animator camera;
+            public Menu.MainMenu mainMenu;
 
             public float introTime = 4.0f;
             private float startTime = 0.0f;
@@ -38,7 +39,8 @@ namespace ResonantSpark {
             }
 
             public override void Exit(int frameIndex) {
-                // do nothing
+                camera.Play("mainMenu");
+                menuStack.AddMenu(mainMenu);
             }
         }
     }

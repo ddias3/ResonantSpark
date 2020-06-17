@@ -3,8 +3,13 @@
 namespace ResonantSpark {
     namespace Menu {
         public class MainMenu : Menu {
+            public Menu exitGameDialogue;
+            public Menu controllerSelect;
+
             public Animator animator3d;
             public Animator animator2d;
+
+            public Animator camera;
 
             public Selectable versus;
             public Selectable training;
@@ -31,6 +36,8 @@ namespace ResonantSpark {
                 eventHandler.On("activate", () => {
                     animator3d.SetFloat("speed", 1.0f);
                     animator2d.SetFloat("speed", 1.0f);
+                    animator3d.SetBool("hiding", false);
+                    animator2d.SetBool("hiding", false);
                     animator3d.Play("appear", 0, 0.0f);
                     animator2d.Play("appear", 0, 0.0f);
 
@@ -39,6 +46,8 @@ namespace ResonantSpark {
                 eventHandler.On("deactivate", () => {
                     animator3d.SetFloat("speed", -1.0f);
                     animator2d.SetFloat("speed", -1.0f);
+                    animator3d.SetBool("hiding", true);
+                    animator2d.SetBool("hiding", true);
                     animator3d.Play("appear", 0, 1.0f);
                     animator2d.Play("appear", 0, 1.0f);
 
@@ -84,6 +93,11 @@ namespace ResonantSpark {
                     currSelected = quit;
                 }).On("submit", () => {
                     cursor3d.Select(versus);
+
+                    menuStack.Pop(this);
+                    menuStack.AddMenu(controllerSelect);
+                    camera.Play("mainMenuToControllerSelect");
+                    changeState("controllerSelect");
                 });
 
                 training.On("down", () => {
@@ -96,6 +110,11 @@ namespace ResonantSpark {
                     currSelected = versus;
                 }).On("submit", () => {
                     cursor3d.Select(training);
+
+                    menuStack.Pop(this);
+                    menuStack.AddMenu(controllerSelect);
+                    camera.Play("mainMenuToControllerSelect");
+                    changeState("controllerSelect");
                 });
 
                 options.On("down", () => {
@@ -136,6 +155,7 @@ namespace ResonantSpark {
                 }).On("submit", () => {
                     cursor2d.Select(quit);
 
+                    menuStack.AddMenu(exitGameDialogue);
                     changeState("exitGameDialogue");
                 });
             }

@@ -3,9 +3,14 @@
 namespace ResonantSpark {
     namespace Menu {
         public class ControllerSelect : Menu {
+            public Menu controllerButtonBind;
+            public Menu mainMenu;
+
             public Animator animator3d;
             public Animator animator2d;
             public Animator animatorPlayerDesignation;
+
+            public Animator camera;
 
             public GameObject controllerIconPrefab;
 
@@ -29,6 +34,11 @@ namespace ResonantSpark {
                     animator3d.SetFloat("speed", 1.0f);
                     animator2d.SetFloat("speed", 1.0f);
                     animatorPlayerDesignation.SetFloat("speed", 1.0f);
+
+                    animatorPlayerDesignation.SetBool("hiding", false);
+                    animator3d.SetBool("hiding", false);
+                    animator2d.SetBool("hiding", false);
+
                     animator3d.Play("appear", 0, 0.0f);
                     animator2d.Play("appear", 0, 0.0f);
                     animatorPlayerDesignation.Play("slideFromOutside", 0, 0.0f);
@@ -39,8 +49,15 @@ namespace ResonantSpark {
                 eventHandler.On("deactivate", () => {
                     animator3d.SetFloat("speed", -1.0f);
                     animator2d.SetFloat("speed", -1.0f);
-                    animator3d.Play("appear", 0, 1.0f);
-                    animator2d.Play("appear", 0, 1.0f);
+                    animatorPlayerDesignation.SetFloat("speed", -1.0f);
+
+                    animatorPlayerDesignation.SetBool("hiding", true);
+                    animator3d.SetBool("hiding", true);
+                    animator2d.SetBool("hiding", true);
+
+                    animator3d.Play("disappear", 0, 1.0f);
+                    animator2d.Play("disappear", 0, 1.0f);
+                    animatorPlayerDesignation.Play("slideFromOutside", 0, 1.0f);
 
                     cursor2d.Fade();
                 });
@@ -75,12 +92,30 @@ namespace ResonantSpark {
 
                     currSelected = controllerBinding;
                 }).On("submit", () => {
+                    menuStack.Pop(this);
+                    menuStack.AddMenu(mainMenu);
+                    camera.Play("controllerSelectToMainMenu");
                     changeState("mainMenu");
                 }).On("cancel", () => {
+                    menuStack.Pop(this);
+                    menuStack.AddMenu(mainMenu);
+                    camera.Play("controllerSelectToMainMenu");
                     changeState("mainMenu");
                 });
 
                 //TODO: Create the controller binding Selectable
+            }
+
+            public void HideReturnButton() {
+                animator2d.SetBool("hiding", true);
+                animator2d.SetFloat("speed", -1.0f);
+                animator2d.Play("disappear", 0, 1.0f);
+            }
+
+            public void ShowReturnButton() {
+                animator2d.SetBool("hiding", false);
+                animator2d.SetFloat("speed", 1.0f);
+                animator2d.Play("appear", 0, 0.0f);
             }
         }
     }

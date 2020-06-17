@@ -17,6 +17,7 @@ namespace ResonantSpark {
                 exitGameDialogue.SetChangeStateCallback(stateName => {
                     changeState(states.Get(stateName));
                 });
+                exitGameDialogue.SetMenuStack(menuStack);
             }
 
             public override void TriggerEvent(string eventName) {
@@ -25,7 +26,6 @@ namespace ResonantSpark {
 
             public override void Enter(int frameIndex, IState previousState) {
                 inputManager.SetActiveState(this);
-                menuStack.AddMenu(exitGameDialogue);
             }
 
             public override void Execute(int frameIndex) {
@@ -33,7 +33,7 @@ namespace ResonantSpark {
             }
 
             public override void Exit(int frameIndex) {
-                menuStack.Pop(exitGameDialogue);
+                // do nothing
             }
         }
     }
