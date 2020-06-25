@@ -35,10 +35,6 @@ namespace ResonantSpark {
                 throw new System.NotImplementedException();
             }
 
-            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
-                throw new System.NotImplementedException();
-            }
-
             public override GroundRelation GetGroundRelation() {
                 return GroundRelation.GROUNDED;
             }

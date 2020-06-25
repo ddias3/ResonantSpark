@@ -18,6 +18,8 @@ namespace ResonantSpark {
             [Tooltip("These many frames of the start of the dash may not be cancelled into an attack")]
             public int attackDisallowed = 30;
 
+            public AnimationCurve dashSpeedCurve;
+
             private Utility.AttackTracker tracker;
 
             private FightingGameInputCodeDir dashDir;
@@ -59,30 +61,29 @@ namespace ResonantSpark {
             public override void ExecutePass0(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
 
+                fgChar.AddRelativeVelocity(Gameplay.VelocityPriority.Dash, new Vector3(0.0f, 0.0f, dashSpeedCurve.Evaluate(tracker.frameCount)));
+
                 if (tracker.frameCount > dashLength) {
+                    Debug.Log("ExecutePass0");
+                }
+            }
+
+            public override void ExecutePass1(int frameIndex) {
+                if (tracker.frameCount > dashLength) {
+                    Debug.Log("ExecutePass1");
                     changeState(states.Get("stand"));
+                    fgChar.UpdateTarget();
                 }
 
-                Debug.Log("Calculate Final Velocity :(" + tracker.frameCount + ")");
+                //fgChar.UpdateCharacterMovement();
                 fgChar.CalculateFinalVelocity();
+                //fgChar.AnimationWalkVelocity();
 
                 tracker.Increment();
             }
 
-            public override void ExecutePass1(int frameIndex) {
-                //fgChar.UpdateTarget();
-                //fgChar.UpdateCharacterMovement();
-                //fgChar.CalculateFinalVelocity();
-                //fgChar.AnimationWalkVelocity();
-            }
-
             public override void Exit(int frameIndex) {
                 // do nothing
-            }
-
-            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
-                Debug.Log("Animator Move :(" + tracker.frameCount + ")");
-                fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Dash, animatorVelocity);
             }
 
             public override GroundRelation GetGroundRelation() {

@@ -222,7 +222,6 @@ namespace ResonantSpark {
             }
 
             public float LookToMoveAngle() {
-                Debug.Log(targetFG.targetPos + " - " + rigidFG.position);
                 return Vector3.SignedAngle(rigidFG.transform.forward, targetFG.targetPos - rigidFG.position, Vector3.up);
             }
 
@@ -245,14 +244,6 @@ namespace ResonantSpark {
 
             public CharacterStates.CharacterBaseState GetPrevState() {
                 return prevState;
-            }
-
-            public void AnimatorMoveCallback(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
-                if (stateMachine.GetCurrentState() != null) {
-                    CharacterStates.CharacterBaseState currState = (CharacterStates.CharacterBaseState)stateMachine.GetCurrentState();
-                    
-                    currState.AnimatorMove(animatorRootRotation, Quaternion.Euler(-90f, 180f, 0f) * Quaternion.Inverse(rigidFG.rotation) * animatorVelocity);
-                }
             }
 
             public Vector3 GetLocalVelocity() {

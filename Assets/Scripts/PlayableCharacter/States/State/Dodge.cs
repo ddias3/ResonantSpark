@@ -72,6 +72,8 @@ namespace ResonantSpark {
                     z = 0.3f / fgChar.TargetDirection().magnitude,
                 };
 
+                //fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Dash, animatorDelta);
+
                 if (tracker.frameCount > dodgeLength) {
                     changeState(states.Get("stand"));
                 }
@@ -110,10 +112,6 @@ namespace ResonantSpark {
                     //TODO: don't turn character while in mid air
                     Debug.LogError("Character not grounded while in 'Stand' character state");
                 }
-            }
-
-            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorDelta) {
-                fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Dash, animatorDelta);
             }
 
             public override GroundRelation GetGroundRelation() {

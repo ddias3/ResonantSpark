@@ -38,6 +38,8 @@ namespace ResonantSpark {
             public override void ExecutePass0(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
 
+                //fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Dash, animatorVelocity);
+
                 fgChar.RunAttackFrame();
                 fgChar.CalculateFinalVelocity();
             }
@@ -55,10 +57,6 @@ namespace ResonantSpark {
 
             public override GroundRelation GetGroundRelation() {
                 return GroundRelation.GROUNDED;
-            }
-
-            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
-                fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Dash, animatorVelocity);
             }
 
             public override void GetHit(bool launch) {

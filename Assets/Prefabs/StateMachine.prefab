@@ -656,9 +656,51 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bdd247590d669f4a8acb121677cb794, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dashLength: 40
+  dashLength: 36
   redashDisallowed: 40
   attackDisallowed: 35
+  dashSpeedCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: -0.1
+      inSlope: -7.4997935
+      outSlope: -7.4997935
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.03409091
+    - serializedVersion: 3
+      time: 0.10416668
+      value: -10
+      inSlope: 0.018610384
+      outSlope: 0.018610384
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.13095237
+    - serializedVersion: 3
+      time: 0.5011344
+      value: -0.8924862
+      inSlope: 0.95731455
+      outSlope: 0.95731455
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.17925048
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: -0.2
+      inSlope: -0.008632032
+      outSlope: -0.008632032
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.16190477
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &5306274129022473684
 GameObject:
   m_ObjectHideFlags: 0

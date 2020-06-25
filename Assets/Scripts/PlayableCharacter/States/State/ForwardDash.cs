@@ -63,6 +63,8 @@ namespace ResonantSpark {
                     changeState(states.Get("stand"));
                 }
 
+                //fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Dash, animatorVelocity);
+
                 fgChar.CalculateFinalVelocity();
                 tracker.Increment();
             }
@@ -76,10 +78,6 @@ namespace ResonantSpark {
 
             public override void Exit(int frameIndex) {
                 // do nothing
-            }
-
-            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
-                fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Dash, animatorVelocity);
             }
 
             public override GroundRelation GetGroundRelation() {

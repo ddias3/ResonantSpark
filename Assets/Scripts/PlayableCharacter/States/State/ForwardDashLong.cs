@@ -58,6 +58,10 @@ namespace ResonantSpark {
                     changeState(states.Get("stand"));
                 }
 
+                //distance += animatorDelta / fgChar.gameTime;
+                //fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Dash, animatorVelocity);
+                //fgChar.position += fgChar.toLocal * animatorDelta;
+
                 fgChar.CalculateFinalVelocity();
                 tracker.Increment();
             }
@@ -71,12 +75,6 @@ namespace ResonantSpark {
 
             public override void Exit(int frameIndex) {
                 // do nothing
-            }
-
-            public override void AnimatorMove(Quaternion animatorRootRotation, Vector3 animatorVelocity) {
-                //distance += animatorDelta / fgChar.gameTime;
-                fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Dash, animatorVelocity);
-                //fgChar.position += fgChar.toLocal * animatorDelta;
             }
 
             public override GroundRelation GetGroundRelation() {
