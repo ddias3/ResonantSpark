@@ -15,13 +15,13 @@ namespace ResonantSpark {
 
             public void OnValueChange(float value) {
                 this.value = value;
-                Persistence.GetPersistence().SetOptionValue(optionKey, value);
+                Persistence.Get().SetOptionValue(optionKey, value);
 
                 valueLabel.text = value.ToString("F2");
             }
 
             public void Start() {
-                value = Persistence.GetPersistence().GetOptionValue(optionKey);
+                value = Persistence.Get().GetOptionValue(optionKey);
 
                 valueLabel.text = value.ToString("F2");
             }

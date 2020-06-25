@@ -6,7 +6,7 @@ namespace ResonantSpark {
     public class Persistence {
         private static Persistence pers = null;
         public static bool Exists() { return pers != null; }
-        public static Persistence GetPersistence() {
+        public static Persistence Get() {
             if (pers == null) {
                 pers = new Persistence();
             }

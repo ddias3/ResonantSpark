@@ -5,57 +5,77 @@ using UnityEngine;
 namespace ResonantSpark {
     public class GameTimeManager : MonoBehaviour {
 
-            // TODO: Remake this to be a tree structure instead of always linear
-        private List<Func<float, float>> callbacks;
-        private Dictionary<string, int> layerNames;
-        private List<float> cachedValues;
-        private bool valid = false;
+        private class Node {
+            public string id;
+            public Func<float, float> callback;
+            public List<Node> children;
 
-        public void Update() {
-            valid = false;
+            public Node(string id, Func<float, float> callback) {
+                children = new List<Node>();
+                this.callback = callback;
+                this.id = id;
+            }
         }
+
+        private Dictionary<string, Node> nodePaths;
+        private Dictionary<string, float> cachedValues;
+
+        private Node root;
 
         private void Awake() {
-            callbacks = new List<Func<float, float>>();
-            cachedValues = new List<float>();
-            layerNames = new Dictionary<string, int>();
+            cachedValues = new Dictionary<string, float>();
+            nodePaths = new Dictionary<string, Node>();
 
-            // This call is skipped in CalculateDeltaTime
-            //callbacks.Add(new Func<float, float>(x => x));
-            //cachedValues.Add(Time.deltaTime);
-            AddLayer(new Func<float, float>(x => x), "realTime");
+            root = new Node("/", null);
+            nodePaths.Add("/", root);
         }
 
-        private void CalculateDeltaTime(float deltaTime) {
-            float finalDeltaTime = deltaTime;
-            cachedValues[0] = deltaTime;
-            for (int n = 1; n < callbacks.Count; ++n) {
-                finalDeltaTime = callbacks[n].Invoke(finalDeltaTime);
-                cachedValues[n] = finalDeltaTime;
-            }
-        }
+        public float DeltaTime(params string[] path) {
 
-        public float Layer(int layerId) {
-            if (!valid) {
-                //CalculateDeltaTime(1.0f / 60.0f);
-                CalculateDeltaTime(Time.deltaTime);
-            }
-            return cachedValues[layerId];
-        }
+            float deltaTime = 1.0f;
+            Node currNode = root;
+            for (int n = 0; n < path.Length; ++n) {
+                int childId = -1;
+                for (int c = 0; childId < 0 && c < currNode.children.Count; ++c) {
+                    if (currNode.children[c].id == path[n]) {
+                        childId = c;
+                    }
+                }
 
-        public float Layer(string layerName) {
-            return Layer(layerNames[layerName]);
-        }
-
-        public int AddLayer(Func<float, float> callback, string name = null) {
-            callbacks.Add(callback);
-            cachedValues.Add(0.0f);
-
-            if (name != null) {
-                layerNames.Add(name, callbacks.Count - 1);
+                if (childId >= 0) {
+                    currNode = currNode.children[childId];
+                    deltaTime = currNode.callback(deltaTime);
+                }
+                else {
+                    throw new Exception("Invalid node path " + path.ToString());
+                }
             }
 
-            return callbacks.Count - 1;
+            return deltaTime;
+        }
+
+        public void AddNode(Func<float, float> callback, List<string> path) {
+            Node newNode = new Node(path[path.Count - 1], callback);
+
+            Node currNode = root;
+            for (int n = 0; n < path.Count - 1; ++n) {
+                int childId = -1;
+                for (int c = 0; childId < 0 && c < currNode.children.Count; ++c) {
+                    if (currNode.children[c].id == path[n]) {
+                        childId = c;
+                    }
+                }
+
+                if (childId >= 0) {
+                    currNode = currNode.children[childId];
+                }
+                else {
+                    throw new Exception("Invalid node path " + path.ToString());
+                }
+            }
+            currNode.children.Add(newNode);
+            nodePaths.Add("/." + string.Join(".", path.ToArray()), newNode);
+            //cachedValues.Add("/." + string.Join(".", path.ToArray()), 0.0f);
         }
     }
 }

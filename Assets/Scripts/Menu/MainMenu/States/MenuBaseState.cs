@@ -27,7 +27,8 @@ namespace ResonantSpark {
             public abstract void TriggerEvent(string eventName);
 
             public abstract void Enter(int frameIndex, IState previousState);
-            public abstract void Execute(int frameIndex);
+            public abstract void ExecutePass0(int frameIndex);
+            public abstract void ExecutePass1(int frameIndex);
             public abstract void Exit(int frameIndex);
         }
     }

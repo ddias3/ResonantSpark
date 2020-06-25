@@ -22,11 +22,15 @@ namespace ResonantSpark {
                 elapsedTime = 0;
             }
 
-            public override void Execute(int frameIndex) {
+            public override void ExecutePass0(int frameIndex) {
                 if (elapsedTime > 0.5f) {
                     changeState(states.Get("openingMode"));
                 }
-                elapsedTime += gameTimeManager.Layer("gameTime");
+                elapsedTime += gameTimeManager.DeltaTime("frameDelta", "game");
+            }
+
+            public override void ExecutePass1(int frameIndex) {
+                throw new InvalidOperationException();
             }
 
             public override void Exit(int frameIndex) {

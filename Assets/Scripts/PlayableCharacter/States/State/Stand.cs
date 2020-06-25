@@ -61,7 +61,7 @@ namespace ResonantSpark {
                 smoothedInput = fgChar.RelativeInputToLocal(dirPress, upJump);
             }
 
-            public override void Execute(int frameIndex) {
+            public override void ExecutePass0(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
 
                 Vector3 localVelocity = fgChar.GetLocalVelocity();
@@ -70,7 +70,10 @@ namespace ResonantSpark {
                     // Move the character
                 WalkCharacter(localVelocity, localInput);
                 TurnCharacter(localInput);
+            }
 
+            public override void ExecutePass1(int frameIndex) {
+                fgChar.UpdateTarget();
                 fgChar.UpdateCharacterMovement();
                 fgChar.CalculateFinalVelocity();
                 fgChar.AnimationWalkVelocity();

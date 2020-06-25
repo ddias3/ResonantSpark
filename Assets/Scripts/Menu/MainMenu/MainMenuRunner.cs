@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,7 +22,8 @@ namespace ResonantSpark {
 
             public IEnumerator DelayedStart() {
                 yield return new WaitForEndOfFrame();
-                executeCallback = stateMachine.Enable(states.Get("fadeIn"));
+                (Action<int>, Action<int>) callbacks = stateMachine.Enable(states.Get("fadeIn"));
+                executeCallback = callbacks.Item1;
                 this.enabled = true;
             }
         }

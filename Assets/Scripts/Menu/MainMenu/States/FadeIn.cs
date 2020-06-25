@@ -36,7 +36,7 @@ namespace ResonantSpark {
                 startTime = Time.time;
                 fadeIn.FadeIn();
 
-                Persistence persistence = Persistence.GetPersistence();
+                Persistence persistence = Persistence.Get();
                 if (persistence.firstTimeLoad) {
                     persistence.MenuLoaded();
                     camera.Play("preintro");
@@ -48,7 +48,7 @@ namespace ResonantSpark {
                 }
             }
 
-            public override void Execute(int frameIndex) {
+            public override void ExecutePass0(int frameIndex) {
                 if (Time.time - startTime > introTime) {
                     camera.SetTrigger("start");
 
@@ -59,6 +59,10 @@ namespace ResonantSpark {
                         changeState(states.Get("mainMenu"));
                     }
                 }
+            }
+
+            public override void ExecutePass1(int frameIndex) {
+                throw new InvalidOperationException();
             }
 
             public override void Exit(int frameIndex) {

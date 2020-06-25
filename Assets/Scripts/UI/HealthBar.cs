@@ -90,10 +90,10 @@ namespace ResonantSpark {
             public void Update() {
                 if (timer > delayTime || flushHealthBar) {
                     if (prevHealth - currHealth < 400) {
-                        prevHealth -= Mathf.RoundToInt(flushEndingLinearSpeed * 1 / FrameEnforcer.FRAME_TIME * gameTime.Layer("gameTime"));
+                        prevHealth -= Mathf.RoundToInt(flushEndingLinearSpeed * 1 / FrameEnforcer.FRAME_TIME * gameTime.DeltaTime("frameDelta", "game"));
                     }
                     else {
-                        prevHealth = Mathf.RoundToInt(Mathf.Lerp(prevHealth, currHealth, gameTime.Layer("gameTime") * flushSpeed));
+                        prevHealth = Mathf.RoundToInt(Mathf.Lerp(prevHealth, currHealth, gameTime.DeltaTime("frameDelta", "game") * flushSpeed));
                     }
 
                     if (prevHealth <= currHealth + 20) {
@@ -104,7 +104,7 @@ namespace ResonantSpark {
                 SetFillDimensions();
 
                 if (!freezeSync) {
-                    timer += gameTime.Layer("gameTime");
+                    timer += gameTime.DeltaTime("frameDelta", "game");
                 }
             }
         }

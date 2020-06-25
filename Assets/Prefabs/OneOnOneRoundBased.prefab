@@ -176,7 +176,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stateMachine: {fileID: 4425296836205938801}
   states: {fileID: 3403993231974159872}
-  roundTime: 5
+  roundTime: 60
   gameTime: 1
 --- !u!114 &4054885748363290252
 MonoBehaviour:
@@ -190,6 +190,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a7f718226369d3408c13ec23085b352, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  callback0Priority: 256
+  callback1Priority: 0
+  enableCallback1: 0
   initState: {fileID: 5759152208771770001}
   stateMachine: {fileID: 4425296836205938801}
 --- !u!1 &5976575351784179997
@@ -385,3 +388,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02a3994c3f49e416194e7ff9de041548, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  openingTime: 0.5

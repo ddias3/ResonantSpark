@@ -55,7 +55,6 @@ GameObject:
   - component: {fileID: 1184226374591764614}
   - component: {fileID: 1184226374591764635}
   - component: {fileID: 1184226374591764632}
-  - component: {fileID: 1184226374591764633}
   m_Layer: 0
   m_Name: TimeManagement
   m_TagString: rspTime
@@ -102,18 +101,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fpsCounter: {fileID: 0}
---- !u!114 &1184226374591764633
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1184226374591764615}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e50f3e7a660d7d40b158bbc1dce035f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1184226374955332968
 GameObject:
   m_ObjectHideFlags: 0
@@ -760,6 +747,7 @@ GameObject:
   - component: {fileID: 6293366847377294897}
   - component: {fileID: 5543860194610472664}
   - component: {fileID: 7128709530728349900}
+  - component: {fileID: 346015930430113308}
   m_Layer: 0
   m_Name: Services
   m_TagString: rspService
@@ -930,9 +918,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a037f0db006b5f045bb4c8c4ecb6b35e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthBarP0: {fileID: 0}
   healthBarP1: {fileID: 0}
+  healthBarP2: {fileID: 0}
   roundTimer: {fileID: 0}
+  openingText: {fileID: 0}
+  roundCounterP1: {fileID: 0}
+  roundCounterP2: {fileID: 0}
+  comboCounterP1: {fileID: 0}
+  comboCounterP2: {fileID: 0}
 --- !u!114 &6293366847377294897
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -967,6 +960,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d1fb0357cc056d341be0de1c822e8b24, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &346015930430113308
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1184226376533119636}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e811fd571ecff5e42ab9dd574cbc3c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1184226376563709882

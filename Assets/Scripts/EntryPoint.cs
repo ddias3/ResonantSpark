@@ -24,6 +24,7 @@ namespace ResonantSpark {
             typeof(InputService),
             typeof(ParticleService),
             typeof(PersistenceService),
+            typeof(PhysicsService),
             typeof(PlayerService),
             typeof(ProjectileService),
             typeof(TimeService),

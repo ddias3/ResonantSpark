@@ -7,6 +7,7 @@ using ResonantSpark.Gamemode;
 namespace ResonantSpark {
     namespace GamemodeStates {
         public class OpeningMode : GamemodeBaseState {
+            public float openingTime = 3.0f;
             private GameTimeManager gameTimeManager;
             private float elapsedTime;
 
@@ -27,15 +28,19 @@ namespace ResonantSpark {
                 fgService.DisableControl();
             }
 
-            public override void Execute(int frameIndex) {
-                elapsedTime += gameTimeManager.Layer("gameTime");
+            public override void ExecutePass0(int frameIndex) {
+                elapsedTime += gameTimeManager.DeltaTime("frameDelta", "game");
 
-                if (elapsedTime > 3.0f) {
+                if (elapsedTime > openingTime) {
                     uiService.HideMainScreenText();
 
                     // after VS animation, switch to the RoundStart state
                     changeState(states.Get("roundStartMode"));
                 }
+            }
+
+            public override void ExecutePass1(int frameIndex) {
+                throw new InvalidOperationException();
             }
 
             public override void Exit(int frameIndex) {

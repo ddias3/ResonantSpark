@@ -7,14 +7,18 @@ using System;
 namespace ResonantSpark {
     public enum FramePriority : int {
         ActivePollingReset = 1,
-        Gamemode = 256,
-        Service = 512,
-        StateMachine = 1024,
-        InputBuffer = 2048,
 
-        LateService = 0x1000 + 512,
+        Gamemode = 16,
+        Service = 32,
+        StateMachine = 64,
+        InputBuffer = 128,
 
-        UpdateInput = 9999999,
+        PhysicsMovement = 256,
+        PhysicsCollisions = 256 + 1,
+        PhysicsResolve = 256 + 2,
+
+        LateService = 0x1000 + 32,
+        LateStateMachine = 0x1000 + 64,
     }
 
     [RequireComponent(typeof(GameTimeManager))]
@@ -31,7 +35,8 @@ namespace ResonantSpark {
             }
         }
 
-        public Text fpsCounter;
+        public Text fpsCounterText;
+        public Text frameIndexText;
         private int updateCounterSnapshot = 0;
         private float timeSnapshot = 0.0f;
 
@@ -40,18 +45,25 @@ namespace ResonantSpark {
         private List<FrameEnforcerCallback> updateActions = new List<FrameEnforcerCallback>();
         private GameTimeManager gameTime;
 
-        private float elapsedTime = 0f;
+        private float startTime = 0.0f;
+        private float prevTime = 0.0f;
 
         private int frameIndex = 0;
 
+        private float deltaTime;
+
         public void Awake() {
             this.enabled = false;
-            elapsedTime = FRAME_TIME;
+            //elapsedTime = FRAME_TIME;
             frameIndex = 0;
+
+            gameTime = gameObject.GetComponent<GameTimeManager>();
+            gameTime.AddNode(x => FRAME_TIME, new List<string> { "frameDelta" });
+            gameTime.AddNode(x => deltaTime, new List<string> { "realDelta" });
         }
 
         public void Start() {
-            gameTime = gameObject.GetComponent<GameTimeManager>();
+            StartTimeCount();
         }
 
         public int index {
@@ -61,30 +73,36 @@ namespace ResonantSpark {
             }
         }
 
+        public void StartTimeCount() {
+            startTime = Time.time;
+            prevTime = startTime;
+        }
+
         public void FixedUpdate() {
             int stepsInFrame = 0;
 
-                // TODO: This may be incorrect. I may need to pull this while loop out into an async call
-            while (elapsedTime > FRAME_TIME) {
+            deltaTime = Time.time - prevTime;
+
+            while (Time.time - prevTime > FRAME_TIME) {
                 foreach (FrameEnforcerCallback action in updateActions) {
                     action.callback.Invoke(frameIndex);
                 }
+
+                prevTime = Time.time;
 
                 stepsInFrame++;
                 updateCounter++;
 
                 frameIndex++;
-                elapsedTime -= FRAME_TIME;
+                frameIndexText.text = "Fr#: " + frameIndex.ToString();
             }
 
             //if (stepsInFrame > 1) {
             //    Debug.LogWarning("Frame Skip at frame(" + frameIndex + "). Stepped " + stepsInFrame + " times in single frame");
             //}
 
-            elapsedTime += gameTime.Layer("realTime");
-
             if (Time.time - timeSnapshot >= 0.45) {
-                fpsCounter.text = ((updateCounter - updateCounterSnapshot) / (Time.time - timeSnapshot)).ToString("F1") + " FPS";
+                fpsCounterText.text = ((updateCounter - updateCounterSnapshot) / (Time.time - timeSnapshot)).ToString("F1") + " FPS";
                 timeSnapshot = Time.time;
                 updateCounterSnapshot = updateCounter;
             }

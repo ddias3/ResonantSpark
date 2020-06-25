@@ -40,7 +40,7 @@ namespace ResonantSpark {
                 fgChar.Play("faceOpponent");
             }
 
-            public override void Execute(int frameIndex) {
+            public override void ExecutePass0(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
 
                 Vector3 localVelocity = fgChar.GetLocalVelocity();
@@ -51,6 +51,13 @@ namespace ResonantSpark {
                 TurnCharacter(localInput);
 
                 fgChar.CalculateFinalVelocity();
+            }
+
+            public override void ExecutePass1(int frameIndex) {
+                //fgChar.UpdateTarget();
+                //fgChar.UpdateCharacterMovement();
+                //fgChar.CalculateFinalVelocity();
+                //fgChar.AnimationWalkVelocity();
             }
 
             public override void Exit(int frameIndex) {

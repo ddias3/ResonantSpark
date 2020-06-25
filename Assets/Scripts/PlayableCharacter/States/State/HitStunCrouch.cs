@@ -34,7 +34,7 @@ namespace ResonantSpark {
                 }
             }
 
-            public override void Execute(int frameIndex) {
+            public override void ExecutePass0(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
 
                 if (tracker.frameCount > testLength) {
@@ -43,6 +43,13 @@ namespace ResonantSpark {
 
                 fgChar.CalculateFinalVelocity();
                 tracker.Increment();
+            }
+
+            public override void ExecutePass1(int frameIndex) {
+                //fgChar.UpdateTarget();
+                //fgChar.UpdateCharacterMovement();
+                //fgChar.CalculateFinalVelocity();
+                //fgChar.AnimationWalkVelocity();
             }
 
             public override void Exit(int frameIndex) {

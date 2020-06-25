@@ -27,7 +27,7 @@ namespace ResonantSpark {
                 char1Wins = oneOnOne.GetCharNumWins(1);
             }
 
-            public override void Execute(int frameIndex) {
+            public override void ExecutePass0(int frameIndex) {
                 if (elapsedTime > 4.0f) {
                     changeState(states.Get("gameCompleteMode"));
                 }
@@ -43,7 +43,11 @@ namespace ResonantSpark {
                     }
                 }
 
-                elapsedTime += gameTimeManager.Layer("gameTime");
+                elapsedTime += gameTimeManager.DeltaTime("frameDelta", "game");
+            }
+
+            public override void ExecutePass1(int frameIndex) {
+                throw new InvalidOperationException();
             }
 
             public override void Exit(int frameIndex) {

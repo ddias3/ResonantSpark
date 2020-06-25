@@ -28,7 +28,7 @@ namespace ResonantSpark {
                 fgChar.Play("airborne");
             }
 
-            public override void Execute(int frameIndex) {
+            public override void ExecutePass0(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
 
                 fgChar.AddForce(gravityExtra, ForceMode.Acceleration);
@@ -42,6 +42,13 @@ namespace ResonantSpark {
                 }
 
                 fgChar.CalculateFinalVelocity();
+            }
+
+            public override void ExecutePass1(int frameIndex) {
+                //fgChar.UpdateTarget();
+                //fgChar.UpdateCharacterMovement();
+                //fgChar.CalculateFinalVelocity();
+                //fgChar.AnimationWalkVelocity();
             }
 
             public override void Exit(int frameIndex) {

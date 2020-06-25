@@ -146,7 +146,8 @@ namespace ResonantSpark {
 
                         if (others[n].GetGroundRelation() == Character.GroundRelation.GROUNDED) {
                             if (Vector3.Distance(fgChar.transform.position, others[n].transform.position) < 0.68f) {
-                                fgChar.PushAway(0.68f, others[n]);
+                                //fgChar.PushAway(0.68f, others[n]);
+                                Debug.Log("PushAway Required : " + Vector3.Distance(fgChar.transform.position, others[n].transform.position));
                             }
                         }
                     }

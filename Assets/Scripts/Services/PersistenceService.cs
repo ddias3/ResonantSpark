@@ -25,7 +25,7 @@ namespace ResonantSpark {
 
             public void Start() {
                 if (Persistence.Exists()) {
-                    persObj = Persistence.GetPersistence();
+                    persObj = Persistence.Get();
 
                     gamemodeStr         = persObj.gamemode;
                     characterSelections = persObj.characterSelection;

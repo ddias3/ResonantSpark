@@ -39,7 +39,8 @@ namespace ResonantSpark {
                 frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
 
                 gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
-                gameTimeManager.AddLayer(new Func<float, float>(GameTime), "gameTime");
+                gameTimeManager.AddNode(new Func<float, float>(GameTime), new List<string> { "frameDelta", "game" });
+                gameTimeManager.AddNode(new Func<float, float>(GameTime), new List<string> { "realDelta", "game" });
 
                 EventManager.StartListening<Events.FrameEnforcerReady>(enablePlayersCallback = new UnityAction(EnablePlayers));
                 EventManager.StartListening<Events.StartGame>(enablePlayersCallback = new UnityAction(ResetGame));
@@ -58,8 +59,8 @@ namespace ResonantSpark {
                 char0 = playerService.GetFGChar(0);
                 char1 = playerService.GetFGChar(1);
 
-                char0.SetOpponentCharacter(char1);
-                char1.SetOpponentCharacter(char0);
+                char0.SetOpponentTarget(char1);
+                char1.SetOpponentTarget(char0);
 
                 char0.RegisterOnHealthChangeCallback(OnPlayerHealthChange(0));
                 char1.RegisterOnHealthChangeCallback(OnPlayerHealthChange(1));
@@ -99,11 +100,11 @@ namespace ResonantSpark {
             public void ResetRound() {
                 Transform spawnTransform = fgService.GetSpawnPoint();
 
-                char0.transform.position = spawnTransform.position + spawnTransform.rotation * new Vector3(0, 0, fgService.GetSpawnPointOffset());
-                char1.transform.position = spawnTransform.position + spawnTransform.rotation * Quaternion.Euler(0, 180, 0) * new Vector3(0, 0, fgService.GetSpawnPointOffset());
+                char0.position = spawnTransform.position + spawnTransform.rotation * new Vector3(0, 0, fgService.GetSpawnPointOffset());
+                char1.position = spawnTransform.position + spawnTransform.rotation * Quaternion.Euler(0, 180, 0) * new Vector3(0, 0, fgService.GetSpawnPointOffset());
 
-                char0.transform.LookAt(char1.transform);
-                char1.transform.LookAt(char0.transform);
+                char0.transform.LookAt(char1.position);
+                char1.transform.LookAt(char0.position);
 
                 playerService.EachFGChar((id, fgChar) => {
                     fgChar.RoundReset();

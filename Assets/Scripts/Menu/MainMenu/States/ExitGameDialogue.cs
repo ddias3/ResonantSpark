@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -28,8 +28,12 @@ namespace ResonantSpark {
                 inputManager.SetActiveState(this);
             }
 
-            public override void Execute(int frameIndex) {
+            public override void ExecutePass0(int frameIndex) {
                 // do nothing
+            }
+
+            public override void ExecutePass1(int frameIndex) {
+                throw new InvalidOperationException();
             }
 
             public override void Exit(int frameIndex) {

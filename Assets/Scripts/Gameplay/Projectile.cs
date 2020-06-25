@@ -23,7 +23,7 @@ namespace ResonantSpark {
             private Vector3 storeLocation;
             private int frameStart;
 
-            public void Start() {
+            public void Awake() {
                 active = false;
                 frameStart = -1;
                 storeLocation = transform.position;

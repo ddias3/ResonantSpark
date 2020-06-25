@@ -27,8 +27,12 @@ namespace ResonantSpark {
                 controllerSelect.ShowReturnButton();
             }
 
-            public override void Execute(int frameIndex) {
+            public override void ExecutePass0(int frameIndex) {
                 // TODO: figure this one out.
+            }
+
+            public override void ExecutePass1(int frameIndex) {
+                throw new InvalidOperationException();
             }
 
             public override void Exit(int frameIndex) {

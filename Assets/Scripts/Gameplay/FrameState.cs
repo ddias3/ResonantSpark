@@ -56,7 +56,7 @@ namespace ResonantSpark {
                     hit.Active();
                 }
                 armorCallback?.Invoke(default);
-                trackCallback?.Invoke(fgChar.GetTarget(), fgChar.GetOpponentTransform());
+                trackCallback?.Invoke(fgChar.GetTarget(), null);
                 soundCallback?.Invoke(null);
                 projectileCallback?.Invoke(projectile);
             }

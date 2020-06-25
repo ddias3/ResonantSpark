@@ -23,7 +23,11 @@ namespace ResonantSpark {
                 throw new System.NotImplementedException();
             }
 
-            public override void Execute(int frameIndex) {
+            public override void ExecutePass0(int frameIndex) {
+                throw new System.NotImplementedException();
+            }
+
+            public override void ExecutePass1(int frameIndex) {
                 throw new System.NotImplementedException();
             }
 

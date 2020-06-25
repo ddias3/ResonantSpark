@@ -35,11 +35,18 @@ namespace ResonantSpark {
                 attackRunner.StartAttackIfRequired(frameIndex);
             }
 
-            public override void Execute(int frameIndex) {
+            public override void ExecutePass0(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
 
                 fgChar.RunAttackFrame();
                 fgChar.CalculateFinalVelocity();
+            }
+
+            public override void ExecutePass1(int frameIndex) {
+                //fgChar.UpdateTarget();
+                //fgChar.UpdateCharacterMovement();
+                //fgChar.CalculateFinalVelocity();
+                //fgChar.AnimationWalkVelocity();
             }
 
             public override void Exit(int frameIndex) {

@@ -19,17 +19,15 @@ namespace ResonantSpark {
             public StateMachine stateMachine;
             public Utility.StateDict states;
 
-            public AnimatorRootMotion animatorRootMotion;
-
             public AttackRunner attackRunner;
 
+            public Orientation defaultForwardOrientation;
+
             public LayerMask groundRaycastMask;
-            public float groundCheckDistance;
+            public float groundCheckDistance = 0.11f;
             public float groundCheckDistanceMinimum = 0.11f;
 
             public float landAnimationFrameTarget = 3f;
-
-            public Orientation defaultForwardOrientation;
 
             public Transform standCollider;
 
@@ -44,12 +42,9 @@ namespace ResonantSpark {
 
             private CharacterStates.CharacterBaseState prevState;
 
-            private Vector3 target;
-
             private Input.InputBuffer inputBuffer;
             private List<Combination> inputDoNothingList;
 
-            private FightingGameCharacter opponentChar;
             private GameTimeManager gameTimeManager;
 
             private List<Combination> inUseCombinations;
@@ -57,23 +52,17 @@ namespace ResonantSpark {
             private List<Action<int, int>> onHealthChangeCallbacks;
             private List<Action<FightingGameCharacter>> onEmptyHealthCallbacks;
 
-            private new Rigidbody rigidbody;
-            private CharacterPrioritizedVelocity charVelocity;
-            private List<(Vector3, ForceMode)> forces;
+            private TargetFG targetFG;
 
             private bool controlEnable = false;
 
-            public Quaternion rotation {
-                get { return rigidbody.rotation; }
-            }
-
             public Quaternion toLocal {
-                get { return Quaternion.Inverse(rigidbody.rotation); }
+                get { return Quaternion.Inverse(rigidFG.rotation); }
             }
 
             public Vector3 position {
-                get { return rigidbody.position; }
-                set { rigidbody.position = value; }
+                get { return rigidFG.position; }
+                set { rigidFG.position = value; }
             }
 
             public int maxHealth {
@@ -86,11 +75,11 @@ namespace ResonantSpark {
             private CharacterData charData;
 
             public float gameTime {
-                get { return gameTimeManager.Layer("gameTime"); }
+                get { return gameTimeManager.DeltaTime("frameDelta", "game"); }
             }
 
             public float realTime {
-                get { return gameTimeManager.Layer("realTime"); }
+                get { return gameTimeManager.DeltaTime("realDelta"); }
             }
 
             public void Init(CharacterData charData) {
@@ -108,10 +97,7 @@ namespace ResonantSpark {
 
                 inputDoNothingList = new List<Combination> { ScriptableObject.CreateInstance<DirectionCurrent>().Init(0, Input.FightingGameAbsInputCodeDir.Neutral) };
 
-                rigidbody = gameObject.GetComponent<Rigidbody>();
-                charVelocity = new CharacterPrioritizedVelocity();
-                forces = new List<(Vector3, ForceMode)>();
-                animatorRootMotion.SetCallback(AnimatorMoveCallback);
+                targetFG = gameObject.GetComponentInChildren<TargetFG>();
 
                 charMovementAnimation = new CharacterMovementAnimation(this);
 
@@ -119,12 +105,6 @@ namespace ResonantSpark {
                 onEmptyHealthCallbacks = new List<Action<FightingGameCharacter>>();
 
                 gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
-            }
-
-            public FightingGameCharacter SetOpponentCharacter(FightingGameCharacter opponentChar) {
-                this.opponentChar = opponentChar;
-                target = opponentChar.position;
-                return this;
             }
 
             public FightingGameCharacter SetInputBuffer(Input.InputBuffer inputBuffer) {
@@ -190,21 +170,17 @@ namespace ResonantSpark {
                 return Quaternion.Euler(0.0f, -90.0f, 0.0f) * worldInput;
             }
 
-            public Vector3 OpponentDirection() {
-                return opponentChar.position - position;
-            }
-
             public bool Grounded(out Vector3 groundPoint) {
                 RaycastHit hitInfo;
 
-                Debug.DrawLine(rigidbody.position + (Vector3.up * 0.1f), rigidbody.position + (Vector3.up * 0.1f) + (Vector3.down * groundCheckDistance), Color.yellow);
+                Debug.DrawLine(rigidFG.position + (Vector3.up * 0.1f), rigidFG.position + (Vector3.up * 0.1f) + (Vector3.down * groundCheckDistance), Color.yellow);
 
-                if (Physics.Raycast(rigidbody.position + (Vector3.up * 0.1f), Vector3.down, out hitInfo, groundCheckDistance, groundRaycastMask, QueryTriggerInteraction.Ignore)) {
+                if (Physics.Raycast(rigidFG.position + (Vector3.up * 0.1f), Vector3.down, out hitInfo, groundCheckDistance, groundRaycastMask, QueryTriggerInteraction.Ignore)) {
                     groundPoint = hitInfo.point;
                     return true;
                 }
                 else {
-                    groundPoint = new Vector3(rigidbody.position.x, 0.0f, rigidbody.position.z);
+                    groundPoint = new Vector3(rigidFG.position.x, 0.0f, rigidFG.position.z);
                     return false;
                 }
             }
@@ -212,62 +188,42 @@ namespace ResonantSpark {
             public bool CheckAboutToLand() {
                 RaycastHit hitInfo;
 
-                float checkDistance = Mathf.Max(landAnimationFrameTarget / 60.0f * -rigidbody.velocity.y, groundCheckDistanceMinimum);
+                float checkDistance = Mathf.Max(landAnimationFrameTarget / 60.0f * -rigidFG.velocity.y, groundCheckDistanceMinimum);
 
-                return checkDistance > 0.0f && Physics.Raycast(rigidbody.position + (Vector3.up * 0.1f), Vector3.down, out hitInfo, checkDistance + 0.1f, groundRaycastMask, QueryTriggerInteraction.Ignore);
+                return checkDistance > 0.0f && Physics.Raycast(rigidFG.position + (Vector3.up * 0.1f), Vector3.down, out hitInfo, checkDistance + 0.1f, groundRaycastMask, QueryTriggerInteraction.Ignore);
             }
 
             public void AddRelativeVelocity(VelocityPriority priority, Vector3 velocity) {
-                charVelocity.AddVelocity(priority, rotation * velocity);
+                rigidFG.AddRelativeVelocity(priority, velocity);
             }
 
             public void SetRelativeVelocity(VelocityPriority priority, Vector3 velocity) {
-                charVelocity.SetVelocity(priority, rotation * velocity);
+                rigidFG.SetRelativeVelocity(priority, velocity);
             }
 
             public void AddForce(Vector3 force, ForceMode mode) {
-                forces.Add((force, mode));
+                rigidFG.AddForce(force, mode);
             }
 
             public void CalculateFinalVelocity() {
-                rigidbody.velocity = charVelocity.CalculateVelocity(rigidbody.velocity);
-
-                for (int n = 0; n < forces.Count; ++n) {
-                    rigidbody.AddForce(forces[n].Item1, forces[n].Item2);
-                }
-
-                charVelocity.ClearVelocities();
-                forces.Clear();
+                rigidFG.CalculateFinalVelocity();
             }
 
             public void Rotate(Quaternion rotation) {
-                rigidbody.MoveRotation(rotation * rigidbody.rotation);
+                rigidFG.Rotate(rotation);
             }
             
             public void SetRotation(Quaternion rotation) {
-                rigidbody.MoveRotation(rotation);
+                rigidFG.SetRotation(rotation);
             }
 
             public void SetRotation(Vector3 charDirection) {
-                rigidbody.MoveRotation(Quaternion.Euler(0.0f, Vector3.SignedAngle(Vector3.right, charDirection, Vector3.up), 0.0f));
-            }
-
-            public void PushAway(float maxDistance, FightingGameCharacter otherChar) {
-                float oneMinusDistance = maxDistance - Vector3.Distance(otherChar.transform.position, transform.position);
-                Vector3 force = 1000.0f * oneMinusDistance * (otherChar.transform.position - transform.position).normalized;
-                force.y = 0;
-
-                //TODO: Decrease the force from the one actually doing the pushing.
-                rigidbody.AddForce(-0.2f * force);
-                otherChar.AddForce(0.8f * force);
-            }
-
-            public void AddForce(Vector3 force) {
-                rigidbody.AddForce(force, ForceMode.Force);
+                rigidFG.SetRotation(charDirection);
             }
 
             public float LookToMoveAngle() {
-                return Vector3.SignedAngle(rigidbody.transform.forward, opponentChar.transform.position - rigidbody.position, Vector3.up);
+                Debug.Log(targetFG.targetPos + " - " + rigidFG.position);
+                return Vector3.SignedAngle(rigidFG.transform.forward, targetFG.targetPos - rigidFG.position, Vector3.up);
             }
 
             public void SetLocalWalkParameters(float x, float z) {
@@ -295,12 +251,12 @@ namespace ResonantSpark {
                 if (stateMachine.GetCurrentState() != null) {
                     CharacterStates.CharacterBaseState currState = (CharacterStates.CharacterBaseState)stateMachine.GetCurrentState();
                     
-                    currState.AnimatorMove(animatorRootRotation, Quaternion.Euler(-90f, 180f, 0f) * Quaternion.Inverse(rigidbody.rotation) * animatorVelocity);
+                    currState.AnimatorMove(animatorRootRotation, Quaternion.Euler(-90f, 180f, 0f) * Quaternion.Inverse(rigidFG.rotation) * animatorVelocity);
                 }
             }
 
             public Vector3 GetLocalVelocity() {
-                return Quaternion.Inverse(rigidbody.rotation) * rigidbody.velocity;
+                return rigidFG.GetLocalVelocity();
             }
 
             public Orientation GetOrientation() {
@@ -314,10 +270,10 @@ namespace ResonantSpark {
 
             public void __debugSetStateText(string text, Color color) {
                 if (screenOrientation.x > 0) {
-                    __debugState.transform.rotation = rigidbody.rotation * Quaternion.Euler(0.0f, -90.0f, 0.0f);
+                    __debugState.transform.rotation = rigidFG.rotation * Quaternion.Euler(0.0f, -90.0f, 0.0f);
                 }
                 else {
-                    __debugState.transform.rotation = rigidbody.rotation * Quaternion.Euler(0.0f, 90.0f, 0.0f);
+                    __debugState.transform.rotation = rigidFG.rotation * Quaternion.Euler(0.0f, 90.0f, 0.0f);
                 }
 
                 __debugState.text = text;
@@ -383,15 +339,19 @@ namespace ResonantSpark {
             }
 
             public Vector3 GetTarget() {
-                return target;
+                return targetFG.targetPos;
             }
 
             public void SetTarget(Vector3 newTargetPos) {
-                target = newTargetPos;
+                targetFG.targetPos = newTargetPos;
             }
 
-            public Transform GetOpponentTransform() {
-                return opponentChar.transform;
+            public void SetOpponentTarget(InGameEntity opponentChar) {
+                targetFG.SetNewTarget(opponentChar);
+            }
+
+            public Vector3 TargetDirection() {
+                return targetFG.targetPos - rigidFG.position;
             }
 
             public void ChangeHealth(int amount) {
@@ -470,6 +430,10 @@ namespace ResonantSpark {
 
             public void UpdateCharacterMovement() {
                 charMovementAnimation.Increment();
+            }
+
+            public void UpdateTarget() {
+                targetFG.UpdateTarget();
             }
 
             public void AnimationCrouch() {

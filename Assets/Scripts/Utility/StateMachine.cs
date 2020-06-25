@@ -20,12 +20,12 @@ namespace ResonantSpark {
 
         private List<Action<IState>> onChangeState;
 
-        public void Execute(int frameIndex) {
+        public void ExecutePass0(int frameIndex) {
             try {
 #if UNITY_EDITOR
                 currStateName = curr.GetType().Name;
 #endif
-                curr.Execute(frameIndex);
+                curr.ExecutePass0(frameIndex);
                 if (changeState) {
                     ChangeState(frameIndex);
                 }
@@ -37,10 +37,23 @@ namespace ResonantSpark {
                 //gameObject.SetActive(false);
                 this.enabled = false;
             }
-            catch {
+        }
+
+        public void ExecutePass1(int frameIndex) {
+            try {
+#if UNITY_EDITOR
+                currStateName = curr.GetType().Name;
+#endif
+
+                curr.ExecutePass1(frameIndex);
+                if (changeState) {
+                    ChangeState(frameIndex);
+                }
+            }
+            catch (Exception ex) {
                 Debug.LogError("State Machine threw Exception");
                 Debug.LogError("  error in state: " + curr.ToString());
-                Debug.LogError("Missing Exception");
+                Debug.LogError(ex);
                 //gameObject.SetActive(false);
                 this.enabled = false;
             }
@@ -50,7 +63,7 @@ namespace ResonantSpark {
             return curr;
         }
 
-        public Action<int> Enable(IState startState) {
+        public (Action<int>, Action<int>) Enable(IState startState) {
             nextStates = new List<IState>();
             if (onChangeState == null) {
                 onChangeState = new List<Action<IState>>();
@@ -66,7 +79,7 @@ namespace ResonantSpark {
 
             startState.Enter(-1, null);
 
-            return Execute;
+            return (ExecutePass0, ExecutePass1);
         }
 
         public void RegisterOnChangeStateCallback(Action<IState> callback) {
