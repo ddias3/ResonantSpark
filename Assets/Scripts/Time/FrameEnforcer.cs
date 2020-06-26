@@ -6,21 +6,23 @@ using System;
 
 namespace ResonantSpark {
     public enum FramePriority : int {
-        ActivePollingReset = 1,
+        InputBuffer = 8,
 
-        Gamemode = 16,
-        Service = 32,
         StateMachine = 64,
         StateMachinePass1 = 64 + 1,
-
-        InputBuffer = 128,
 
         PhysicsMovement = 256,
         PhysicsCollisions = 256 + 1,
         PhysicsResolve = 256 + 2,
 
-        LateService = 0x1000 + 32,
+        Service = 128,
+
+        Gamemode = 16,
+
+        LateService = 0x1000 + 128,
         LateStateMachine = 0x1000 + 64,
+
+        ActivePollingReset = 0xFFFF,
     }
 
     [RequireComponent(typeof(GameTimeManager))]
@@ -33,7 +35,7 @@ namespace ResonantSpark {
             public Action<int> callback;
 
             public int CompareTo(FrameEnforcerCallback other) {
-                return other.priority - this.priority;
+                return this.priority - other.priority;
             }
         }
 

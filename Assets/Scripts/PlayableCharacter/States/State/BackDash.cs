@@ -60,28 +60,26 @@ namespace ResonantSpark {
 
             public override void ExecutePass0(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
-
                 fgChar.AddRelativeVelocity(Gameplay.VelocityPriority.Dash, new Vector3(0.0f, 0.0f, dashSpeedCurve.Evaluate(tracker.frameCount)));
-
-                fgChar.CalculateFinalVelocity();
             }
 
             public override void ExecutePass1(int frameIndex) {
-                if (tracker.frameCount > dashLength) {
-                    Debug.Log("ExecutePass1");
-                    changeState(states.Get("stand"));
-                    fgChar.UpdateTarget();
-                }
-
-                tracker.Increment();
+                fgChar.CalculateFinalVelocity();
             }
 
             public override void LateExecute(int frameIndex) {
+                if (tracker.frameCount > dashLength) {
+                    changeState(states.Get("stand"));
+                }
+
+                fgChar.UpdateTarget();
                 //fgChar.UpdateCharacterMovement();
                 //fgChar.AnimationWalkVelocity();
+                tracker.Increment();
             }
 
             public override void Exit(int frameIndex) {
+                    // frameIndex is off by one for Exit, it only gets called on the next frame at the very start.
                 // do nothing
             }
 

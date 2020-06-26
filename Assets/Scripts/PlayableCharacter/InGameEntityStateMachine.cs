@@ -26,6 +26,10 @@ namespace ResonantSpark {
 #if UNITY_EDITOR
                     currStateName = curr.GetType().Name;
 #endif
+                    if (changeState) {
+                        ChangeState(frameIndex);
+                    }
+
                     curr.ExecutePass0(frameIndex);
                 }
                 catch (Exception ex) {
@@ -42,7 +46,6 @@ namespace ResonantSpark {
 #if UNITY_EDITOR
                     currStateName = curr.GetType().Name;
 #endif
-
                     curr.ExecutePass1(frameIndex);
                 }
                 catch (Exception ex) {
@@ -60,10 +63,6 @@ namespace ResonantSpark {
                     currStateName = curr.GetType().Name;
 #endif
                     curr.LateExecute(frameIndex);
-
-                    if (changeState) {
-                        ChangeState(frameIndex);
-                    }
                 }
                 catch (Exception ex) {
                     Debug.LogError("State Machine threw Exception");
