@@ -31,7 +31,7 @@ namespace ResonantSpark {
                 tracker = new Utility.AttackTracker(clashAnimationLength);
             }
 
-            public override void Enter(int frameIndex, IState previousState) {
+            public override void Enter(int frameIndex, InGameEntityBaseState previousState) {
                 fgChar.__debugSetStateText("Clash", Color.black);
 
                 currDir = FightingGameInputCodeDir.Neutral;
@@ -55,6 +55,11 @@ namespace ResonantSpark {
                 //fgChar.UpdateTarget();
                 //fgChar.UpdateCharacterMovement();
                 //fgChar.CalculateFinalVelocity();
+                //fgChar.AnimationWalkVelocity();
+            }
+
+            public override void LateExecute(int frameIndex) {
+                //fgChar.UpdateCharacterMovement();
                 //fgChar.AnimationWalkVelocity();
             }
 

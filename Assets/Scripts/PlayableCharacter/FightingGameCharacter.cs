@@ -16,8 +16,8 @@ namespace ResonantSpark {
             public static int fgCharCounter = 0;
 
             public AnimatorAdapter animator;
-            public StateMachine stateMachine;
-            public Utility.StateDict states;
+            public InGameEntityStateMachine stateMachine;
+            public InGameEntityStateDict states;
 
             public AttackRunner attackRunner;
 
@@ -235,7 +235,7 @@ namespace ResonantSpark {
                 if (nextState.GetType() != typeof(CharacterStates.AttackGrounded) && nextState.GetType() != typeof(CharacterStates.AttackAirborne)) {
                     attackRunner.ClearPrevAttacks();
                 }
-                stateMachine.ChangeState(nextState);
+                stateMachine.QueueStateChange(nextState);
             }
 
             public CharacterStates.CharacterBaseState State(string id) {

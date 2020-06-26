@@ -29,7 +29,7 @@ namespace ResonantSpark {
                 fgService.EnableControl();
             }
 
-            public override void ExecutePass0(int frameIndex) {
+            public override void Execute(int frameIndex) {
                 if (elapsedTime > 1.2f && !clearedMainScreenText) {
                     uiService.HideMainScreenText();
                     clearedMainScreenText = true;
@@ -44,10 +44,6 @@ namespace ResonantSpark {
 
                 elapsedTime += gameTimeManager.DeltaTime("frameDelta", "game");
                 currRoundTime -= gameTimeManager.DeltaTime("frameDelta", "game");
-            }
-
-            public override void ExecutePass1(int frameIndex) {
-                throw new InvalidOperationException();
             }
 
             public override void Exit(int frameIndex) {

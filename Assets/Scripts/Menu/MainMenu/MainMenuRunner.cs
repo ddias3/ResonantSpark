@@ -22,8 +22,7 @@ namespace ResonantSpark {
 
             public IEnumerator DelayedStart() {
                 yield return new WaitForEndOfFrame();
-                (Action<int>, Action<int>) callbacks = stateMachine.Enable(states.Get("fadeIn"));
-                executeCallback = callbacks.Item1;
+                executeCallback = stateMachine.Enable(states.Get("fadeIn"));
                 this.enabled = true;
             }
         }

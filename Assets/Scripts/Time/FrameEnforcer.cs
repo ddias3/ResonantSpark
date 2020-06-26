@@ -11,6 +11,8 @@ namespace ResonantSpark {
         Gamemode = 16,
         Service = 32,
         StateMachine = 64,
+        StateMachinePass1 = 64 + 1,
+
         InputBuffer = 128,
 
         PhysicsMovement = 256,

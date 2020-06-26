@@ -28,7 +28,7 @@ namespace ResonantSpark {
                 fgService.DisableControl();
             }
 
-            public override void ExecutePass0(int frameIndex) {
+            public override void Execute(int frameIndex) {
                 elapsedTime += gameTimeManager.DeltaTime("frameDelta", "game");
 
                 if (elapsedTime > openingTime) {
@@ -37,10 +37,6 @@ namespace ResonantSpark {
                     // after VS animation, switch to the RoundStart state
                     changeState(states.Get("roundStartMode"));
                 }
-            }
-
-            public override void ExecutePass1(int frameIndex) {
-                throw new InvalidOperationException();
             }
 
             public override void Exit(int frameIndex) {

@@ -7,7 +7,6 @@ using ResonantSpark.Input.Combinations;
 using ResonantSpark.Input;
 using ResonantSpark.Character;
 using ResonantSpark.Gameplay;
-using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -50,7 +49,7 @@ namespace ResonantSpark {
                     .On<Empty>(GivenNothing);
             }
 
-            public override void Enter(int frameIndex, IState previousState) {
+            public override void Enter(int frameIndex, InGameEntityBaseState previousState) {
                 fgChar.__debugSetStateText("Stand", new Color(0.3f, 0.65f, 0.3f));
                 dirPress = FightingGameInputCodeDir.Neutral;
 
@@ -73,9 +72,12 @@ namespace ResonantSpark {
             }
 
             public override void ExecutePass1(int frameIndex) {
+                fgChar.CalculateFinalVelocity();
+            }
+
+            public override void LateExecute(int frameIndex) {
                 fgChar.UpdateTarget();
                 fgChar.UpdateCharacterMovement();
-                fgChar.CalculateFinalVelocity();
                 fgChar.AnimationWalkVelocity();
             }
 

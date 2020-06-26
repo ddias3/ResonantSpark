@@ -28,7 +28,7 @@ namespace ResonantSpark {
                 uiService.SetRoundWins(1, char1Wins);
             }
 
-            public override void ExecutePass0(int frameIndex) {
+            public override void Execute(int frameIndex) {
                 if (elapsedTime > 2.0f) {
                     if (char0Wins >= 3 || char1Wins >= 3) {
                         changeState(states.Get("gameEndMode"));
@@ -39,10 +39,6 @@ namespace ResonantSpark {
                 }
 
                 elapsedTime += gameTimeManager.DeltaTime("frameDelta", "game"); ;
-            }
-
-            public override void ExecutePass1(int frameIndex) {
-                throw new InvalidOperationException();
             }
 
             public override void Exit(int frameIndex) {

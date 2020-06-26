@@ -19,7 +19,7 @@ namespace ResonantSpark {
                     .On<DoubleTap>(OnDoubleTap);
             }
 
-            public override void Enter(int frameIndex, IState previousState) {
+            public override void Enter(int frameIndex, InGameEntityBaseState previousState) {
                 throw new System.NotImplementedException();
             }
 
@@ -29,6 +29,10 @@ namespace ResonantSpark {
 
             public override void ExecutePass1(int frameIndex) {
                 throw new System.NotImplementedException();
+            }
+
+            public override void LateExecute(int frameIndex) {
+                throw new NotImplementedException();
             }
 
             public override void Exit(int frameIndex) {

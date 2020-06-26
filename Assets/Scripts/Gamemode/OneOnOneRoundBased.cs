@@ -72,9 +72,9 @@ namespace ResonantSpark {
             private void EnablePlayers() {
                 Debug.Log("Enable Players");
 
-                char0.GetComponent<CharacterStates.Init>().StartStateMachine(frame);
-                char1.GetComponent<CharacterStates.Init>().StartStateMachine(frame);
-                GetComponent<CharacterStates.Init>().StartStateMachine(frame);
+                char0.GetComponent<CharacterStates.InitInGameEntityStateMachine>().StartStateMachine(frame);
+                char1.GetComponent<CharacterStates.InitInGameEntityStateMachine>().StartStateMachine(frame);
+                GetComponent<InitStateMachine>().StartStateMachine(frame);
             }
 
             private float GameTime(float input) {
@@ -120,7 +120,7 @@ namespace ResonantSpark {
             }
 
             private void OnRoundEnd() {
-                stateMachine.ChangeState(states.Get("roundEndMode"));
+                stateMachine.QueueStateChange(states.Get("roundEndMode"));
 
                 if (char0.health > char1.health) {
                     char0RoundWins += 1;

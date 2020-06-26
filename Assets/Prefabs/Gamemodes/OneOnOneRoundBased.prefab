@@ -139,7 +139,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5907818410644016003}
   - component: {fileID: 5907818410644016004}
-  - component: {fileID: 4054885748363290252}
+  - component: {fileID: 8557064791874502764}
   m_Layer: 0
   m_Name: OneOnOneRoundBased
   m_TagString: rspGamemode
@@ -178,7 +178,7 @@ MonoBehaviour:
   states: {fileID: 3403993231974159872}
   roundTime: 60
   gameTime: 1
---- !u!114 &4054885748363290252
+--- !u!114 &8557064791874502764
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -187,12 +187,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 5907818410644016008}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a7f718226369d3408c13ec23085b352, type: 3}
+  m_Script: {fileID: 11500000, guid: e1ec014d70a95c444873c5dfe9f59182, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  callback0Priority: 256
-  callback1Priority: 0
-  enableCallback1: 0
+  callbackPriority: 16
   initState: {fileID: 5759152208771770001}
   stateMachine: {fileID: 4425296836205938801}
 --- !u!1 &5976575351784179997

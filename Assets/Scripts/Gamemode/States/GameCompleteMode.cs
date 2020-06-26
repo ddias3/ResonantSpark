@@ -24,12 +24,8 @@ namespace ResonantSpark {
                 uiService.HideMainScreenText();
             }
 
-            public override void ExecutePass0(int frameIndex) {
+            public override void Execute(int frameIndex) {
                 // do nothing
-            }
-
-            public override void ExecutePass1(int frameIndex) {
-                throw new NotImplementedException();
             }
 
             public override void Exit(int frameIndex) {

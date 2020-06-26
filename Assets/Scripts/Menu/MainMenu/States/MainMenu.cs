@@ -26,12 +26,8 @@ namespace ResonantSpark {
                 mainMenu.ShowQuitButton();
             }
 
-            public override void ExecutePass0(int frameIndex) {
+            public override void Execute(int frameIndex) {
                 // TODO: figure this one out.
-            }
-
-            public override void ExecutePass1(int frameIndex) {
-                throw new InvalidOperationException();
             }
 
             public override void Exit(int frameIndex) {

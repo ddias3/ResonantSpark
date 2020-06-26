@@ -35,7 +35,7 @@ namespace ResonantSpark {
                 frameCount = 0;
             }
 
-            public override void ExecutePass0(int frameIndex) {
+            public override void Execute(int frameIndex) {
                 if (elapsedTime > elapsedDisplayTime[0]) {
                     changeState(states.Get("fightingMode"));
                 }
@@ -45,10 +45,6 @@ namespace ResonantSpark {
 
                 elapsedTime += gameTimeManager.DeltaTime("frameDelta", "game");
                 ++frameCount;
-            }
-
-            public override void ExecutePass1(int frameIndex) {
-                throw new InvalidOperationException();
             }
 
             public override void Exit(int frameIndex) {

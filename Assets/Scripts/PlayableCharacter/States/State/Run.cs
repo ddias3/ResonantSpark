@@ -21,7 +21,7 @@ namespace ResonantSpark {
                     .On<NeutralReturn>(OnNeutralReturn);
             }
 
-            public override void Enter(int frameIndex, IState previousState) {
+            public override void Enter(int frameIndex, InGameEntityBaseState previousState) {
                 fgChar.__debugSetStateText("Run", Color.black);
                 //fgChar.Play("run_forward", 0, 0.0f);
             }
@@ -35,6 +35,11 @@ namespace ResonantSpark {
                 fgChar.UpdateTarget();
                 //fgChar.UpdateCharacterMovement();
                 //fgChar.CalculateFinalVelocity();
+                //fgChar.AnimationWalkVelocity();
+            }
+
+            public override void LateExecute(int frameIndex) {
+                //fgChar.UpdateCharacterMovement();
                 //fgChar.AnimationWalkVelocity();
             }
 

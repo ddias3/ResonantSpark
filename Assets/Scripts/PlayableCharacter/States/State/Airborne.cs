@@ -22,7 +22,7 @@ namespace ResonantSpark {
                     .On<DoubleTap>(OnDoubleTap);
             }
 
-            public override void Enter(int frameIndex, IState previousState) {
+            public override void Enter(int frameIndex, InGameEntityBaseState previousState) {
                 fgChar.__debugSetStateText("Airborne", Color.yellow);
 
                 fgChar.Play("airborne");
@@ -48,6 +48,11 @@ namespace ResonantSpark {
                 //fgChar.UpdateTarget();
                 //fgChar.UpdateCharacterMovement();
                 //fgChar.CalculateFinalVelocity();
+                //fgChar.AnimationWalkVelocity();
+            }
+
+            public override void LateExecute(int frameIndex) {
+                //fgChar.UpdateCharacterMovement();
                 //fgChar.AnimationWalkVelocity();
             }
 

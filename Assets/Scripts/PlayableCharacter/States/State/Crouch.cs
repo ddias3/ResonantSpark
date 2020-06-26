@@ -32,7 +32,7 @@ namespace ResonantSpark {
                     .On<Empty>(GivenNothing);
             }
 
-            public override void Enter(int frameIndex, IState previousState) {
+            public override void Enter(int frameIndex, InGameEntityBaseState previousState) {
                 fgChar.__debugSetStateText("Crouch", new Color(0.3f, 0.65f, 0.3f));
                 dirPress = FightingGameInputCodeDir.Neutral;
 
@@ -52,6 +52,11 @@ namespace ResonantSpark {
                 //fgChar.UpdateTarget();
                 //fgChar.UpdateCharacterMovement();
                 //fgChar.CalculateFinalVelocity();
+                //fgChar.AnimationWalkVelocity();
+            }
+
+            public override void LateExecute(int frameIndex) {
+                //fgChar.UpdateCharacterMovement();
                 //fgChar.AnimationWalkVelocity();
             }
 

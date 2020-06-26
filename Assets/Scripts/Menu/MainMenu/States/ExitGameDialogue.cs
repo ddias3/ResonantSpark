@@ -28,12 +28,8 @@ namespace ResonantSpark {
                 inputManager.SetActiveState(this);
             }
 
-            public override void ExecutePass0(int frameIndex) {
+            public override void Execute(int frameIndex) {
                 // do nothing
-            }
-
-            public override void ExecutePass1(int frameIndex) {
-                throw new InvalidOperationException();
             }
 
             public override void Exit(int frameIndex) {

@@ -22,7 +22,7 @@ namespace ResonantSpark {
                     .On<DoubleTap>(OnDoubleTap);
             }
 
-            public override void Enter(int frameIndex, IState previousState) {
+            public override void Enter(int frameIndex, InGameEntityBaseState previousState) {
                 fgChar.__debugSetStateText("Grab Break", new Color(1.0f, 0.5f, 0.0f));
                 //if (messages.Count > 0) {
                 //    Combination combo = messages.Dequeue();
@@ -41,6 +41,11 @@ namespace ResonantSpark {
                 //fgChar.UpdateTarget();
                 //fgChar.UpdateCharacterMovement();
                 //fgChar.CalculateFinalVelocity();
+                //fgChar.AnimationWalkVelocity();
+            }
+
+            public override void LateExecute(int frameIndex) {
+                //fgChar.UpdateCharacterMovement();
                 //fgChar.AnimationWalkVelocity();
             }
 

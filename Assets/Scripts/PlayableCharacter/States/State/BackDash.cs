@@ -42,7 +42,7 @@ namespace ResonantSpark {
                 tracker = new Utility.AttackTracker(dashLength);
             }
 
-            public override void Enter(int frameIndex, IState previousState) {
+            public override void Enter(int frameIndex, InGameEntityBaseState previousState) {
                 fgChar.__debugSetStateText("Back Dash", Color.green);
 
                 dashDir = FightingGameInputCodeDir.None;
@@ -63,9 +63,7 @@ namespace ResonantSpark {
 
                 fgChar.AddRelativeVelocity(Gameplay.VelocityPriority.Dash, new Vector3(0.0f, 0.0f, dashSpeedCurve.Evaluate(tracker.frameCount)));
 
-                if (tracker.frameCount > dashLength) {
-                    Debug.Log("ExecutePass0");
-                }
+                fgChar.CalculateFinalVelocity();
             }
 
             public override void ExecutePass1(int frameIndex) {
@@ -75,11 +73,12 @@ namespace ResonantSpark {
                     fgChar.UpdateTarget();
                 }
 
-                //fgChar.UpdateCharacterMovement();
-                fgChar.CalculateFinalVelocity();
-                //fgChar.AnimationWalkVelocity();
-
                 tracker.Increment();
+            }
+
+            public override void LateExecute(int frameIndex) {
+                //fgChar.UpdateCharacterMovement();
+                //fgChar.AnimationWalkVelocity();
             }
 
             public override void Exit(int frameIndex) {

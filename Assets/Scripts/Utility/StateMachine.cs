@@ -20,32 +20,12 @@ namespace ResonantSpark {
 
         private List<Action<IState>> onChangeState;
 
-        public void ExecutePass0(int frameIndex) {
+        public void Execute(int frameIndex) {
             try {
 #if UNITY_EDITOR
                 currStateName = curr.GetType().Name;
 #endif
-                curr.ExecutePass0(frameIndex);
-                if (changeState) {
-                    ChangeState(frameIndex);
-                }
-            }
-            catch (Exception ex) {
-                Debug.LogError("State Machine threw Exception");
-                Debug.LogError("  error in state: " + curr.ToString());
-                Debug.LogError(ex);
-                //gameObject.SetActive(false);
-                this.enabled = false;
-            }
-        }
-
-        public void ExecutePass1(int frameIndex) {
-            try {
-#if UNITY_EDITOR
-                currStateName = curr.GetType().Name;
-#endif
-
-                curr.ExecutePass1(frameIndex);
+                curr.Execute(frameIndex);
                 if (changeState) {
                     ChangeState(frameIndex);
                 }
@@ -63,7 +43,7 @@ namespace ResonantSpark {
             return curr;
         }
 
-        public (Action<int>, Action<int>) Enable(IState startState) {
+        public Action<int> Enable(IState startState) {
             nextStates = new List<IState>();
             if (onChangeState == null) {
                 onChangeState = new List<Action<IState>>();
@@ -74,12 +54,12 @@ namespace ResonantSpark {
             initState = startState;
 
             stateDict.Each(state => {
-                state.OnStateMachineEnable(new Action<IState>(ChangeState));
+                state.OnStateMachineEnable(new Action<IState>(QueueStateChange));
             });
 
             startState.Enter(-1, null);
 
-            return (ExecutePass0, ExecutePass1);
+            return Execute;
         }
 
         public void RegisterOnChangeStateCallback(Action<IState> callback) {
@@ -95,7 +75,7 @@ namespace ResonantSpark {
             //   I'm not sure I like this design, so far
         }
 
-        public void ChangeState(IState nextState) {
+        public void QueueStateChange(IState nextState) {
             if (nextStates.Count != 0) Debug.LogWarning("Next State isn't empty, multiple ChangeState calls on the same frame");
 
             changeState = true;

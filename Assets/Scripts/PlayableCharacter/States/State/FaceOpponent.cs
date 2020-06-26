@@ -30,7 +30,7 @@ namespace ResonantSpark {
                     .On<DirectionPress>(GivenDirectionPress);
             }
 
-            public override void Enter(int frameIndex, IState previousState) {
+            public override void Enter(int frameIndex, InGameEntityBaseState previousState) {
                 fgChar.__debugSetStateText("Face Opponent", Color.blue);
                 GivenInput(fgChar.GetInUseCombinations());
 
@@ -57,6 +57,11 @@ namespace ResonantSpark {
                 //fgChar.UpdateTarget();
                 //fgChar.UpdateCharacterMovement();
                 //fgChar.CalculateFinalVelocity();
+                //fgChar.AnimationWalkVelocity();
+            }
+
+            public override void LateExecute(int frameIndex) {
+                //fgChar.UpdateCharacterMovement();
                 //fgChar.AnimationWalkVelocity();
             }
 

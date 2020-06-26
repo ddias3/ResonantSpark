@@ -48,7 +48,7 @@ namespace ResonantSpark {
                 }
             }
 
-            public override void ExecutePass0(int frameIndex) {
+            public override void Execute(int frameIndex) {
                 if (Time.time - startTime > introTime) {
                     camera.SetTrigger("start");
 
@@ -59,10 +59,6 @@ namespace ResonantSpark {
                         changeState(states.Get("mainMenu"));
                     }
                 }
-            }
-
-            public override void ExecutePass1(int frameIndex) {
-                throw new InvalidOperationException();
             }
 
             public override void Exit(int frameIndex) {
