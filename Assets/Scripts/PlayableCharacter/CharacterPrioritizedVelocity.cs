@@ -10,6 +10,7 @@ namespace ResonantSpark {
             Movement,
             Dash,
             Jump,
+            MovementOverride,
             Light,
             Medium,
             Heavy,

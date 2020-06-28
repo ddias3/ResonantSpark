@@ -5,7 +5,7 @@ using UnityEngine;
 
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Character;
-using ResonantSpark.Gameplay;
+using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -21,7 +21,7 @@ namespace ResonantSpark {
                     .On<NeutralReturn>(OnNeutralReturn);
             }
 
-            public override void Enter(int frameIndex, InGameEntityBaseState previousState) {
+            public override void Enter(int frameIndex, MultipassBaseState previousState) {
                 fgChar.__debugSetStateText("Run", Color.black);
                 //fgChar.Play("run_forward", 0, 0.0f);
             }

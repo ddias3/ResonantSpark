@@ -163,7 +163,7 @@ namespace ResonantSpark {
                 public FightingGameAbsInputCodeDir direction { get; private set; }
 
                 public DoubleTap() {
-                    SetInfo(staleTime: 18, priorityValue: 1000);
+                    SetInfo(staleTime: 12, priorityValue: 1000);
                     this.frameStart = -1;
                     this.frameEnd = -1;
                 }

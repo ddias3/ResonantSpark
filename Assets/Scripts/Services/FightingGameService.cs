@@ -140,39 +140,8 @@ namespace ResonantSpark {
             }
 
             private void FrameUpdate(int frameIndex) {
-                playerService.OneToOthers((id, fgChar, others) => {
-                    for (int n = 0; n < others.Count; ++n) {
-                        //Debug.LogFormat("#{0} : distance from other[{1}] = {2}", id, others[n].id, Vector3.Distance(fgChar.transform.position, others[n].transform.position));
-
-                        if (others[n].GetGroundRelation() == Character.GroundRelation.GROUNDED) {
-                            if (Vector3.Distance(fgChar.transform.position, others[n].transform.position) < 0.68f) {
-                                //fgChar.PushAway(0.68f, others[n]);
-                                Debug.Log("PushAway Required : " + Vector3.Distance(fgChar.transform.position, others[n].transform.position));
-                            }
-                        }
-                    }
-                });
-
                 CalculateComboScaling();
                 ResolveHits();
-
-                //if (UnityEngine.Input.GetKeyDown(KeyCode.Keypad1)) {
-                //    player0ComboHits += 1;
-                //    uiService.SetComboCounter(0, player0ComboHits);
-                //}
-                //if (UnityEngine.Input.GetKeyDown(KeyCode.Keypad4)) {
-                //    player0ComboHits = 0;
-                //    uiService.HideComboCounter(0);
-                //}
-
-                //if (UnityEngine.Input.GetKeyDown(KeyCode.Keypad3)) {
-                //    player1ComboHits += 1;
-                //    uiService.SetComboCounter(1, player1ComboHits);
-                //}
-                //if (UnityEngine.Input.GetKeyDown(KeyCode.Keypad6)) {
-                //    player1ComboHits = 0;
-                //    uiService.HideComboCounter(1);
-                //}
             }
 
             private List<float> comboScaling = new List<float> { 1.0f, 0.8f, 0.6f, 0.5f, 0.45f, 0.4f, 0.35f, 0.3f, 0.25f };

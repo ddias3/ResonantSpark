@@ -18,15 +18,19 @@ namespace ResonantSpark {
                 gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
             }
 
-            public override void Enter(int frameIndex, IState previousState) {
+            public override void Enter(int frameIndex, MultipassBaseState previousState) {
                 elapsedTime = 0;
             }
 
-            public override void Execute(int frameIndex) {
+            public override void ExecutePass0(int frameIndex) {
                 if (elapsedTime > 0.5f) {
                     changeState(states.Get("openingMode"));
                 }
                 elapsedTime += gameTimeManager.DeltaTime("frameDelta", "game");
+            }
+
+            public override void LateExecute(int frameIndex) {
+                oneOnOne.RestrictDistance();
             }
 
             public override void Exit(int frameIndex) {

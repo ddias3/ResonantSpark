@@ -5,10 +5,11 @@ using UnityEngine;
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Gameplay;
 using ResonantSpark.Character;
+using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public abstract class CharacterBaseState : InGameEntityBaseState {
+        public abstract class CharacterBaseState : MultipassBaseState {
 
             protected FightingGameCharacter fgChar;
 
@@ -36,7 +37,7 @@ namespace ResonantSpark {
                 fgChar = gameObject.GetComponentInParent<FightingGameCharacter>();
             }
 
-            public override void OnStateMachineEnable(Action<InGameEntityBaseState> changeState) {
+            public override void OnStateMachineEnable(Action<MultipassBaseState> changeState) {
                 this.changeState = (newState) => {
                     fgChar.SetState((CharacterBaseState) newState);
                 };

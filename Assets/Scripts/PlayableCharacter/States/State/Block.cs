@@ -5,7 +5,7 @@ using UnityEngine;
 
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Character;
-using ResonantSpark.Gameplay;
+using ResonantSpark.Utility;
 using ResonantSpark.Input;
 
 namespace ResonantSpark {
@@ -22,7 +22,7 @@ namespace ResonantSpark {
                     .On<DirectionCurrent>(OnDirectionCurrent);
             }
 
-            public override void Enter(int frameIndex, InGameEntityBaseState previousState) {
+            public override void Enter(int frameIndex, MultipassBaseState previousState) {
                 fgChar.__debugSetStateText("Back Dash", Color.gray);
 
                 fgChar.Play("idle");

@@ -139,7 +139,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5907818410644016003}
   - component: {fileID: 5907818410644016004}
-  - component: {fileID: 8557064791874502764}
+  - component: {fileID: 4204782087996913149}
   m_Layer: 0
   m_Name: OneOnOneRoundBased
   m_TagString: rspGamemode
@@ -174,11 +174,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94ac5d75c1e028a40a415194831c0c23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stateMachine: {fileID: 4425296836205938801}
-  states: {fileID: 3403993231974159872}
+  stateMachine: {fileID: 5006741397487736226}
+  states: {fileID: 8138733489031963274}
   roundTime: 60
   gameTime: 1
---- !u!114 &8557064791874502764
+--- !u!114 &4204782087996913149
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -187,12 +187,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 5907818410644016008}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1ec014d70a95c444873c5dfe9f59182, type: 3}
+  m_Script: {fileID: 11500000, guid: 9a7f718226369d3408c13ec23085b352, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  callbackPriority: 16
+  callback0Priority: 512
+  performSecondPass: 0
+  callback1Priority: 0
+  lateCallbackPriority: 66048
   initState: {fileID: 5759152208771770001}
-  stateMachine: {fileID: 4425296836205938801}
+  stateMachine: {fileID: 5006741397487736226}
 --- !u!1 &5976575351784179997
 GameObject:
   m_ObjectHideFlags: 0
@@ -288,8 +291,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4319761164933371877}
-  - component: {fileID: 4425296836205938801}
-  - component: {fileID: 3403993231974159872}
+  - component: {fileID: 5006741397487736226}
+  - component: {fileID: 8138733489031963274}
   m_Layer: 0
   m_Name: StateMachine
   m_TagString: Untagged
@@ -317,7 +320,7 @@ Transform:
   m_Father: {fileID: 5907818410644016003}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4425296836205938801
+--- !u!114 &5006741397487736226
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -326,12 +329,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 7042724851628739568}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 413492a9191f29441a82c04d75f99cfb, type: 3}
+  m_Script: {fileID: 11500000, guid: bd83ba2930fd9b44caa8628de6f34cc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stateDict: {fileID: 3403993231974159872}
+  stateDict: {fileID: 8138733489031963274}
   currStateName: 
---- !u!114 &3403993231974159872
+--- !u!114 &8138733489031963274
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -340,7 +343,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7042724851628739568}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6798682baa7bd4a08aec47bc647db88d, type: 3}
+  m_Script: {fileID: 11500000, guid: 177091d9d4748ff43b08d6f039a7f230, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &8374698332835782575

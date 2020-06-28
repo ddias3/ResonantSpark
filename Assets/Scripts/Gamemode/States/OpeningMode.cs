@@ -18,7 +18,7 @@ namespace ResonantSpark {
                 gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
             }
 
-            public override void Enter(int frameIndex, IState previousState) {
+            public override void Enter(int frameIndex, MultipassBaseState previousState) {
                 oneOnOne.OpeningMode();
                 oneOnOne.ResetGame();
                 oneOnOne.ResetRound();
@@ -28,7 +28,7 @@ namespace ResonantSpark {
                 fgService.DisableControl();
             }
 
-            public override void Execute(int frameIndex) {
+            public override void ExecutePass0(int frameIndex) {
                 elapsedTime += gameTimeManager.DeltaTime("frameDelta", "game");
 
                 if (elapsedTime > openingTime) {
@@ -37,6 +37,10 @@ namespace ResonantSpark {
                     // after VS animation, switch to the RoundStart state
                     changeState(states.Get("roundStartMode"));
                 }
+            }
+
+            public override void LateExecute(int frameIndex) {
+                oneOnOne.RestrictDistance();
             }
 
             public override void Exit(int frameIndex) {

@@ -6,19 +6,20 @@ using ResonantSpark.Input.Combinations;
 using ResonantSpark.Character;
 using ResonantSpark.Input;
 using ResonantSpark.Gameplay;
+using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace CharacterStates {
         public class BackDash : CharacterBaseState {
 
             [Tooltip("The dash length in frames")]
-            public int dashLength = 36;
+            public int dashLength = 18;
             [Tooltip("These many frames of the start of the dash may not be cancelled into another dash")]
-            public int redashDisallowed = 36;
+            public int redashDisallowed = 18;
             [Tooltip("These many frames of the start of the dash may not be cancelled into an attack")]
-            public int attackDisallowed = 30;
+            public int attackDisallowed = 15;
 
-            public AnimationCurve dashSpeedCurve;
+            public AnimationCurve dashPositionCurve;
 
             private Utility.AttackTracker tracker;
 
@@ -42,14 +43,14 @@ namespace ResonantSpark {
                 tracker = new Utility.AttackTracker(dashLength);
             }
 
-            public override void Enter(int frameIndex, InGameEntityBaseState previousState) {
+            public override void Enter(int frameIndex, MultipassBaseState previousState) {
                 fgChar.__debugSetStateText("Back Dash", Color.green);
 
                 dashDir = FightingGameInputCodeDir.None;
                 GivenInput(fgChar.GetInUseCombinations());
 
                 if (dashDir == FightingGameInputCodeDir.Back) {
-                    fgChar.Play("dash_backward");
+                    fgChar.Play("dash_backward_fast");
                 }
                 else {
                     throw new InvalidOperationException("Entered player state dash without a valid dash direction");
@@ -60,7 +61,12 @@ namespace ResonantSpark {
 
             public override void ExecutePass0(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
-                fgChar.AddRelativeVelocity(Gameplay.VelocityPriority.Dash, new Vector3(0.0f, 0.0f, dashSpeedCurve.Evaluate(tracker.frameCount)));
+                //fgChar.AddRelativeVelocity(Gameplay.VelocityPriority.Dash, new Vector3(0.0f, 0.0f, dashSpeedCurve.Evaluate(tracker.frameCount)));
+                fgChar.AddRelativeVelocity(Gameplay.VelocityPriority.Dash,
+                    new Vector3(
+                        0.0f,
+                        0.0f,
+                        AnimationCurveCalculus.Differentiate(dashPositionCurve, tracker.frameCount) / fgChar.gameTime));
             }
 
             public override void ExecutePass1(int frameIndex) {

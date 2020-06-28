@@ -6,7 +6,7 @@ using UnityEngine;
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Character;
 using ResonantSpark.Input;
-using ResonantSpark.Gameplay;
+using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -44,7 +44,7 @@ namespace ResonantSpark {
                 tracker = new Utility.AttackTracker(dodgeLength);
             }
 
-            public override void Enter(int frameIndex, InGameEntityBaseState previousState) {
+            public override void Enter(int frameIndex, MultipassBaseState previousState) {
                 fgChar.__debugSetStateText("Dodge", Color.green);
 
                 dodgeDir = FightingGameInputCodeDir.None;

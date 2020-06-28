@@ -20,12 +20,16 @@ namespace ResonantSpark {
                 gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
             }
 
-            public override void Enter(int frameIndex, IState previousState) {
+            public override void Enter(int frameIndex, MultipassBaseState previousState) {
                 uiService.HideMainScreenText();
             }
 
-            public override void Execute(int frameIndex) {
+            public override void ExecutePass0(int frameIndex) {
                 // do nothing
+            }
+
+            public override void LateExecute(int frameIndex) {
+                oneOnOne.RestrictDistance();
             }
 
             public override void Exit(int frameIndex) {

@@ -19,7 +19,7 @@ namespace ResonantSpark {
                 gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
             }
 
-            public override void Enter(int frameIndex, IState previousState) {
+            public override void Enter(int frameIndex, MultipassBaseState previousState) {
                 elapsedTime = 0;
                 char0Wins = oneOnOne.GetCharNumWins(0);
                 char1Wins = oneOnOne.GetCharNumWins(1);
@@ -28,7 +28,7 @@ namespace ResonantSpark {
                 uiService.SetRoundWins(1, char1Wins);
             }
 
-            public override void Execute(int frameIndex) {
+            public override void ExecutePass0(int frameIndex) {
                 if (elapsedTime > 2.0f) {
                     if (char0Wins >= 3 || char1Wins >= 3) {
                         changeState(states.Get("gameEndMode"));
@@ -39,6 +39,10 @@ namespace ResonantSpark {
                 }
 
                 elapsedTime += gameTimeManager.DeltaTime("frameDelta", "game"); ;
+            }
+
+            public override void LateExecute(int frameIndex) {
+                oneOnOne.RestrictDistance();
             }
 
             public override void Exit(int frameIndex) {

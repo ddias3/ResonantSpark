@@ -6,7 +6,7 @@ using UnityEngine;
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Input;
 using ResonantSpark.Character;
-using ResonantSpark.Gameplay;
+using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -26,7 +26,7 @@ namespace ResonantSpark {
                     .On<QuarterCircleButtonPress>(OnQuarterCircleButtonPress);
             }
 
-            public override void Enter(int frameIndex, InGameEntityBaseState previousState) {
+            public override void Enter(int frameIndex, MultipassBaseState previousState) {
                 fgChar.Play("idle");
             }
 

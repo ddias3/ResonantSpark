@@ -6,6 +6,7 @@ using ResonantSpark.Input.Combinations;
 using ResonantSpark.Character;
 using ResonantSpark.Input;
 using ResonantSpark.Gameplay;
+using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -17,6 +18,8 @@ namespace ResonantSpark {
             public int redashDisallowed = 10;
             [Tooltip("These many frames of the start of the dash may not be cancelled into an attack")]
             public int attackDisallowed = 16;
+
+            public AnimationCurve dashPositionCurve;
 
             private Utility.AttackTracker tracker;
 
@@ -40,13 +43,18 @@ namespace ResonantSpark {
                 tracker = new Utility.AttackTracker(dashLength);
             }
 
-            public override void Enter(int frameIndex, InGameEntityBaseState previousState) {
+            public override void Enter(int frameIndex, MultipassBaseState previousState) {
                 fgChar.__debugSetStateText("Frwd Dash", Color.green);
 
                 dashDir = FightingGameInputCodeDir.None;
                 GivenInput(fgChar.GetInUseCombinations());
 
-                fgChar.Play("dash_forward_long");
+                if (dashDir == FightingGameInputCodeDir.Forward) {
+                    fgChar.Play("dash_forward"); // fgChar.Play("dash_forward_long");
+                }
+                else {
+                    throw new InvalidOperationException("Entered player state dash without a valid dash direction");
+                }
 
                 tracker.Track(frameIndex);
             }
@@ -54,28 +62,28 @@ namespace ResonantSpark {
             public override void ExecutePass0(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
 
+                fgChar.AddRelativeVelocity(Gameplay.VelocityPriority.Dash,
+                    new Vector3(
+                        0.0f,
+                        0.0f,
+                        AnimationCurveCalculus.Differentiate(dashPositionCurve, tracker.frameCount) / fgChar.gameTime));
+                //fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Dash, animatorVelocity);
+            }
+
+            public override void ExecutePass1(int frameIndex) {
+                fgChar.CalculateFinalVelocity();
+            }
+
+            public override void LateExecute(int frameIndex) {
                 if (tracker.frameCount > dashLength) {
                     changeState(states.Get("stand"));
                 }
 
-                //distance += animatorDelta / fgChar.gameTime;
-                //fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Dash, animatorVelocity);
-                //fgChar.position += fgChar.toLocal * animatorDelta;
-
-                fgChar.CalculateFinalVelocity();
-                tracker.Increment();
-            }
-
-            public override void ExecutePass1(int frameIndex) {
-                //fgChar.UpdateTarget();
+                fgChar.UpdateTarget();
                 //fgChar.UpdateCharacterMovement();
                 //fgChar.CalculateFinalVelocity();
                 //fgChar.AnimationWalkVelocity();
-            }
-
-            public override void LateExecute(int frameIndex) {
-                //fgChar.UpdateCharacterMovement();
-                //fgChar.AnimationWalkVelocity();
+                tracker.Increment();
             }
 
             public override void Exit(int frameIndex) {

@@ -4,8 +4,7 @@ using UnityEngine;
 
 namespace ResonantSpark {
     namespace Utility {
-        public class StateDict: MonoBehaviour
-        {
+        public class StateDict: MonoBehaviour {
 
             private Dictionary<string, IState> dict = new Dictionary<string, IState>();
 

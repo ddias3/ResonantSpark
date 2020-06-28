@@ -211,7 +211,8 @@ namespace ResonantSpark {
 
                             n = 0;
                             while (continueSearch && reader.ReadyNextLookBehind()) {
-                                if (n < 8) {
+                                //if (n < 8) {
+                                if (n < 5) {
                                     int lookBehindFrameIndex = reader.LookBehind(out GameInputStruct lb);
 
                                     if (lb.direction != FightingGameAbsInputCodeDir.Neutral) break;

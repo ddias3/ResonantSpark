@@ -11,7 +11,6 @@ using ResonantSpark.Gameplay;
 namespace ResonantSpark {
     namespace CharacterStates {
         public abstract class Attack : CharacterBaseState {
-            public AttackRunner attackRunner;
         }
     }
 }

@@ -27,32 +27,6 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &-9051113050253416991
-AnimatorState:
-  serializedVersion: 5
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: walk_right_stop
-  m_Speed: 1
-  m_CycleOffset: 0
-  m_Transitions: []
-  m_StateMachineBehaviours: []
-  m_Position: {x: 50, y: 50, z: 0}
-  m_IKOnFeet: 0
-  m_WriteDefaultValues: 1
-  m_Mirror: 0
-  m_SpeedParameterActive: 0
-  m_MirrorParameterActive: 0
-  m_CycleOffsetParameterActive: 0
-  m_TimeParameterActive: 0
-  m_Motion: {fileID: 258454479710748209, guid: f567ff25715f108469dfdda359e76464, type: 3}
-  m_Tag: 
-  m_SpeedParameter: 
-  m_MirrorParameter: 
-  m_CycleOffsetParameter: 
-  m_TimeParameter: 
 --- !u!1102 &-8912012305754756637
 AnimatorState:
   serializedVersion: 5
@@ -128,60 +102,6 @@ AnimatorState:
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
   m_Motion: {fileID: -6103028888987235432, guid: f567ff25715f108469dfdda359e76464,
-    type: 3}
-  m_Tag: 
-  m_SpeedParameter: 
-  m_MirrorParameter: 
-  m_CycleOffsetParameter: 
-  m_TimeParameter: 
---- !u!1102 &-8178488400025422274
-AnimatorState:
-  serializedVersion: 5
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: run_forward_start
-  m_Speed: 1
-  m_CycleOffset: 0
-  m_Transitions: []
-  m_StateMachineBehaviours: []
-  m_Position: {x: 50, y: 50, z: 0}
-  m_IKOnFeet: 0
-  m_WriteDefaultValues: 1
-  m_Mirror: 0
-  m_SpeedParameterActive: 0
-  m_MirrorParameterActive: 0
-  m_CycleOffsetParameterActive: 0
-  m_TimeParameterActive: 0
-  m_Motion: {fileID: -7871574533976859591, guid: f567ff25715f108469dfdda359e76464,
-    type: 3}
-  m_Tag: 
-  m_SpeedParameter: 
-  m_MirrorParameter: 
-  m_CycleOffsetParameter: 
-  m_TimeParameter: 
---- !u!1102 &-8163341191747946248
-AnimatorState:
-  serializedVersion: 5
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: turn_right_90
-  m_Speed: 1
-  m_CycleOffset: 0
-  m_Transitions: []
-  m_StateMachineBehaviours: []
-  m_Position: {x: 50, y: 50, z: 0}
-  m_IKOnFeet: 0
-  m_WriteDefaultValues: 1
-  m_Mirror: 0
-  m_SpeedParameterActive: 0
-  m_MirrorParameterActive: 0
-  m_CycleOffsetParameterActive: 0
-  m_TimeParameterActive: 0
-  m_Motion: {fileID: 2569606086056827729, guid: f567ff25715f108469dfdda359e76464,
     type: 3}
   m_Tag: 
   m_SpeedParameter: 
@@ -296,33 +216,6 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &-6889912930030748058
-AnimatorState:
-  serializedVersion: 5
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: walk_backward_stop
-  m_Speed: 1
-  m_CycleOffset: 0
-  m_Transitions: []
-  m_StateMachineBehaviours: []
-  m_Position: {x: 50, y: 50, z: 0}
-  m_IKOnFeet: 0
-  m_WriteDefaultValues: 1
-  m_Mirror: 0
-  m_SpeedParameterActive: 0
-  m_MirrorParameterActive: 0
-  m_CycleOffsetParameterActive: 0
-  m_TimeParameterActive: 0
-  m_Motion: {fileID: 1081481939268004768, guid: f567ff25715f108469dfdda359e76464,
-    type: 3}
-  m_Tag: 
-  m_SpeedParameter: 
-  m_MirrorParameter: 
-  m_CycleOffsetParameter: 
-  m_TimeParameter: 
 --- !u!1102 &-6728581749286658933
 AnimatorState:
   serializedVersion: 5
@@ -404,86 +297,6 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &-6463336294273208491
-AnimatorState:
-  serializedVersion: 5
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: walk_left_start
-  m_Speed: 1
-  m_CycleOffset: 0
-  m_Transitions: []
-  m_StateMachineBehaviours: []
-  m_Position: {x: 50, y: 50, z: 0}
-  m_IKOnFeet: 0
-  m_WriteDefaultValues: 1
-  m_Mirror: 0
-  m_SpeedParameterActive: 0
-  m_MirrorParameterActive: 0
-  m_CycleOffsetParameterActive: 0
-  m_TimeParameterActive: 0
-  m_Motion: {fileID: -98680872868937166, guid: f567ff25715f108469dfdda359e76464, type: 3}
-  m_Tag: 
-  m_SpeedParameter: 
-  m_MirrorParameter: 
-  m_CycleOffsetParameter: 
-  m_TimeParameter: 
---- !u!1102 &-5889940307162284690
-AnimatorState:
-  serializedVersion: 5
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: dash_forward_long
-  m_Speed: 1
-  m_CycleOffset: 0
-  m_Transitions: []
-  m_StateMachineBehaviours: []
-  m_Position: {x: 50, y: 50, z: 0}
-  m_IKOnFeet: 0
-  m_WriteDefaultValues: 1
-  m_Mirror: 0
-  m_SpeedParameterActive: 0
-  m_MirrorParameterActive: 0
-  m_CycleOffsetParameterActive: 0
-  m_TimeParameterActive: 0
-  m_Motion: {fileID: 5240558282382149592, guid: f567ff25715f108469dfdda359e76464,
-    type: 3}
-  m_Tag: 
-  m_SpeedParameter: 
-  m_MirrorParameter: 
-  m_CycleOffsetParameter: 
-  m_TimeParameter: 
---- !u!1102 &-5834110992816015050
-AnimatorState:
-  serializedVersion: 5
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: run_forward_stop
-  m_Speed: 1
-  m_CycleOffset: 0
-  m_Transitions: []
-  m_StateMachineBehaviours: []
-  m_Position: {x: 50, y: 50, z: 0}
-  m_IKOnFeet: 0
-  m_WriteDefaultValues: 1
-  m_Mirror: 0
-  m_SpeedParameterActive: 0
-  m_MirrorParameterActive: 0
-  m_CycleOffsetParameterActive: 0
-  m_TimeParameterActive: 0
-  m_Motion: {fileID: -5024877773240349586, guid: f567ff25715f108469dfdda359e76464,
-    type: 3}
-  m_Tag: 
-  m_SpeedParameter: 
-  m_MirrorParameter: 
-  m_CycleOffsetParameter: 
-  m_TimeParameter: 
 --- !u!206 &-5831645069199285488
 BlendTree:
   m_ObjectHideFlags: 1
@@ -544,33 +357,6 @@ BlendTree:
   m_UseAutomaticThresholds: 1
   m_NormalizedBlendValues: 0
   m_BlendType: 1
---- !u!1102 &-4953172154622625776
-AnimatorState:
-  serializedVersion: 5
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: walk_backward_start
-  m_Speed: 1
-  m_CycleOffset: 0
-  m_Transitions: []
-  m_StateMachineBehaviours: []
-  m_Position: {x: 50, y: 50, z: 0}
-  m_IKOnFeet: 0
-  m_WriteDefaultValues: 1
-  m_Mirror: 0
-  m_SpeedParameterActive: 0
-  m_MirrorParameterActive: 0
-  m_CycleOffsetParameterActive: 0
-  m_TimeParameterActive: 0
-  m_Motion: {fileID: -8413719969735316056, guid: f567ff25715f108469dfdda359e76464,
-    type: 3}
-  m_Tag: 
-  m_SpeedParameter: 
-  m_MirrorParameter: 
-  m_CycleOffsetParameter: 
-  m_TimeParameter: 
 --- !u!1102 &-4718450734487963369
 AnimatorState:
   serializedVersion: 5
@@ -598,33 +384,6 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &-4444912153350523783
-AnimatorState:
-  serializedVersion: 5
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: walk_right
-  m_Speed: 1
-  m_CycleOffset: 0
-  m_Transitions: []
-  m_StateMachineBehaviours: []
-  m_Position: {x: 50, y: 50, z: 0}
-  m_IKOnFeet: 0
-  m_WriteDefaultValues: 1
-  m_Mirror: 0
-  m_SpeedParameterActive: 0
-  m_MirrorParameterActive: 0
-  m_CycleOffsetParameterActive: 0
-  m_TimeParameterActive: 0
-  m_Motion: {fileID: -6972005280777886564, guid: f567ff25715f108469dfdda359e76464,
-    type: 3}
-  m_Tag: 
-  m_SpeedParameter: 
-  m_MirrorParameter: 
-  m_CycleOffsetParameter: 
-  m_TimeParameter: 
 --- !u!1107 &-4374580471820001703
 AnimatorStateMachine:
   serializedVersion: 5
@@ -639,271 +398,226 @@ AnimatorStateMachine:
     m_Position: {x: 510, y: -130, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -3554524719594704942}
-    m_Position: {x: 508.8274, y: -9.730682, z: 0}
+    m_Position: {x: 820, y: 840, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 9142103820249570990}
-    m_Position: {x: 518.8274, y: 0.26931763, z: 0}
+    m_Position: {x: 350, y: 760, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -4230186860802069036}
-    m_Position: {x: 528.8274, y: 10.269318, z: 0}
+    m_Position: {x: 350, y: 800, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 443700836318099214}
-    m_Position: {x: 538.8274, y: 20.269318, z: 0}
+    m_Position: {x: 590, y: 760, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 7430803376727846776}
-    m_Position: {x: 548.8274, y: 30.269318, z: 0}
+    m_Position: {x: 590, y: 800, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -8874851132808257372}
-    m_Position: {x: 558.8274, y: 40.269318, z: 0}
+    m_Position: {x: 590, y: 840, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -4225944002845239828}
-    m_Position: {x: 568.8274, y: 50.269318, z: 0}
+    m_Position: {x: 860, y: 760, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -1780335927607989042}
-    m_Position: {x: 578.8274, y: 60.269318, z: 0}
+    m_Position: {x: 1050, y: 840, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 2514734858297376629}
-    m_Position: {x: 588.8274, y: 70.26932, z: 0}
+    m_Position: {x: 350, y: 550, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -140289667062887780}
-    m_Position: {x: 598.8274, y: 80.26932, z: 0}
+    m_Position: {x: 350, y: 590, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 4072719444200451391}
-    m_Position: {x: 608.8274, y: 90.26932, z: 0}
+    m_Position: {x: 350, y: 630, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -6728581749286658933}
-    m_Position: {x: 618.8274, y: 100.26932, z: 0}
+    m_Position: {x: 590, y: 550, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 4274939672239646853}
-    m_Position: {x: 628.8274, y: 110.26932, z: 0}
+    m_Position: {x: 590, y: 590, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -3141748201008974509}
-    m_Position: {x: 638.8274, y: 120.26932, z: 0}
+    m_Position: {x: 590, y: 630, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -1851739512513743802}
-    m_Position: {x: 648.8274, y: 130.26932, z: 0}
+    m_Position: {x: 590, y: 670, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -421666312103984922}
-    m_Position: {x: 658.8274, y: 140.26932, z: 0}
+    m_Position: {x: 850, y: 550, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1116371787499680433}
-    m_Position: {x: 668.8274, y: 150.26932, z: 0}
+    m_Position: {x: 410, y: 470, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -2674332165391082727}
-    m_Position: {x: 678.8274, y: 160.26932, z: 0}
+    m_Position: {x: 670, y: 470, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -64996509605244179}
-    m_Position: {x: 688.8274, y: 170.26932, z: 0}
+    m_Position: {x: 350, y: 1040, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 2806723990318819690}
-    m_Position: {x: 698.8274, y: 180.26932, z: 0}
+    m_Position: {x: 350, y: 960, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 7673560282705285026}
-    m_Position: {x: 708.8274, y: 190.26932, z: 0}
+    m_Position: {x: 350, y: 1000, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1692899007137697347}
-    m_Position: {x: 718.8274, y: 200.26932, z: 0}
+    m_Position: {x: 1000, y: 1040, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -6726154397284151150}
-    m_Position: {x: 728.8274, y: 210.26932, z: 0}
+    m_Position: {x: 1000, y: 960, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -7714042879046032761}
-    m_Position: {x: 738.8274, y: 220.26932, z: 0}
-  - serializedVersion: 1
-    m_State: {fileID: -3128924311744039116}
-    m_Position: {x: 748.8274, y: 230.26932, z: 0}
+    m_Position: {x: 1000, y: 1000, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -8683038782868558579}
-    m_Position: {x: 758.8274, y: 240.26932, z: 0}
+    m_Position: {x: 1510, y: -60, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -4256826740462679126}
-    m_Position: {x: 768.8274, y: 250.26932, z: 0}
+    m_Position: {x: 1510, y: -20, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 4236261526482448827}
-    m_Position: {x: 778.8274, y: 260.26932, z: 0}
+    m_Position: {x: 1510, y: 20, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -3979545629512036432}
-    m_Position: {x: 788.8274, y: 270.26932, z: 0}
+    m_Position: {x: 1510, y: 60, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -3186640429074598451}
-    m_Position: {x: 798.8274, y: 280.26932, z: 0}
+    m_Position: {x: 1510, y: 100, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -987009381007427419}
-    m_Position: {x: 808.8274, y: 290.26932, z: 0}
+    m_Position: {x: 1510, y: 140, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 7494837135450722594}
-    m_Position: {x: 818.8274, y: 300.26932, z: 0}
+    m_Position: {x: 1510, y: 180, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -7567206237522531362}
-    m_Position: {x: 828.8274, y: 310.26932, z: 0}
+    m_Position: {x: 910, y: 380, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -3425417184765932084}
-    m_Position: {x: 838.8274, y: 320.26932, z: 0}
+    m_Position: {x: 910, y: 330, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -3629823173666956939}
-    m_Position: {x: 848.8274, y: 330.26932, z: 0}
+    m_Position: {x: 2020, y: 360, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -671461511728652727}
-    m_Position: {x: 858.8274, y: 340.26932, z: 0}
+    m_Position: {x: 2020, y: 400, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -9160153731946277368}
-    m_Position: {x: 868.8274, y: 350.26932, z: 0}
+    m_Position: {x: 2020, y: 300, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -21337213128081302}
-    m_Position: {x: 878.8274, y: 360.26932, z: 0}
+    m_Position: {x: 710, y: 280, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -4323754924371072261}
-    m_Position: {x: 888.8274, y: 370.26932, z: 0}
+    m_Position: {x: 1110, y: 280, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 6359689989558818865}
-    m_Position: {x: 898.8274, y: 380.26932, z: 0}
+    m_Position: {x: 1940, y: 620, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1197837724457658446}
-    m_Position: {x: 908.8274, y: 390.26932, z: 0}
+    m_Position: {x: 1940, y: 670, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -4139433099515518231}
-    m_Position: {x: 918.8274, y: 400.26932, z: 0}
+    m_Position: {x: 1940, y: 720, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -2403270140919088731}
-    m_Position: {x: 928.8274, y: 410.26932, z: 0}
+    m_Position: {x: 1720, y: -60, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 5036304761455950966}
-    m_Position: {x: 938.8274, y: 420.26932, z: 0}
+    m_Position: {x: 1720, y: -20, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 747631955586894002}
-    m_Position: {x: 948.8274, y: 430.26932, z: 0}
+    m_Position: {x: 1720, y: 20, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -2398654847870742822}
-    m_Position: {x: 958.8274, y: 440.26932, z: 0}
+    m_Position: {x: 1720, y: 60, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -2148619566795061650}
-    m_Position: {x: 968.8274, y: 450.26932, z: 0}
+    m_Position: {x: 1720, y: 100, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1107135606034215315}
-    m_Position: {x: 978.8274, y: 460.26932, z: 0}
+    m_Position: {x: 1720, y: 140, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -135759418451585911}
-    m_Position: {x: 988.8274, y: 470.26932, z: 0}
+    m_Position: {x: 1720, y: 180, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -2300255195914349355}
-    m_Position: {x: 998.8274, y: 480.26932, z: 0}
+    m_Position: {x: 1720, y: 220, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 4559874131194495594}
-    m_Position: {x: 1008.8274, y: 490.26932, z: 0}
+    m_Position: {x: 1200, y: 650, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -4718450734487963369}
-    m_Position: {x: 1018.8274, y: 500.26932, z: 0}
+    m_Position: {x: 1200, y: 690, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -8912012305754756637}
-    m_Position: {x: 1028.8274, y: 510.26932, z: 0}
+    m_Position: {x: 1200, y: 730, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -945009658622767330}
-    m_Position: {x: 1038.8274, y: 520.2693, z: 0}
+    m_Position: {x: 1410, y: 650, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -795468031678009302}
-    m_Position: {x: 1048.8274, y: 530.2693, z: 0}
+    m_Position: {x: 1410, y: 690, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -7312335483810599875}
-    m_Position: {x: 1058.8274, y: 540.2693, z: 0}
+    m_Position: {x: 1620, y: 650, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -2300221752472692636}
-    m_Position: {x: 1068.8274, y: 550.2693, z: 0}
+    m_Position: {x: 730, y: 20, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1728205384283163852}
-    m_Position: {x: 1078.8274, y: 560.2693, z: 0}
+    m_Position: {x: 1930, y: -60, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 8710979586823100373}
-    m_Position: {x: 1088.8274, y: 570.2693, z: 0}
+    m_Position: {x: 1930, y: -20, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -6596251931759762679}
-    m_Position: {x: 1098.8274, y: 580.2693, z: 0}
+    m_Position: {x: 1930, y: 20, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 4167542666075789270}
-    m_Position: {x: 1108.8274, y: 590.2693, z: 0}
+    m_Position: {x: 1130, y: 20, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 2097073406325493012}
-    m_Position: {x: 1118.8274, y: 600.2693, z: 0}
+    m_Position: {x: 1130, y: 60, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -787405958104237566}
-    m_Position: {x: 1128.8274, y: 610.2693, z: 0}
-  - serializedVersion: 1
-    m_State: {fileID: -8178488400025422274}
-    m_Position: {x: 1138.8274, y: 620.2693, z: 0}
-  - serializedVersion: 1
-    m_State: {fileID: -5834110992816015050}
-    m_Position: {x: 1148.8274, y: 630.2693, z: 0}
+    m_Position: {x: 1400, y: 380, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 4031184177058181334}
-    m_Position: {x: 1158.8274, y: 640.2693, z: 0}
+    m_Position: {x: 1610, y: 380, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 6018795509688134948}
-    m_Position: {x: 1168.8274, y: 650.2693, z: 0}
+    m_Position: {x: 1610, y: 420, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -1220645045626794908}
-    m_Position: {x: 1178.8274, y: 660.2693, z: 0}
+    m_Position: {x: 1590, y: 450, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 8599327437669199207}
-    m_Position: {x: 1188.8274, y: 670.2693, z: 0}
-  - serializedVersion: 1
-    m_State: {fileID: 6102184515623935725}
-    m_Position: {x: 1198.8274, y: 680.2693, z: 0}
-  - serializedVersion: 1
-    m_State: {fileID: -8163341191747946248}
-    m_Position: {x: 1208.8274, y: 690.2693, z: 0}
-  - serializedVersion: 1
-    m_State: {fileID: 6388626902017671119}
-    m_Position: {x: 1218.8274, y: 700.2693, z: 0}
-  - serializedVersion: 1
-    m_State: {fileID: -2528525380229019207}
-    m_Position: {x: 1228.8274, y: 710.2693, z: 0}
-  - serializedVersion: 1
-    m_State: {fileID: -163795748101423110}
-    m_Position: {x: 1238.8274, y: 720.2693, z: 0}
-  - serializedVersion: 1
-    m_State: {fileID: -4953172154622625776}
-    m_Position: {x: 1248.8274, y: 730.2693, z: 0}
-  - serializedVersion: 1
-    m_State: {fileID: -6889912930030748058}
-    m_Position: {x: 1258.8274, y: 740.2693, z: 0}
-  - serializedVersion: 1
-    m_State: {fileID: 6109041035320626467}
-    m_Position: {x: 1268.8274, y: 750.2693, z: 0}
-  - serializedVersion: 1
-    m_State: {fileID: -36289132328499367}
-    m_Position: {x: 1278.8274, y: 760.2693, z: 0}
-  - serializedVersion: 1
-    m_State: {fileID: 5689903254863897825}
-    m_Position: {x: 1288.8274, y: 770.2693, z: 0}
-  - serializedVersion: 1
-    m_State: {fileID: 1304056360639808352}
-    m_Position: {x: 1298.8274, y: 780.2693, z: 0}
-  - serializedVersion: 1
-    m_State: {fileID: -6463336294273208491}
-    m_Position: {x: 1308.8274, y: 790.2693, z: 0}
-  - serializedVersion: 1
-    m_State: {fileID: 3239450846118061405}
-    m_Position: {x: 1318.8274, y: 800.2693, z: 0}
-  - serializedVersion: 1
-    m_State: {fileID: -4444912153350523783}
-    m_Position: {x: 1328.8274, y: 810.2693, z: 0}
-  - serializedVersion: 1
-    m_State: {fileID: -3419941157082160879}
-    m_Position: {x: 1338.8274, y: 820.2693, z: 0}
-  - serializedVersion: 1
-    m_State: {fileID: -9051113050253416991}
-    m_Position: {x: 1348.8274, y: 830.2693, z: 0}
+    m_Position: {x: 1120, y: 140, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -7675975219737740256}
-    m_Position: {x: 1358.8274, y: 840.2693, z: 0}
+    m_Position: {x: 1630, y: 800, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 3921345676845084074}
-    m_Position: {x: 1368.8274, y: 850.2693, z: 0}
-  - serializedVersion: 1
-    m_State: {fileID: -5889940307162284690}
-    m_Position: {x: 1380, y: 860, z: 0}
+    m_Position: {x: 1630, y: 840, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1089890957610893128}
-    m_Position: {x: 450, y: 220, z: 0}
+    m_Position: {x: 910, y: 280, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: -1295907401038036484}
+    m_Position: {x: 1630, y: 930, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: 3323553858593475832}
+    m_Position: {x: 1940, y: 770, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: 3372706662878451921}
+    m_Position: {x: 930, y: -20, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: -1812970612349829438}
+    m_Position: {x: 930, y: -60, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: -1827440568378958242}
+    m_Position: {x: 930, y: -100, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
@@ -1157,33 +871,6 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &-3419941157082160879
-AnimatorState:
-  serializedVersion: 5
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: walk_right_start
-  m_Speed: 1
-  m_CycleOffset: 0
-  m_Transitions: []
-  m_StateMachineBehaviours: []
-  m_Position: {x: 50, y: 50, z: 0}
-  m_IKOnFeet: 0
-  m_WriteDefaultValues: 1
-  m_Mirror: 0
-  m_SpeedParameterActive: 0
-  m_MirrorParameterActive: 0
-  m_CycleOffsetParameterActive: 0
-  m_TimeParameterActive: 0
-  m_Motion: {fileID: -6410225964288800440, guid: f567ff25715f108469dfdda359e76464,
-    type: 3}
-  m_Tag: 
-  m_SpeedParameter: 
-  m_MirrorParameter: 
-  m_CycleOffsetParameter: 
-  m_TimeParameter: 
 --- !u!1102 &-3186640429074598451
 AnimatorState:
   serializedVersion: 5
@@ -1238,33 +925,6 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &-3128924311744039116
-AnimatorState:
-  serializedVersion: 5
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: airborne
-  m_Speed: 1
-  m_CycleOffset: 0
-  m_Transitions: []
-  m_StateMachineBehaviours: []
-  m_Position: {x: 50, y: 50, z: 0}
-  m_IKOnFeet: 0
-  m_WriteDefaultValues: 1
-  m_Mirror: 0
-  m_SpeedParameterActive: 0
-  m_MirrorParameterActive: 0
-  m_CycleOffsetParameterActive: 0
-  m_TimeParameterActive: 0
-  m_Motion: {fileID: 4123992558868245728, guid: f567ff25715f108469dfdda359e76464,
-    type: 3}
-  m_Tag: 
-  m_SpeedParameter: 
-  m_MirrorParameter: 
-  m_CycleOffsetParameter: 
-  m_TimeParameter: 
 --- !u!1102 &-2674332165391082727
 AnimatorState:
   serializedVersion: 5
@@ -1286,33 +946,6 @@ AnimatorState:
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
   m_Motion: {fileID: 6711754605615036202, guid: f567ff25715f108469dfdda359e76464,
-    type: 3}
-  m_Tag: 
-  m_SpeedParameter: 
-  m_MirrorParameter: 
-  m_CycleOffsetParameter: 
-  m_TimeParameter: 
---- !u!1102 &-2528525380229019207
-AnimatorState:
-  serializedVersion: 5
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: wakeup_standing
-  m_Speed: 1
-  m_CycleOffset: 0
-  m_Transitions: []
-  m_StateMachineBehaviours: []
-  m_Position: {x: 50, y: 50, z: 0}
-  m_IKOnFeet: 0
-  m_WriteDefaultValues: 1
-  m_Mirror: 0
-  m_SpeedParameterActive: 0
-  m_MirrorParameterActive: 0
-  m_CycleOffsetParameterActive: 0
-  m_TimeParameterActive: 0
-  m_Motion: {fileID: -6477769631291595330, guid: f567ff25715f108469dfdda359e76464,
     type: 3}
   m_Tag: 
   m_SpeedParameter: 
@@ -1481,6 +1114,60 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
+--- !u!1102 &-1827440568378958242
+AnimatorState:
+  serializedVersion: 5
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: airborne_upward
+  m_Speed: 1
+  m_CycleOffset: 0
+  m_Transitions: []
+  m_StateMachineBehaviours: []
+  m_Position: {x: 50, y: 50, z: 0}
+  m_IKOnFeet: 0
+  m_WriteDefaultValues: 1
+  m_Mirror: 0
+  m_SpeedParameterActive: 0
+  m_MirrorParameterActive: 0
+  m_CycleOffsetParameterActive: 0
+  m_TimeParameterActive: 0
+  m_Motion: {fileID: 2236622167033480461, guid: f567ff25715f108469dfdda359e76464,
+    type: 3}
+  m_Tag: 
+  m_SpeedParameter: 
+  m_MirrorParameter: 
+  m_CycleOffsetParameter: 
+  m_TimeParameter: 
+--- !u!1102 &-1812970612349829438
+AnimatorState:
+  serializedVersion: 5
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: airborne_peak
+  m_Speed: 1
+  m_CycleOffset: 0
+  m_Transitions: []
+  m_StateMachineBehaviours: []
+  m_Position: {x: 50, y: 50, z: 0}
+  m_IKOnFeet: 0
+  m_WriteDefaultValues: 1
+  m_Mirror: 0
+  m_SpeedParameterActive: 0
+  m_MirrorParameterActive: 0
+  m_CycleOffsetParameterActive: 0
+  m_TimeParameterActive: 0
+  m_Motion: {fileID: -5156844333489249144, guid: f567ff25715f108469dfdda359e76464,
+    type: 3}
+  m_Tag: 
+  m_SpeedParameter: 
+  m_MirrorParameter: 
+  m_CycleOffsetParameter: 
+  m_TimeParameter: 
 --- !u!1102 &-1780335927607989042
 AnimatorState:
   serializedVersion: 5
@@ -1502,6 +1189,33 @@ AnimatorState:
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
   m_Motion: {fileID: -3528358315489820034, guid: f567ff25715f108469dfdda359e76464,
+    type: 3}
+  m_Tag: 
+  m_SpeedParameter: 
+  m_MirrorParameter: 
+  m_CycleOffsetParameter: 
+  m_TimeParameter: 
+--- !u!1102 &-1295907401038036484
+AnimatorState:
+  serializedVersion: 5
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: crumple
+  m_Speed: 1
+  m_CycleOffset: 0
+  m_Transitions: []
+  m_StateMachineBehaviours: []
+  m_Position: {x: 50, y: 50, z: 0}
+  m_IKOnFeet: 0
+  m_WriteDefaultValues: 1
+  m_Mirror: 0
+  m_SpeedParameterActive: 0
+  m_MirrorParameterActive: 0
+  m_CycleOffsetParameterActive: 0
+  m_TimeParameterActive: 0
+  m_Motion: {fileID: 1106325745426125796, guid: f567ff25715f108469dfdda359e76464,
     type: 3}
   m_Tag: 
   m_SpeedParameter: 
@@ -1696,33 +1410,6 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &-163795748101423110
-AnimatorState:
-  serializedVersion: 5
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: walk_backward
-  m_Speed: 1
-  m_CycleOffset: 0
-  m_Transitions: []
-  m_StateMachineBehaviours: []
-  m_Position: {x: 50, y: 50, z: 0}
-  m_IKOnFeet: 0
-  m_WriteDefaultValues: 1
-  m_Mirror: 0
-  m_SpeedParameterActive: 0
-  m_MirrorParameterActive: 0
-  m_CycleOffsetParameterActive: 0
-  m_TimeParameterActive: 0
-  m_Motion: {fileID: -568350623590988069, guid: f567ff25715f108469dfdda359e76464,
-    type: 3}
-  m_Tag: 
-  m_SpeedParameter: 
-  m_MirrorParameter: 
-  m_CycleOffsetParameter: 
-  m_TimeParameter: 
 --- !u!1102 &-140289667062887780
 AnimatorState:
   serializedVersion: 5
@@ -1797,33 +1484,6 @@ AnimatorState:
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
   m_Motion: {fileID: 5021920756626669462, guid: f567ff25715f108469dfdda359e76464,
-    type: 3}
-  m_Tag: 
-  m_SpeedParameter: 
-  m_MirrorParameter: 
-  m_CycleOffsetParameter: 
-  m_TimeParameter: 
---- !u!1102 &-36289132328499367
-AnimatorState:
-  serializedVersion: 5
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: walk_forward_start
-  m_Speed: 1
-  m_CycleOffset: 0
-  m_Transitions: []
-  m_StateMachineBehaviours: []
-  m_Position: {x: 50, y: 50, z: 0}
-  m_IKOnFeet: 0
-  m_WriteDefaultValues: 1
-  m_Mirror: 0
-  m_SpeedParameterActive: 0
-  m_MirrorParameterActive: 0
-  m_CycleOffsetParameterActive: 0
-  m_TimeParameterActive: 0
-  m_Motion: {fileID: -5032444013135219143, guid: f567ff25715f108469dfdda359e76464,
     type: 3}
   m_Tag: 
   m_SpeedParameter: 
@@ -2051,33 +1711,6 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &1304056360639808352
-AnimatorState:
-  serializedVersion: 5
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: walk_left
-  m_Speed: 1
-  m_CycleOffset: 0
-  m_Transitions: []
-  m_StateMachineBehaviours: []
-  m_Position: {x: 50, y: 50, z: 0}
-  m_IKOnFeet: 0
-  m_WriteDefaultValues: 1
-  m_Mirror: 0
-  m_SpeedParameterActive: 0
-  m_MirrorParameterActive: 0
-  m_CycleOffsetParameterActive: 0
-  m_TimeParameterActive: 0
-  m_Motion: {fileID: -7801245770563035318, guid: f567ff25715f108469dfdda359e76464,
-    type: 3}
-  m_Tag: 
-  m_SpeedParameter: 
-  m_MirrorParameter: 
-  m_CycleOffsetParameter: 
-  m_TimeParameter: 
 --- !u!1102 &1692899007137697347
 AnimatorState:
   serializedVersion: 5
@@ -2213,14 +1846,14 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &3239450846118061405
+--- !u!1102 &3323553858593475832
 AnimatorState:
   serializedVersion: 5
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: walk_left_stop
+  m_Name: grabbed
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -2233,8 +1866,34 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 5329082462277552618, guid: f567ff25715f108469dfdda359e76464,
+  m_Motion: {fileID: -702302166911828562, guid: f567ff25715f108469dfdda359e76464,
     type: 3}
+  m_Tag: 
+  m_SpeedParameter: 
+  m_MirrorParameter: 
+  m_CycleOffsetParameter: 
+  m_TimeParameter: 
+--- !u!1102 &3372706662878451921
+AnimatorState:
+  serializedVersion: 5
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: airborne_downward
+  m_Speed: 1
+  m_CycleOffset: 0
+  m_Transitions: []
+  m_StateMachineBehaviours: []
+  m_Position: {x: 50, y: 50, z: 0}
+  m_IKOnFeet: 0
+  m_WriteDefaultValues: 1
+  m_Mirror: 0
+  m_SpeedParameterActive: 0
+  m_MirrorParameterActive: 0
+  m_CycleOffsetParameterActive: 0
+  m_TimeParameterActive: 0
+  m_Motion: {fileID: -23877057681794520, guid: f567ff25715f108469dfdda359e76464, type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -2483,33 +2142,6 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &5689903254863897825
-AnimatorState:
-  serializedVersion: 5
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: walk_forward_stop
-  m_Speed: 1
-  m_CycleOffset: 0
-  m_Transitions: []
-  m_StateMachineBehaviours: []
-  m_Position: {x: 50, y: 50, z: 0}
-  m_IKOnFeet: 0
-  m_WriteDefaultValues: 1
-  m_Mirror: 0
-  m_SpeedParameterActive: 0
-  m_MirrorParameterActive: 0
-  m_CycleOffsetParameterActive: 0
-  m_TimeParameterActive: 0
-  m_Motion: {fileID: -5076979043083063318, guid: f567ff25715f108469dfdda359e76464,
-    type: 3}
-  m_Tag: 
-  m_SpeedParameter: 
-  m_MirrorParameter: 
-  m_CycleOffsetParameter: 
-  m_TimeParameter: 
 --- !u!1102 &6018795509688134948
 AnimatorState:
   serializedVersion: 5
@@ -2537,59 +2169,6 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &6102184515623935725
-AnimatorState:
-  serializedVersion: 5
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: turn_left_90
-  m_Speed: 1
-  m_CycleOffset: 0
-  m_Transitions: []
-  m_StateMachineBehaviours: []
-  m_Position: {x: 50, y: 50, z: 0}
-  m_IKOnFeet: 0
-  m_WriteDefaultValues: 1
-  m_Mirror: 0
-  m_SpeedParameterActive: 0
-  m_MirrorParameterActive: 0
-  m_CycleOffsetParameterActive: 0
-  m_TimeParameterActive: 0
-  m_Motion: {fileID: -7758834395178691105, guid: f567ff25715f108469dfdda359e76464,
-    type: 3}
-  m_Tag: 
-  m_SpeedParameter: 
-  m_MirrorParameter: 
-  m_CycleOffsetParameter: 
-  m_TimeParameter: 
---- !u!1102 &6109041035320626467
-AnimatorState:
-  serializedVersion: 5
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: walk_forward
-  m_Speed: 1
-  m_CycleOffset: 0
-  m_Transitions: []
-  m_StateMachineBehaviours: []
-  m_Position: {x: 50, y: 50, z: 0}
-  m_IKOnFeet: 0
-  m_WriteDefaultValues: 1
-  m_Mirror: 0
-  m_SpeedParameterActive: 0
-  m_MirrorParameterActive: 0
-  m_CycleOffsetParameterActive: 0
-  m_TimeParameterActive: 0
-  m_Motion: {fileID: 974678785842290896, guid: f567ff25715f108469dfdda359e76464, type: 3}
-  m_Tag: 
-  m_SpeedParameter: 
-  m_MirrorParameter: 
-  m_CycleOffsetParameter: 
-  m_TimeParameter: 
 --- !u!1102 &6359689989558818865
 AnimatorState:
   serializedVersion: 5
@@ -2611,33 +2190,6 @@ AnimatorState:
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
   m_Motion: {fileID: -7811437093079328347, guid: f567ff25715f108469dfdda359e76464,
-    type: 3}
-  m_Tag: 
-  m_SpeedParameter: 
-  m_MirrorParameter: 
-  m_CycleOffsetParameter: 
-  m_TimeParameter: 
---- !u!1102 &6388626902017671119
-AnimatorState:
-  serializedVersion: 5
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: wakeup_crouch
-  m_Speed: 1
-  m_CycleOffset: 0
-  m_Transitions: []
-  m_StateMachineBehaviours: []
-  m_Position: {x: 50, y: 50, z: 0}
-  m_IKOnFeet: 0
-  m_WriteDefaultValues: 1
-  m_Mirror: 0
-  m_SpeedParameterActive: 0
-  m_MirrorParameterActive: 0
-  m_CycleOffsetParameterActive: 0
-  m_TimeParameterActive: 0
-  m_Motion: {fileID: 8774362873757462201, guid: f567ff25715f108469dfdda359e76464,
     type: 3}
   m_Tag: 
   m_SpeedParameter: 

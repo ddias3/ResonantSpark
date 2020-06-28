@@ -6,7 +6,7 @@ using UnityEngine;
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Input;
 using ResonantSpark.Character;
-using ResonantSpark.Gameplay;
+using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -49,7 +49,7 @@ namespace ResonantSpark {
                     .On<Empty>(GivenNothing);
             }
 
-            public override void Enter(int frameIndex, InGameEntityBaseState previousState) {
+            public override void Enter(int frameIndex, MultipassBaseState previousState) {
                 fgChar.__debugSetStateText("Stand", new Color(0.3f, 0.65f, 0.3f));
                 dirPress = FightingGameInputCodeDir.Neutral;
 
@@ -65,6 +65,10 @@ namespace ResonantSpark {
 
                 Vector3 localVelocity = fgChar.GetLocalVelocity();
                 Vector3 localInput = fgChar.RelativeInputToLocal(dirPress, upJump);
+
+                if (dirPress != FightingGameInputCodeDir.Neutral && Mathf.Abs(fgChar.LookToMoveAngle()) > 45f) {
+                    changeState(states.Get("faceOpponent"));
+                }
 
                     // Move the character
                 WalkCharacter(localVelocity, localInput);
@@ -133,8 +137,8 @@ namespace ResonantSpark {
                     if (localInput.sqrMagnitude > 0.0f) {
                         charRotation = fgChar.LookToMoveAngle() / fgChar.gameTime;
                         if (charRotation != 0.0f) {
-                            //fgChar.rigidbody.MoveRotation(Quaternion.AngleAxis(Mathf.Clamp(charRotation, -maxRotation, maxRotation) * fgChar.realTime, Vector3.up) * fgChar.rotation);
-                            fgChar.Rotate(Quaternion.AngleAxis(Mathf.Clamp(charRotation, -maxRotation, maxRotation) * fgChar.realTime, Vector3.up));
+                            //fgChar.rigidbody.MoveRotation(Quaternion.AngleAxis(Mathf.Clamp(charRotation, -maxRotation, maxRotation) * fgChar.gameTime, Vector3.up) * fgChar.rotation);
+                            fgChar.Rotate(Quaternion.AngleAxis(Mathf.Clamp(charRotation, -maxRotation, maxRotation) * fgChar.gameTime, Vector3.up));
                         }
                     }
                 }
@@ -204,7 +208,8 @@ namespace ResonantSpark {
                 if (relDir == FightingGameInputCodeDir.Forward) {
                     fgChar.Use(doubleTap);
                     stop();
-                    changeState(states.Get("forwardDash"));
+                    Debug.Log("Would Use Forward Dash");
+                    //changeState(states.Get("forwardDash"));
                 }
                 else if (relDir == FightingGameInputCodeDir.Back) {
                     fgChar.Use(doubleTap);
@@ -248,10 +253,15 @@ namespace ResonantSpark {
                         fgChar.Use(dirPlusBut);
                         changeState(states.Get("dodge"));
                     }
-                    else if (dirPress == FightingGameInputCodeDir.Forward) {
+                    //else if (dirPress == FightingGameInputCodeDir.Forward) {
+                    //    stop();
+                    //    fgChar.Use(dirPlusBut);
+                    //    changeState(states.Get("forwardDashLong"));
+                    //}
+                    else if (dirPress == FightingGameInputCodeDir.Back) {
                         stop();
                         fgChar.Use(dirPlusBut);
-                        changeState(states.Get("forwardDashLong"));
+                        changeState(states.Get("backDashLong"));
                     }
                 }
             }

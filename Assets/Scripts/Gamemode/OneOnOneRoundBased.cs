@@ -12,8 +12,8 @@ namespace ResonantSpark {
     namespace Gamemode {
         public class OneOnOneRoundBased : MonoBehaviour, IGamemode {
 
-            public StateMachine stateMachine;
-            public Utility.StateDict states;
+            public MultipassStateMachine stateMachine;
+            public MultipassStateDict states;
 
             public float roundTime = 60.0f;
             private PlayerService playerService;
@@ -72,9 +72,9 @@ namespace ResonantSpark {
             private void EnablePlayers() {
                 Debug.Log("Enable Players");
 
-                char0.GetComponent<CharacterStates.InitInGameEntityStateMachine>().StartStateMachine(frame);
-                char1.GetComponent<CharacterStates.InitInGameEntityStateMachine>().StartStateMachine(frame);
-                GetComponent<InitStateMachine>().StartStateMachine(frame);
+                char0.GetComponent<InitMultipassStateMachine>().StartStateMachine(frame);
+                char1.GetComponent<InitMultipassStateMachine>().StartStateMachine(frame);
+                GetComponent<InitMultipassStateMachine>().StartStateMachine(frame);
             }
 
             private float GameTime(float input) {
@@ -159,6 +159,10 @@ namespace ResonantSpark {
                 // TODO: this might result in a race condition that needs to be resolved for double K.O.s
 
                 EndRound();
+            }
+
+            public void RestrictDistance() {
+                
             }
 
             public void CalculateScreenOrientation() {

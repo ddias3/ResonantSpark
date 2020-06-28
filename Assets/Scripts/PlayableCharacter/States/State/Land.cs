@@ -5,7 +5,7 @@ using UnityEngine;
 
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Character;
-using ResonantSpark.Gameplay;
+using ResonantSpark.Utility;
 using ResonantSpark.Input;
 
 namespace ResonantSpark {
@@ -25,11 +25,11 @@ namespace ResonantSpark {
                     .On<DirectionCurrent>(OnDirectionCurrent);
             }
 
-            public override void Enter(int frameIndex, InGameEntityBaseState previousState) {
+            public override void Enter(int frameIndex, MultipassBaseState previousState) {
                 fgChar.__debugSetStateText("Land", Color.cyan);
 
                 fgChar.GetInUseCombinations();
-                fgChar.Play("jump_land");
+                fgChar.Play("landing");
 
                 startFrame = frameIndex;
                 frameCount = 0;
@@ -42,20 +42,15 @@ namespace ResonantSpark {
                     changeState(states.Get("stand"));
                 }
 
-                fgChar.CalculateFinalVelocity();
-                ++frameCount;
             }
 
             public override void ExecutePass1(int frameIndex) {
-                //fgChar.UpdateTarget();
-                //fgChar.UpdateCharacterMovement();
-                //fgChar.CalculateFinalVelocity();
-                //fgChar.AnimationWalkVelocity();
+                fgChar.UpdateTarget();
+                fgChar.CalculateFinalVelocity();
             }
 
             public override void LateExecute(int frameIndex) {
-                //fgChar.UpdateCharacterMovement();
-                //fgChar.AnimationWalkVelocity();
+                ++frameCount;
             }
 
             public override void Exit(int frameIndex) {

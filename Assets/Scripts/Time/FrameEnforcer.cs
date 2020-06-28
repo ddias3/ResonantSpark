@@ -11,18 +11,20 @@ namespace ResonantSpark {
         StateMachine = 64,
         StateMachinePass1 = 64 + 1,
 
-        PhysicsMovement = 256,
-        PhysicsCollisions = 256 + 1,
-        PhysicsResolve = 256 + 2,
+        PhysicsMovement = 128,
+        PhysicsCollisions = 128 + 1,
+        PhysicsResolve = 128 + 2,
 
-        Service = 128,
+        Service = 256,
 
-        Gamemode = 16,
+        Gamemode = 512,
 
-        LateService = 0x1000 + 128,
-        LateStateMachine = 0x1000 + 64,
+        LateService = 0x10000 + 128,
+        LateStateMachine = 0x10000 + 64,
 
-        ActivePollingReset = 0xFFFF,
+        LateGamemode = 0x10000 + 512,
+
+        ActivePollingReset = 0xFFFFFFF,
     }
 
     [RequireComponent(typeof(GameTimeManager))]

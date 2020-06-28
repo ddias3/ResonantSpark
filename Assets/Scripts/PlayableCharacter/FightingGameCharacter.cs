@@ -9,6 +9,7 @@ using ResonantSpark.Character;
 using ResonantSpark.Input;
 using ResonantSpark.Service;
 using ResonantSpark.Utility;
+using ResonantSpark.CharacterProperties;
 
 namespace ResonantSpark {
     namespace Gameplay {
@@ -16,8 +17,8 @@ namespace ResonantSpark {
             public static int fgCharCounter = 0;
 
             public AnimatorAdapter animator;
-            public InGameEntityStateMachine stateMachine;
-            public InGameEntityStateDict states;
+            public MultipassStateMachine stateMachine;
+            public MultipassStateDict states;
 
             public AttackRunner attackRunner;
 
@@ -128,8 +129,16 @@ namespace ResonantSpark {
                 screenOrientation = newScreenOrientation;
             }
 
+            public void StartAttackIfRequired(int frameIndex) {
+                attackRunner.StartAttackIfRequired(frameIndex);
+            }
+
             public void ChooseAttack(CharacterStates.CharacterBaseState currState, CharacterProperties.Attack currAttack, FightingGameInputCodeBut button, FightingGameInputCodeDir direction = FightingGameInputCodeDir.None) {
                 attackRunner.ChooseAttack(charData, currState, currAttack, button, direction);
+            }
+
+            public Attack GetCurrentAttack() {
+                return attackRunner.GetCurrentAttack();
             }
 
             public void ClearPrevAttacks() {
@@ -195,6 +204,10 @@ namespace ResonantSpark {
 
             public void AddRelativeVelocity(VelocityPriority priority, Vector3 velocity) {
                 rigidFG.AddRelativeVelocity(priority, velocity);
+            }
+
+            public void AddVelocity(VelocityPriority priority, Vector3 velocity) {
+                rigidFG.AddVelocity(priority, velocity);
             }
 
             public void SetRelativeVelocity(VelocityPriority priority, Vector3 velocity) {
@@ -424,6 +437,7 @@ namespace ResonantSpark {
             }
 
             public void UpdateTarget() {
+                //TODO: attackRunner.UpdateTarget();
                 targetFG.UpdateTarget();
             }
 

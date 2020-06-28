@@ -66,9 +66,6 @@ namespace ResonantSpark {
                     }
                 }
             }
-
-            public void FrameUpdateResolve(int frameIndex) {
-            }
         }
     }
 }

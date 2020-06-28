@@ -24,7 +24,7 @@ namespace ResonantSpark {
                 gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
             }
 
-            public override void Enter(int frameIndex, IState previousState) {
+            public override void Enter(int frameIndex, MultipassBaseState previousState) {
                 elapsedTime = 0;
 
                 fgService.DisableControl();
@@ -35,7 +35,7 @@ namespace ResonantSpark {
                 frameCount = 0;
             }
 
-            public override void Execute(int frameIndex) {
+            public override void ExecutePass0(int frameIndex) {
                 if (elapsedTime > elapsedDisplayTime[0]) {
                     changeState(states.Get("fightingMode"));
                 }
@@ -45,6 +45,10 @@ namespace ResonantSpark {
 
                 elapsedTime += gameTimeManager.DeltaTime("frameDelta", "game");
                 ++frameCount;
+            }
+
+            public override void LateExecute(int frameIndex) {
+                oneOnOne.RestrictDistance();
             }
 
             public override void Exit(int frameIndex) {

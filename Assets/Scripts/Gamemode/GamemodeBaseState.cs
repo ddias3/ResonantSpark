@@ -8,7 +8,7 @@ using ResonantSpark.Service;
 
 namespace ResonantSpark {
     namespace GamemodeStates {
-        public abstract class GamemodeBaseState : BaseState {
+        public abstract class GamemodeBaseState : MultipassBaseState {
             protected OneOnOneRoundBased oneOnOne;
             protected UiService uiService;
             protected FightingGameService fgService;
@@ -19,6 +19,10 @@ namespace ResonantSpark {
                 oneOnOne = gameObject.GetComponentInParent<OneOnOneRoundBased>();
                 uiService = GameObject.FindGameObjectWithTag("rspService").GetComponent<UiService>();
                 fgService = GameObject.FindGameObjectWithTag("rspService").GetComponent<FightingGameService>();
+            }
+
+            public override void ExecutePass1(int frameIndex) {
+                throw new InvalidOperationException("Game mode states do not have a second execute pass");
             }
         }
     }

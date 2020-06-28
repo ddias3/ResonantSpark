@@ -6,7 +6,7 @@ using UnityEngine;
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Input;
 using ResonantSpark.Character;
-using ResonantSpark.Gameplay;
+using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -40,7 +40,7 @@ namespace ResonantSpark {
                     .On<DirectionCurrent>(GivenDirectionCurrent);
             }
 
-            public override void Enter(int frameIndex, InGameEntityBaseState previousState) {
+            public override void Enter(int frameIndex, MultipassBaseState previousState) {
                 fgChar.__debugSetStateText("Jump", Color.yellow);
 
                 jumpDir = FightingGameInputCodeDir.None;
@@ -63,7 +63,7 @@ namespace ResonantSpark {
                         Debug.Log("Jump didn't have a dirPress");
                         break;
                 }
-                fgChar.Play("jump_start");
+                fgChar.Play("jump");
                 startFrame = frameIndex;
                 frameCount = 0;
                 leavingGround = true;
@@ -80,7 +80,6 @@ namespace ResonantSpark {
                     jumpVelocity.z = Mathf.Lerp(jumpVelocity.z, localVelocity.z, Mathf.Abs(localVelocity.z) / maxSpeed);
 
                     fgChar.AddRelativeVelocity(Gameplay.VelocityPriority.Jump, jumpVelocity);
-                    fgChar.Play("jump");
                 }
                 else if (frameCount > 4) {
                     changeState(states.Get("airborne"));
@@ -100,21 +99,15 @@ namespace ResonantSpark {
                         changeState(states.Get("land"));
                     }
                 }
-
-                fgChar.CalculateFinalVelocity();
-                ++frameCount;
             }
 
             public override void ExecutePass1(int frameIndex) {
-                //fgChar.UpdateTarget();
-                //fgChar.UpdateCharacterMovement();
-                //fgChar.CalculateFinalVelocity();
-                //fgChar.AnimationWalkVelocity();
+                fgChar.UpdateTarget();
+                fgChar.CalculateFinalVelocity();
             }
 
             public override void LateExecute(int frameIndex) {
-                //fgChar.UpdateCharacterMovement();
-                //fgChar.AnimationWalkVelocity();
+                ++frameCount;
             }
 
             public override void Exit(int frameIndex) {

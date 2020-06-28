@@ -6,15 +6,15 @@ using UnityEngine;
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Input;
 using ResonantSpark.Character;
-using ResonantSpark.Gameplay;
+using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace CharacterStates {
         public class FaceOpponent : CharacterBaseState {
 
             public float maxRotation;
+            public float stepAwaySpeed;
 
-            private Vector3 smoothedInput;
             private float charRotation;
 
             private Input.FightingGameInputCodeDir dirPress = Input.FightingGameInputCodeDir.None;
@@ -30,72 +30,52 @@ namespace ResonantSpark {
                     .On<DirectionPress>(GivenDirectionPress);
             }
 
-            public override void Enter(int frameIndex, InGameEntityBaseState previousState) {
+            public override void Enter(int frameIndex, MultipassBaseState previousState) {
                 fgChar.__debugSetStateText("Face Opponent", Color.blue);
                 GivenInput(fgChar.GetInUseCombinations());
 
-                //smoothedInput = fgChar.RelativeInputToLocal(dirPress, upJump);
-
                 fgChar.SetLocalWalkParameters(0.0f, 0.0f);
-                fgChar.Play("faceOpponent");
+                fgChar.Play("turn_180");
             }
 
             public override void ExecutePass0(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
 
                 Vector3 localVelocity = fgChar.GetLocalVelocity();
-                Vector3 localInput = smoothedInput; // fgChar.RelativeInputToLocal(dirPress, upJump);
 
                 // Move the character
-                WalkCharacter(localVelocity, localInput);
-                TurnCharacter(localInput);
-
-                fgChar.CalculateFinalVelocity();
+                StepAway();
+                TurnCharacter();
             }
 
             public override void ExecutePass1(int frameIndex) {
-                //fgChar.UpdateTarget();
+                fgChar.UpdateTarget();
                 //fgChar.UpdateCharacterMovement();
-                //fgChar.CalculateFinalVelocity();
+                fgChar.CalculateFinalVelocity();
                 //fgChar.AnimationWalkVelocity();
             }
 
             public override void LateExecute(int frameIndex) {
-                //fgChar.UpdateCharacterMovement();
-                //fgChar.AnimationWalkVelocity();
+                if (Mathf.Abs(fgChar.LookToMoveAngle()) < 2f) {
+                    changeState(states.Get("stand"));
+                }
             }
 
             public override void Exit(int frameIndex) {
                 // do nothing
             }
 
-            private void WalkCharacter(Vector3 localVelocity, Vector3 localInput) {
-                //smoothedInput = Vector3.Lerp(smoothedInput, localInput, movementChangeDampTime * fgChar.gameTime);
-
-                if (smoothedInput.sqrMagnitude > 0) {
-
-                    Vector3 movementForce = new Vector3 {
-                        x = smoothedInput.x,
-                        y = smoothedInput.y,
-                        z = smoothedInput.z,
-                    };
-                    movementForce.Scale(new Vector3 {
-                        x = 1.0f, //maxHorizontalForce * horizontalForce.Evaluate(localVelocity.x),
-                        y = 1.0f,
-                        z = 1.0f, //(localVelocity.z > 0 ? maxForwardForce : maxBackwardForce) * forwardForce.Evaluate(localVelocity.z)
-                    });
-
-                    //fgChar.rigidbody.AddRelativeForce(movementForce);
+            private void StepAway() {
+                if (Mathf.Abs(fgChar.LookToMoveAngle()) > 90f) {
+                    fgChar.AddVelocity(Gameplay.VelocityPriority.Movement, fgChar.TargetDirection() * stepAwaySpeed);
                 }
             }
 
-            private void TurnCharacter(Vector3 localInput) {
+            private void TurnCharacter() {
                 if (fgChar.Grounded(out Vector3 currStandingPoint)) {
-                    if (localInput.sqrMagnitude > 0.0f) {
-                        charRotation = fgChar.LookToMoveAngle() / fgChar.gameTime;
-                        if (charRotation != 0.0f) {
-                            //fgChar.rigidbody.MoveRotation(Quaternion.AngleAxis(Mathf.Clamp(charRotation, -maxRotation, maxRotation) * fgChar.realTime, Vector3.up) * fgChar.rigidbody.rotation);
-                        }
+                    charRotation = fgChar.LookToMoveAngle() / fgChar.gameTime;
+                    if (charRotation != 0.0f) {
+                        fgChar.Rotate(Quaternion.AngleAxis(Mathf.Clamp(charRotation, -maxRotation, maxRotation) * fgChar.gameTime, Vector3.up));
                     }
                 }
                 else {
