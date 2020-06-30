@@ -19,7 +19,7 @@ namespace ResonantSpark {
                 FrameEnforcer frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
                 //frame.AddUpdate((int) FramePriority.PhysicsMovement, FrameUpdateMovement);
                 //frame.AddUpdate((int) FramePriority.PhysicsCollisions, FrameUpdateCollisions);
-                //frame.AddUpdate((int) FramePriority.PhysicsResolve, FrameUpdateResolve);
+                frame.AddUpdate((int) FramePriority.PhysicsResolve, FrameUpdateResolve);
                 frame.AddUpdate((int) FramePriority.PhysicsMovement, FramePhysicsSimulate);
                 gameTime = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
 
@@ -65,6 +65,10 @@ namespace ResonantSpark {
                         Bounds bounds1 = collider1.collider.bounds;
                     }
                 }
+            }
+
+            public void FrameUpdateResolve(int frameIndex) {
+                
             }
         }
     }

@@ -19,9 +19,8 @@ namespace ResonantSpark {
 
         Gamemode = 512,
 
-        LateService = 0x10000 + 128,
         LateStateMachine = 0x10000 + 64,
-
+        LateService = 0x10000 + 256,
         LateGamemode = 0x10000 + 512,
 
         ActivePollingReset = 0xFFFFFFF,

@@ -79,7 +79,6 @@ GameObject:
   - component: {fileID: 6957239916241651657}
   - component: {fileID: 476829354079088110}
   - component: {fileID: 2465652325987101972}
-  - component: {fileID: 5346195510026317427}
   m_Layer: 10
   m_Name: lawrence
   m_TagString: rspCharacter
@@ -208,25 +207,6 @@ MonoBehaviour:
   animators:
   - {fileID: 7170136837020984624}
   - {fileID: 5755144972254718940}
---- !u!1818360608 &5346195510026317427
-PositionConstraint:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2465652325987101973}
-  m_Enabled: 1
-  m_Weight: 1
-  m_TranslationAtRest: {x: 0, y: 0, z: 0}
-  m_TranslationOffset: {x: 0, y: 0, z: 0}
-  m_AffectTranslationX: 1
-  m_AffectTranslationY: 0
-  m_AffectTranslationZ: 0
-  m_IsContraintActive: 0
-  m_IsLocked: 0
-  m_Sources:
-  - sourceTransform: {fileID: 0}
-    weight: 1
 --- !u!1 &4540545626233696953
 GameObject:
   m_ObjectHideFlags: 0

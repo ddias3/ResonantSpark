@@ -86,7 +86,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2573381c5f984674683b90ab12ed0ffb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackRunner: {fileID: 0}
 --- !u!1 &663932091497080124
 GameObject:
   m_ObjectHideFlags: 0
@@ -815,7 +814,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3298fa3129b5845448fdaa117a6dd33c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackRunner: {fileID: 0}
 --- !u!1 &5374638422670349251
 GameObject:
   m_ObjectHideFlags: 0
@@ -1243,9 +1241,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26dfd37abb08d984ea1d595337ebdd5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jump8Velocity: {x: 0, y: 5, z: 0}
-  jump7Velocity: {x: 0, y: 5, z: -1.3}
-  jump9Velocity: {x: 0, y: 5, z: 2}
+  jump8Velocity: {x: 0, y: 5.5, z: 0}
+  jump7Velocity: {x: 0, y: 5.5, z: -1.3}
+  jump9Velocity: {x: 0, y: 5.5, z: 2}
   gravityExtra: {x: 0, y: -12, z: 0}
   maxSpeed: 3
 --- !u!1 &8698697647293353193

@@ -66,6 +66,10 @@ namespace ResonantSpark {
                 set { rigidFG.position = value; }
             }
 
+            public Vector3 velocity {
+                get { return rigidFG.velocity; }
+            }
+
             public int maxHealth {
                 get { return charData.maxHealth; }
             }
@@ -202,6 +206,10 @@ namespace ResonantSpark {
                 return checkDistance > 0.0f && Physics.Raycast(rigidFG.position + (Vector3.up * 0.1f), Vector3.down, out hitInfo, checkDistance + 0.1f, groundRaycastMask, QueryTriggerInteraction.Ignore);
             }
 
+            public bool Stationary() {
+                return rigidFG.velocity.sqrMagnitude < 1e-6f;
+            }
+
             public void AddRelativeVelocity(VelocityPriority priority, Vector3 velocity) {
                 rigidFG.AddRelativeVelocity(priority, velocity);
             }
@@ -212,6 +220,10 @@ namespace ResonantSpark {
 
             public void SetRelativeVelocity(VelocityPriority priority, Vector3 velocity) {
                 rigidFG.SetRelativeVelocity(priority, velocity);
+            }
+
+            public void SetVelocity(VelocityPriority priority, Vector3 velocity) {
+                rigidFG.SetVelocity(priority, velocity);
             }
 
             public void AddForce(Vector3 force, ForceMode mode) {

@@ -177,6 +177,7 @@ MonoBehaviour:
   stateMachine: {fileID: 5006741397487736226}
   states: {fileID: 8138733489031963274}
   roundTime: 60
+  maxCharacterDistance: 8
   gameTime: 1
 --- !u!114 &4204782087996913149
 MonoBehaviour:

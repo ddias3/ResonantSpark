@@ -109,6 +109,10 @@ namespace ResonantSpark {
                 charVelocity.SetVelocity(priority, rigidbody.rotation * velocity);
             }
 
+            public void SetVelocity(VelocityPriority priority, Vector3 velocity) {
+                charVelocity.SetVelocity(priority, velocity);
+            }
+
             public void AddForce(Vector3 force, ForceMode mode) {
                 forces.Add((force, mode));
             }

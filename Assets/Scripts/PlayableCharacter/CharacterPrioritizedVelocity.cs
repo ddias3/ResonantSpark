@@ -18,6 +18,7 @@ namespace ResonantSpark {
             Projectile,
             Beam,
             Super,
+            BoundOverride,
         };
 
         public class CharacterPrioritizedVelocity {

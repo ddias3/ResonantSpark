@@ -91,7 +91,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   camera: {fileID: 3831185715290269346}
-  cameraHeightClosest: 1.72
+  cameraHeightClosest: 1.4
   cameraHeightFarthest: 2.15
   heightLook: 1.13
   cameraDistanceClosest: 4.5

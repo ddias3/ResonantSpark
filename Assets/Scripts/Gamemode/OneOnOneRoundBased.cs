@@ -16,6 +16,7 @@ namespace ResonantSpark {
             public MultipassStateDict states;
 
             public float roundTime = 60.0f;
+            public float maxCharacterDistance = 8.0f;
             private PlayerService playerService;
             private UiService uiService;
             private FightingGameService fgService;
@@ -162,7 +163,47 @@ namespace ResonantSpark {
             }
 
             public void RestrictDistance() {
-                
+                Vector3 charDirectLine = char1.position - char0.position;
+                if (charDirectLine.magnitude > maxCharacterDistance) {
+                    bool char0Moving = false;
+                    bool char1Moving = false;
+                    
+                    charDirectLine.y = 0;
+
+                    if (Vector3.Dot(char0.velocity, charDirectLine) < 0.0f) {
+                        Vector3 newVelocity = Vector3.ProjectOnPlane(char0.velocity, charDirectLine);
+                        char0.SetVelocity(VelocityPriority.BoundOverride, newVelocity);
+                        char0.CalculateFinalVelocity();
+                        char0Moving = true;
+                    }
+                    else if (!char0.Stationary()) {
+                        char0Moving = true;
+                    }
+
+                    if (Vector3.Dot(char1.velocity, charDirectLine) > 0.0f) {
+                        Vector3 newVelocity = Vector3.ProjectOnPlane(char1.velocity, -charDirectLine);
+                        char1.SetVelocity(VelocityPriority.BoundOverride, newVelocity);
+                        char1.CalculateFinalVelocity();
+                        char1Moving = true;
+                    }
+                    else if (!char1.Stationary()) {
+                        char1Moving = true;
+                    }
+
+                    float overDistanced = charDirectLine.magnitude - maxCharacterDistance;
+                    if (char0Moving) {
+                        if (char1Moving) {
+                            char0.position += charDirectLine.normalized * overDistanced * 0.5f;
+                            char1.position -= charDirectLine.normalized * overDistanced * 0.5f;
+                        }
+                        else {
+                            char0.position += charDirectLine.normalized * overDistanced;
+                        }
+                    }
+                    else if (char1Moving) {
+                        char1.position -= charDirectLine.normalized * overDistanced;
+                    }
+                }
             }
 
             public void CalculateScreenOrientation() {
