@@ -103,8 +103,14 @@ namespace ResonantSpark {
             public void RunFrame() {
                 int frameCount = tracker.frameCount;
                 //Debug.LogWarningFormat("    -- Atk: {0} | Frame#: = {1}/{2}", ToString(), frameCount, frames.Count);
-                framesContinuous?.Invoke((float)frameCount, fgChar.GetTarget());
+                framesContinuous?.Invoke((float)frameCount, fgChar.GetTarget().targetPos);
                 frames[frameCount].Perform(fgChar);
+
+                fgChar.AddRelativeVelocity(VelocityPriority.AttackMovement,
+                    new Vector3(
+                        FunctionCalculus.Differentiate(xMoveCb, tracker.frameCount) / fgChar.gameTime,
+                        FunctionCalculus.Differentiate(yMoveCb, tracker.frameCount) / fgChar.gameTime,
+                        FunctionCalculus.Differentiate(zMoveCb, tracker.frameCount) / fgChar.gameTime));
 
                 if (frameCount == frames.Count - 1) {
                     cleanUpCallback?.Invoke();

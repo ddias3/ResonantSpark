@@ -78,7 +78,7 @@ namespace ResonantSpark {
                     changeState(states.Get("stand"));
                 }
 
-                fgChar.UpdateTarget();
+                fgChar.RealignTarget();
                 //fgChar.UpdateCharacterMovement();
                 //fgChar.AnimationWalkVelocity();
                 tracker.Increment();

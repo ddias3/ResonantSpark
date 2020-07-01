@@ -11,6 +11,19 @@ namespace ResonantSpark {
             public int id { get; private set; }
             public RigidbodyFG rigidFG { private set; get; }
 
+            public Quaternion toLocal {
+                get { return Quaternion.Inverse(rigidFG.rotation); }
+            }
+
+            public Vector3 position {
+                get { return rigidFG.position; }
+                set { rigidFG.position = value; }
+            }
+
+            public Vector3 velocity {
+                get { return rigidFG.velocity; }
+            }
+
             public void Init() {
                 this.id = entityCounter++;
                 rigidFG = GetComponent<RigidbodyFG>();

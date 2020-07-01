@@ -25,6 +25,7 @@ namespace ResonantSpark {
 
                 private Dictionary<string, AudioClip> audioMap;
                 private Dictionary<string, ParticleEffect> particleMap;
+                private Dictionary<string, AnimationCurve> animationCurveMap;
                 private Dictionary<string, Projectile> projectileMap;
 
                 private FightingGameCharacter fgChar;
@@ -33,6 +34,7 @@ namespace ResonantSpark {
                         AllServices services,
                         Dictionary<string, AudioClip> audioMap,
                         Dictionary<string, ParticleEffect> particleMap,
+                        Dictionary<string, AnimationCurve> animationCurveMap,
                         Dictionary<string, Projectile> projectileMap) {
                     fgService = services.GetService<IFightingGameService>();
                     audioService = services.GetService<IAudioService>();
@@ -43,6 +45,7 @@ namespace ResonantSpark {
 
                     this.audioMap = audioMap;
                     this.particleMap = particleMap;
+                    this.animationCurveMap = animationCurveMap;
                     this.projectileMap = projectileMap;
                 }
 
@@ -56,6 +59,7 @@ namespace ResonantSpark {
                         atkBuilder.Input(InputNotation._4A, InputNotation._5A);
                         atkBuilder.AnimationState("5A");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
+                        atkBuilder.Movement(null, null, null);
                         atkBuilder.Frames(
                             FrameUtil.CreateList(fl => {
                                 fl.SpecialCancellable(true);
@@ -103,6 +107,7 @@ namespace ResonantSpark {
                         atkBuilder.Input(InputNotation._4A, InputNotation._5A);
                         atkBuilder.AnimationState("5AA");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
+                        atkBuilder.Movement(zMoveCb: animationCurveMap["orth_5AA.z"].Evaluate);
                         atkBuilder.Frames(
                             FrameUtil.CreateList(fl => {
                                 fl.SpecialCancellable(true);
@@ -111,8 +116,8 @@ namespace ResonantSpark {
                                 fl.From(1);
                                     fl.ChainCancellable(false);
                                 fl.From(4);
-                                    fl.Track((currTarget, actualTarget) => {
-                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
+                                    fl.Track((targetFG) => {
+                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, targetFG.targetPos, targetFG.ActualTargetPos(), 20.0f);
                                             // for now, just let the setting of this value be instantaneous once per frame.
                                         fgChar.SetTarget(newTargetPos);
                                     });
@@ -171,6 +176,7 @@ namespace ResonantSpark {
                         //            // fgChar.GetOrientation is done automatically on each frame
                         //    }
                         //});
+                        atkBuilder.Movement(zMoveCb: animationCurveMap["orth_5AAA.z"].Evaluate);
                         atkBuilder.Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
@@ -406,9 +412,9 @@ namespace ResonantSpark {
                                 fl.CancellableOnWhiff(false);
                                 fl.CounterHit(true);
                                 fl.From(4);
-                                    fl.Track((currTarget, actualTarget) => {
-                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
-                                        // for now, just let the setting of this value be instantaneous once per frame.
+                                    fl.Track((targetFG) => {
+                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, targetFG.targetPos, targetFG.ActualTargetPos(), 20.0f);
+                                            // for now, just let the setting of this value be instantaneous once per frame.
                                         fgChar.SetTarget(newTargetPos);
                                     });
                                 fl.To(8);
@@ -618,9 +624,9 @@ namespace ResonantSpark {
                                 .CancellableOnWhiff(false)
                                 .CounterHit(true)
                                 .From(4)
-                                    .Track((currTarget, actualTarget) => {
-                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
-                                        // for now, just let the setting of this value be instantaneous once per frame.
+                                    .Track((targetFG) => {
+                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, targetFG.targetPos, targetFG.ActualTargetPos(), 20.0f);
+                                            // for now, just let the setting of this value be instantaneous once per frame.
                                         fgChar.SetTarget(newTargetPos);
                                     })
                                 .To(12)
@@ -673,8 +679,8 @@ namespace ResonantSpark {
                                 .CancellableOnWhiff(false)
                                 .CounterHit(true)
                                 .From(4)
-                                    .Track((currTarget, actualTarget) => {
-                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
+                                    .Track((targetFG) => {
+                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, targetFG.targetPos, targetFG.ActualTargetPos(), 20.0f);
                                             // for now, just let the setting of this value be instantaneous once per frame.
                                         fgChar.SetTarget(newTargetPos);
                                     })
@@ -910,8 +916,8 @@ namespace ResonantSpark {
                                         soundResource.transform.position = fgChar.GetSpeakPosition();
                                         audioService.Play(soundResource);
                                     })
-                                    .Track((currTarget, actualTarget) => {
-                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 5.0f);
+                                    .Track((targetFG) => {
+                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, targetFG.targetPos, targetFG.ActualTargetPos(), 5.0f);
                                             // for now, just let the setting of this value be instantaneous once per frame.
                                         fgChar.SetTarget(newTargetPos);
                                     })

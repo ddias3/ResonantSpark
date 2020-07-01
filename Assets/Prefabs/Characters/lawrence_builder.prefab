@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7418198995729794663}
   - component: {fileID: 534259130289147125}
   - component: {fileID: 1518595847234667903}
+  - component: {fileID: 4406322581361524681}
   m_Layer: 9
   m_Name: lawrence_builder
   m_TagString: rspBuilder
@@ -100,3 +101,110 @@ MonoBehaviour:
   - hadouken
   values:
   - {fileID: 675256983, guid: cdf59115687864f4bace8f132a967c61, type: 3}
+--- !u!114 &4406322581361524681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8557177467078201262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aefdf01e8743a5f4ba3273a9be79138b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  keys:
+  - orth_5AA.z
+  - orth_5AAA.z
+  values:
+  - serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.0019328623
+      outSlope: 0.0019328623
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.38596454
+    - serializedVersion: 3
+      time: 6.4644823
+      value: 0.14751765
+      inSlope: 0.059868634
+      outSlope: 0.059868634
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.258347
+    - serializedVersion: 3
+      time: 12.393911
+      value: 0.8476854
+      inSlope: 0.044113163
+      outSlope: 0.044113163
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.26934415
+      outWeight: 0.10048864
+    - serializedVersion: 3
+      time: 20.05818
+      value: 0.9465492
+      inSlope: 0.004086658
+      outSlope: 0.004086658
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 29.888952
+      value: 1.0017315
+      inSlope: 0.0003878884
+      outSlope: 0.0003878884
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.09280307
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  - serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.0019328623
+      outSlope: 0.0019328623
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.38596454
+    - serializedVersion: 3
+      time: 6.4644823
+      value: 0.14751765
+      inSlope: 0.059868634
+      outSlope: 0.059868634
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.258347
+    - serializedVersion: 3
+      time: 10.582459
+      value: 0.25919524
+      inSlope: 0.00095440395
+      outSlope: 0.00095440395
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.26934415
+      outWeight: 0.29056194
+    - serializedVersion: 3
+      time: 19.886858
+      value: 0.26809585
+      inSlope: 0.0025395895
+      outSlope: 0.0025395895
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.2898985
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0

@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Character;
@@ -33,6 +32,7 @@ namespace ResonantSpark {
             public Transform standCollider;
 
             public TMPro.TextMeshPro __debugState;
+            public UI.UIDebug.AttackInfo attackInfoDisplay;
 
             public int fgCharId { get; private set; }
             private int teamId;
@@ -56,19 +56,6 @@ namespace ResonantSpark {
             private TargetFG targetFG;
 
             private bool controlEnable = false;
-
-            public Quaternion toLocal {
-                get { return Quaternion.Inverse(rigidFG.rotation); }
-            }
-
-            public Vector3 position {
-                get { return rigidFG.position; }
-                set { rigidFG.position = value; }
-            }
-
-            public Vector3 velocity {
-                get { return rigidFG.velocity; }
-            }
 
             public int maxHealth {
                 get { return charData.maxHealth; }
@@ -135,6 +122,7 @@ namespace ResonantSpark {
 
             public void StartAttackIfRequired(int frameIndex) {
                 attackRunner.StartAttackIfRequired(frameIndex);
+                attackInfoDisplay?.DisplayAttack(attackRunner.GetCurrentAttack());
             }
 
             public void ChooseAttack(CharacterStates.CharacterBaseState currState, CharacterProperties.Attack currAttack, FightingGameInputCodeBut button, FightingGameInputCodeDir direction = FightingGameInputCodeDir.None) {
@@ -354,12 +342,16 @@ namespace ResonantSpark {
                 return "onHitFGChar";
             }
 
-            public Vector3 GetTarget() {
-                return targetFG.targetPos;
+            public TargetFG GetTarget() {
+                return targetFG;
             }
 
             public void SetTarget(Vector3 newTargetPos) {
                 targetFG.targetPos = newTargetPos;
+            }
+
+            public void RealignTarget() {
+                targetFG.RealignTargetPos();
             }
 
             public void SetOpponentTarget(InGameEntity opponentChar) {
@@ -446,11 +438,6 @@ namespace ResonantSpark {
 
             public void UpdateCharacterMovement() {
                 charMovementAnimation.Increment();
-            }
-
-            public void UpdateTarget() {
-                //TODO: attackRunner.UpdateTarget();
-                targetFG.UpdateTarget();
             }
 
             public void AnimationCrouch() {

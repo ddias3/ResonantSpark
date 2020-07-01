@@ -32,7 +32,7 @@ namespace ResonantSpark {
             }
 
             public override void ExecutePass1(int frameIndex) {
-                fgChar.UpdateTarget();
+                fgChar.RealignTarget();
                 //fgChar.UpdateCharacterMovement();
                 //fgChar.CalculateFinalVelocity();
                 //fgChar.AnimationWalkVelocity();

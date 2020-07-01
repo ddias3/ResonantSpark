@@ -17,8 +17,6 @@ namespace ResonantSpark {
 
             public GameObject fightingGameCameraPrefab;
 
-            public GameObject male0BuilderPrefab;
-            public GameObject female0BuilderPrefab;
             public GameObject lawrenceBuilderPrefab;
 
             private Persistence persObj;
@@ -58,8 +56,6 @@ namespace ResonantSpark {
 
             public GameObject GetSelectedCharacter(int playerIndex) {
                 switch (characterSelections[playerIndex]) {
-                    case "male0":
-                        return male0BuilderPrefab;
                     case "lawrence":
                         return lawrenceBuilderPrefab;
                     default:

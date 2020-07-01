@@ -27,12 +27,16 @@ namespace ResonantSpark {
                 height = transform.position.y;
             }
 
-            public void SetNewTarget(InGameEntity newTarget) {
-                targetChar = newTarget;
+            public void SetNewTarget(InGameEntity newTargetChar) {
+                targetChar = newTargetChar;
             }
 
-            public void UpdateTarget() {
-                targetPos = targetChar.rigidFG.position;
+            public void RealignTargetPos() {
+                targetPos = targetChar.position;
+            }
+
+            public Vector3 ActualTargetPos() {
+                return targetChar.position;
             }
 
             public void Update() {

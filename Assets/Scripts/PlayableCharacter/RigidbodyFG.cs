@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using ResonantSpark.SimplifiedPhysics;
+
 namespace ResonantSpark {
     namespace Gameplay {
         [RequireComponent(typeof(Rigidbody))]
         public class RigidbodyFG : MonoBehaviour {
             public Vector3 gravity = new Vector3(0.0f, -9.81f, 0.0f);
             public Collider collider;
+            public List<Constraint> constraints;
 
             private CharacterPrioritizedVelocity charVelocity;
             private List<(Vector3, ForceMode)> forces;

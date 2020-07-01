@@ -65,8 +65,8 @@ namespace ResonantSpark {
                                 fl.CancellableOnWhiff(true);
                                 fl.ChainCancellable(true);
                                 fl.From(4);
-                                    fl.Track((currTarget, actualTarget) => {
-                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
+                                    fl.Track((targetFG) => {
+                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, targetFG.targetPos, targetFG.ActualTargetPos(), 20.0f);
                                             // for now, just let the setting of this value be instantaneous once per frame.
                                         fgChar.SetTarget(newTargetPos);
                                     });
@@ -119,8 +119,8 @@ namespace ResonantSpark {
                                 fl.From(1);
                                     fl.ChainCancellable(false);
                                 fl.From(4);
-                                    fl.Track((currTarget, actualTarget) => {
-                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
+                                    fl.Track((targetFG) => {
+                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, targetFG.targetPos, targetFG.ActualTargetPos(), 20.0f);
                                             // for now, just let the setting of this value be instantaneous once per frame.
                                         fgChar.SetTarget(newTargetPos);
                                     });
@@ -243,8 +243,8 @@ namespace ResonantSpark {
                                 .CancellableOnWhiff(true)
                                 .ChainCancellable(true)
                                 .From(4)
-                                    .Track((currTarget, actualTarget) => {
-                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
+                                    .Track((targetFG) => {
+                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, targetFG.targetPos, targetFG.ActualTargetPos(), 20.0f);
                                             // for now, just let the setting of this value be instantaneous once per frame.
                                         fgChar.SetTarget(newTargetPos);
                                     })
@@ -301,9 +301,9 @@ namespace ResonantSpark {
                                 .ChainCancellable(false)
                                 .CancellableOnWhiff(false)
                                 .From(4)
-                                    .Track((currTarget, actualTarget) => {
-                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
-                                            // for now, just let the setting of this value be instantaneous once per frame.
+                                    .Track((targetFG) => {
+                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, targetFG.targetPos, targetFG.ActualTargetPos(), 20.0f);
+                                        // for now, just let the setting of this value be instantaneous once per frame.
                                         fgChar.SetTarget(newTargetPos);
                                     })
                                 .To(16)
@@ -405,9 +405,9 @@ namespace ResonantSpark {
                                 .ChainCancellable(false)
                                 .CancellableOnWhiff(false)
                                 .From(4)
-                                    .Track((currTarget, actualTarget) => {
-                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
-                                            // for now, just let the setting of this value be instantaneous once per frame.
+                                    .Track((targetFG) => {
+                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, targetFG.targetPos, targetFG.ActualTargetPos(), 20.0f);
+                                        // for now, just let the setting of this value be instantaneous once per frame.
                                         fgChar.SetTarget(newTargetPos);
                                     })
                                 .To(13)
@@ -556,9 +556,9 @@ namespace ResonantSpark {
                                 .ChainCancellable(false)
                                 .CancellableOnWhiff(false)
                                 .From(4)
-                                    .Track((currTarget, actualTarget) => {
-                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
-                                            // for now, just let the setting of this value be instantaneous once per frame.
+                                    .Track((targetFG) => {
+                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, targetFG.targetPos, targetFG.ActualTargetPos(), 20.0f);
+                                        // for now, just let the setting of this value be instantaneous once per frame.
                                         fgChar.SetTarget(newTargetPos);
                                     })
                                 .To(12)
@@ -608,9 +608,9 @@ namespace ResonantSpark {
                                 .ChainCancellable(false)
                                 .CancellableOnWhiff(false)
                                 .From(4)
-                                    .Track((currTarget, actualTarget) => {
-                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
-                                            // for now, just let the setting of this value be instantaneous once per frame.
+                                    .Track((targetFG) => {
+                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, targetFG.targetPos, targetFG.ActualTargetPos(), 20.0f);
+                                        // for now, just let the setting of this value be instantaneous once per frame.
                                         fgChar.SetTarget(newTargetPos);
                                     })
                                 .To(12)
@@ -696,9 +696,9 @@ namespace ResonantSpark {
                                 .CancellableOnWhiff(false)
                                 .ChainCancellable(false)
                                 .From(4)
-                                    .Track((currTarget, actualTarget) => {
-                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
-                                            // for now, just let the setting of this value be instantaneous once per frame.
+                                    .Track((targetFG) => {
+                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, targetFG.targetPos, targetFG.ActualTargetPos(), 20.0f);
+                                        // for now, just let the setting of this value be instantaneous once per frame.
                                         fgChar.SetTarget(newTargetPos);
                                     })
                                 .To(10)
@@ -750,9 +750,9 @@ namespace ResonantSpark {
                                 .CancellableOnWhiff(false)
                                 .ChainCancellable(false)
                                 .From(4)
-                                    .Track((currTarget, actualTarget) => {
-                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 20.0f);
-                                            // for now, just let the setting of this value be instantaneous once per frame.
+                                    .Track((targetFG) => {
+                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, targetFG.targetPos, targetFG.ActualTargetPos(), 20.0f);
+                                        // for now, just let the setting of this value be instantaneous once per frame.
                                         fgChar.SetTarget(newTargetPos);
                                     })
                                 .To(12)
@@ -800,9 +800,9 @@ namespace ResonantSpark {
                                         soundResource.transform.position = fgChar.GetSpeakPosition();
                                         audioService.Play(soundResource);
                                     })
-                                    .Track((currTarget, actualTarget) => {
-                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, currTarget, actualTarget.position, 5.0f);
-                                            // for now, just let the setting of this value be instantaneous once per frame.
+                                    .Track((targetFG) => {
+                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, targetFG.targetPos, targetFG.ActualTargetPos(), 5.0f);
+                                        // for now, just let the setting of this value be instantaneous once per frame.
                                         fgChar.SetTarget(newTargetPos);
                                     })
                                 .To(46)

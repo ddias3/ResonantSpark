@@ -56,7 +56,7 @@ namespace ResonantSpark {
             }
 
             public override void LateExecute(int frameIndex) {
-                fgChar.UpdateTarget();
+                fgChar.RealignTarget();
             }
 
             public override void Exit(int frameIndex) {

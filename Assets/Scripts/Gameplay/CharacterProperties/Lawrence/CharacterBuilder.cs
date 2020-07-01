@@ -35,11 +35,13 @@ namespace ResonantSpark {
 
                     audioMap = GetComponent<AudioClipMap>();
                     particleMap = GetComponent<ParticleEffectMap>();
+                    attackMovementMap = GetComponent<AnimationCurveMap>();
                     projectileMap = GetComponent<ProjectileMap>();
 
                     Attacks attacks = new Attacks(services,
                         audioMap.BuildDictionary(),
                         particleMap.BuildDictionary(),
+                        attackMovementMap.BuildDictionary(),
                         projectileMap.BuildDictionary());
                     Movement movement = new Movement(services);
 

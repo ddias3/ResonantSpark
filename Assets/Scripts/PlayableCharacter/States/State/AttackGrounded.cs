@@ -38,8 +38,6 @@ namespace ResonantSpark {
             public override void ExecutePass0(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
 
-                //fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Dash, animatorVelocity);
-
                 fgChar.RunAttackFrame();
             }
 

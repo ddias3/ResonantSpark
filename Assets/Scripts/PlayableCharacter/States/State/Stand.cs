@@ -80,7 +80,7 @@ namespace ResonantSpark {
             }
 
             public override void LateExecute(int frameIndex) {
-                fgChar.UpdateTarget();
+                fgChar.RealignTarget();
                 fgChar.UpdateCharacterMovement();
                 fgChar.AnimationWalkVelocity();
             }

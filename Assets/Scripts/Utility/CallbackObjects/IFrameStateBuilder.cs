@@ -16,7 +16,7 @@ namespace ResonantSpark {
                     bool counterHit,
                     List<int> hitCallbackIds,
                     Action<HitInfo> armorCallback,
-                    Action<Vector3, Transform> trackCallback,
+                    Action<TargetFG> trackCallback,
                     AudioClip soundClip,
                     Action<AudioResource> soundCallback,
                     Projectile projectile,
@@ -35,7 +35,7 @@ namespace ResonantSpark {
 
             public Action<HitInfo> armorCallback { get; private set; }
 
-            public Action<Vector3, Transform> trackCallback { get; private set; }
+            public Action<TargetFG> trackCallback { get; private set; }
 
             public AudioClip soundClip { get; private set; }
             public Action<AudioResource> soundCallback { get; private set; }
@@ -50,7 +50,7 @@ namespace ResonantSpark {
                     bool counterHit,
                     List<int> hitCallbackIds,
                     Action<HitInfo> armorCallback,
-                    Action<Vector3, Transform> trackCallback,
+                    Action<TargetFG> trackCallback,
                     AudioClip soundClip,
                     Action<AudioResource> soundCallback,
                     Projectile projectile,

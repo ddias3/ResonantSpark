@@ -27,7 +27,7 @@ namespace ResonantSpark {
 
                 public List<int> hitCallbackIds;
 
-                public Action<Vector3, Transform> trackCallback = null;
+                public Action<TargetFG> trackCallback = null;
 
                 public AudioClip soundClip = null;
                 public Action<AudioResource> soundCallback = null;
@@ -146,7 +146,7 @@ namespace ResonantSpark {
                             topStackFrame.counterHit = counterHit = (bool)entry.content;
                             break;
                         case "track":
-                            topStackFrame.trackCallback = (Action<Vector3, Transform>)entry.content;
+                            topStackFrame.trackCallback = (Action<TargetFG>)entry.content;
                             break;
                         // TODO: Create armor callback.
                         //case "armor":

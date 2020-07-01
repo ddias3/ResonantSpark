@@ -8,6 +8,8 @@ using ResonantSpark.SimplifiedPhysics;
 namespace ResonantSpark {
     namespace Service {
         public class PhysicsService : MonoBehaviour {
+            public List<GlobalConstraint> constraints;
+
             private PhysicsTracker physics;
 
             private GameTimeManager gameTime;
@@ -17,10 +19,11 @@ namespace ResonantSpark {
                 physics = PhysicsTracker.Get();
 
                 FrameEnforcer frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
+                frame.AddUpdate((int)FramePriority.PhysicsMovement, FramePhysicsSimulate);
+
                 //frame.AddUpdate((int) FramePriority.PhysicsMovement, FrameUpdateMovement);
                 //frame.AddUpdate((int) FramePriority.PhysicsCollisions, FrameUpdateCollisions);
                 frame.AddUpdate((int) FramePriority.PhysicsResolve, FrameUpdateResolve);
-                frame.AddUpdate((int) FramePriority.PhysicsMovement, FramePhysicsSimulate);
                 gameTime = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
 
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(PhysicsService));
