@@ -84,8 +84,18 @@ namespace ResonantSpark {
             }
 
             private void OnButtonPress(Action stop, Combination combo) {
-                var butPress = (ButtonPress)combo;
+                var buttonPress = (ButtonPress)combo;
 
+                if (buttonPress.button0 != FightingGameInputCodeBut.D) {
+                    FightingGameInputCodeDir direction = FightingGameInputCodeDir.Neutral;
+                    fgChar.Use(combo);
+                    fgChar.UseCombination<DirectionCurrent>(currDir => {
+                        direction = fgChar.MapAbsoluteToRelative(((DirectionCurrent)currDir).direction);
+                    });
+
+                    fgChar.ChooseAttack(this, null, buttonPress.button0, direction);
+                    stop();
+                }
             }
 
             private void OnDoubleTap(Action stop, Combination combo) {

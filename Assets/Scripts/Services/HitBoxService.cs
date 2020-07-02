@@ -29,23 +29,6 @@ namespace ResonantSpark {
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(HitBoxService));
             }
 
-                // There is a better way to do this.
-            //private void FrameUpdate(int frameIndex) {
-            //    foreach (KeyValuePair<int, HitBox> kvp in hitBoxMap) {
-            //        HitBox hitBox = kvp.Value;
-            //        if (activeHitBoxes.Contains(hitBox)) {
-            //            if (!hitBox.IsActive()) {
-            //                hitBox.Activate();
-            //            }
-            //        }
-            //        else {
-            //            if (hitBox.IsActive()) {
-            //                hitBox.Deactivate();
-            //            }
-            //        }
-            //    }
-            //}
-
             private void FrameUpdate(int frameIndex) {
                 foreach (HitBox hitBox in activeHitBoxes) {
                     if (!previousActiveHitBoxes.Contains(hitBox)) {
@@ -72,11 +55,6 @@ namespace ResonantSpark {
                     hitBox.hit.InvokeQueuedEvents();
                 }
             }
-
-            //private void ResetActivePolling(int frameIndex) {
-            //    previousActiveHitBoxes = activeHitBoxes;
-            //    activeHitBoxes = new List<HitBox>();
-            //}
 
             private void ResetActivePolling(int frameIndex) {
                 previousActiveHitBoxes.Clear();

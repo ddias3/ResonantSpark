@@ -258,6 +258,7 @@ namespace ResonantSpark {
                         atkBuilder.Input(InputNotation._1A, InputNotation._2A, InputNotation._3A);
                         atkBuilder.AnimationState("2A");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
+                        atkBuilder.Movement();
                         atkBuilder.Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
@@ -310,6 +311,7 @@ namespace ResonantSpark {
                         atkBuilder.Input(InputNotation._1A, InputNotation._2A, InputNotation._3A);
                         atkBuilder.AnimationState("2AA");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
+                        atkBuilder.Movement();
                         atkBuilder.Frames(
                             FrameUtil.CreateList(f => { f
                                 .SpecialCancellable(true)
@@ -355,6 +357,7 @@ namespace ResonantSpark {
                         atkBuilder.Input(InputNotation._4B, InputNotation._5B);
                         atkBuilder.AnimationState("5B");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
+                        atkBuilder.Movement(zMoveCb: animationCurveMap["orth_5B.z"].Evaluate);
                         atkBuilder.Frames(
                             FrameUtil.CreateList(fl => {
                                 fl.SpecialCancellable(true);
@@ -406,6 +409,7 @@ namespace ResonantSpark {
                         atkBuilder.Input(InputNotation._4B, InputNotation._5B);
                         atkBuilder.AnimationState("5BB");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
+                        atkBuilder.Movement(zMoveCb: animationCurveMap["orth_5BB.z"].Evaluate);
                         atkBuilder.Frames(
                             FrameUtil.CreateList(fl => {
                                 fl.SpecialCancellable(true);
@@ -462,6 +466,7 @@ namespace ResonantSpark {
                         atkBuilder.Input(InputNotation._4B, InputNotation._5B);
                         atkBuilder.AnimationState("5BBB");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
+                        atkBuilder.Movement(zMoveCb: animationCurveMap["orth_5BBB.z"].Evaluate);
                         atkBuilder.Frames(
                             FrameUtil.CreateList(fl => {
                                 fl.SpecialCancellable(true);
@@ -511,6 +516,7 @@ namespace ResonantSpark {
                         atkBuilder.Input(InputNotation._4B, InputNotation._5B);
                         atkBuilder.AnimationState("5BBBB");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
+                        atkBuilder.Movement(zMoveCb: animationCurveMap["orth_5BBBB.z"].Evaluate);
                         atkBuilder.Frames(
                             FrameUtil.CreateList(fl => {
                                 fl.SpecialCancellable(true);
@@ -553,13 +559,14 @@ namespace ResonantSpark {
                         atkBuilder.CleanUp(ReturnToStand);
                     });
 
-                    Attack atkJumpSpw5A = new Attack(atkBuilder => {
-                        atkBuilder.Name("jump_southpaw_5A");
+                    Attack atkJump5A = new Attack(atkBuilder => {
+                        atkBuilder.Name("jump_5A");
                         atkBuilder.Orientation(Orientation.ORTHODOX);
                         atkBuilder.GroundRelation(GroundRelation.AIRBORNE);
-                        atkBuilder.Input(InputNotation._A);
-                        atkBuilder.AnimationState("j.A");
+                        atkBuilder.Input(InputNotation._4A, InputNotation._5A, InputNotation._6A, InputNotation._1A, InputNotation._2A, InputNotation._3A);
+                        atkBuilder.AnimationState("j_A");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackAirborne"));
+                        atkBuilder.Movement();
                         atkBuilder.FramesContinuous((localFrame, target) => {
                             if (localFrame >= 8.0f && localFrame <= 11.0f) {
                                 float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
@@ -604,13 +611,14 @@ namespace ResonantSpark {
                         atkBuilder.CleanUp(ReturnToAirborne);
                     });
 
-                    Attack atkJumpSpw5AA = new Attack(atkBuilder => {
-                        atkBuilder.Name("jump_southpaw_5AA");
+                    Attack atkJump5AA = new Attack(atkBuilder => {
+                        atkBuilder.Name("jump_5AA");
                         atkBuilder.Orientation(Orientation.ORTHODOX);
                         atkBuilder.GroundRelation(GroundRelation.AIRBORNE);
-                        atkBuilder.Input(InputNotation._A);
-                        atkBuilder.AnimationState("j.AA");
+                        atkBuilder.Input(InputNotation._4A, InputNotation._5A, InputNotation._6A, InputNotation._1A, InputNotation._2A, InputNotation._3A);
+                        atkBuilder.AnimationState("j_AA");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackAirborne"));
+                        atkBuilder.Movement();
                         atkBuilder.FramesContinuous((localFrame, target) => {
                             if (localFrame >= 8.0f && localFrame <= 11.0f) {
                                 float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
@@ -659,13 +667,14 @@ namespace ResonantSpark {
                         atkBuilder.CleanUp(ReturnToAirborne);
                     });
 
-                    Attack atkJumpSpw5AAA = new Attack(atkBuilder => {
-                        atkBuilder.Name("jump_southpaw_5AAA");
+                    Attack atkJump5AAA = new Attack(atkBuilder => {
+                        atkBuilder.Name("jump_5AAA");
                         atkBuilder.Orientation(Orientation.ORTHODOX);
                         atkBuilder.GroundRelation(GroundRelation.AIRBORNE);
-                        atkBuilder.Input(InputNotation._A);
-                        atkBuilder.AnimationState("j.AAA");
+                        atkBuilder.Input(InputNotation._4A, InputNotation._5A, InputNotation._6A, InputNotation._1A, InputNotation._2A, InputNotation._3A);
+                        atkBuilder.AnimationState("j_AAA");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackAirborne"));
+                        atkBuilder.Movement(yMoveCb: animationCurveMap["jump_5AAA.y"].Evaluate, zMoveCb: animationCurveMap["jump_5AAA.z"].Evaluate);
                         atkBuilder.FramesContinuous((localFrame, target) => {
                             if (localFrame >= 8.0f && localFrame <= 11.0f) {
                                 float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
@@ -756,6 +765,7 @@ namespace ResonantSpark {
                         atkBuilder.Input(InputNotation._1C);
                         atkBuilder.AnimationState("1C");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
+                        atkBuilder.Movement(zMoveCb: animationCurveMap["orth_1C.z"].Evaluate);
                         atkBuilder.Frames(
                             FrameUtil.CreateList(fl => {
                                 fl.SpecialCancellable(true);
@@ -805,6 +815,7 @@ namespace ResonantSpark {
                         atkBuilder.Input(InputNotation._2C);
                         atkBuilder.AnimationState("2C");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
+                        atkBuilder.Movement();
                         atkBuilder.Frames(
                             FrameUtil.CreateList(fl => {
                                 fl.SpecialCancellable(true);
@@ -839,58 +850,6 @@ namespace ResonantSpark {
                                         }));
                                     });
                                 fl.To(10);
-                                fl.From(20);
-                                    fl.CounterHit(false);
-                                    fl.ChainCancellable(true);
-                                fl.To(35);
-                            }));
-                        atkBuilder.CleanUp(ReturnToStand);
-                    });
-
-                    Attack atkOrt3C = new Attack(atkBuilder => {
-                        atkBuilder.Name("orthodox_3C");
-                        atkBuilder.Orientation(Orientation.ORTHODOX);
-                        atkBuilder.GroundRelation(GroundRelation.GROUNDED);
-                        atkBuilder.Input(InputNotation._3C);
-                        atkBuilder.AnimationState("3C");
-                        atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
-                        atkBuilder.Frames(
-                            FrameUtil.CreateList(fl => {
-                                fl.SpecialCancellable(true);
-                                fl.CancellableOnWhiff(false);
-                                fl.CounterHit(true);
-                                fl.From(9);
-                                    fl.Hit(hit => {
-                                        hit.HitDamage(1000);
-                                        hit.BlockDamage(0);
-                                        hit.HitStun(30.0f);
-                                        hit.BlockStun(12.0f);
-                                        hit.ComboScaling(1.0f);
-                                        hit.Priority(AttackPriority.LightAttack);
-
-                                        hit.HitBox(new HitBox(hb => {
-                                            hb.Relative(fgChar.transform);
-                                            hb.Point0(new Vector3(0, 0, 0.8f));
-                                            hb.Point1(new Vector3(0, 1, 0.8f));
-                                            hb.Radius(0.25f);
-                                            hb.Event("onHitFGChar",
-                                                CommonGroundedOnHitFGChar(
-                                                    hitSound: audioMap["mediumHit"],
-                                                    groundedForceMagnitude: 0.5f,
-                                                    airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
-                                                    airborneForceMagnitude: 1.0f));
-
-                                            hb.Event("onEqualPriorityHitBox", (hitInfo) => {
-                                                if (hitInfo.hitEntity != fgChar) {
-                                                    fgChar.PredeterminedActions("horizontalClashSwingFromLeft");
-                                                }
-                                            });
-                                        }));
-                                    });
-                                fl.To(10);
-                                fl.To(14);
-                                    fl.ChangeState(fgChar.State("attackAirborne"));
-                                fl.From(15);
                                 fl.From(20);
                                     fl.CounterHit(false);
                                     fl.ChainCancellable(true);
@@ -946,6 +905,7 @@ namespace ResonantSpark {
 
                     List<CharacterStates.CharacterBaseState> validAirborneAttackStates = new List<CharacterStates.CharacterBaseState> {
                         fgChar.State("airborne"),
+                        fgChar.State("airDash"),
                         fgChar.State("attackAirborne"),
                     };
 
@@ -1076,6 +1036,33 @@ namespace ResonantSpark {
                             currAttack == atkOrt5BBB ||
                             currAttack == atkOrt5BBBB ||
                             currAttack == atkOrt1C) {
+                            return true;
+                        }
+                        return false;
+                    });
+                    charBuilder.Attack(atkJump5A, (charState, currAttack, prevAttacks) => {
+                        if (!validAirborneAttackStates.Contains(charState)) {
+                            return false;
+                        }
+                        if (currAttack == null) {
+                            return true;
+                        }
+                        return false;
+                    });
+                    charBuilder.Attack(atkJump5AA, (charState, currAttack, prevAttacks) => {
+                        if (!validAirborneAttackStates.Contains(charState)) {
+                            return false;
+                        }
+                        if (currAttack == atkJump5A) {
+                            return true;
+                        }
+                        return false;
+                    });
+                    charBuilder.Attack(atkJump5AAA, (charState, currAttack, prevAttacks) => {
+                        if (!validAirborneAttackStates.Contains(charState)) {
+                            return false;
+                        }
+                        if (currAttack == atkJump5AA) {
                             return true;
                         }
                         return false;
