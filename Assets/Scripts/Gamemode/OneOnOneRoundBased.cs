@@ -59,6 +59,8 @@ namespace ResonantSpark {
 
                 char0 = playerService.GetFGChar(0);
                 char1 = playerService.GetFGChar(1);
+                char0.name += "P1";
+                char1.name += "P2";
 
                 char0.SetOpponentTarget(char1);
                 char1.SetOpponentTarget(char0);

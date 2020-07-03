@@ -53,13 +53,15 @@ namespace ResonantSpark {
         private float startTime = 0.0f;
         private float prevTime = 0.0f;
 
+        private float elapsedTime = 0f;
+
         private int frameIndex = 0;
 
         private float deltaTime;
 
         public void Awake() {
             this.enabled = false;
-            //elapsedTime = FRAME_TIME;
+            elapsedTime = FRAME_TIME;
             frameIndex = 0;
 
             gameTime = gameObject.GetComponent<GameTimeManager>();
@@ -81,6 +83,7 @@ namespace ResonantSpark {
         public void StartTimeCount() {
             startTime = Time.time;
             prevTime = startTime;
+            frameIndex = 0;
         }
 
         public void FixedUpdate() {
@@ -88,7 +91,7 @@ namespace ResonantSpark {
 
             deltaTime = Time.time - prevTime;
 
-            while (Time.time - prevTime > FRAME_TIME) {
+            while (elapsedTime > FRAME_TIME * frameIndex) {
                 foreach (FrameEnforcerCallback action in updateActions) {
                     action.callback.Invoke(frameIndex);
                 }
@@ -99,8 +102,13 @@ namespace ResonantSpark {
                 updateCounter++;
 
                 frameIndex++;
-                frameIndexText.text = "Fr#: " + frameIndex.ToString();
+                frameIndexText.text = string.Format("Fr#: {0}", frameIndex.ToString());
+
+                elapsedTime -= FRAME_TIME;
             }
+
+            //elapsedTime += Time.fixedDeltaTime;
+            elapsedTime = Time.time - startTime;
 
             //if (stepsInFrame > 1) {
             //    Debug.LogWarning("Frame Skip at frame(" + frameIndex + "). Stepped " + stepsInFrame + " times in single frame");
@@ -110,6 +118,13 @@ namespace ResonantSpark {
                 fpsCounterText.text = ((updateCounter - updateCounterSnapshot) / (Time.time - timeSnapshot)).ToString("F1") + " FPS";
                 timeSnapshot = Time.time;
                 updateCounterSnapshot = updateCounter;
+            }
+        }
+
+        public void Update() {
+            if (UnityEngine.InputSystem.Keyboard.current.spaceKey.wasPressedThisFrame) {
+                Debug.LogFormat("Frame : {0}", frameIndex);
+                Debug.LogFormat("Time : {0}", Time.time);
             }
         }
 

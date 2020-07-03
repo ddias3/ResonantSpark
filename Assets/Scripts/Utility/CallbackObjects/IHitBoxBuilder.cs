@@ -27,11 +27,10 @@ namespace ResonantSpark {
 
             public Dictionary<string, Action<HitInfo>> eventCallbacks { get; private set; }
             public bool tracking { get; private set; }
-
-            private Vector3 hitLocation = Vector3.up;
+            public Transform relativeTransform { get; private set; }
+            public Vector3 hitLocation { get; private set; }
 
             private CapsuleCollider collider;
-            private Transform transform;
 
             private Vector3 point0;
             private Vector3 point1;
@@ -78,8 +77,8 @@ namespace ResonantSpark {
                 return this;
             }
 
-            public IHitBoxCallbackObject Relative(Transform transform) {
-                this.transform = transform;
+            public IHitBoxCallbackObject Relative(Transform relativeTransform) {
+                this.relativeTransform = relativeTransform;
                 return this;
             }
         }

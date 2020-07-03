@@ -399,13 +399,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1184226375514141021}
-  m_LocalRotation: {x: 0.21263108, y: -0.67437977, z: 0.21263108, w: 0.67437977}
-  m_LocalPosition: {x: -29, y: 6, z: 48}
+  m_LocalRotation: {x: 0.21263108, y: 0.67437977, z: -0.21263108, w: 0.67437977}
+  m_LocalPosition: {x: -39, y: 6, z: 48}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1184226376533119849}
   m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 35, y: -90, z: 0}
+  m_LocalEulerAnglesHint: {x: 35, y: 90, z: 0}
 --- !u!1 &1184226375601759937
 GameObject:
   m_ObjectHideFlags: 0
@@ -799,9 +799,6 @@ MonoBehaviour:
     type: 3}
   fightingGameCameraPrefab: {fileID: 4063835550487571392, guid: 80e20bc8a04a4f941940b2925bdf66cc,
     type: 3}
-  male0BuilderPrefab: {fileID: 2424264271135548662, guid: 6869695df3ddd1447a77ff07b613adec,
-    type: 3}
-  female0BuilderPrefab: {fileID: 0}
   lawrenceBuilderPrefab: {fileID: 8557177467078201262, guid: 880c011c99fbc664296a31457b717cd6,
     type: 3}
 --- !u!114 &1184226376533119850
@@ -1150,5 +1147,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bcc93a3b57cc7842acd7e47a1cc1306, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  char0: {fileID: 0}
-  char1: {fileID: 0}
+  maxAngle: 60
+  maxAngleRotation: 600
+  maxWallStopAngle: 40

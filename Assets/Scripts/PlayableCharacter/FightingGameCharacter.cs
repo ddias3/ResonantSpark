@@ -285,7 +285,7 @@ namespace ResonantSpark {
             }
 
             public void Play(string animationState, float normalizedTime = 0.0f) {
-                Debug.Log(" $$$ PLAY : " + animationState);
+                //Debug.Log(" $$$ PLAY : " + animationState);
                 animator.Play(animationState, 0, normalizedTime);
             }
 

@@ -11,9 +11,11 @@ namespace ResonantSpark {
     namespace Gameplay {
         public class HitBoxComponent : MonoBehaviour {
             public HitBox hitBox { get; private set; }
+            public Vector3 point0 { get; private set; }
+            public Vector3 point1 { get; private set; }
+            public float radius { get; private set; }
 
-            private LayerMask hurtBoxLayer;
-            private LayerMask hitBoxLayer;
+            private bool active = false;
 
             private Transform relativeTransform;
             private Vector3 offset;
@@ -29,15 +31,12 @@ namespace ResonantSpark {
 
             private Vector3 deactivatedPosition;
 
-            Action<InGameEntity, Collider, Vector3> hitBoxCallback;
-
             private IHitBoxService hitBoxService;
             private IFightingGameService fgService;
 
-            public void Init(HitBox hitBox, Transform relativeTransform, Vector3 hitLocation, Action<InGameEntity, Collider, Vector3> hitBoxCallback) {
+            public void Init(HitBox hitBox, Transform relativeTransform, Vector3 hitLocation) {
                 this.hitBox = hitBox;
                 this.relativeTransform = relativeTransform;
-                this.hitBoxCallback = hitBoxCallback;
 
                 //this.offset = relativeTransform.position - transform.position;
                 this.offset = Vector3.zero;
@@ -59,19 +58,11 @@ namespace ResonantSpark {
                 this.fgService = fgService;
             }
 
-            public void Awake() {
-                hurtBoxLayer = LayerMask.NameToLayer("HurtBox");
-                hitBoxLayer = LayerMask.NameToLayer("HitBox");
-            }
-
-            public void OnTriggerEnter(Collider other) {
-                if (other.gameObject.layer == hurtBoxLayer || other.gameObject.layer == hitBoxLayer) {
-                    InGameEntity gameEntity = other.gameObject.GetComponentInParent<InGameEntity>();
-                    hitBoxCallback(gameEntity, other, transform.position + transform.rotation * localHitLocation);
-                }
-            }
-
             public void SetColliderPosition(Vector3 point0, Vector3 point1, float radius) {
+                this.point0 = point0;
+                this.point1 = point1;
+                this.radius = radius;
+
                 if (Mathf.Abs(Vector3.Cross(point1 - point0, Vector3.up).sqrMagnitude) > 0.01f) {
                     colliderTransform.localRotation = Quaternion.LookRotation(point1 - point0, Vector3.up);
                     rendererTransform.localRotation = Quaternion.LookRotation(point1 - point0, Vector3.up);
@@ -96,26 +87,20 @@ namespace ResonantSpark {
             }
 
             public bool IsActive() {
-                return collider.enabled;
+                return active; //collider.enabled;
             }
 
             public void Activate() {
-                //Debug.Break();
-                collider.enabled = true;
-
-                    // I'm not sure witch method of movement is better for this situation. They are technically different.
-                //rigidbody.rotation = relativeTransform.rotation;
-                //rigidbody.position = relativeTransform.rotation * offset + relativeTransform.position;
-                rigidbody.MoveRotation(relativeTransform.rotation);
-                rigidbody.MovePosition(relativeTransform.rotation * offset + relativeTransform.position);
+                active = true;
+                //collider.enabled = true;
+                rigidbody.rotation = relativeTransform.rotation;
+                rigidbody.position = relativeTransform.rotation * offset + relativeTransform.position;
             }
 
             public void Deactivate() {
-                collider.enabled = false;
-
-                    // I'm not sure witch method of movement is better for this situation. They are technically different.
-                //rigidbody.position = deactivatedPosition;
-                rigidbody.MovePosition(deactivatedPosition);
+                active = false;
+                //collider.enabled = false;
+                rigidbody.position = deactivatedPosition;
             }
         }
     }

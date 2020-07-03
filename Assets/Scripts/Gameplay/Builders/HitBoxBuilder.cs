@@ -24,15 +24,16 @@ namespace ResonantSpark {
                 this.hitBoxPrefab = this.hitBoxService.DefaultPrefab();
 
                 tracking = false;
+                hitLocation = Vector3.up;
             }
 
-            public HitBoxComponent CreateHitBox(HitBox hitBox, Transform hitBoxEmptyParentTransform, Action<InGameEntity, Collider, Vector3> hitBoxCallback) {
+            public HitBoxComponent CreateHitBox(HitBox hitBox, Transform hitBoxEmptyParentTransform) {
                     // default means Vector3.zero in this case
                 if (collider != null) {
                     HitBoxComponent hitBoxComp = GameObject.Instantiate<HitBoxComponent>(hitBoxPrefab, hitBoxEmptyParentTransform.position, Quaternion.identity, hitBoxEmptyParentTransform);
 
                     hitBoxComp.SetServices(hitBoxService, fgService);
-                    hitBoxComp.Init(hitBox, transform, hitLocation, hitBoxCallback);
+                    hitBoxComp.Init(hitBox, relativeTransform, hitLocation);
 
                     switch (collider.direction) {
                         case 0: // X-axis
@@ -51,7 +52,7 @@ namespace ResonantSpark {
                     HitBoxComponent hitBoxComp = GameObject.Instantiate<HitBoxComponent>(hitBoxPrefab, hitBoxEmptyParentTransform.position, Quaternion.identity, hitBoxEmptyParentTransform);
 
                     hitBoxComp.SetServices(hitBoxService, fgService);
-                    hitBoxComp.Init(hitBox, transform, hitLocation, hitBoxCallback);
+                    hitBoxComp.Init(hitBox, relativeTransform, hitLocation);
 
                     hitBoxComp.SetColliderPosition(point0, point1, radius);
                     return hitBoxComp;

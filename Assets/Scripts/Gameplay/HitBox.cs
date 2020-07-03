@@ -15,7 +15,15 @@ namespace ResonantSpark {
             public int id { get; private set; }
             public Hit hit { get; set; }
 
-            private HitBoxComponent hitBoxMono;
+            private LayerMask hitableLayers;
+            private LayerMask hurtBoxLayer;
+            private LayerMask hitBoxLayer;
+
+            private Collider[] colliderBuffer;
+
+            private HitBoxComponent hitBoxComponent;
+            private Transform relativeTransform;
+            private Vector3 localHitLocation;
 
             private bool tracking;
             private List<InGameEntity> hitEntities;
@@ -30,6 +38,8 @@ namespace ResonantSpark {
             public HitBox(Action<IHitBoxCallbackObject> buildCallback) {
                 this.id = HitBox.hitBoxCounter++;
                 this.buildCallback = buildCallback;
+
+                colliderBuffer = new Collider[128];
             }
 
             public HitBox Build(AllServices services, Hit hit) {
@@ -43,10 +53,16 @@ namespace ResonantSpark {
                 hitEntities = new List<InGameEntity>();
                 hitBoxService.RegisterHitBox(this);
 
+                hitableLayers = LayerMask.GetMask("HurtBox", "HitBox");
+                hurtBoxLayer = LayerMask.NameToLayer("HurtBox");
+                hitBoxLayer = LayerMask.NameToLayer("HitBox");
+
                 HitBoxBuilder builder = new HitBoxBuilder(services);
                 buildCallback(builder);
-                hitBoxMono = builder.CreateHitBox(this, hitBoxService.GetEmptyHoldTransform(), OnHitBoxEnter);
+                hitBoxComponent = builder.CreateHitBox(this, hitBoxService.GetEmptyHoldTransform());
 
+                relativeTransform = builder.relativeTransform;
+                localHitLocation = builder.hitLocation;
                 tracking = builder.tracking;
                 eventCallbacks = builder.eventCallbacks;
 
@@ -74,7 +90,8 @@ namespace ResonantSpark {
                     }
 
                     HitInfo hitInfo = new HitInfo(this, gameEntity, hitLocation, 1000);// -1);
-                    hit.QueueUpEvent(gameEntity.HitBoxEventType(this), this, hitInfo);
+                    Debug.Log(gameEntity);
+                    //hit.QueueUpEvent(gameEntity.HitBoxEventType(this), this, hitInfo);
                     //hit.InvokeEvent(gameEntity.HitBoxEventType(this), this, hitInfo);
                 }
             }
@@ -88,19 +105,35 @@ namespace ResonantSpark {
 
             public void Active() {
                 hitBoxService.Active(this);
+                int numCollisions = 0;
+                if ((numCollisions =
+                        Physics.OverlapCapsuleNonAlloc(relativeTransform.position + relativeTransform.rotation * hitBoxComponent.point0,
+                            relativeTransform.position + relativeTransform.rotation * hitBoxComponent.point1,
+                            hitBoxComponent.radius,
+                            colliderBuffer,
+                            hitableLayers,
+                            QueryTriggerInteraction.Collide)) > 0) {
+                    for (int n = 0; n < numCollisions; ++n) {
+                        if (colliderBuffer[n].gameObject.layer == hurtBoxLayer || colliderBuffer[n].gameObject.layer == hitBoxLayer) {
+                            InGameEntity gameEntity = colliderBuffer[n].gameObject.GetComponentInParent<InGameEntity>();
+                            OnHitBoxEnter(gameEntity, colliderBuffer[n], relativeTransform.position + relativeTransform.rotation * localHitLocation);
+                        }
+                    }
+                }
+                Debug.LogFormat("### Num Collisions {0}", numCollisions);
             }
 
             public bool IsActive() {
-                return hitBoxMono.IsActive();
+                return hitBoxComponent.IsActive();
             }
 
             public void Activate() {
                 hitEntities.Clear();
-                hitBoxMono.Activate();
+                hitBoxComponent.Activate();
             }
 
             public void Deactivate() {
-                hitBoxMono.Deactivate();
+                hitBoxComponent.Deactivate();
             }
 
             public bool Equals(HitBox other) {
