@@ -741,6 +741,7 @@ GameObject:
   - component: {fileID: 1184226376533119638}
   - component: {fileID: 1184226376533119639}
   - component: {fileID: 1184226376533119851}
+  - component: {fileID: 6879421515800181313}
   - component: {fileID: 1184226376533119848}
   - component: {fileID: 1184226376533119853}
   - component: {fileID: 1184226376533119852}
@@ -865,6 +866,18 @@ MonoBehaviour:
   hitBoxEmpty: {fileID: 1184226375173711291}
   hitBoxDefaultPrefab: {fileID: 2887183265405047131, guid: 06ebd93d9c5576841b2d2f1d30885ddd,
     type: 3}
+--- !u!114 &6879421515800181313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1184226376533119636}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f95ce816f5ed8da40b02ae2ea58e1d08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1184226376533119848
 MonoBehaviour:
   m_ObjectHideFlags: 0

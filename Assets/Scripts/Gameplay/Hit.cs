@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+
 using ResonantSpark.Character;
-using ResonantSpark.CharacterProperties;
+using ResonantSpark.Service;
 using ResonantSpark.Utility;
 
 namespace ResonantSpark {
@@ -16,14 +17,23 @@ namespace ResonantSpark {
             private List<HitBox> hitBoxes;
             private Dictionary<string, Action<List<HitBox>, HitInfo>> hitEventCallbacks;
 
+            //private Dictionary<InGameEntity, List<HitBox>> hitEntities;
+
             private List<(string, HitBox, HitInfo)> hitBoxQueue;
 
-            public Hit(Dictionary<string, Action<List<HitBox>, HitInfo>> hitEventCallbacks) {
+            private IHitService hitService;
+
+            public Hit(AllServices services, Dictionary<string, Action<List<HitBox>, HitInfo>> hitEventCallbacks) {
                 this.id = Hit.hitCounter++;
+                this.hitService = services.GetService<IHitService>();
+
                 this.hitBoxes = new List<HitBox>();
                 this.hitEventCallbacks = hitEventCallbacks;
 
+                //hitEntities = new List<InGameEntity>();
                 hitBoxQueue = new List<(string, HitBox, HitInfo)>();
+
+                hitService.RegisterHit(this);
 
                 PopulateEventCallbacks();
             }

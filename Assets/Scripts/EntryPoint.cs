@@ -21,6 +21,7 @@ namespace ResonantSpark {
             typeof(CameraService),
             typeof(FightingGameService),
             typeof(HitBoxService),
+            typeof(HitService),
             typeof(InputService),
             typeof(ParticleService),
             typeof(PersistenceService),

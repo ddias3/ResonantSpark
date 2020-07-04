@@ -91,7 +91,7 @@ namespace ResonantSpark {
 
                     HitInfo hitInfo = new HitInfo(this, gameEntity, hitLocation, 1000);// -1);
                     Debug.Log(gameEntity);
-                    //hit.QueueUpEvent(gameEntity.HitBoxEventType(this), this, hitInfo);
+                    hit.QueueUpEvent(gameEntity.HitBoxEventType(this), this, hitInfo);
                     //hit.InvokeEvent(gameEntity.HitBoxEventType(this), this, hitInfo);
                 }
             }
@@ -128,7 +128,10 @@ namespace ResonantSpark {
             }
 
             public void Activate() {
+                    // TODO: This needs to run before Active()
                 hitEntities.Clear();
+                    //        ^ this line used to run before, but now Active is synchronous...
+
                 hitBoxComponent.Activate();
             }
 

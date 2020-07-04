@@ -29,7 +29,7 @@ namespace ResonantSpark {
 
             public Hit CreateHit() {
 
-                Hit hit = new Hit(this.eventCallbacks);
+                Hit hit = new Hit(services, this.eventCallbacks);
 
                 for (int n = 0; n < hitBoxes.Count; ++n) {
                     HitBox hitBox = hitBoxes[n];
