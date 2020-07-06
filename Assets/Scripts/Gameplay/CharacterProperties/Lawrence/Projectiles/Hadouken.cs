@@ -6,7 +6,7 @@ using ResonantSpark.Particle;
 
 namespace ResonantSpark {
     namespace CharacterProperties {
-        namespace Male0 {
+        namespace Lawrence {
             public class Hadouken : Projectile {
 
                 public float speed;

@@ -54,6 +54,7 @@ namespace ResonantSpark {
                 projectServ = services.GetService<IProjectileService>();
                 audioServ = services.GetService<IAudioService>();
 
+                    // TODO: Change this in the future to InGameEntity and allow attacks to be owned by InGameEntities
                 fgChar = services.GetService<IBuildService>().GetBuildingFGChar();
 
                 AttackBuilder attackBuilder = new AttackBuilder(services);

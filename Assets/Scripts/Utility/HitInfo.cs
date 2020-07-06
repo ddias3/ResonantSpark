@@ -1,9 +1,7 @@
 ﻿using UnityEngine;
 
-using ResonantSpark.Gameplay;
-
 namespace ResonantSpark {
-    namespace Utility {
+    namespace Gameplay {
         public struct HitInfo {
             public HitBox hitBox { get; private set; }
             public InGameEntity hitEntity { get; private set; }

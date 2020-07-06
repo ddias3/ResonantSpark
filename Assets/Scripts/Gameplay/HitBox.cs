@@ -26,7 +26,6 @@ namespace ResonantSpark {
             private Vector3 localHitLocation;
 
             private bool tracking;
-            private List<InGameEntity> hitEntities;
 
             private Dictionary<string, Action<HitInfo>> eventCallbacks;
 
@@ -50,7 +49,6 @@ namespace ResonantSpark {
 
                 this.hit = hit;
 
-                hitEntities = new List<InGameEntity>();
                 hitBoxService.RegisterHitBox(this);
 
                 hitableLayers = LayerMask.GetMask("HurtBox", "HitBox");
@@ -75,27 +73,6 @@ namespace ResonantSpark {
                 return this;
             }
 
-            public void OnHitBoxEnter(InGameEntity gameEntity, Collider other, Vector3 hitLocation) {
-                if (gameEntity != null && !hitEntities.Contains(gameEntity)) {
-                    hitEntities.Add(gameEntity);
-
-                    HurtBox hurtBox = null;
-                    if ((hurtBox = other.gameObject.GetComponent<HurtBox>()) != null) {
-
-                    }
-                    HitBox hitBox = null;
-                    HitBoxComponent hitBoxComp = null;
-                    if ((hitBoxComp = other.gameObject.GetComponent<HitBoxComponent>()) != null) {
-                        hitBox = hitBoxComp.hitBox;
-                    }
-
-                    HitInfo hitInfo = new HitInfo(this, gameEntity, hitLocation, 1000);// -1);
-                    Debug.Log(gameEntity);
-                    hit.QueueUpEvent(gameEntity.HitBoxEventType(this), this, hitInfo);
-                    //hit.InvokeEvent(gameEntity.HitBoxEventType(this), this, hitInfo);
-                }
-            }
-
             public void InvokeEvent(string eventName, HitInfo hitInfo) {
                 Action<HitInfo> callback;
                 if (eventCallbacks.TryGetValue(eventName, out callback)) {
@@ -115,12 +92,27 @@ namespace ResonantSpark {
                             QueryTriggerInteraction.Collide)) > 0) {
                     for (int n = 0; n < numCollisions; ++n) {
                         if (colliderBuffer[n].gameObject.layer == hurtBoxLayer || colliderBuffer[n].gameObject.layer == hitBoxLayer) {
-                            InGameEntity gameEntity = colliderBuffer[n].gameObject.GetComponentInParent<InGameEntity>();
-                            OnHitBoxEnter(gameEntity, colliderBuffer[n], relativeTransform.position + relativeTransform.rotation * localHitLocation);
+                            HurtBox hurtBox;
+                            if ((hurtBox = colliderBuffer[n].gameObject.GetComponent<HurtBox>()) != null) {
+                                InGameEntity gameEntity = hurtBox.GetEntity();
+                                Debug.LogFormat("Type {0}, Entity {1}", "HurtBox", gameEntity);
+                                hit.RegisterHitInfo(this, relativeTransform.position + relativeTransform.rotation * localHitLocation, hurtBox);
+                            }
+
+                            //HitBox otherHitBox;
+                            //if ((otherHitBox = colliderBuffer[n].gameObject.GetComponent<HitBox>()) != null) {
+                            //    InGameEntity gameEntity = otherHitBox.GetEntity();
+                            //    Debug.LogFormat("Type {0}, Entity {1}", "HitBox", gameEntity);
+                            //    hit.RegisterHitInfo(this, relativeTransform.position + relativeTransform.rotation * localHitLocation, otherHitBox);
+                            //}
                         }
                     }
                 }
                 Debug.LogFormat("### Num Collisions {0}", numCollisions);
+            }
+
+            public InGameEntity GetEntity() {
+                return null;
             }
 
             public bool IsActive() {
@@ -128,10 +120,6 @@ namespace ResonantSpark {
             }
 
             public void Activate() {
-                    // TODO: This needs to run before Active()
-                hitEntities.Clear();
-                    //        ^ this line used to run before, but now Active is synchronous...
-
                 hitBoxComponent.Activate();
             }
 

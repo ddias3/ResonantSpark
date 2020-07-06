@@ -17,6 +17,7 @@ namespace ResonantSpark {
             List<Transform> GetLevelBoundaries();
             void Hit(InGameEntity hitEntity, InGameEntity byEntity, HitBox hitBox, Action<AttackPriority> callback);
             void DisableControl();
+            void PerformHits(Hit hit, Dictionary<InGameEntity, (List<HurtBox> hurt, List<HitBox> hit)> entityMap);
         }
     }
 }

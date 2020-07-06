@@ -7,12 +7,12 @@ namespace ResonantSpark {
         public class HurtBox : MonoBehaviour {
             public string hurtBoxName;
 
-            private FightingGameCharacter fgChar;
+            private InGameEntity inGameEntity;
             private LayerMask hurtBox;
             private LayerMask hitBox;
 
-            public void Start() {
-                fgChar = GetComponentInParent<FightingGameCharacter>();
+            public void Awake() {
+                inGameEntity = GetComponentInParent<InGameEntity>();
                 hurtBox = LayerMask.NameToLayer("HurtBox");
                 hitBox = LayerMask.NameToLayer("HitBox");
             }
@@ -23,6 +23,10 @@ namespace ResonantSpark {
                     // TODO: Call callback on fgChar;
                     //      fgChar.OnHit();
                 }
+            }
+
+            public InGameEntity GetEntity() {
+                return inGameEntity;
             }
         }
     }

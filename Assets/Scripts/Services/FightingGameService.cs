@@ -157,6 +157,13 @@ namespace ResonantSpark {
                 });
             }
 
+            public void PerformHits(Hit hit, Dictionary<InGameEntity, (List<HurtBox> hurt, List<HitBox> hit)> entityMap) {
+                foreach (KeyValuePair<InGameEntity, (List<HurtBox> hurt, List<HitBox> hit)> kvp in entityMap) {
+                    InGameEntity inGameEntity = kvp.Key;
+
+                }
+            }
+
             public void DisableControl() {
                 playerService.EachFGChar((id, fgChar) => {
                     fgChar.SetControlEnable(false);
