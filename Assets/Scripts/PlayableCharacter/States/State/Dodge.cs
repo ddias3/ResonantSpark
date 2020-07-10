@@ -133,6 +133,21 @@ namespace ResonantSpark {
                 return ComboState.None;
             }
 
+            public override CharacterVulnerability GetCharacterVulnerability() {
+                if (tracker.frameCount < trackingEnd) {
+                    return new CharacterVulnerability {
+                        strikable = true,
+                        throwable = false,
+                    };
+                }
+                else {
+                    return new CharacterVulnerability {
+                        strikable = true,
+                        throwable = true,
+                    };
+                }
+            }
+
             public override void GetHit(bool launch) {
                 if (launch) {
                     changeState(states.Get("hitStunAirborne"));

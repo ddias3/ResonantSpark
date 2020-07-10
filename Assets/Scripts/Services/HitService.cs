@@ -36,7 +36,7 @@ namespace ResonantSpark {
                         }
                     }
 
-                    hit.Clear();
+                    hit.ClearHitQueue();
                 }
             }
         }

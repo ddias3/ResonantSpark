@@ -58,6 +58,13 @@ namespace ResonantSpark {
                 return ComboState.None;
             }
 
+            public override CharacterVulnerability GetCharacterVulnerability() {
+                return new CharacterVulnerability {
+                    strikable = true,
+                    throwable = false,
+                };
+            }
+
             public override void GetHit(bool launch) {
                 if (dirCurr == FightingGameInputCodeDir.Back) {
                     changeState(states.Get("blockStunStand"));

@@ -128,17 +128,23 @@ namespace ResonantSpark {
 
                 foreach (HurtBox hb in hurtBoxes) {
                     InGameEntity entity = hb.GetEntity();
-                    if (!entityMap.ContainsKey(entity)) {
-                        entityMap.Add(entity, (new List<HurtBox>(), new List<HitBox>()));
+                    if (!hitEntities.Contains(entity)) {
+                        hitEntities.Add(entity);
+                        if (!entityMap.ContainsKey(entity)) {
+                            entityMap.Add(entity, (new List<HurtBox>(), new List<HitBox>()));
+                        }
+                        entityMap[entity].hurt.Add(hb);
                     }
-                    entityMap[entity].hurt.Add(hb);
                 }
                 foreach (HitBox hb in hitBoxes) {
                     InGameEntity entity = hb.GetEntity();
-                    if (!entityMap.ContainsKey(entity)) {
-                        entityMap.Add(entity, (new List<HurtBox>(), new List<HitBox>()));
+                    if (!hitEntities.Contains(entity)) {
+                        hitEntities.Add(entity);
+                        if (!entityMap.ContainsKey(entity)) {
+                            entityMap.Add(entity, (new List<HurtBox>(), new List<HitBox>()));
+                        }
+                        entityMap[entity].hit.Add(hb);
                     }
-                    entityMap[entity].hit.Add(hb);
                 }
 
                 return entityMap;
@@ -149,7 +155,7 @@ namespace ResonantSpark {
                 onHitCallback?.Invoke(this, hitLocation, entity, hurt, hit);
             }
 
-            public void Clear() {
+            public void ClearHitQueue() {
                 hitBoxQueue.Clear();
                 hitLocation.Clear();
                 foreach (KeyValuePair<HitBox, List<HurtBox>> kvp in hitHurtBoxes) {
@@ -158,6 +164,10 @@ namespace ResonantSpark {
                 foreach (KeyValuePair<HitBox, List<HitBox>> kvp in hitHitBoxes) {
                     kvp.Value.Clear();
                 }
+            }
+
+            public void ClearHitEntities() {
+                hitEntities.Clear();
             }
 
             public bool Equals(Hit other) {

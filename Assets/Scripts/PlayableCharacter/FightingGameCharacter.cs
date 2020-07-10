@@ -20,6 +20,8 @@ namespace ResonantSpark {
             public MultipassStateDict states;
 
             public AttackRunner attackRunner;
+            public ComboRunner comboRunner;
+            public BlockRunner blockRunner;
 
             public Orientation defaultForwardOrientation;
 
@@ -64,6 +66,8 @@ namespace ResonantSpark {
 
             private Vector2 screenOrientation = Vector2.zero;
 
+            public float hitStun { private set; get; }
+
             private CharacterData charData;
 
             public float gameTime {
@@ -82,6 +86,7 @@ namespace ResonantSpark {
                 teamId = 0;
 
                 health = charData.maxHealth;
+                hitStun = 0.0f;
 
                 fgService = GameObject.FindGameObjectWithTag("rspService").GetComponent<FightingGameService>();
                 AddSelf();
@@ -89,6 +94,8 @@ namespace ResonantSpark {
                 parent = null;
 
                 attackRunner.Init(this);
+                comboRunner.Init(this);
+                blockRunner.Init(this);
 
                 inputDoNothingList = new List<Combination> { ScriptableObject.CreateInstance<DirectionCurrent>().Init(0, Input.FightingGameAbsInputCodeDir.Neutral) };
 
@@ -141,12 +148,32 @@ namespace ResonantSpark {
                 return attackRunner.GetCurrentAttack();
             }
 
+            public CharacterVulnerability GetAttackCharacterVulnerability() {
+                return attackRunner.GetCharacterVulnerability();
+            }
+
             public void ClearPrevAttacks() {
                 attackRunner.ClearPrevAttacks();
             }
 
             public void RunAttackFrame() {
                 attackRunner.RunFrame();
+            }
+
+            public int GetNumGrabsInCombo() {
+                return comboRunner.numGrabs;
+            }
+
+            public int GetNumWallBouncesInCombo() {
+                return comboRunner.numWallBounces;
+            }
+
+            public void SetHitStun(float newHitStun) {
+                this.hitStun = newHitStun;
+            }
+
+            public void IncrementHitStun() {
+                hitStun -= 1.0f;
             }
 
             public FightingGameInputCodeDir MapAbsoluteToRelative(FightingGameAbsInputCodeDir absInput) {
@@ -347,7 +374,10 @@ namespace ResonantSpark {
                 }
             }
 
-            public void GetHit(bool launch) {
+            public void GetHit(float hitStun, bool launch) {
+                comboRunner.AddNumHits(1);
+                this.hitStun = comboRunner.GetFilteredHitStun(hitStun);
+
                 ((CharacterStates.CharacterBaseState) stateMachine.GetCurrentState()).GetHit(launch);
             }
 
@@ -413,7 +443,6 @@ namespace ResonantSpark {
                 }
 
                 AddRelativeVelocity(velPriority, finalVelocity);
-                GetHit(launch);
             }
 
             public void SetStandCollider(Vector3 standColliderOffset) {

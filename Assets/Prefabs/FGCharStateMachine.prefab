@@ -251,7 +251,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 171a70d420992c74fa0e345af8e79a20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testLength: 20
 --- !u!1 &2152161314199937204
 GameObject:
   m_ObjectHideFlags: 0
@@ -349,6 +348,7 @@ Transform:
   - {fileID: 1095020692871649084}
   - {fileID: 8147897146673362570}
   - {fileID: 8067122287443546856}
+  - {fileID: 1468726516969812308}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -648,7 +648,51 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c32c7bcdf96ba294dad2c3a992b5d4cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testLength: 20
+--- !u!1 &4752437365165763681
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1468726516969812308}
+  - component: {fileID: 2406293870191471}
+  m_Layer: 9
+  m_Name: RecoverAirborne
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1468726516969812308
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4752437365165763681}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2152161314391702300}
+  m_RootOrder: 25
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2406293870191471
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4752437365165763681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1894b1ce84b2384089702cca2ff48bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxRotation: 600
+  gravityExtra: {x: 0, y: -10, z: 0}
 --- !u!1 &5206494667171976667
 GameObject:
   m_ObjectHideFlags: 0
@@ -1197,7 +1241,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f667d1d702c65d649a61d323cfb304b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testLength: 20
 --- !u!1 &8100666586449368848
 GameObject:
   m_ObjectHideFlags: 0

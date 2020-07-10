@@ -96,6 +96,9 @@ namespace ResonantSpark {
             }
 
             public void StartPerformable(int frameIndex) {
+                foreach (Hit hit in hits) {
+                    hit.ClearHitEntities();
+                }
                 tracker.Track(frameIndex);
                 Debug.Log("Start Performable Attack Animation State: " + animStateName + " from attack: " + ToString());
                 fgChar.Play(animStateName);
@@ -131,6 +134,14 @@ namespace ResonantSpark {
 
             public bool SpecialCancellable() {
                 return frames[tracker.frameCount].specialCancellable;
+            }
+
+            public CharacterVulnerability GetCharacterVulnerability() {
+                // TODO: return frames[tracker.frameCount].characterVulnerability;
+                return new CharacterVulnerability {
+                    strikable = true,
+                    throwable = true,
+                };
             }
 
             public bool Equals(Attack other) {

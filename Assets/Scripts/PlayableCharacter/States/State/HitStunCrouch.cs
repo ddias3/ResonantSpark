@@ -24,8 +24,6 @@ namespace ResonantSpark {
             public override void Enter(int frameIndex, MultipassBaseState previousState) {
                 fgChar.__debugSetStateText("Hit Stun", Color.magenta);
 
-                tracker.Track();
-
                 if (UnityEngine.Random.Range(0.0f, 1.0f) < 0.5f) {
                     fgChar.Play("hurt_crouch_0");
                 }
@@ -37,24 +35,18 @@ namespace ResonantSpark {
             public override void ExecutePass0(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
 
-                if (tracker.frameCount > testLength) {
+                if (fgChar.hitStun <= 0.0f) {
+                    OnComplete();
                     changeState(states.Get("crouch"));
                 }
-
-                fgChar.CalculateFinalVelocity();
-                tracker.Increment();
             }
 
             public override void ExecutePass1(int frameIndex) {
-                //fgChar.UpdateTarget();
-                //fgChar.UpdateCharacterMovement();
-                //fgChar.CalculateFinalVelocity();
-                //fgChar.AnimationWalkVelocity();
+                fgChar.CalculateFinalVelocity();
             }
 
             public override void LateExecute(int frameIndex) {
-                //fgChar.UpdateCharacterMovement();
-                //fgChar.AnimationWalkVelocity();
+                fgChar.IncrementHitStun();
             }
 
             public override void Exit(int frameIndex) {

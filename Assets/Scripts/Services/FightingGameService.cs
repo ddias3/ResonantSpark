@@ -15,6 +15,12 @@ namespace ResonantSpark {
             InCombo,
         }
 
+        public struct CharacterVulnerability {
+            public bool throwable;
+            public bool strikable;
+            public bool armored;
+        }
+
         public class FightingGameService : MonoBehaviour, IFightingGameService {
 
             public GameObject mapCamera;

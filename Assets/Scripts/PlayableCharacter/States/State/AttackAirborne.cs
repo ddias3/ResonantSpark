@@ -62,6 +62,10 @@ namespace ResonantSpark {
                 return ComboState.None;
             }
 
+            public override CharacterVulnerability GetCharacterVulnerability() {
+                return fgChar.GetAttackCharacterVulnerability();
+            }
+
             public override void GetHit(bool launch) {
                 CharacterProperties.Attack activeAttack = fgChar.GetCurrentAttack();
                 if (activeAttack.CounterHit()) {

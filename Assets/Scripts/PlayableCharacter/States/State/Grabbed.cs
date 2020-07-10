@@ -61,6 +61,13 @@ namespace ResonantSpark {
                 return ComboState.InCombo;
             }
 
+            public override CharacterVulnerability GetCharacterVulnerability() {
+                return new CharacterVulnerability {
+                    strikable = false,
+                    throwable = false,
+                };
+            }
+
             public override void GetHit(bool launch) {
                 // TODO: Make it clear that the attack is ignored by displaying a particle
             }

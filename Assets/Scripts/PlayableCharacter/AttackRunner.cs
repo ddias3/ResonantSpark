@@ -6,12 +6,11 @@ using UnityEngine;
 using ResonantSpark.Input;
 using ResonantSpark.Character;
 using ResonantSpark.Utility;
+using ResonantSpark.Service;
 
 namespace ResonantSpark {
     namespace Gameplay {
         public class AttackRunner : MonoBehaviour {
-            public string testString;
-
             private FightingGameCharacter fgChar;
 
             private List<CharacterProperties.Attack> prevAttacks;
@@ -67,6 +66,10 @@ namespace ResonantSpark {
 
             public CharacterProperties.Attack GetCurrentAttack() {
                 return activeAttack;
+            }
+
+            public CharacterVulnerability GetCharacterVulnerability() {
+                return activeAttack.GetCharacterVulnerability();
             }
 
             public void OnCompleteAttack() {

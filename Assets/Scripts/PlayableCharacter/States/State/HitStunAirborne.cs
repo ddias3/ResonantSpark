@@ -11,6 +11,8 @@ namespace ResonantSpark {
     namespace CharacterStates {
         public class HitStunAirborne : HitStun {
 
+            public Vector3 gravityExtra;
+
             public new void Awake() {
                 base.Awake();
                 states.Register(this, "hitStunAirborne");
@@ -23,32 +25,34 @@ namespace ResonantSpark {
             public override void Enter(int frameIndex, MultipassBaseState previousState) {
                 fgChar.__debugSetStateText("Hit Stun", Color.magenta);
 
-                tracker.Track();
-
                 fgChar.Play("hurt_airborne");
             }
 
             public override void ExecutePass0(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
 
-                if (tracker.frameCount > testLength) {
-                    changeState(states.Get("airborne"));
+                fgChar.AddForce(gravityExtra, ForceMode.Acceleration);
+
+                if (fgChar.hitStun <= 0.0f) {
+                    OnComplete();
+                    changeState(states.Get("recoverAirborne"));
+                }
+                if (fgChar.Grounded(out Vector3 landPoint)) {
+                    OnComplete();
+                    changeState(states.Get("land"));
                 }
 
-                fgChar.CalculateFinalVelocity();
-                tracker.Increment();
+                //if (fgChar.CheckAboutToLand()) {
+                //    changeState(states.Get("land"));
+                //}
             }
 
             public override void ExecutePass1(int frameIndex) {
-                //fgChar.UpdateTarget();
-                //fgChar.UpdateCharacterMovement();
-                //fgChar.CalculateFinalVelocity();
-                //fgChar.AnimationWalkVelocity();
+                fgChar.CalculateFinalVelocity();
             }
 
             public override void LateExecute(int frameIndex) {
-                //fgChar.UpdateCharacterMovement();
-                //fgChar.AnimationWalkVelocity();
+                fgChar.IncrementHitStun();
             }
 
             public override void Exit(int frameIndex) {
@@ -56,7 +60,7 @@ namespace ResonantSpark {
             }
 
             public override GroundRelation GetGroundRelation() {
-                return GroundRelation.GROUNDED;
+                return GroundRelation.AIRBORNE;
             }
 
             public override void GetHit(bool launch) {
