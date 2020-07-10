@@ -9,7 +9,9 @@ namespace ResonantSpark {
     namespace Gamemode {
         public interface IGamemode {
             void SetUp(PlayerService playerService, FightingGameService fgService, UiService uiService);
+            bool IsCurrentFGChar(InGameEntity entity);
             int GetMaxPlayers();
+            void OnGameEntityNumHitsChange(InGameEntity entity, int numHits);
         }
     }
 }

@@ -10,6 +10,11 @@ using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace Service {
+        public enum ComboState : int {
+            None,
+            InCombo,
+        }
+
         public class FightingGameService : MonoBehaviour, IFightingGameService {
 
             public GameObject mapCamera;
@@ -23,32 +28,52 @@ namespace ResonantSpark {
 
             private PlayerService playerService;
             private PersistenceService persistenceService;
-            private UiService uiService;
 
             private new StageLeakCamera camera;
 
-            private List<(InGameEntity, InGameEntity, HitBox, Action<AttackPriority>)> hitQueue;
+            private List<InGameEntity> entities;
+            private Dictionary<InGameEntity, int> numComboHits;
+            private Dictionary<InGameEntity, int> comboScalingIndex;
+
+            private Dictionary<InGameEntity, ComboState> prevComboState;
+
+            private List<(InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>)> hitQueue;
 
             private FrameEnforcer frame;
 
             private IGamemode gamemode;
 
-            private Dictionary<FightingGameCharacter, int> numComboAttacks;
-            private Dictionary<FightingGameCharacter, int> numComboHits;
-
             public void Start() {
                 frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
-                frame.AddUpdate((int)FramePriority.Service, new System.Action<int>(FrameUpdate));
+                frame.AddUpdate((int)FramePriority.ServiceFG, new System.Action<int>(FrameUpdate));
+                frame.AddUpdate((int)FramePriority.LateService, new System.Action<int>(LateFrameUpdate));
+
                 playerService = GetComponent<PlayerService>();
                 persistenceService = GetComponent<PersistenceService>();
-                uiService = GetComponent<UiService>();
 
-                hitQueue = new List<(InGameEntity, InGameEntity, HitBox, Action<AttackPriority>)>();
+                entities = new List<InGameEntity>();
+                numComboHits = new Dictionary<InGameEntity, int>();
+                comboScalingIndex = new Dictionary<InGameEntity, int>();
 
-                numComboAttacks = new Dictionary<FightingGameCharacter, int>();
-                numComboHits = new Dictionary<FightingGameCharacter, int>();
+                prevComboState = new Dictionary<InGameEntity, ComboState>();
+
+                hitQueue = new List<(InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>)>();
 
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(FightingGameService));
+            }
+
+            public void RegisterInGameEntity(InGameEntity entity) {
+                entities.Add(entity);
+                numComboHits[entity] = 0;
+                comboScalingIndex[entity] = 0;
+                prevComboState.Add(entity, ComboState.None);
+            }
+
+            public void RemoveInGameEntity(InGameEntity entity) {
+                entities.Remove(entity);
+                numComboHits[entity] = 0;
+                comboScalingIndex[entity] = 0;
+                prevComboState.Remove(entity);
             }
 
             public void CreateGamemode() {
@@ -66,16 +91,24 @@ namespace ResonantSpark {
             }
 
             public void SetUpGamemode() {
-                gamemode.SetUp(playerService, this, uiService);
+                gamemode.SetUp(playerService, this, GetComponent<UiService>());
                 camera.SetUpCamera(this);
             }
 
-            public void Hit(InGameEntity hitEntity, InGameEntity byEntity, HitBox hitBox, Action<AttackPriority> callback) {
+            public bool IsCurrentFGChar(InGameEntity entity) {
+                return gamemode.IsCurrentFGChar(entity);
+            }
+
+            public void Hit(InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority, int> callback) {
                 Debug.Log(hitEntity);
-                hitQueue.Add((hitEntity, byEntity, hitBox, callback));
+                hitQueue.Add((hitEntity, byEntity, hit, callback));
             }
 
             private void ResolveHits() {
+                if (hitQueue.Count == 0) {
+                    return;
+                }
+
                 List<InGameEntity> entities = new List<InGameEntity>();
                 Dictionary<InGameEntity, InGameEntity> hitBy = new Dictionary<InGameEntity, InGameEntity>();
 
@@ -83,7 +116,7 @@ namespace ResonantSpark {
                     InGameEntity hitEntity = hitQueue[n].Item1;
                     InGameEntity byEntity = hitQueue[n].Item2;
 
-                    hitBy.Add(hitEntity, byEntity);
+                    hitBy[hitEntity] = byEntity;
                 }
 
                 foreach (KeyValuePair<InGameEntity, InGameEntity> kvp in hitBy) {
@@ -97,30 +130,43 @@ namespace ResonantSpark {
                         entities.Add(hitBy[hitEntity]); //hitBy.Remove(hitBy[hitEntity]);
                         entities.Add(hitEntity);        //hitBy.Remove(hitEntity);
 
-                        (InGameEntity, InGameEntity, HitBox, Action<AttackPriority>) info0 = hitQueue.Single(tuple => tuple.Item1 == ent0);
-                        (InGameEntity, InGameEntity, HitBox, Action<AttackPriority>) info1 = hitQueue.Single(tuple => tuple.Item1 == ent1);
+                        (InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>) info0 = hitQueue.Single(tuple => tuple.Item1 == ent0);
+                        (InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>) info1 = hitQueue.Single(tuple => tuple.Item1 == ent1);
 
-                        if (info0.Item1.GetType() == typeof(FightingGameCharacter)) {
-                            numComboHits[(FightingGameCharacter)info0.Item1]++;
+                        if (IsCurrentFGChar(info0.Item1)) {
+                            InGameEntity fgChar = info0.Item1;
+                            numComboHits[fgChar]++;
+                            gamemode.OnGameEntityNumHitsChange(fgChar, numComboHits[fgChar]);
+
+                            comboScalingIndex[fgChar]++;
                         }
-                        if (info1.Item1.GetType() == typeof(FightingGameCharacter)) {
-                            numComboHits[(FightingGameCharacter)info1.Item1]++;
+                        if (IsCurrentFGChar(info1.Item1)) {
+                            InGameEntity fgChar = info1.Item1;
+                            numComboHits[fgChar]++;
+                            gamemode.OnGameEntityNumHitsChange(fgChar, numComboHits[fgChar]);
+
+                            comboScalingIndex[fgChar]++;
                         }
-                        info0.Item4?.Invoke(info1.Item3.hit.priority);
-                        info1.Item4?.Invoke(info0.Item3.hit.priority);
+
+                        info0.Item4?.Invoke(info1.Item3.priority, GetComboScale(info0.Item1, info0.Item3));
+                        info1.Item4?.Invoke(info0.Item3.priority, GetComboScale(info1.Item1, info1.Item3));
                     }
                     else {
                         InGameEntity ent0 = hitEntity;
 
                         entities.Add(hitEntity); //hitBy.Remove(hitEntity);
 
-                        (InGameEntity, InGameEntity, HitBox, Action<AttackPriority>) info0 = hitQueue.Single(tuple => tuple.Item1 == ent0);
+                        (InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>) info0 = hitQueue.Single(tuple => tuple.Item1 == ent0);
 
-                        if (info0.Item1.GetType() == typeof(FightingGameCharacter)) {
-                            numComboHits[(FightingGameCharacter)info0.Item1]++;
+                        if (IsCurrentFGChar(info0.Item1)) {
+                            InGameEntity fgChar = info0.Item1;
+                            numComboHits[fgChar]++;
+                            gamemode.OnGameEntityNumHitsChange(fgChar, numComboHits[fgChar]);
+
+                            comboScalingIndex[fgChar]++;
                         }
 
-                        info0.Item4?.Invoke(AttackPriority.None);
+                        info0.Item4?.Invoke(AttackPriority.None, GetComboScale(info0.Item1, info0.Item3));
                     }
                 }
 
@@ -140,28 +186,47 @@ namespace ResonantSpark {
             }
 
             private void FrameUpdate(int frameIndex) {
-                CalculateComboScaling();
+                ResetComboCounter();
                 ResolveHits();
             }
 
-            private List<float> comboScaling = new List<float> { 1.0f, 0.8f, 0.6f, 0.5f, 0.45f, 0.4f, 0.35f, 0.3f, 0.25f };
+            private void LateFrameUpdate(int frameIndex) {
+                foreach (InGameEntity entity in entities) {
+                    prevComboState[entity] = entity.GetComboState();
+                }
+            }
 
-            private void CalculateComboScaling() {
+            private List<float> comboScaling = new List<float> { 1.0f, 0.8f, 0.65f, 0.5f, 0.45f, 0.4f, 0.35f, 0.3f, 0.25f };
+
+            private int GetComboScale(InGameEntity fgChar, Hit hit) {
+                if (numComboHits[fgChar] == 0) {
+                    for (int n = 0; n < comboScaling.Count; ++n) {
+                        if (comboScaling[n] <= hit.comboScaling) {
+                            comboScalingIndex[fgChar] = n;
+                        }
+                    }
+                }
+                if (comboScalingIndex[fgChar] >= comboScaling.Count) {
+                    return (int)(hit.hitDamage * comboScaling[comboScaling.Count - 1]);
+                }
+                else {
+                    return (int)(hit.hitDamage * comboScaling[comboScalingIndex[fgChar]]);
+                }
+            }
+
+            private void ResetComboCounter() {
                 playerService.EachFGChar((id, fgChar) => {
-                    if (!fgChar.InHitStun()) {
+                    if (fgChar.GetComboState() == ComboState.None && prevComboState[fgChar] == ComboState.InCombo) {
                         numComboHits[fgChar] = 0;
-                        numComboAttacks[fgChar] = 0;
+                        comboScalingIndex[fgChar] = 0;
 
-                        //uiService.HideComboCounter(id);
+                        gamemode.OnGameEntityNumHitsChange(fgChar, 0);
                     }
                 });
             }
 
-            public void PerformHits(Hit hit, Dictionary<InGameEntity, (List<HurtBox> hurt, List<HitBox> hit)> entityMap) {
-                foreach (KeyValuePair<InGameEntity, (List<HurtBox> hurt, List<HitBox> hit)> kvp in entityMap) {
-                    InGameEntity inGameEntity = kvp.Key;
-
-                }
+            public int GetNumHits(InGameEntity fgChar) {
+                return numComboHits[fgChar];
             }
 
             public void DisableControl() {

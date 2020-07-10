@@ -6,6 +6,7 @@ using ResonantSpark.Input.Combinations;
 using ResonantSpark.Gameplay;
 using ResonantSpark.Character;
 using ResonantSpark.Utility;
+using ResonantSpark.Service;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -92,6 +93,7 @@ namespace ResonantSpark {
             }
 
             public abstract GroundRelation GetGroundRelation();
+            public abstract ComboState GetComboState();
             public abstract void GetHit(bool launch);
 
             public struct CallbackRegistry<Tcallback> {

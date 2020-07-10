@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Gameplay;
+using ResonantSpark.Builder;
 
 namespace ResonantSpark {
     namespace Service {
         public class HitBoxService : MonoBehaviour, IHitBoxService {
             public Transform hitBoxEmpty;
-            public HitBoxComponent hitBoxDefaultPrefab;
+            public HitBox hitBoxDefaultPrefab;
 
             private FrameEnforcer frame;
 
@@ -44,6 +45,10 @@ namespace ResonantSpark {
                         }
                     }
                 }
+
+                foreach (HitBox hitBox in activeHitBoxes) {
+                    hitBox.PerformOverlapCheck();
+                }
             }
 
             private void ResetActivePolling(int frameIndex) {
@@ -54,6 +59,12 @@ namespace ResonantSpark {
                 activeHitBoxes.Clear();
             }
 
+            public HitBox Create(Action<IHitBoxCallbackObject> buildCallback) {
+                HitBox hitBox = GameObject.Instantiate<HitBox>(hitBoxDefaultPrefab, GetEmptyHoldTransform().position, Quaternion.identity, GetEmptyHoldTransform());
+                hitBox.Init(buildCallback);
+                return hitBox;
+            }
+
             public void RegisterHitBox(HitBox hitBox) {
                 hitBoxMap.Add(hitBox.id, hitBox);
             }
@@ -62,7 +73,7 @@ namespace ResonantSpark {
                 activeHitBoxes.Add(hitBox);
             }
 
-            public HitBoxComponent DefaultPrefab() {
+            public HitBox DefaultPrefab() {
                 return hitBoxDefaultPrefab;
             }
 

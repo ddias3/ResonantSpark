@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using ResonantSpark.Service;
+
 namespace ResonantSpark {
     namespace Gameplay {
         [RequireComponent(typeof(RigidbodyFG))]
-        public abstract class InGameEntity : MonoBehaviour, IInGameEntity, IEquatable<InGameEntity> {
+        public abstract class InGameEntity : MonoBehaviour, IEquatable<InGameEntity> {
             public static int entityCounter = 0;
+
+            public InGameEntity parent { protected set; get; }
 
             public int id { get; private set; }
             public RigidbodyFG rigidFG { private set; get; }
@@ -40,6 +44,7 @@ namespace ResonantSpark {
             public abstract string HitBoxEventType(HitBox hitBox);
             public abstract void AddSelf();
             public abstract void RemoveSelf();
+            public abstract ComboState GetComboState();
         }
     }
 }

@@ -23,6 +23,8 @@ namespace ResonantSpark {
                 private ICameraService cameraService;
                 private ITimeService timeService;
 
+                private IHitBoxService hitBoxService;
+
                 private Dictionary<string, AudioClip> audioMap;
                 private Dictionary<string, ParticleEffect> particleMap;
                 private Dictionary<string, AnimationCurve> animationCurveMap;
@@ -42,6 +44,8 @@ namespace ResonantSpark {
                     particleService = services.GetService<IParticleService>();
                     cameraService = services.GetService<ICameraService>();
                     timeService = services.GetService<ITimeService>();
+
+                    hitBoxService = services.GetService<IHitBoxService>();
 
                     this.audioMap = audioMap;
                     this.particleMap = particleMap;
@@ -77,18 +81,45 @@ namespace ResonantSpark {
 
                                         // hit.Block(); default is to allow any kind of blocking
 
-                                        hit.HitBox(new HitBox(hb => {
+                                        HitBox defaultHitBox = hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0.5f));
                                             hb.Point1(new Vector3(0, 1.1f, 1.3f));
                                             hb.Radius(0.25f);
-                                            hb.Event("onHitFGChar", 
-                                                CommonGroundedOnHitFGChar(
-                                                    hitSound: audioMap["weakHit"],
-                                                    groundedForceMagnitude: 0.5f,
-                                                    airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
-                                                    airborneForceMagnitude: 1.0f));
-                                        }));
+                                            hb.InGameEntity(fgChar);
+                                            hb.Validate((HitBox _, HitBox other) => true);
+                                            hb.Validate((HitBox _, HurtBox other) => true);
+                                        });
+
+                                        hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
+                                            //CommonGroundedOnHitFGChar(hitSound: audioMap["weakHit"], groundedForceMagnitude: 0.5f, airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f), airborneForceMagnitude: 1.0f);
+                                            if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
+                                                FightingGameCharacter opponent = (FightingGameCharacter) entity;
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["weakHit"]);
+
+                                                // This exists to make characters hitting each other async
+                                                fgService.Hit(entity, fgChar, thisHit, (hitAtSameTimeByAttackPriority, damage) => {
+                                                    opponent.ChangeHealth(damage); // damage includes combo scaling.
+
+                                                    switch (opponent.GetGroundRelation()) {
+                                                        case GroundRelation.GROUNDED:
+                                                            opponent.KnockBack(
+                                                                thisHit.priority,
+                                                                launch: false,
+                                                                knockback: fgChar.transform.rotation * Vector3.forward * 0.5f);
+                                                            break;
+                                                        case GroundRelation.AIRBORNE:
+                                                            opponent.KnockBack(
+                                                                thisHit.priority,
+                                                                launch: true,
+                                                                knockback: fgChar.transform.rotation * new Vector3(0.0f, 1.0f, 1.0f) * 0.7071f);
+                                                            break;
+                                                    }
+                                                });
+                                            }
+                                        });
+
+                                        hit.HitBox(defaultHitBox);
                                     });
                                 fl.To(8);
                                 fl.From(8);
@@ -133,23 +164,30 @@ namespace ResonantSpark {
                                         hit.ComboScaling(1.0f);
                                         hit.Priority(AttackPriority.LightAttack);
 
-                                        hit.HitBox(new HitBox(hb => {
+                                        hit.HitBox(hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0.8f));
                                             hb.Point1(new Vector3(0, 1, 0.8f));
                                             hb.Radius(0.25f);
-                                            hb.Event("onHitFGChar",
-                                                CommonGroundedOnHitFGChar(
-                                                    hitSound: audioMap["mediumHit"],
-                                                    groundedForceMagnitude: 0.5f,
-                                                    airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
-                                                    airborneForceMagnitude: 1.0f));
-
-                                            hb.Event("onEqualPriorityHitBox", (hitInfo) => {
-                                                if (hitInfo.hitEntity != fgChar) {
-                                                    fgChar.PredeterminedActions("horizontalClashSwingFromLeft");
-                                                }
+                                            hb.InGameEntity(fgChar);
+                                            hb.Validate((HitBox _, HitBox other) => {
+                                                return true;
                                             });
+                                            hb.Validate((HitBox _, HurtBox other) => {
+                                                return true;
+                                            });
+                                            //hb.Event("onHitFGChar",
+                                            //    CommonGroundedOnHitFGChar(
+                                            //        hitSound: audioMap["mediumHit"],
+                                            //        groundedForceMagnitude: 0.5f,
+                                            //        airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
+                                            //        airborneForceMagnitude: 1.0f));
+
+                                            //hb.Event("onEqualPriorityHitBox", (hitInfo) => {
+                                            //    if (hitInfo.hitEntity != fgChar) {
+                                            //        fgChar.PredeterminedActions("horizontalClashSwingFromLeft");
+                                            //    }
+                                            //});
                                         }));
                                     });
                                 fl.To(14);
@@ -194,54 +232,68 @@ namespace ResonantSpark {
                                             .Tracking(true)
                                             .Priority(AttackPriority.MediumAttack);
 
-                                        HitBox farHitBox = new HitBox(hb => {
+                                        HitBox farHitBox = hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0.8f));
                                             hb.Point1(new Vector3(0, 1, 0.8f));
                                             hb.Radius(0.25f);
-                                            hb.Event("onHitFGChar",
-                                                CommonGroundedOnHitFGChar(
-                                                    hitSound: audioMap["mediumHit"],
-                                                    groundedForceMagnitude: 0.5f,
-                                                    airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
-                                                    airborneForceMagnitude: 1.0f));
-
-                                            hb.Event("onEqualPriorityHitBox", (hitInfo) => {
-                                                if (hitInfo.hitEntity != fgChar) {
-                                                    fgChar.PredeterminedActions("verticalClash");
-                                                }
+                                            hb.InGameEntity(fgChar);
+                                            hb.Validate((HitBox _, HitBox other) => {
+                                                return true;
                                             });
+                                            hb.Validate((HitBox _, HurtBox other) => {
+                                                return true;
+                                            });
+                                            //hb.Event("onHitFGChar",
+                                            //    CommonGroundedOnHitFGChar(
+                                            //        hitSound: audioMap["mediumHit"],
+                                            //        groundedForceMagnitude: 0.5f,
+                                            //        airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
+                                            //        airborneForceMagnitude: 1.0f));
+
+                                            //hb.Event("onEqualPriorityHitBox", (hitInfo) => {
+                                            //    if (hitInfo.hitEntity != fgChar) {
+                                            //        fgChar.PredeterminedActions("verticalClash");
+                                            //    }
+                                            //});
                                         });
 
-                                        HitBox closeHitBox = new HitBox(hb => {
+                                        HitBox closeHitBox = hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0.6f));
                                             hb.Point1(new Vector3(0, 1, 0.6f));
                                             hb.Radius(0.5f);
-                                            hb.Event("onHitFGChar",
-                                                CommonGroundedOnHitFGChar(
-                                                    hitSound: audioMap["mediumHit"],
-                                                    groundedForceMagnitude: 0.5f,
-                                                    airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
-                                                    airborneForceMagnitude: 1.0f));
-
-                                            hb.Event("onEqualPriorityHitBox", (hitInfo) => {
-                                                if (hitInfo.hitEntity != fgChar) {
-                                                    fgChar.PredeterminedActions("verticalClash");
-                                                }
+                                            hb.InGameEntity(fgChar);
+                                            hb.Validate((HitBox _, HitBox other) => {
+                                                return true;
                                             });
+                                            hb.Validate((HitBox _, HurtBox other) => {
+                                                return true;
+                                            });
+                                            //hb.Event("onHitFGChar",
+                                            //    CommonGroundedOnHitFGChar(
+                                            //        hitSound: audioMap["mediumHit"],
+                                            //        groundedForceMagnitude: 0.5f,
+                                            //        airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
+                                            //        airborneForceMagnitude: 1.0f));
+
+                                            //hb.Event("onEqualPriorityHitBox", (hitInfo) => {
+                                            //    if (hitInfo.hitEntity != fgChar) {
+                                            //        fgChar.PredeterminedActions("verticalClash");
+                                            //    }
+                                            //});
                                         });
 
                                         hit.HitBox(farHitBox);
                                         hit.HitBox(closeHitBox);
 
-                                        hit.Event("onHitFGChar", (hitBoxes, hitInfo) => {
-                                            if (hitBoxes.Count == 1 && hitBoxes.Contains(farHitBox)) {
-                                                // do extra stuff.
-                                            }
+                                        //hit.Event("onHitFGChar", (hitBoxes, hitInfo) => {
+                                        //    if (hitBoxes.Count == 1 && hitBoxes.Contains(farHitBox)) {
+                                        //        // do extra stuff.
+                                        //    }
 
-                                            hitBoxes[0].InvokeEvent("onHitFGChar", hitInfo);
-                                        });
+                                        //    hitBoxes[0].InvokeEvent("onHitFGChar", hitInfo);
+                                        //});
                                     })
                                 .To(16)
                                 .From(22)
@@ -274,25 +326,32 @@ namespace ResonantSpark {
 
                                         hit.Block(Block.LOW);
 
-                                        hit.HitBox(new HitBox(hb => {
+                                        hit.HitBox(hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0.2f, 0.5f));
                                             hb.Point1(new Vector3(0, 0.2f, 1.3f));
                                             hb.Radius(0.35f);
-                                            hb.Event("onHitFGChar", (hitInfo) => {
-                                                FightingGameCharacter opponent = (FightingGameCharacter) hitInfo.hitEntity;
-                                                if (opponent != fgChar) {
-                                                    audioService.PlayOneShot(hitInfo.position, audioMap["weakHit"]);
-                                                    fgService.Hit(hitInfo.hitEntity, fgChar, hitInfo.hitBox, (hitAtSameTimeByAttackPriority) => {
-                                                        opponent.ChangeHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
-                                                        opponent.KnockBack(
-                                                            hitInfo.hitBox.hit.priority,
-                                                            launch: false,
-                                                            knockbackDirection: fgChar.transform.rotation * new Vector3(0.0f, 1.0f, 1.0f),
-                                                            knockbackMagnitude: 1.0f);
-                                                    });
-                                                }
+                                            hb.InGameEntity(fgChar);
+                                            hb.Validate((HitBox _, HitBox other) => {
+                                                return true;
                                             });
+                                            hb.Validate((HitBox _, HurtBox other) => {
+                                                return true;
+                                            });
+                                            //hb.Event("onHitFGChar", (hitInfo) => {
+                                            //    FightingGameCharacter opponent = (FightingGameCharacter) hitInfo.hitEntity;
+                                            //    if (opponent != fgChar) {
+                                            //        audioService.PlayOneShot(hitInfo.position, audioMap["weakHit"]);
+                                            //        fgService.Hit(hitInfo.hitEntity, fgChar, hitInfo.hitBox, (hitAtSameTimeByAttackPriority) => {
+                                            //            opponent.ChangeHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
+                                            //            opponent.KnockBack(
+                                            //                hitInfo.hitBox.hit.priority,
+                                            //                launch: false,
+                                            //                knockbackDirection: fgChar.transform.rotation * new Vector3(0.0f, 1.0f, 1.0f),
+                                            //                knockbackMagnitude: 1.0f);
+                                            //        });
+                                            //    }
+                                            //});
                                         }));
                                     })
                                 .To(9)
@@ -328,17 +387,24 @@ namespace ResonantSpark {
 
                                         hit.Block(Block.LOW);
 
-                                        hit.HitBox(new HitBox(hb => {
+                                        hit.HitBox(hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0.2f, 0.6f));
                                             hb.Point1(new Vector3(0, 0.2f, 1.4f));
                                             hb.Radius(0.25f);
-                                            hb.Event("onHitFGChar",
-                                                CommonGroundedOnHitFGChar(
-                                                    hitSound: audioMap["weakHit"],
-                                                    groundedForceMagnitude: 0.5f,
-                                                    airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
-                                                    airborneForceMagnitude: 1.0f));
+                                            hb.InGameEntity(fgChar);
+                                            hb.Validate((HitBox _, HitBox other) => {
+                                                return true;
+                                            });
+                                            hb.Validate((HitBox _, HurtBox other) => {
+                                                return true;
+                                            });
+                                            //hb.Event("onHitFGChar",
+                                            //    CommonGroundedOnHitFGChar(
+                                            //        hitSound: audioMap["weakHit"],
+                                            //        groundedForceMagnitude: 0.5f,
+                                            //        airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
+                                            //        airborneForceMagnitude: 1.0f));
                                         }));
                                     })
                                 .To(14)
@@ -374,23 +440,30 @@ namespace ResonantSpark {
                                         hit.ComboScaling(1.0f);
                                         hit.Priority(AttackPriority.LightAttack);
 
-                                        hit.HitBox(new HitBox(hb => {
+                                        hit.HitBox(hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0.8f));
                                             hb.Point1(new Vector3(0, 1, 0.8f));
                                             hb.Radius(0.25f);
-                                            hb.Event("onHitFGChar",
-                                                CommonGroundedOnHitFGChar(
-                                                    hitSound: audioMap["mediumHit"],
-                                                    groundedForceMagnitude: 0.5f,
-                                                    airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
-                                                    airborneForceMagnitude: 1.0f));
-
-                                            hb.Event("onEqualPriorityHitBox", (hitInfo) => {
-                                                if (hitInfo.hitEntity != fgChar) {
-                                                    fgChar.PredeterminedActions("horizontalClashSwingFromLeft");
-                                                }
+                                            hb.InGameEntity(fgChar);
+                                            hb.Validate((HitBox _, HitBox other) => {
+                                                return true;
                                             });
+                                            hb.Validate((HitBox _, HurtBox other) => {
+                                                return true;
+                                            });
+                                            //hb.Event("onHitFGChar",
+                                            //    CommonGroundedOnHitFGChar(
+                                            //        hitSound: audioMap["mediumHit"],
+                                            //        groundedForceMagnitude: 0.5f,
+                                            //        airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
+                                            //        airborneForceMagnitude: 1.0f));
+
+                                            //hb.Event("onEqualPriorityHitBox", (hitInfo) => {
+                                            //    if (hitInfo.hitEntity != fgChar) {
+                                            //        fgChar.PredeterminedActions("horizontalClashSwingFromLeft");
+                                            //    }
+                                            //});
                                         }));
                                     });
                                 fl.To(16);
@@ -431,23 +504,30 @@ namespace ResonantSpark {
                                         hit.ComboScaling(1.0f);
                                         hit.Priority(AttackPriority.LightAttack);
 
-                                        hit.HitBox(new HitBox(hb => {
+                                        hit.HitBox(hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0.8f));
                                             hb.Point1(new Vector3(0, 1, 0.8f));
                                             hb.Radius(0.25f);
-                                            hb.Event("onHitFGChar",
-                                                CommonGroundedOnHitFGChar(
-                                                    hitSound: audioMap["mediumHit"],
-                                                    groundedForceMagnitude: 0.5f,
-                                                    airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
-                                                    airborneForceMagnitude: 1.0f));
-
-                                            hb.Event("onEqualPriorityHitBox", (hitInfo) => {
-                                                if (hitInfo.hitEntity != fgChar) {
-                                                    fgChar.PredeterminedActions("horizontalClashSwingFromLeft");
-                                                }
+                                            hb.InGameEntity(fgChar);
+                                            hb.Validate((HitBox _, HitBox other) => {
+                                                return true;
                                             });
+                                            hb.Validate((HitBox _, HurtBox other) => {
+                                                return true;
+                                            });
+                                            //hb.Event("onHitFGChar",
+                                            //    CommonGroundedOnHitFGChar(
+                                            //        hitSound: audioMap["mediumHit"],
+                                            //        groundedForceMagnitude: 0.5f,
+                                            //        airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
+                                            //        airborneForceMagnitude: 1.0f));
+
+                                            //hb.Event("onEqualPriorityHitBox", (hitInfo) => {
+                                            //    if (hitInfo.hitEntity != fgChar) {
+                                            //        fgChar.PredeterminedActions("horizontalClashSwingFromLeft");
+                                            //    }
+                                            //});
                                         }));
                                     });
                                 fl.To(16);
@@ -481,23 +561,30 @@ namespace ResonantSpark {
                                         hit.ComboScaling(1.0f);
                                         hit.Priority(AttackPriority.LightAttack);
 
-                                        hit.HitBox(new HitBox(hb => {
+                                        hit.HitBox(hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0.8f));
                                             hb.Point1(new Vector3(0, 1, 0.8f));
                                             hb.Radius(0.25f);
-                                            hb.Event("onHitFGChar",
-                                                CommonGroundedOnHitFGChar(
-                                                    hitSound: audioMap["mediumHit"],
-                                                    groundedForceMagnitude: 0.5f,
-                                                    airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
-                                                    airborneForceMagnitude: 1.0f));
-
-                                            hb.Event("onEqualPriorityHitBox", (hitInfo) => {
-                                                if (hitInfo.hitEntity != fgChar) {
-                                                    fgChar.PredeterminedActions("horizontalClashSwingFromLeft");
-                                                }
+                                            hb.InGameEntity(fgChar);
+                                            hb.Validate((HitBox _, HitBox other) => {
+                                                return true;
                                             });
+                                            hb.Validate((HitBox _, HurtBox other) => {
+                                                return true;
+                                            });
+                                            //hb.Event("onHitFGChar",
+                                            //    CommonGroundedOnHitFGChar(
+                                            //        hitSound: audioMap["mediumHit"],
+                                            //        groundedForceMagnitude: 0.5f,
+                                            //        airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
+                                            //        airborneForceMagnitude: 1.0f));
+
+                                            //hb.Event("onEqualPriorityHitBox", (hitInfo) => {
+                                            //    if (hitInfo.hitEntity != fgChar) {
+                                            //        fgChar.PredeterminedActions("horizontalClashSwingFromLeft");
+                                            //    }
+                                            //});
                                         }));
                                     });
                                 fl.To(19);
@@ -531,23 +618,30 @@ namespace ResonantSpark {
                                         hit.ComboScaling(1.0f);
                                         hit.Priority(AttackPriority.LightAttack);
 
-                                        hit.HitBox(new HitBox(hb => {
+                                        hit.HitBox(hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0.8f));
                                             hb.Point1(new Vector3(0, 1, 0.8f));
                                             hb.Radius(0.25f);
-                                            hb.Event("onHitFGChar",
-                                                CommonGroundedOnHitFGChar(
-                                                    hitSound: audioMap["mediumHit"],
-                                                    groundedForceMagnitude: 0.5f,
-                                                    airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
-                                                    airborneForceMagnitude: 1.0f));
-
-                                            hb.Event("onEqualPriorityHitBox", (hitInfo) => {
-                                                if (hitInfo.hitEntity != fgChar) {
-                                                    fgChar.PredeterminedActions("horizontalClashSwingFromLeft");
-                                                }
+                                            hb.InGameEntity(fgChar);
+                                            hb.Validate((HitBox _, HitBox other) => {
+                                                return true;
                                             });
+                                            hb.Validate((HitBox _, HurtBox other) => {
+                                                return true;
+                                            });
+                                            //hb.Event("onHitFGChar",
+                                            //    CommonGroundedOnHitFGChar(
+                                            //        hitSound: audioMap["mediumHit"],
+                                            //        groundedForceMagnitude: 0.5f,
+                                            //        airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
+                                            //        airborneForceMagnitude: 1.0f));
+
+                                            //hb.Event("onEqualPriorityHitBox", (hitInfo) => {
+                                            //    if (hitInfo.hitEntity != fgChar) {
+                                            //        fgChar.PredeterminedActions("horizontalClashSwingFromLeft");
+                                            //    }
+                                            //});
                                         }));
                                     });
                                 fl.To(10);
@@ -589,17 +683,24 @@ namespace ResonantSpark {
                                             .HitStun(12.0f)
                                             .BlockStun(30.0f);
 
-                                        hit.HitBox(new HitBox(hb => {
+                                        hit.HitBox(hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0.8f));
                                             hb.Point1(new Vector3(0, 1, 0.8f));
                                             hb.Radius(0.25f);
-                                            hb.Event("onHitFGChar",
-                                                CommonGroundedOnHitFGChar(
-                                                    hitSound: audioMap["mediumHit"],
-                                                    groundedForceMagnitude: 0.5f,
-                                                    airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
-                                                    airborneForceMagnitude: 1.0f));
+                                            hb.InGameEntity(fgChar);
+                                            hb.Validate((HitBox _, HitBox other) => {
+                                                return true;
+                                            });
+                                            hb.Validate((HitBox _, HurtBox other) => {
+                                                return true;
+                                            });
+                                            //hb.Event("onHitFGChar",
+                                            //    CommonGroundedOnHitFGChar(
+                                            //        hitSound: audioMap["mediumHit"],
+                                            //        groundedForceMagnitude: 0.5f,
+                                            //        airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
+                                            //        airborneForceMagnitude: 1.0f));
                                         }));
                                     })
                                 .To(11)
@@ -645,17 +746,24 @@ namespace ResonantSpark {
                                             .HitStun(12.0f)
                                             .BlockStun(12.0f);
 
-                                        hit.HitBox(new HitBox(hb => {
+                                        hit.HitBox(hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0.8f));
                                             hb.Point1(new Vector3(0, 1, 0.8f));
                                             hb.Radius(0.25f);
-                                            hb.Event("onHitFGChar",
-                                                CommonGroundedOnHitFGChar(
-                                                    hitSound: audioMap["weakHit"],
-                                                    groundedForceMagnitude: 0.5f,
-                                                    airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
-                                                    airborneForceMagnitude: 1.0f));
+                                            hb.InGameEntity(fgChar);
+                                            hb.Validate((HitBox _, HitBox other) => {
+                                                return true;
+                                            });
+                                            hb.Validate((HitBox _, HurtBox other) => {
+                                                return true;
+                                            });
+                                            //hb.Event("onHitFGChar",
+                                            //    CommonGroundedOnHitFGChar(
+                                            //        hitSound: audioMap["weakHit"],
+                                            //        groundedForceMagnitude: 0.5f,
+                                            //        airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
+                                            //        airborneForceMagnitude: 1.0f));
                                         }));
                                     })
                                 .To(13)
@@ -703,52 +811,59 @@ namespace ResonantSpark {
                                             .Priority(AttackPriority.HeavyAttack)
                                             .ComboScaling(1.0f);
 
-                                        hit.HitBox(new HitBox(hb => {
+                                        hit.HitBox(hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0.8f));
                                             hb.Point1(new Vector3(0, 1, 0.8f));
                                             hb.Radius(0.25f);
-                                            hb.Event("onHitFGChar", (hitInfo) => {
-                                                FightingGameCharacter opponent = (FightingGameCharacter) hitInfo.hitEntity;
-                                                if (opponent != fgChar) {
-                                                    audioService.PlayOneShot(hitInfo.position, audioMap["strongHit"]);
-                                                        // This exists to make characters hitting each other async
-                                                    fgService.Hit(hitInfo.hitEntity, fgChar, hitInfo.hitBox, (hitAtSameTimeByAttackPriority) => {
-                                                        opponent.ChangeHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
-
-                                                        if (hitAtSameTimeByAttackPriority == AttackPriority.HeavyAttack) { // colloquially known as trading
-                                                            cameraService.PredeterminedActions<float>("zoomIn", 0.5f);
-                                                            timeService.PredeterminedActions<float>("timeSlow", 0.5f);
-
-                                                            opponent.KnockBack(
-                                                                hitInfo.hitBox.hit.priority,
-                                                                launch: false,
-                                                                knockbackDirection: fgChar.transform.rotation * Vector3.forward,
-                                                                knockbackMagnitude: 0.5f);
-                                                        }
-                                                        else {
-                                                            opponent.KnockBack(
-                                                                hitInfo.hitBox.hit.priority,
-                                                                launch: true,
-                                                                knockbackDirection: fgChar.transform.rotation * new Vector3(0.0f, 1.0f, 1.0f),
-                                                                knockbackMagnitude: 2.0f);
-                                                        }
-                                                    });
-                                                }
+                                            hb.InGameEntity(fgChar);
+                                            hb.Validate((HitBox _, HitBox other) => {
+                                                return true;
                                             });
-                                            hb.Event("onHitProjectile", (hitInfo) => {
-                                                Projectile projectile = (Projectile) hitInfo.hitEntity;
-                                                if (projectile.health <= 2) {
-                                                    fgService.Hit(projectile, fgChar, hitInfo.hitBox, (hitAtSameTimeByAttackPriority) => {
-                                                        if (hitAtSameTimeByAttackPriority != AttackPriority.None) {
-                                                            particleService.PlayOneShot(hitInfo.position, particleMap["destroyParticle"]);
-                                                                // these lines might be redundant
-                                                            particleService.PlayOneShot(hitInfo.position, projectile.DestroyedParticle());
-                                                            projectile.RemoveSelf();
-                                                        }
-                                                    });
-                                                }
+                                            hb.Validate((HitBox _, HurtBox other) => {
+                                                return true;
                                             });
+                                            //hb.Event("onHitFGChar", (hitInfo) => {
+                                            //    FightingGameCharacter opponent = (FightingGameCharacter) hitInfo.hitEntity;
+                                            //    if (opponent != fgChar) {
+                                            //        audioService.PlayOneShot(hitInfo.position, audioMap["strongHit"]);
+                                            //            // This exists to make characters hitting each other async
+                                            //        fgService.Hit(hitInfo.hitEntity, fgChar, hitInfo.hitBox, (hitAtSameTimeByAttackPriority) => {
+                                            //            opponent.ChangeHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
+
+                                            //            if (hitAtSameTimeByAttackPriority == AttackPriority.HeavyAttack) { // colloquially known as trading
+                                            //                cameraService.PredeterminedActions<float>("zoomIn", 0.5f);
+                                            //                timeService.PredeterminedActions<float>("timeSlow", 0.5f);
+
+                                            //                opponent.KnockBack(
+                                            //                    hitInfo.hitBox.hit.priority,
+                                            //                    launch: false,
+                                            //                    knockbackDirection: fgChar.transform.rotation * Vector3.forward,
+                                            //                    knockbackMagnitude: 0.5f);
+                                            //            }
+                                            //            else {
+                                            //                opponent.KnockBack(
+                                            //                    hitInfo.hitBox.hit.priority,
+                                            //                    launch: true,
+                                            //                    knockbackDirection: fgChar.transform.rotation * new Vector3(0.0f, 1.0f, 1.0f),
+                                            //                    knockbackMagnitude: 2.0f);
+                                            //            }
+                                            //        });
+                                            //    }
+                                            //});
+                                            //hb.Event("onHitProjectile", (hitInfo) => {
+                                            //    Projectile projectile = (Projectile) hitInfo.hitEntity;
+                                            //    if (projectile.health <= 2) {
+                                            //        fgService.Hit(projectile, fgChar, hitInfo.hitBox, (hitAtSameTimeByAttackPriority) => {
+                                            //            if (hitAtSameTimeByAttackPriority != AttackPriority.None) {
+                                            //                particleService.PlayOneShot(hitInfo.position, particleMap["destroyParticle"]);
+                                            //                    // these lines might be redundant
+                                            //                particleService.PlayOneShot(hitInfo.position, projectile.DestroyedParticle());
+                                            //                projectile.RemoveSelf();
+                                            //            }
+                                            //        });
+                                            //    }
+                                            //});
                                         }));
                                     })
                                 .To(21)
@@ -780,23 +895,30 @@ namespace ResonantSpark {
                                         hit.ComboScaling(1.0f);
                                         hit.Priority(AttackPriority.LightAttack);
 
-                                        hit.HitBox(new HitBox(hb => {
+                                        hit.HitBox(hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0.8f));
                                             hb.Point1(new Vector3(0, 1, 0.8f));
                                             hb.Radius(0.25f);
-                                            hb.Event("onHitFGChar",
-                                                CommonGroundedOnHitFGChar(
-                                                    hitSound: audioMap["mediumHit"],
-                                                    groundedForceMagnitude: 0.5f,
-                                                    airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
-                                                    airborneForceMagnitude: 1.0f));
-
-                                            hb.Event("onEqualPriorityHitBox", (hitInfo) => {
-                                                if (hitInfo.hitEntity != fgChar) {
-                                                    fgChar.PredeterminedActions("horizontalClashSwingFromLeft");
-                                                }
+                                            hb.InGameEntity(fgChar);
+                                            hb.Validate((HitBox _, HitBox other) => {
+                                                return true;
                                             });
+                                            hb.Validate((HitBox _, HurtBox other) => {
+                                                return true;
+                                            });
+                                            //hb.Event("onHitFGChar",
+                                            //    CommonGroundedOnHitFGChar(
+                                            //        hitSound: audioMap["mediumHit"],
+                                            //        groundedForceMagnitude: 0.5f,
+                                            //        airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
+                                            //        airborneForceMagnitude: 1.0f));
+
+                                            //hb.Event("onEqualPriorityHitBox", (hitInfo) => {
+                                            //    if (hitInfo.hitEntity != fgChar) {
+                                            //        fgChar.PredeterminedActions("horizontalClashSwingFromLeft");
+                                            //    }
+                                            //});
                                         }));
                                     });
                                 fl.To(10);
@@ -830,23 +952,30 @@ namespace ResonantSpark {
                                         hit.ComboScaling(1.0f);
                                         hit.Priority(AttackPriority.LightAttack);
 
-                                        hit.HitBox(new HitBox(hb => {
+                                        hit.HitBox(hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0.8f));
                                             hb.Point1(new Vector3(0, 1, 0.8f));
                                             hb.Radius(0.25f);
-                                            hb.Event("onHitFGChar",
-                                                CommonGroundedOnHitFGChar(
-                                                    hitSound: audioMap["mediumHit"],
-                                                    groundedForceMagnitude: 0.5f,
-                                                    airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
-                                                    airborneForceMagnitude: 1.0f));
-
-                                            hb.Event("onEqualPriorityHitBox", (hitInfo) => {
-                                                if (hitInfo.hitEntity != fgChar) {
-                                                    fgChar.PredeterminedActions("horizontalClashSwingFromLeft");
-                                                }
+                                            hb.InGameEntity(fgChar);
+                                            hb.Validate((HitBox _, HitBox other) => {
+                                                return true;
                                             });
+                                            hb.Validate((HitBox _, HurtBox other) => {
+                                                return true;
+                                            });
+                                            //hb.Event("onHitFGChar",
+                                            //    CommonGroundedOnHitFGChar(
+                                            //        hitSound: audioMap["mediumHit"],
+                                            //        groundedForceMagnitude: 0.5f,
+                                            //        airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
+                                            //        airborneForceMagnitude: 1.0f));
+
+                                            //hb.Event("onEqualPriorityHitBox", (hitInfo) => {
+                                            //    if (hitInfo.hitEntity != fgChar) {
+                                            //        fgChar.PredeterminedActions("horizontalClashSwingFromLeft");
+                                            //    }
+                                            //});
                                         }));
                                     });
                                 fl.To(10);
@@ -884,6 +1013,9 @@ namespace ResonantSpark {
                                 .From(12)
                                     .Projectile(projectileMap["hadouken"], proj => {
                                         projectileService.FireProjectile(proj.id);
+                                        hitBoxService.Create(hb => {
+                                            hb.InGameEntity(proj);
+                                        });
                                     })
                                 .To(13)
                                 .From(16)
@@ -1082,35 +1214,35 @@ namespace ResonantSpark {
                     fgChar.SetState(fgChar.State("airborne"));
                 }
 
-                private Action<HitInfo> CommonGroundedOnHitFGChar(AudioClip hitSound, float groundedForceMagnitude, Vector3 airborneForceDirection, float airborneForceMagnitude) {
-                    return hitInfo => {
-                        FightingGameCharacter opponent = (FightingGameCharacter) hitInfo.hitEntity;
-                        if (opponent != fgChar) {
-                            audioService.PlayOneShot(hitInfo.position, hitSound);
-                                // This exists to make characters hitting each other async
-                            fgService.Hit(hitInfo.hitEntity, fgChar, hitInfo.hitBox, (hitAtSameTimeByAttackPriority) => {
-                                opponent.ChangeHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
+                //private Action<HitInfo> CommonGroundedOnHitFGChar(AudioClip hitSound, float groundedForceMagnitude, Vector3 airborneForceDirection, float airborneForceMagnitude) {
+                //    return hitInfo => {
+                //        FightingGameCharacter opponent = (FightingGameCharacter) hitInfo.hitEntity;
+                //        if (opponent != fgChar) {
+                //            audioService.PlayOneShot(hitInfo.position, hitSound);
+                //                // This exists to make characters hitting each other async
+                //            fgService.Hit(hitInfo.hitEntity, fgChar, hitInfo.hitBox, (hitAtSameTimeByAttackPriority) => {
+                //                opponent.ChangeHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
 
-                                switch (opponent.GetGroundRelation()) {
-                                    case GroundRelation.GROUNDED:
-                                        opponent.KnockBack(
-                                            hitInfo.hitBox.hit.priority,
-                                            launch: false,
-                                            knockbackDirection: fgChar.transform.rotation * Vector3.forward,
-                                            knockbackMagnitude: groundedForceMagnitude);
-                                        break;
-                                    case GroundRelation.AIRBORNE:
-                                        opponent.KnockBack(
-                                            hitInfo.hitBox.hit.priority,
-                                            launch: true,
-                                            knockbackDirection: fgChar.transform.rotation * airborneForceDirection,
-                                            knockbackMagnitude: airborneForceMagnitude);
-                                        break;
-                                }
-                            });
-                        }
-                    };
-                }
+                //                switch (opponent.GetGroundRelation()) {
+                //                    case GroundRelation.GROUNDED:
+                //                        opponent.KnockBack(
+                //                            hitInfo.hitBox.hit.priority,
+                //                            launch: false,
+                //                            knockbackDirection: fgChar.transform.rotation * Vector3.forward,
+                //                            knockbackMagnitude: groundedForceMagnitude);
+                //                        break;
+                //                    case GroundRelation.AIRBORNE:
+                //                        opponent.KnockBack(
+                //                            hitInfo.hitBox.hit.priority,
+                //                            launch: true,
+                //                            knockbackDirection: fgChar.transform.rotation * airborneForceDirection,
+                //                            knockbackMagnitude: airborneForceMagnitude);
+                //                        break;
+                //                }
+                //            });
+                //        }
+                //    };
+                //}
             }
         }
     }

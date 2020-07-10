@@ -15,7 +15,7 @@ namespace ResonantSpark {
                     bool cancellableOnWhiff,
                     bool counterHit,
                     List<int> hitCallbackIds,
-                    Action<HitInfo> armorCallback,
+                    Action<Hit> armorCallback,
                     Action<TargetFG> trackCallback,
                     AudioClip soundClip,
                     Action<AudioResource> soundCallback,
@@ -33,7 +33,7 @@ namespace ResonantSpark {
             public bool cancellableOnWhiff { get; private set; }
             public bool counterHit { get; private set; }
 
-            public Action<HitInfo> armorCallback { get; private set; }
+            public Action<Hit> armorCallback { get; private set; }
 
             public Action<TargetFG> trackCallback { get; private set; }
 
@@ -49,7 +49,7 @@ namespace ResonantSpark {
                     bool cancellableOnWhiff,
                     bool counterHit,
                     List<int> hitCallbackIds,
-                    Action<HitInfo> armorCallback,
+                    Action<Hit> armorCallback,
                     Action<TargetFG> trackCallback,
                     AudioClip soundClip,
                     Action<AudioResource> soundCallback,

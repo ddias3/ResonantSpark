@@ -3,17 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Service;
-using ResonantSpark.Utility;
 using ResonantSpark.CharacterProperties;
 using ResonantSpark.Builder;
 
 namespace ResonantSpark {
     namespace Gameplay {
-        public class HitBox : IEquatable<HitBox> {
+        public class HitBox : MonoBehaviour, IEquatable<HitBox> {
             private static int hitBoxCounter = 0;
 
             public int id { get; private set; }
             public Hit hit { get; set; }
+
+            public Vector3 point0 { get; private set; }
+            public Vector3 point1 { get; private set; }
+            public float radius { get; private set; }
 
             private LayerMask hitableLayers;
             private LayerMask hurtBoxLayer;
@@ -21,72 +24,112 @@ namespace ResonantSpark {
 
             private Collider[] colliderBuffer;
 
-            private HitBoxComponent hitBoxComponent;
+            private InGameEntity entity;
+            private Func<HitBox, HurtBox, bool> validateOnHurtCallback;
+            private Func<HitBox, HitBox, bool> validateOnHitCallback;
+
             private Transform relativeTransform;
             private Vector3 localHitLocation;
+            private Vector3 offset;
 
             private bool tracking;
-
-            private Dictionary<string, Action<HitInfo>> eventCallbacks;
 
             private IHitBoxService hitBoxService;
             private IFightingGameService fgService;
 
             private Action<IHitBoxCallbackObject> buildCallback;
 
-            public HitBox(Action<IHitBoxCallbackObject> buildCallback) {
+            private bool active = false;
+
+            private new Rigidbody rigidbody;
+
+            private new CapsuleCollider collider;
+            private Transform colliderTransform;
+
+            private new HitBoxRenderer renderer;
+            private Transform rendererTransform;
+
+            private Vector3 deactivatedPosition;
+
+            public void Init(Action<IHitBoxCallbackObject> buildCallback) {
                 this.id = HitBox.hitBoxCounter++;
                 this.buildCallback = buildCallback;
-
-                colliderBuffer = new Collider[128];
-            }
-
-            public HitBox Build(AllServices services, Hit hit) {
-                this.id = HitBox.hitBoxCounter++;
-
-                this.hitBoxService = services.GetService<IHitBoxService>();
-                this.fgService = services.GetService<IFightingGameService>();
-
-                this.hit = hit;
-
-                hitBoxService.RegisterHitBox(this);
 
                 hitableLayers = LayerMask.GetMask("HurtBox", "HitBox");
                 hurtBoxLayer = LayerMask.NameToLayer("HurtBox");
                 hitBoxLayer = LayerMask.NameToLayer("HitBox");
 
+                colliderBuffer = new Collider[128];
+            }
+
+            public HitBox Build(AllServices services, Hit hit) {
+                this.hitBoxService = services.GetService<IHitBoxService>();
+                this.fgService = services.GetService<IFightingGameService>();
+
+                this.hit = hit;
+
+                collider = GetComponentInChildren<CapsuleCollider>();
+                renderer = GetComponentInChildren<HitBoxRenderer>();
+                rigidbody = GetComponent<Rigidbody>();
+                colliderTransform = collider.transform;
+                rendererTransform = renderer.transform;
+
+                collider.enabled = true;
+                collider.isTrigger = true;
+
+                deactivatedPosition = hitBoxService.GetEmptyHoldTransform().position;
+                Deactivate();
+
+                hitBoxService.RegisterHitBox(this);
+
                 HitBoxBuilder builder = new HitBoxBuilder(services);
                 buildCallback(builder);
-                hitBoxComponent = builder.CreateHitBox(this, hitBoxService.GetEmptyHoldTransform());
+                builder.SetColliderPosition(this);
 
+                entity = builder.entity;
                 relativeTransform = builder.relativeTransform;
                 localHitLocation = builder.hitLocation;
                 tracking = builder.tracking;
-                eventCallbacks = builder.eventCallbacks;
+                validateOnHitCallback = builder.validateOnHitCallback;
+                validateOnHurtCallback = builder.validateOnHurtCallback;
 
                 return this;
             }
 
-            public HitBox Init(Transform relativeTransform, bool tracking, Action<HitInfo> onHurtBoxEnter, Action<HitInfo> onHitBoxEnter) {
-                Deactivate();
+            public void SetColliderPosition(Vector3 point0, Vector3 point1, float radius) {
+                this.point0 = point0;
+                this.point1 = point1;
+                this.radius = radius;
 
-                return this;
-            }
-
-            public void InvokeEvent(string eventName, HitInfo hitInfo) {
-                Action<HitInfo> callback;
-                if (eventCallbacks.TryGetValue(eventName, out callback)) {
-                    callback(hitInfo);
+                if (Mathf.Abs(Vector3.Cross(point1 - point0, Vector3.up).sqrMagnitude) > 0.01f) {
+                    colliderTransform.localRotation = Quaternion.LookRotation(point1 - point0, Vector3.up);
+                    rendererTransform.localRotation = Quaternion.LookRotation(point1 - point0, Vector3.up);
                 }
+                else {
+                    colliderTransform.localRotation = Quaternion.LookRotation(point1 - point0, Vector3.right);
+                    rendererTransform.localRotation = Quaternion.LookRotation(point1 - point0, Vector3.right);
+                }
+
+                colliderTransform.localPosition = point0;
+                rendererTransform.localPosition = point0;
+
+                float cylinderHeight = Vector3.Distance(point0, point1);
+
+                collider.radius = radius;
+                collider.direction = 2; // Z-axis
+                collider.height = cylinderHeight + 2 * radius;
+                collider.center = cylinderHeight / 2 * Vector3.forward;
+
+                renderer.radius = radius;
+                renderer.height = cylinderHeight;
             }
 
-            public void Active() {
-                hitBoxService.Active(this);
+            public void PerformOverlapCheck() {
                 int numCollisions = 0;
                 if ((numCollisions =
-                        Physics.OverlapCapsuleNonAlloc(relativeTransform.position + relativeTransform.rotation * hitBoxComponent.point0,
-                            relativeTransform.position + relativeTransform.rotation * hitBoxComponent.point1,
-                            hitBoxComponent.radius,
+                        Physics.OverlapCapsuleNonAlloc(relativeTransform.position + relativeTransform.rotation * point0,
+                            relativeTransform.position + relativeTransform.rotation * point1,
+                            radius,
                             colliderBuffer,
                             hitableLayers,
                             QueryTriggerInteraction.Collide)) > 0) {
@@ -96,15 +139,19 @@ namespace ResonantSpark {
                             if ((hurtBox = colliderBuffer[n].gameObject.GetComponent<HurtBox>()) != null) {
                                 InGameEntity gameEntity = hurtBox.GetEntity();
                                 Debug.LogFormat("Type {0}, Entity {1}", "HurtBox", gameEntity);
-                                hit.RegisterHitInfo(this, relativeTransform.position + relativeTransform.rotation * localHitLocation, hurtBox);
+                                if (validateOnHurtCallback(this, hurtBox)) {
+                                    hit.RegisterHitInfo(this, relativeTransform.position + relativeTransform.rotation * localHitLocation, hurtBox);
+                                }
                             }
 
-                            //HitBox otherHitBox;
-                            //if ((otherHitBox = colliderBuffer[n].gameObject.GetComponent<HitBox>()) != null) {
-                            //    InGameEntity gameEntity = otherHitBox.GetEntity();
-                            //    Debug.LogFormat("Type {0}, Entity {1}", "HitBox", gameEntity);
-                            //    hit.RegisterHitInfo(this, relativeTransform.position + relativeTransform.rotation * localHitLocation, otherHitBox);
-                            //}
+                            HitBox otherHitBox;
+                            if ((otherHitBox = colliderBuffer[n].gameObject.GetComponent<HitBox>()) != null) {
+                                InGameEntity gameEntity = otherHitBox.GetEntity();
+                                Debug.LogFormat("Type {0}, Entity {1}", "HitBox", gameEntity);
+                                if (validateOnHitCallback(this, otherHitBox)) {
+                                    hit.RegisterHitInfo(this, relativeTransform.position + relativeTransform.rotation * localHitLocation, otherHitBox);
+                                }
+                            }
                         }
                     }
                 }
@@ -112,19 +159,28 @@ namespace ResonantSpark {
             }
 
             public InGameEntity GetEntity() {
-                return null;
+                return entity;
+            }
+
+            public void Active() {
+                hitBoxService.Active(this);
             }
 
             public bool IsActive() {
-                return hitBoxComponent.IsActive();
+                return active; //collider.enabled;
             }
 
             public void Activate() {
-                hitBoxComponent.Activate();
+                active = true;
+                //collider.enabled = true;
+                rigidbody.rotation = relativeTransform.rotation;
+                rigidbody.position = relativeTransform.rotation * offset + relativeTransform.position;
             }
 
             public void Deactivate() {
-                hitBoxComponent.Deactivate();
+                active = false;
+                //collider.enabled = false;
+                rigidbody.position = deactivatedPosition;
             }
 
             public bool Equals(HitBox other) {

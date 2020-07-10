@@ -4,7 +4,6 @@ using UnityEngine;
 
 using ResonantSpark.Builder;
 using ResonantSpark.Character;
-using ResonantSpark.Utility;
 using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
@@ -18,7 +17,7 @@ namespace ResonantSpark {
             IHitCallbackObject ComboScaling(float scaling);
             IHitCallbackObject Tracking(bool tracking);
             IHitCallbackObject Priority(AttackPriority priority);
-            IHitCallbackObject Event(string eventName, Action<List<HitBox>, HitInfo> callback);
+            IHitCallbackObject OnHit(Action<Hit, Dictionary<HitBox, Vector3>, InGameEntity, List<HurtBox>, List<HitBox>> callback);
             IHitCallbackObject HitBox(HitBox hitBox);
         }
     }
@@ -33,7 +32,7 @@ namespace ResonantSpark {
             public float blockStun { get; private set; }
             public float comboScaling { get; private set; }
             public bool tracking { get; private set; }
-            public Dictionary<string, Action<List<HitBox>, HitInfo>> eventCallbacks { get; private set; }
+            public Action<Hit, Dictionary<HitBox, Vector3>, InGameEntity, List<HurtBox>, List<HitBox>> onHitCallback { get; private set; }
 
             public IHitCallbackObject Block(params Block[] requiredBlocks) {
                 this.requiredBlocks = new List<Block>(requiredBlocks);
@@ -55,8 +54,8 @@ namespace ResonantSpark {
                 this.tracking = tracking;
                 return this;
             }
-            public IHitCallbackObject Event(string eventName, Action<List<HitBox>, HitInfo> callback) {
-                this.eventCallbacks.Add(eventName, callback);
+            public IHitCallbackObject OnHit(Action<Hit, Dictionary<HitBox, Vector3>, InGameEntity, List<HurtBox>, List<HitBox>> callback) {
+                this.onHitCallback = callback;
                 return this;
             }
             public IHitCallbackObject HitBox(HitBox hitBox) {

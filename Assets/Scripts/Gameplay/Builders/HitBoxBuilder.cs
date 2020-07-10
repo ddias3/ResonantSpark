@@ -10,60 +10,49 @@ using ResonantSpark.Utility;
 namespace ResonantSpark {
     namespace CharacterProperties {
         public partial class HitBoxBuilder : IHitBoxCallbackObject {
-            private const string onHitBoxEventKey = "onHitBox";
-            private const string onHurtBoxEventKey = "onHurtBox";
-
             private IHitBoxService hitBoxService;
             private IFightingGameService fgService;
 
             public HitBoxBuilder(AllServices allServices) {
-                eventCallbacks = new Dictionary<string, Action<HitInfo>>();
-
                 this.hitBoxService = allServices.GetService<IHitBoxService>();
                 this.fgService = allServices.GetService<IFightingGameService>();
                 this.hitBoxPrefab = this.hitBoxService.DefaultPrefab();
 
                 tracking = false;
                 hitLocation = Vector3.up;
+                entity = null;
+                validateOnHitCallback = DefaultValidateOnHitCallback;
+                validateOnHurtCallback = DefaultValidateOnHurtCallback;
             }
 
-            public HitBoxComponent CreateHitBox(HitBox hitBox, Transform hitBoxEmptyParentTransform) {
-                    // default means Vector3.zero in this case
+            public void SetColliderPosition(HitBox hitBox) {
                 if (collider != null) {
-                    HitBoxComponent hitBoxComp = GameObject.Instantiate<HitBoxComponent>(hitBoxPrefab, hitBoxEmptyParentTransform.position, Quaternion.identity, hitBoxEmptyParentTransform);
-
-                    hitBoxComp.SetServices(hitBoxService, fgService);
-                    hitBoxComp.Init(hitBox, relativeTransform, hitLocation);
-
                     switch (collider.direction) {
                         case 0: // X-axis
-                            hitBoxComp.SetColliderPosition(collider.transform.position, collider.transform.position + collider.transform.right * collider.height, collider.radius);
+                            hitBox.SetColliderPosition(collider.transform.position, collider.transform.position + collider.transform.right * collider.height, collider.radius);
                             break;
                         case 1: // Y-axis
-                            hitBoxComp.SetColliderPosition(collider.transform.position, collider.transform.position + collider.transform.up * collider.height, collider.radius);
+                            hitBox.SetColliderPosition(collider.transform.position, collider.transform.position + collider.transform.up * collider.height, collider.radius);
                             break;
                         case 2: // Z-axis
-                            hitBoxComp.SetColliderPosition(collider.transform.position, collider.transform.position + collider.transform.forward * collider.height, collider.radius);
+                            hitBox.SetColliderPosition(collider.transform.position, collider.transform.position + collider.transform.forward * collider.height, collider.radius);
                             break;
                     }
-                    return hitBoxComp;
                 }
                 else if (radius > 0) {
-                    HitBoxComponent hitBoxComp = GameObject.Instantiate<HitBoxComponent>(hitBoxPrefab, hitBoxEmptyParentTransform.position, Quaternion.identity, hitBoxEmptyParentTransform);
-
-                    hitBoxComp.SetServices(hitBoxService, fgService);
-                    hitBoxComp.Init(hitBox, relativeTransform, hitLocation);
-
-                    hitBoxComp.SetColliderPosition(point0, point1, radius);
-                    return hitBoxComp;
+                    hitBox.SetColliderPosition(point0, point1, radius);
                 }
                 else {
                     throw new NotSupportedException("Attempting to create a hitbox with no collider to base on or no values provided");
                 }
             }
 
-            public Dictionary<string, Action<HitInfo>> GetEvents() {
-                return eventCallbacks;
+            private bool DefaultValidateOnHitCallback(HitBox checkingHitBox, HitBox otherHitBox) {
+                return true;
+            }
+
+            private bool DefaultValidateOnHurtCallback(HitBox checkingHitBox, HurtBox otherHurtBox) {
+                return true;
             }
         }
     }

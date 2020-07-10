@@ -50,6 +50,10 @@ namespace ResonantSpark {
                 public override void RemoveSelf() {
                     throw new System.NotImplementedException();
                 }
+
+                public override ComboState GetComboState() {
+                    throw new System.NotImplementedException();
+                }
             }
         }
     }

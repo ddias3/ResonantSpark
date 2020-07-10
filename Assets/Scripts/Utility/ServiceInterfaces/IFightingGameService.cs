@@ -8,6 +8,8 @@ using ResonantSpark.Character;
 namespace ResonantSpark {
     namespace Service {
         public interface IFightingGameService {
+            void RegisterInGameEntity(InGameEntity entity);
+            void RemoveInGameEntity(InGameEntity entity);
             void CreateGamemode();
             void SetUpGamemode();
             Transform GetSpawnPoint();
@@ -15,9 +17,9 @@ namespace ResonantSpark {
             void ResetCamera();
             Transform GetCameraStart();
             List<Transform> GetLevelBoundaries();
-            void Hit(InGameEntity hitEntity, InGameEntity byEntity, HitBox hitBox, Action<AttackPriority> callback);
+            void Hit(InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority, int> callback);
+            bool IsCurrentFGChar(InGameEntity entity);
             void DisableControl();
-            void PerformHits(Hit hit, Dictionary<InGameEntity, (List<HurtBox> hurt, List<HitBox> hit)> entityMap);
         }
     }
 }

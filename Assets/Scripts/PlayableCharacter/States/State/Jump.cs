@@ -7,6 +7,7 @@ using ResonantSpark.Input.Combinations;
 using ResonantSpark.Input;
 using ResonantSpark.Character;
 using ResonantSpark.Utility;
+using ResonantSpark.Service;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -121,6 +122,10 @@ namespace ResonantSpark {
                 else {
                     return GroundRelation.GROUNDED;
                 }
+            }
+
+            public override ComboState GetComboState() {
+                return ComboState.None;
             }
 
             public override void GetHit(bool launch) {

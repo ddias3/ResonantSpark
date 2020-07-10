@@ -6,6 +6,7 @@ using UnityEngine;
 using ResonantSpark.Input.Combinations;
 using ResonantSpark.Character;
 using ResonantSpark.Utility;
+using ResonantSpark.Service;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -55,6 +56,10 @@ namespace ResonantSpark {
             public override GroundRelation GetGroundRelation() {
                     //TODO: This could be for an air grab
                 return GroundRelation.GROUNDED;
+            }
+
+            public override ComboState GetComboState() {
+                return ComboState.InCombo;
             }
 
             public override void GetHit(bool launch) {

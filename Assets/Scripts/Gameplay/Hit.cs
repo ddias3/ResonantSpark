@@ -5,6 +5,7 @@ using UnityEngine;
 
 using ResonantSpark.Character;
 using ResonantSpark.Service;
+using ResonantSpark.CharacterProperties;
 
 namespace ResonantSpark {
     namespace Gameplay {
@@ -12,39 +13,56 @@ namespace ResonantSpark {
             private static int hitCounter = 0;
             public int id { get; private set; }
 
+            public List<Block> requiredBlocks { get; private set; }
             public AttackPriority priority { get; private set; }
+            public int hitDamage { get; private set; }
+            public int blockDamage { get; private set; }
+            public float hitStun { get; private set; }
+            public float blockStun { get; private set; }
+            public float comboScaling { get; private set; }
+            public bool tracking { get; private set; }
 
             private List<InGameEntity> hitEntities;
 
             private List<HitBox> hitBoxes;
-            private Dictionary<string, Action<List<HitBox>, HitInfo>> hitEventCallbacks;
+            private Action<Hit, Dictionary<HitBox, Vector3>, InGameEntity, List<HurtBox>, List<HitBox>> onHitCallback;
 
             private Dictionary<HitBox, List<HurtBox>> hitHurtBoxes;
             private Dictionary<HitBox, List<HitBox>> hitHitBoxes;
-            private Dictionary<HitBox, Vector3> hitBoxLocation;
+            private Dictionary<HitBox, Vector3> hitLocation;
             private List<(HitBox, Vector3, HurtBox, HitBox)> hitBoxQueue;
 
             private IHitService hitService;
             private IFightingGameService fgService;
 
-            public Hit(AllServices services, Dictionary<string, Action<List<HitBox>, HitInfo>> hitEventCallbacks) {
+            public Hit(AllServices services) {
                 this.id = Hit.hitCounter++;
+
                 this.hitService = services.GetService<IHitService>();
                 this.fgService = services.GetService<IFightingGameService>();
 
                 this.hitEntities = new List<InGameEntity>();
-
                 this.hitBoxes = new List<HitBox>();
-                this.hitEventCallbacks = hitEventCallbacks;
 
                 hitHurtBoxes = new Dictionary<HitBox, List<HurtBox>>();
                 hitHitBoxes = new Dictionary<HitBox, List<HitBox>>();
-                hitBoxLocation = new Dictionary<HitBox, Vector3>();
+                hitLocation = new Dictionary<HitBox, Vector3>();
                 hitBoxQueue = new List<(HitBox, Vector3, HurtBox, HitBox)>();
 
                 hitService.RegisterHit(this);
+            }
 
-                PopulateEventCallbacks();
+            public void Build(HitBuilder hitBuilder) {
+                this.onHitCallback = hitBuilder.onHitCallback;
+
+                this.requiredBlocks = hitBuilder.requiredBlocks;
+                this.priority = hitBuilder.priority;
+                this.hitDamage = hitBuilder.hitDamage;
+                this.blockDamage = hitBuilder.blockDamage;
+                this.hitStun = hitBuilder.hitStun;
+                this.blockStun = hitBuilder.blockStun;
+                this.comboScaling = hitBuilder.comboScaling;
+                this.tracking = hitBuilder.tracking;
             }
 
             public void AddHitBox(HitBox hitBox) {
@@ -80,13 +98,13 @@ namespace ResonantSpark {
                 }
 
                 for (int n = 0; n < hitBoxQueue.Count; ++n) {
-                    if (hitBoxQueue[n].Item2 != null) {
-                        hitHurtBoxes[hitBoxQueue[n].Item1].Add(hitBoxQueue[n].Item3);
-                        hitBoxLocation[hitBoxQueue[n].Item1] = hitBoxQueue[n].Item2;
-                    }
                     if (hitBoxQueue[n].Item3 != null) {
+                        hitHurtBoxes[hitBoxQueue[n].Item1].Add(hitBoxQueue[n].Item3);
+                        hitLocation[hitBoxQueue[n].Item1] = hitBoxQueue[n].Item2;
+                    }
+                    if (hitBoxQueue[n].Item4 != null) {
                         hitHitBoxes[hitBoxQueue[n].Item1].Add(hitBoxQueue[n].Item4);
-                        hitBoxLocation[hitBoxQueue[n].Item1] = hitBoxQueue[n].Item2;
+                        hitLocation[hitBoxQueue[n].Item1] = hitBoxQueue[n].Item2;
                     }
                 }
 
@@ -123,23 +141,17 @@ namespace ResonantSpark {
                     entityMap[entity].hit.Add(hb);
                 }
 
-                Clear();
-
                 return entityMap;
             }
 
-            public void InvokeEvent(string eventName, HitBox hitBox, HitInfo hitInfo) {
-                if (!hitBoxes.Contains(hitBox)) {
-                    throw new InvalidOperationException("Attempting to invoke a hitbox event to a hit it doesn't belongs to");
-                }
-
-                Action<List<HitBox>, HitInfo> callback = this.hitEventCallbacks[eventName];
-                callback(new List<HitBox> { hitBox }, hitInfo);
+            public void InvokeCallback(InGameEntity entity, List<HurtBox> hurt, List<HitBox> hit) {
+                    //TODO: (Maybe) Have a reference to the entity that owns this hit.
+                onHitCallback?.Invoke(this, hitLocation, entity, hurt, hit);
             }
 
             public void Clear() {
                 hitBoxQueue.Clear();
-                hitBoxLocation.Clear();
+                hitLocation.Clear();
                 foreach (KeyValuePair<HitBox, List<HurtBox>> kvp in hitHurtBoxes) {
                     kvp.Value.Clear();
                 }
@@ -154,26 +166,6 @@ namespace ResonantSpark {
 
             public override int GetHashCode() {
                 return id;
-            }
-
-            private void PopulateEventCallbacks() {
-                List<string> eventNames = new List<string> {
-                    "onHitFGChar",
-                    "onEqualPriorityHitBox",
-                    "onHitProjectile",
-                };
-
-                foreach (string eventName in eventNames) {
-                    if (!hitEventCallbacks.ContainsKey(eventName)) {
-                        hitEventCallbacks.Add(eventName, DefaultEventHandler(eventName));
-                    }
-                }
-            }
-
-            private Action<List<HitBox>, HitInfo> DefaultEventHandler(string eventName) {
-                return (List<HitBox> hitBoxes, HitInfo hitInfo) => {
-                    hitBoxes[0].InvokeEvent(eventName, hitInfo);
-                };
             }
         }
     }

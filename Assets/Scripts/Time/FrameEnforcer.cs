@@ -16,6 +16,8 @@ namespace ResonantSpark {
         PhysicsResolve = 128 + 2,
 
         Service = 256,
+        ServiceHit = 256 + 1,
+        ServiceFG = 256 + 2,
 
         Gamemode = 512,
 

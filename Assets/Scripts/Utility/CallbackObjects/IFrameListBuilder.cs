@@ -15,7 +15,7 @@ namespace ResonantSpark {
             IFrameListCallbackObj CounterHit(bool counterHit);
             IFrameListCallbackObj Hit(Action<IHitCallbackObject> callback);
             IFrameListCallbackObj Track(Action<TargetFG> callback);
-            IFrameListCallbackObj Armor(Action<HitInfo> callback);
+            IFrameListCallbackObj Armor(Action<Hit> callback);
             IFrameListCallbackObj Sound(AudioClip audioClip, Action<AudioResource> soundCallback);
             IFrameListCallbackObj Projectile(Projectile projectile, Action<Projectile> projectileCallback);
             IFrameListCallbackObj ChangeState(CharacterStates.CharacterBaseState charState);
@@ -75,7 +75,7 @@ namespace ResonantSpark {
                 return this;
             }
 
-            public IFrameListCallbackObj Armor(Action<HitInfo> callback) {
+            public IFrameListCallbackObj Armor(Action<Hit> callback) {
                 entries.Add(new FrameUtilMapObject {
                     option = "armor",
                     content = callback

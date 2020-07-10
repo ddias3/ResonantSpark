@@ -22,14 +22,15 @@ namespace ResonantSpark {
 
                 this.tracking = false;
                 this.comboScaling = 1.0f;
-                this.eventCallbacks = new Dictionary<string, Action<List<HitBox>, HitInfo>>();
+                this.onHitCallback = null;
 
                 hitBoxes = new List<HitBox>();
             }
 
             public Hit CreateHit() {
 
-                Hit hit = new Hit(services, this.eventCallbacks);
+                Hit hit = new Hit(services);
+                hit.Build(this);
 
                 for (int n = 0; n < hitBoxes.Count; ++n) {
                     HitBox hitBox = hitBoxes[n];

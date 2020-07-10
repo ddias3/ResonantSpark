@@ -7,6 +7,7 @@ using ResonantSpark.Input.Combinations;
 using ResonantSpark.Character;
 using ResonantSpark.Gameplay;
 using ResonantSpark.Input;
+using ResonantSpark.Service;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -23,6 +24,10 @@ namespace ResonantSpark {
 
             private void OnComplete() {
                 // TODO: Figure out what to do.
+            }
+
+            public override ComboState GetComboState() {
+                return ComboState.InCombo;
             }
         }
     }

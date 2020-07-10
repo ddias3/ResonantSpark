@@ -21,8 +21,8 @@ namespace ResonantSpark {
             private UiService uiService;
             private FightingGameService fgService;
 
-            private FightingGameCharacter char0;
-            private FightingGameCharacter char1;
+            private FightingGameCharacter player1;
+            private FightingGameCharacter player2;
 
             private int char0RoundWins = 0;
             private int char1RoundWins = 0;
@@ -57,26 +57,30 @@ namespace ResonantSpark {
                 this.fgService = fgService;
                 this.uiService = uiService;
 
-                char0 = playerService.GetFGChar(0);
-                char1 = playerService.GetFGChar(1);
-                char0.name += "P1";
-                char1.name += "P2";
+                player1 = playerService.GetFGChar(0);
+                player2 = playerService.GetFGChar(1);
+                player1.name += "P1";
+                player2.name += "P2";
 
-                char0.SetOpponentTarget(char1);
-                char1.SetOpponentTarget(char0);
+                player1.SetOpponentTarget(player2);
+                player2.SetOpponentTarget(player1);
 
-                char0.RegisterOnHealthChangeCallback(OnPlayerHealthChange(0));
-                char1.RegisterOnHealthChangeCallback(OnPlayerHealthChange(1));
+                player1.RegisterOnHealthChangeCallback(OnPlayerHealthChange(0));
+                player2.RegisterOnHealthChangeCallback(OnPlayerHealthChange(1));
 
-                char0.RegisterOnEmptyHealthCallback(OnPlayerEmptyHealth);
-                char1.RegisterOnEmptyHealthCallback(OnPlayerEmptyHealth);
+                player1.RegisterOnEmptyHealthCallback(OnPlayerEmptyHealth);
+                player2.RegisterOnEmptyHealthCallback(OnPlayerEmptyHealth);
+            }
+
+            public bool IsCurrentFGChar(InGameEntity entity) {
+                return entity == player1 || entity == player2;
             }
 
             private void EnablePlayers() {
                 Debug.Log("Enable Players");
 
-                char0.GetComponent<InitMultipassStateMachine>().StartStateMachine(frame);
-                char1.GetComponent<InitMultipassStateMachine>().StartStateMachine(frame);
+                player1.GetComponent<InitMultipassStateMachine>().StartStateMachine(frame);
+                player2.GetComponent<InitMultipassStateMachine>().StartStateMachine(frame);
                 GetComponent<InitMultipassStateMachine>().StartStateMachine(frame);
             }
 
@@ -103,11 +107,11 @@ namespace ResonantSpark {
             public void ResetRound() {
                 Transform spawnTransform = fgService.GetSpawnPoint();
 
-                char0.position = spawnTransform.position + spawnTransform.rotation * new Vector3(0, 0, fgService.GetSpawnPointOffset());
-                char1.position = spawnTransform.position + spawnTransform.rotation * Quaternion.Euler(0, 180, 0) * new Vector3(0, 0, fgService.GetSpawnPointOffset());
+                player1.position = spawnTransform.position + spawnTransform.rotation * new Vector3(0, 0, fgService.GetSpawnPointOffset());
+                player2.position = spawnTransform.position + spawnTransform.rotation * Quaternion.Euler(0, 180, 0) * new Vector3(0, 0, fgService.GetSpawnPointOffset());
 
-                char0.transform.LookAt(char1.position);
-                char1.transform.LookAt(char0.position);
+                player1.transform.LookAt(player2.position);
+                player2.transform.LookAt(player1.position);
 
                 playerService.EachFGChar((id, fgChar) => {
                     fgChar.RoundReset();
@@ -125,11 +129,11 @@ namespace ResonantSpark {
             private void OnRoundEnd() {
                 stateMachine.QueueStateChange(states.Get("roundEndMode"));
 
-                if (char0.health > char1.health) {
+                if (player1.health > player2.health) {
                     char0RoundWins += 1;
                     uiService.SetMainScreenText("K.O.");
                 }
-                else if (char1.health > char0.health) {
+                else if (player2.health > player1.health) {
                     char1RoundWins += 1;
                     uiService.SetMainScreenText("K.O.");
                 }
@@ -165,45 +169,45 @@ namespace ResonantSpark {
             }
 
             public void RestrictDistance() {
-                Vector3 charDirectLine = char1.position - char0.position;
+                Vector3 charDirectLine = player2.position - player1.position;
                 if (charDirectLine.magnitude > maxCharacterDistance) {
                     bool char0Moving = false;
                     bool char1Moving = false;
                     
                     charDirectLine.y = 0;
 
-                    if (Vector3.Dot(char0.velocity, charDirectLine) < 0.0f) {
-                        Vector3 newVelocity = Vector3.ProjectOnPlane(char0.velocity, charDirectLine);
-                        char0.SetVelocity(VelocityPriority.BoundOverride, newVelocity);
-                        char0.CalculateFinalVelocity();
+                    if (Vector3.Dot(player1.velocity, charDirectLine) < 0.0f) {
+                        Vector3 newVelocity = Vector3.ProjectOnPlane(player1.velocity, charDirectLine);
+                        player1.SetVelocity(VelocityPriority.BoundOverride, newVelocity);
+                        player1.CalculateFinalVelocity();
                         char0Moving = true;
                     }
-                    else if (!char0.Stationary()) {
+                    else if (!player1.Stationary()) {
                         char0Moving = true;
                     }
 
-                    if (Vector3.Dot(char1.velocity, charDirectLine) > 0.0f) {
-                        Vector3 newVelocity = Vector3.ProjectOnPlane(char1.velocity, -charDirectLine);
-                        char1.SetVelocity(VelocityPriority.BoundOverride, newVelocity);
-                        char1.CalculateFinalVelocity();
+                    if (Vector3.Dot(player2.velocity, charDirectLine) > 0.0f) {
+                        Vector3 newVelocity = Vector3.ProjectOnPlane(player2.velocity, -charDirectLine);
+                        player2.SetVelocity(VelocityPriority.BoundOverride, newVelocity);
+                        player2.CalculateFinalVelocity();
                         char1Moving = true;
                     }
-                    else if (!char1.Stationary()) {
+                    else if (!player2.Stationary()) {
                         char1Moving = true;
                     }
 
                     float overDistanced = charDirectLine.magnitude - maxCharacterDistance;
                     if (char0Moving) {
                         if (char1Moving) {
-                            char0.position += charDirectLine.normalized * overDistanced * 0.5f;
-                            char1.position -= charDirectLine.normalized * overDistanced * 0.5f;
+                            player1.position += charDirectLine.normalized * overDistanced * 0.5f;
+                            player2.position -= charDirectLine.normalized * overDistanced * 0.5f;
                         }
                         else {
-                            char0.position += charDirectLine.normalized * overDistanced;
+                            player1.position += charDirectLine.normalized * overDistanced;
                         }
                     }
                     else if (char1Moving) {
-                        char1.position -= charDirectLine.normalized * overDistanced;
+                        player2.position -= charDirectLine.normalized * overDistanced;
                     }
                 }
             }
@@ -216,6 +220,25 @@ namespace ResonantSpark {
 
             public void SetDisplayTime(float currRoundTime) {
                 uiService.SetTime(currRoundTime);
+            }
+
+            public void OnGameEntityNumHitsChange(InGameEntity entity, int numHits) {
+                if (entity == player1) {
+                    if (numHits > 0) {
+                        uiService.SetComboCounter(1, numHits);
+                    }
+                    else {
+                        uiService.HideComboCounter(1);
+                    }
+                }
+                else if (entity == player2) {
+                    if (numHits > 0) {
+                        uiService.SetComboCounter(0, numHits);
+                    }
+                    else {
+                        uiService.HideComboCounter(0);
+                    }
+                }
             }
 
             public int GetMaxPlayers() {

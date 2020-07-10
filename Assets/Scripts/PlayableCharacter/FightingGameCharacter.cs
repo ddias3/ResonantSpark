@@ -84,6 +84,9 @@ namespace ResonantSpark {
                 health = charData.maxHealth;
 
                 fgService = GameObject.FindGameObjectWithTag("rspService").GetComponent<FightingGameService>();
+                AddSelf();
+
+                parent = null;
 
                 attackRunner.Init(this);
 
@@ -97,6 +100,11 @@ namespace ResonantSpark {
                 onEmptyHealthCallbacks = new List<Action<FightingGameCharacter>>();
 
                 gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
+            }
+
+            public void OnDestroy() {
+                Debug.LogFormat("Destroy on FGChar, removing self id:{0}", id);
+                RemoveSelf();
             }
 
             public FightingGameCharacter SetInputBuffer(Input.InputBuffer inputBuffer) {
@@ -272,6 +280,10 @@ namespace ResonantSpark {
                 return ((CharacterStates.CharacterBaseState) stateMachine.GetCurrentState()).GetGroundRelation();
             }
 
+            public override ComboState GetComboState() {
+                return ((CharacterStates.CharacterBaseState) stateMachine.GetCurrentState()).GetComboState();
+            }
+
             public void __debugSetStateText(string text, Color color) {
                 if (screenOrientation.x > 0) {
                     __debugState.transform.rotation = rigidFG.rotation * Quaternion.Euler(0.0f, -90.0f, 0.0f);
@@ -377,7 +389,7 @@ namespace ResonantSpark {
                 }
             }
 
-            public void KnockBack(AttackPriority attackPriority, bool launch, Vector3 knockbackDirection, float knockbackMagnitude) {
+            public void KnockBack(AttackPriority attackPriority, bool launch, Vector3 knockback) {
 
                 //opponent.GetHit();
 
@@ -395,19 +407,13 @@ namespace ResonantSpark {
                         break;
                 }
 
-                Vector3 finalVelocity = knockbackDirection.normalized * knockbackMagnitude;
+                Vector3 finalVelocity = knockback;
                 if (!launch) {
                     finalVelocity.y = 0;
                 }
 
                 AddRelativeVelocity(velPriority, finalVelocity);
                 GetHit(launch);
-            }
-
-            public bool InHitStun() {
-                return stateMachine.GetCurrentState().GetType() == typeof(CharacterStates.HitStunStand)
-                    || stateMachine.GetCurrentState().GetType() == typeof(CharacterStates.HitStunCrouch)
-                    || stateMachine.GetCurrentState().GetType() == typeof(CharacterStates.HitStunAirborne);
             }
 
             public void SetStandCollider(Vector3 standColliderOffset) {
@@ -472,11 +478,11 @@ namespace ResonantSpark {
             }
 
             public override void AddSelf() {
-                throw new NotImplementedException();
+                fgService.RegisterInGameEntity(this);
             }
 
             public override void RemoveSelf() {
-                throw new NotImplementedException();
+                fgService.RemoveInGameEntity(this);
             }
 
             public void RegisterOnHealthChangeCallback(Action<int, int> callback) {

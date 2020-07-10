@@ -9,7 +9,7 @@ using ResonantSpark.Builder;
 namespace ResonantSpark {
     namespace Builder {
         public interface IHitBoxCallbackObject {
-            IHitBoxCallbackObject Prefab(HitBoxComponent hitBoxPrefab);
+            IHitBoxCallbackObject Prefab(HitBox hitBoxPrefab);
             IHitBoxCallbackObject Point0(Vector3 p0);
             IHitBoxCallbackObject Point1(Vector3 p1);
             IHitBoxCallbackObject Radius(float width);
@@ -17,18 +17,22 @@ namespace ResonantSpark {
             IHitBoxCallbackObject Tracking(bool tracking);
             IHitBoxCallbackObject FromCollider(CapsuleCollider collider);
             IHitBoxCallbackObject Relative(Transform transform);
-            IHitBoxCallbackObject Event(string eventName, Action<HitInfo> callback);
+            IHitBoxCallbackObject InGameEntity(InGameEntity entity);
+            IHitBoxCallbackObject Validate(Func<HitBox, HurtBox, bool> validateCallback);
+            IHitBoxCallbackObject Validate(Func<HitBox, HitBox, bool> validateCallback);
         }
     }
 
     namespace CharacterProperties {
         public partial class HitBoxBuilder : IHitBoxCallbackObject {
-            private HitBoxComponent hitBoxPrefab;
+            private HitBox hitBoxPrefab;
 
-            public Dictionary<string, Action<HitInfo>> eventCallbacks { get; private set; }
             public bool tracking { get; private set; }
             public Transform relativeTransform { get; private set; }
             public Vector3 hitLocation { get; private set; }
+            public InGameEntity entity { get; private set; }
+            public Func<HitBox, HurtBox, bool> validateOnHurtCallback { get; private set; }
+            public Func<HitBox, HitBox, bool> validateOnHitCallback { get; private set; }
 
             private CapsuleCollider collider;
 
@@ -37,7 +41,7 @@ namespace ResonantSpark {
 
             private float radius = -1;
 
-            public IHitBoxCallbackObject Prefab(HitBoxComponent hitBoxPrefab) {
+            public IHitBoxCallbackObject Prefab(HitBox hitBoxPrefab) {
                 this.hitBoxPrefab = hitBoxPrefab;
                 return this;
             }
@@ -67,11 +71,6 @@ namespace ResonantSpark {
                 return this;
             }
 
-            public IHitBoxCallbackObject Event(string eventName, Action<HitInfo> callback) {
-                eventCallbacks.Add(eventName, callback);
-                return this;
-            }
-
             public IHitBoxCallbackObject FromCollider(CapsuleCollider collider) {
                 this.collider = collider;
                 return this;
@@ -79,6 +78,21 @@ namespace ResonantSpark {
 
             public IHitBoxCallbackObject Relative(Transform relativeTransform) {
                 this.relativeTransform = relativeTransform;
+                return this;
+            }
+
+            public IHitBoxCallbackObject InGameEntity(InGameEntity entity) {
+                this.entity = entity;
+                return this;
+            }
+
+            public IHitBoxCallbackObject Validate(Func<HitBox, HurtBox, bool> validateOnHurtCallback) {
+                this.validateOnHurtCallback = validateOnHurtCallback;
+                return this;
+            }
+
+            public IHitBoxCallbackObject Validate(Func<HitBox, HitBox, bool> validateOnHitCallback) {
+                this.validateOnHitCallback = validateOnHitCallback;
                 return this;
             }
         }

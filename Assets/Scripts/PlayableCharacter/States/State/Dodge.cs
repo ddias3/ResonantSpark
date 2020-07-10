@@ -7,6 +7,7 @@ using ResonantSpark.Input.Combinations;
 using ResonantSpark.Character;
 using ResonantSpark.Input;
 using ResonantSpark.Utility;
+using ResonantSpark.Service;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -18,6 +19,8 @@ namespace ResonantSpark {
             public int redashDisallowed = 28;
             [Tooltip("These many frames of the start of the dodge may not be cancelled into an attack")]
             public int attackDisallowed = 24;
+
+            public AnimationCurve dodgePositionCurve;
 
             public int trackingStart = 6;
             public int trackingEnd = 20;
@@ -78,25 +81,27 @@ namespace ResonantSpark {
                     changeState(states.Get("stand"));
                 }
 
+                fgChar.AddRelativeVelocity(Gameplay.VelocityPriority.Dash,
+                    new Vector3(
+                        localScaling.x * AnimationCurveCalculus.Differentiate(dodgePositionCurve, tracker.frameCount) / fgChar.gameTime,
+                        0.0f,
+                        0.0f));
                 if (tracker.frameCount >= trackingStart && tracker.frameCount < trackingEnd) {
                     TurnCharacter(localVelocity);
                 }
-
-                fgChar.CalculateFinalVelocity();
-
-                tracker.Increment();
             }
 
             public override void ExecutePass1(int frameIndex) {
-                //fgChar.UpdateTarget();
-                //fgChar.UpdateCharacterMovement();
-                //fgChar.CalculateFinalVelocity();
-                //fgChar.AnimationWalkVelocity();
+                fgChar.CalculateFinalVelocity();
             }
 
             public override void LateExecute(int frameIndex) {
+                if (tracker.frameCount >= trackingStart && tracker.frameCount < trackingEnd) {
+                    fgChar.RealignTarget();
+                }
                 //fgChar.UpdateCharacterMovement();
                 //fgChar.AnimationWalkVelocity();
+                tracker.Increment();
             }
 
             public override void Exit(int frameIndex) {
@@ -108,19 +113,24 @@ namespace ResonantSpark {
                     if (localInput.sqrMagnitude > 0.0f) {
                         float charRotation = fgChar.LookToMoveAngle() / fgChar.gameTime;
                         if (charRotation != 0.0f) {
-                            //fgChar.rigidbody.MoveRotation(Quaternion.AngleAxis(Mathf.Clamp(charRotation, -maxRotation, maxRotation) * fgChar.realTime, Vector3.up) * fgChar.rotation);
-                            fgChar.Rotate(Quaternion.AngleAxis(Mathf.Clamp(charRotation, -maxRotation, maxRotation) * fgChar.realTime, Vector3.up));
+                            //fgChar.rigidbody.MoveRotation(Quaternion.AngleAxis(Mathf.Clamp(charRotation, -maxRotation, maxRotation) * fgChar.gameTime, Vector3.up) * fgChar.rotation);
+                            fgChar.Rotate(Quaternion.AngleAxis(Mathf.Clamp(charRotation, -maxRotation, maxRotation) * fgChar.gameTime, Vector3.up));
                         }
                     }
                 }
                 else {
                     //TODO: don't turn character while in mid air
                     Debug.LogError("Character not grounded while in 'Stand' character state");
+                    changeState(states.Get("airborne"));
                 }
             }
 
             public override GroundRelation GetGroundRelation() {
                 return GroundRelation.GROUNDED;
+            }
+
+            public override ComboState GetComboState() {
+                return ComboState.None;
             }
 
             public override void GetHit(bool launch) {

@@ -1,14 +1,17 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 using ResonantSpark.Gameplay;
+using ResonantSpark.Builder;
 
 namespace ResonantSpark {
     namespace Service {
         public interface IHitBoxService {
-            HitBoxComponent DefaultPrefab();
+            HitBox DefaultPrefab();
             Transform GetEmptyHoldTransform();
             void Active(HitBox hitBox);
 
+            HitBox Create(Action<IHitBoxCallbackObject> buildCallback);
             void RegisterHitBox(HitBox hitBox);
         }
     }
