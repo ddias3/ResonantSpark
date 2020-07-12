@@ -13,6 +13,8 @@ namespace ResonantSpark {
 
             public Vector3 gravityExtra;
 
+            private bool leavingGround;
+
             public new void Awake() {
                 base.Awake();
                 states.Register(this, "hitStunAirborne");
@@ -26,6 +28,7 @@ namespace ResonantSpark {
                 fgChar.__debugSetStateText("Hit Stun", Color.magenta);
 
                 fgChar.Play("hurt_airborne");
+                leavingGround = true;
             }
 
             public override void ExecutePass0(int frameIndex) {
@@ -37,14 +40,23 @@ namespace ResonantSpark {
                     OnComplete();
                     changeState(states.Get("recoverAirborne"));
                 }
-                if (fgChar.Grounded(out Vector3 landPoint)) {
-                    OnComplete();
-                    changeState(states.Get("land"));
-                }
 
-                //if (fgChar.CheckAboutToLand()) {
-                //    changeState(states.Get("land"));
-                //}
+                if (leavingGround) {
+                    if (!fgChar.Grounded(out Vector3 standPoint)) {
+                        leavingGround = false;
+                    }
+                }
+                else {
+                    if (fgChar.Grounded(out Vector3 landPoint)) {
+                        OnComplete();
+                        changeState(states.Get("land"));
+                    }
+
+                    if (fgChar.CheckAboutToLand()) {
+                        OnComplete();
+                        changeState(states.Get("land"));
+                    }
+                }
             }
 
             public override void ExecutePass1(int frameIndex) {
@@ -63,7 +75,7 @@ namespace ResonantSpark {
                 return GroundRelation.AIRBORNE;
             }
 
-            public override void GetHit(bool launch) {
+            public override void BeHit(bool launch) {
                 changeState(states.Get("hitStunAirborne"));
             }
 

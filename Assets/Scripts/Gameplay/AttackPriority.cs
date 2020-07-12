@@ -25,6 +25,7 @@ namespace ResonantSpark {
         public enum Block : int {
             LOW,
             HIGH,
+            AIR,
         }
     }
 }

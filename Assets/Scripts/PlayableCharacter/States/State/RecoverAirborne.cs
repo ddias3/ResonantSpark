@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,6 +7,7 @@ using ResonantSpark.Input;
 using ResonantSpark.Character;
 using ResonantSpark.Utility;
 using ResonantSpark.Service;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -59,9 +60,10 @@ namespace ResonantSpark {
             }
 
             private void TurnCharacter() {
-                charRotation = fgChar.LookToMoveAngle() / fgChar.gameTime;
-                if (charRotation != 0.0f) {
-                    fgChar.Rotate(Quaternion.AngleAxis(Mathf.Clamp(charRotation, -maxRotation, maxRotation) * fgChar.gameTime, Vector3.up));
+                charRotation = fgChar.LookToMoveAngle();
+                Debug.Log(charRotation);
+                if (Mathf.Abs(charRotation) > 5.0f) {
+                    fgChar.Rotate(Quaternion.AngleAxis(Mathf.Clamp(charRotation / fgChar.gameTime, -maxRotation, maxRotation) * fgChar.gameTime, Vector3.up));
                 }
             }
 
@@ -80,8 +82,20 @@ namespace ResonantSpark {
                 };
             }
 
-            public override void GetHit(bool launch) {
-                changeState(states.Get("hitStunAirborne"));
+            public override void BeHit(bool launch) {
+                throw new InvalidOperationException("Shouldn't be able to be hit while recovering airborne");
+            }
+
+            public override void BeBlocked(bool forceCrouch) {
+                throw new InvalidOperationException("Shouldn't be able to be block while recovering airborne");
+            }
+
+            public override void BeGrabbed() {
+                throw new InvalidOperationException("A character in block stun is being grabbed");
+            }
+
+            public override bool CheckBlockSuccess(Hit hit) {
+                return false;
             }
         }
     }

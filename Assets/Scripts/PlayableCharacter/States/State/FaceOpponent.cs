@@ -8,6 +8,7 @@ using ResonantSpark.Input;
 using ResonantSpark.Character;
 using ResonantSpark.Utility;
 using ResonantSpark.Service;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -74,9 +75,9 @@ namespace ResonantSpark {
 
             private void TurnCharacter() {
                 if (fgChar.Grounded(out Vector3 currStandingPoint)) {
-                    charRotation = fgChar.LookToMoveAngle() / fgChar.gameTime;
+                    charRotation = fgChar.LookToMoveAngle();
                     if (charRotation != 0.0f) {
-                        fgChar.Rotate(Quaternion.AngleAxis(Mathf.Clamp(charRotation, -maxRotation, maxRotation) * fgChar.gameTime, Vector3.up));
+                        fgChar.Rotate(Quaternion.AngleAxis(Mathf.Clamp(charRotation / fgChar.gameTime, -maxRotation, maxRotation) * fgChar.gameTime, Vector3.up));
                     }
                 }
                 else {
@@ -100,12 +101,42 @@ namespace ResonantSpark {
                 };
             }
 
-            public override void GetHit(bool launch) {
+            public override void BeHit(bool launch) {
                 if (launch) {
                     changeState(states.Get("hitStunAirborne"));
                 }
                 else {
                     changeState(states.Get("hitStunStand"));
+                }
+            }
+
+            public override void BeBlocked(bool forceCrouch) {
+                if (forceCrouch) {
+                    changeState(states.Get("blockStunCrouch"));
+                }
+                else {
+                    if (dirPress == FightingGameInputCodeDir.DownBack) {
+                        changeState(states.Get("blockStunCrouch"));
+                    }
+                    else if (dirPress == FightingGameInputCodeDir.Back) {
+                        changeState(states.Get("blockStunStand"));
+                    }
+                }
+            }
+
+            public override void BeGrabbed() {
+                changeState(states.Get("grabbed"));
+            }
+
+            public override bool CheckBlockSuccess(Hit hit) {
+                if (dirPress == FightingGameInputCodeDir.DownBack) {
+                    return hit.validBlocks.Contains(Character.Block.LOW);
+                }
+                else if (dirPress == FightingGameInputCodeDir.Back) {
+                    return hit.validBlocks.Contains(Character.Block.HIGH);
+                }
+                else {
+                    return false;
                 }
             }
 

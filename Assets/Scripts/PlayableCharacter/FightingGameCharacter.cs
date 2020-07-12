@@ -149,6 +149,7 @@ namespace ResonantSpark {
             }
 
             public CharacterVulnerability GetAttackCharacterVulnerability() {
+                // TODO: make sure this never fucks up.
                 return attackRunner.GetCharacterVulnerability();
             }
 
@@ -270,7 +271,12 @@ namespace ResonantSpark {
             }
 
             public float LookToMoveAngle() {
-                return Vector3.SignedAngle(rigidFG.transform.forward, targetFG.targetPos - rigidFG.position, Vector3.up);
+                Vector3 forward = rigidFG.transform.forward;
+                Vector3 toTarget = targetFG.targetPos - rigidFG.position;
+                forward.y = 0;
+                toTarget.y = 0;
+
+                return Vector3.SignedAngle(forward, toTarget, Vector3.up);
             }
 
             public void SetLocalWalkParameters(float x, float z) {
@@ -374,15 +380,25 @@ namespace ResonantSpark {
                 }
             }
 
-            public void GetHit(float hitStun, bool launch) {
+            public void BeHit(float hitStun, bool launch) {
                 comboRunner.AddNumHits(1);
                 this.hitStun = comboRunner.GetFilteredHitStun(hitStun);
 
-                ((CharacterStates.CharacterBaseState) stateMachine.GetCurrentState()).GetHit(launch);
+                ((CharacterStates.CharacterBaseState) stateMachine.GetCurrentState()).BeHit(launch);
             }
 
-            public override string HitBoxEventType(HitBox hitBox) {
-                return "onHitFGChar";
+            public void BeBlocked(float blockStun, bool forceCrouch) {
+                blockRunner.SetBlockStun(blockStun);
+
+                ((CharacterStates.CharacterBaseState) stateMachine.GetCurrentState()).BeBlocked(forceCrouch);
+            }
+
+            public bool CheckBlockSuccess(Hit hit) {
+                return ((CharacterStates.CharacterBaseState) stateMachine.GetCurrentState()).CheckBlockSuccess(hit);
+            }
+
+            public CharacterVulnerability GetCharacterVulnerability() {
+                return ((CharacterStates.CharacterBaseState) stateMachine.GetCurrentState()).GetCharacterVulnerability();
             }
 
             public TargetFG GetTarget() {
@@ -442,7 +458,7 @@ namespace ResonantSpark {
                     finalVelocity.y = 0;
                 }
 
-                AddRelativeVelocity(velPriority, finalVelocity);
+                AddVelocity(velPriority, finalVelocity);
             }
 
             public void SetStandCollider(Vector3 standColliderOffset) {

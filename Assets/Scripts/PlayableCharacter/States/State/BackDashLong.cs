@@ -18,7 +18,9 @@ namespace ResonantSpark {
             [Tooltip("These many frames of the start of the dash may not be cancelled into another dash")]
             public int redashDisallowed = 36;
             [Tooltip("These many frames of the start of the dash may not be cancelled into an attack")]
-            public int attackDisallowed = 30;
+            public int attackDisallowed = 18;
+            [Tooltip("These many frames of the start of the dash may not be cancelled into an attack")]
+            public int blockDisallowed = 36;
 
             public AnimationCurve dashPositionCurve;
 
@@ -113,12 +115,47 @@ namespace ResonantSpark {
                 }
             }
 
-            public override void GetHit(bool launch) {
+            public override void BeHit(bool launch) {
                 if (launch) {
                     changeState(states.Get("hitStunAirborne"));
                 }
                 else {
                     changeState(states.Get("hitStunStand"));
+                }
+            }
+
+            public override void BeBlocked(bool forceCrouch) {
+                if (forceCrouch) {
+                    changeState(states.Get("blockStunCrouch"));
+                }
+                else {
+                    if (currDir == FightingGameInputCodeDir.DownBack) {
+                        changeState(states.Get("blockStunCrouch"));
+                    }
+                    else if (currDir == FightingGameInputCodeDir.Back) {
+                        changeState(states.Get("blockStunStand"));
+                    }
+                }
+            }
+
+            public override void BeGrabbed() {
+                changeState(states.Get("grabbed"));
+            }
+
+            public override bool CheckBlockSuccess(Hit hit) {
+                if (tracker.frameCount < blockDisallowed) {
+                    return false;
+                }
+                else {
+                    if (currDir == FightingGameInputCodeDir.DownBack) {
+                        return hit.validBlocks.Contains(Character.Block.LOW);
+                    }
+                    else if (currDir == FightingGameInputCodeDir.Back) {
+                        return hit.validBlocks.Contains(Character.Block.HIGH);
+                    }
+                    else {
+                        return false;
+                    }
                 }
             }
 

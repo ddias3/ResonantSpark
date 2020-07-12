@@ -74,7 +74,7 @@ namespace ResonantSpark {
                                     fl.Hit(hit => {
                                         hit.HitDamage(800);
                                         hit.BlockDamage(0);
-                                        hit.HitStun(20.0f);
+                                        hit.HitStun(24.0f);
                                         hit.BlockStun(8.0f);
                                         hit.ComboScaling(0.65f);
                                         hit.Priority(AttackPriority.LightAttack);
@@ -94,28 +94,35 @@ namespace ResonantSpark {
                                         hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
                                             if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
                                                 FightingGameCharacter opponent = (FightingGameCharacter) entity;
-                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["weakHit"]);
 
                                                 // This exists to make characters hitting each other async
-                                                fgService.Hit(entity, fgChar, thisHit, (hitAtSameTimeByAttackPriority, damage) => {
+                                                fgService.Hit(entity, fgChar, thisHit, onHit:(hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["weakHit"]);
                                                     opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                                     switch (opponent.GetGroundRelation()) {
                                                         case GroundRelation.GROUNDED:
-                                                            opponent.GetHit(thisHit.hitStun, false);
+                                                            opponent.BeHit(thisHit.hitStun, false);
                                                             opponent.KnockBack(
                                                                 thisHit.priority,
                                                                 launch: false,
-                                                                knockback: fgChar.transform.rotation * Vector3.forward * 2.0f);
+                                                                knockback: fgChar.rigidFG.rotation * Vector3.forward * 2.0f);
                                                             break;
                                                         case GroundRelation.AIRBORNE:
-                                                            opponent.GetHit(thisHit.hitStun, true);
+                                                            opponent.BeHit(thisHit.hitStun, true);
                                                             opponent.KnockBack(
                                                                 thisHit.priority,
                                                                 launch: true,
-                                                                knockback: fgChar.transform.rotation * new Vector3(0.0f, 1.0f, 1.0f) * 0.7071f);
+                                                                knockback: fgChar.rigidFG.rotation * new Vector3(0.0f, 1.0f, 1.0f) * 0.7071f);
                                                             break;
                                                     }
+                                                }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    opponent.ChangeHealth(damage); // damage is hit.blockDamage
+                                                    opponent.BeHit(thisHit.blockStun, false);
+                                                    opponent.KnockBack(
+                                                        thisHit.priority,
+                                                        launch: false,
+                                                        knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
                                                 });
                                             }
                                         });
@@ -161,7 +168,7 @@ namespace ResonantSpark {
                                         hit.HitDamage(1000);
                                         hit.BlockDamage(0);
                                         hit.HitStun(30.0f);
-                                        hit.BlockStun(12.0f);
+                                        hit.BlockStun(16.0f);
                                         hit.ComboScaling(1.0f);
                                         hit.Priority(AttackPriority.LightAttack);
 
@@ -181,29 +188,36 @@ namespace ResonantSpark {
 
                                         hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
                                             if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
-                                                FightingGameCharacter opponent = (FightingGameCharacter)entity;
-                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                FightingGameCharacter opponent = (FightingGameCharacter) entity;
 
                                                 // This exists to make characters hitting each other async
                                                 fgService.Hit(entity, fgChar, thisHit, (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
                                                     opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                                     switch (opponent.GetGroundRelation()) {
                                                         case GroundRelation.GROUNDED:
-                                                            opponent.GetHit(thisHit.hitStun, false);
+                                                            opponent.BeHit(thisHit.hitStun, false);
                                                             opponent.KnockBack(
                                                                 thisHit.priority,
                                                                 launch: false,
                                                                 knockback: fgChar.transform.rotation * Vector3.forward * 3.0f);
                                                             break;
                                                         case GroundRelation.AIRBORNE:
-                                                            opponent.GetHit(thisHit.hitStun, true);
+                                                            opponent.BeHit(thisHit.hitStun, true);
                                                             opponent.KnockBack(
                                                                 thisHit.priority,
                                                                 launch: true,
-                                                                knockback: fgChar.transform.rotation * new Vector3(0.0f, 1.0f, 1.0f) * 0.7071f);
+                                                                knockback: fgChar.rigidFG.rotation * new Vector3(0.0f, 1.0f, 1.0f) * 0.7071f);
                                                             break;
                                                     }
+                                                }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    opponent.ChangeHealth(damage); // damage is hit.blockDamage
+                                                    opponent.BeHit(thisHit.blockStun, false);
+                                                    opponent.KnockBack(
+                                                        thisHit.priority,
+                                                        launch: false,
+                                                        knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
                                                 });
                                             }
                                         });
@@ -264,18 +278,6 @@ namespace ResonantSpark {
                                             hb.Validate((HitBox _, HurtBox other) => {
                                                 return true;
                                             });
-                                            //hb.Event("onHitFGChar",
-                                            //    CommonGroundedOnHitFGChar(
-                                            //        hitSound: audioMap["mediumHit"],
-                                            //        groundedForceMagnitude: 0.5f,
-                                            //        airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
-                                            //        airborneForceMagnitude: 1.0f));
-
-                                            //hb.Event("onEqualPriorityHitBox", (hitInfo) => {
-                                            //    if (hitInfo.hitEntity != fgChar) {
-                                            //        fgChar.PredeterminedActions("verticalClash");
-                                            //    }
-                                            //});
                                         });
 
                                         HitBox closeHitBox = hitBoxService.Create(hb => {
@@ -290,30 +292,36 @@ namespace ResonantSpark {
                                             hb.Validate((HitBox _, HurtBox other) => {
                                                 return true;
                                             });
-                                            //hb.Event("onHitFGChar",
-                                            //    CommonGroundedOnHitFGChar(
-                                            //        hitSound: audioMap["mediumHit"],
-                                            //        groundedForceMagnitude: 0.5f,
-                                            //        airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
-                                            //        airborneForceMagnitude: 1.0f));
-
-                                            //hb.Event("onEqualPriorityHitBox", (hitInfo) => {
-                                            //    if (hitInfo.hitEntity != fgChar) {
-                                            //        fgChar.PredeterminedActions("verticalClash");
-                                            //    }
-                                            //});
                                         });
 
                                         hit.HitBox(farHitBox);
                                         hit.HitBox(closeHitBox);
 
-                                        //hit.Event("onHitFGChar", (hitBoxes, hitInfo) => {
-                                        //    if (hitBoxes.Count == 1 && hitBoxes.Contains(farHitBox)) {
-                                        //        // do extra stuff.
-                                        //    }
+                                        hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
+                                            if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
+                                                FightingGameCharacter opponent = (FightingGameCharacter)entity;
 
-                                        //    hitBoxes[0].InvokeEvent("onHitFGChar", hitInfo);
-                                        //});
+                                                // This exists to make characters hitting each other async
+                                                fgService.Hit(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[closeHitBox], audioMap["mediumHit"]);
+                                                    audioService.PlayOneShot(hitLocations[closeHitBox], audioMap["weakHit"]);
+
+                                                    opponent.ChangeHealth(damage); // damage includes combo scaling.
+                                                    opponent.BeHit(thisHit.hitStun, true);
+                                                    opponent.KnockBack(
+                                                        thisHit.priority,
+                                                        launch: true,
+                                                        knockback: fgChar.rigidFG.rotation * new Vector3(0.0f, 4.5f, 1.5f));
+                                                }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    opponent.ChangeHealth(damage); // damage is hit.blockDamage
+                                                    opponent.BeBlocked(thisHit.blockStun, false);
+                                                    opponent.KnockBack(
+                                                        thisHit.priority,
+                                                        launch: false,
+                                                        knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
+                                                });
+                                            }
+                                        });
                                     })
                                 .To(16)
                                 .From(22)

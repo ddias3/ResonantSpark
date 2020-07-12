@@ -8,6 +8,7 @@ using ResonantSpark.Character;
 using ResonantSpark.Utility;
 using ResonantSpark.Input;
 using ResonantSpark.Service;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -79,8 +80,20 @@ namespace ResonantSpark {
                 };
             }
 
-            public override void GetHit(bool launch) {
+            public override void BeHit(bool launch) {
                 changeState(states.Get("hitStunAirborne"));
+            }
+
+            public override void BeBlocked(bool forceCrouch) {
+                throw new InvalidOperationException("Airborne is somehow being told to block");
+            }
+
+            public override void BeGrabbed() {
+                throw new InvalidOperationException("There shouldn't be any air grabs right now");
+            }
+
+            public override bool CheckBlockSuccess(Hit hit) {
+                return false;
             }
 
             private string ChooseAirborneAnimation(Vector3 velocity) {

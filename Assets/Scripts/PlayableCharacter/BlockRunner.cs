@@ -12,6 +12,14 @@ namespace ResonantSpark {
             public void Init(FightingGameCharacter fgChar) {
                 this.fgChar = fgChar;
             }
+
+            public void SetBlockStun(float blockStun) {
+                this.blockStun = blockStun;
+            }
+
+            public void IncrementBlockStun() {
+                blockStun -= 1.0f;
+            }
         }
     }
 }

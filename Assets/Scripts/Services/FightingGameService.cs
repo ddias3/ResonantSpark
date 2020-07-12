@@ -43,7 +43,7 @@ namespace ResonantSpark {
 
             private Dictionary<InGameEntity, ComboState> prevComboState;
 
-            private List<(InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>)> hitQueue;
+            private List<(InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>, Action<AttackPriority, int>)> hitQueue;
 
             private FrameEnforcer frame;
 
@@ -63,7 +63,7 @@ namespace ResonantSpark {
 
                 prevComboState = new Dictionary<InGameEntity, ComboState>();
 
-                hitQueue = new List<(InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>)>();
+                hitQueue = new List<(InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>, Action<AttackPriority, int>)>();
 
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(FightingGameService));
             }
@@ -105,9 +105,9 @@ namespace ResonantSpark {
                 return gamemode.IsCurrentFGChar(entity);
             }
 
-            public void Hit(InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority, int> callback) {
+            public void Hit(InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority, int> onHit, Action<AttackPriority, int> onBlock) {
                 Debug.Log(hitEntity);
-                hitQueue.Add((hitEntity, byEntity, hit, callback));
+                hitQueue.Add((hitEntity, byEntity, hit, onHit, onBlock));
             }
 
             private void ResolveHits() {
@@ -115,7 +115,6 @@ namespace ResonantSpark {
                     return;
                 }
 
-                List<InGameEntity> entities = new List<InGameEntity>();
                 Dictionary<InGameEntity, InGameEntity> hitBy = new Dictionary<InGameEntity, InGameEntity>();
 
                 for (int n = 0; n < hitQueue.Count; ++n) {
@@ -127,17 +126,14 @@ namespace ResonantSpark {
 
                 foreach (KeyValuePair<InGameEntity, InGameEntity> kvp in hitBy) {
                     var hitEntity = kvp.Key;
-                    if (entities.Contains(hitEntity)) continue;
 
                     if (HitEachOther(hitEntity, hitBy)) {
+                        // TODO: Fix this case just like the other one.
                         InGameEntity ent0 = hitEntity;
                         InGameEntity ent1 = hitBy[hitEntity];
 
-                        entities.Add(hitBy[hitEntity]); //hitBy.Remove(hitBy[hitEntity]);
-                        entities.Add(hitEntity);        //hitBy.Remove(hitEntity);
-
-                        (InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>) info0 = hitQueue.Single(tuple => tuple.Item1 == ent0);
-                        (InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>) info1 = hitQueue.Single(tuple => tuple.Item1 == ent1);
+                        (InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>, Action<AttackPriority, int>) info0 = hitQueue.Single(tuple => tuple.Item1 == ent0);
+                        (InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>, Action<AttackPriority, int>) info1 = hitQueue.Single(tuple => tuple.Item1 == ent1);
 
                         if (IsCurrentFGChar(info0.Item1)) {
                             InGameEntity fgChar = info0.Item1;
@@ -160,19 +156,36 @@ namespace ResonantSpark {
                     else {
                         InGameEntity ent0 = hitEntity;
 
-                        entities.Add(hitEntity); //hitBy.Remove(hitEntity);
+                        if (IsCurrentFGChar(ent0)) {
+                            FightingGameCharacter fgChar = (FightingGameCharacter)ent0;
+                            if (fgChar.GetCharacterVulnerability().strikable) {
+                                IEnumerable<(InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>, Action<AttackPriority, int>)> relevantTuples = hitQueue.Where(tuple => tuple.Item1 == ent0);
+                                bool hitSuccessful = relevantTuples.Any(tuple => !fgChar.CheckBlockSuccess(tuple.Item3));
 
-                        (InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>) info0 = hitQueue.Single(tuple => tuple.Item1 == ent0);
+                                if (hitSuccessful) {
+                                    foreach ((InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>, Action<AttackPriority, int>) tuple in relevantTuples) {
+                                        numComboHits[fgChar]++;
+                                        comboScalingIndex[fgChar]++;
 
-                        if (IsCurrentFGChar(info0.Item1)) {
-                            InGameEntity fgChar = info0.Item1;
-                            numComboHits[fgChar]++;
-                            gamemode.OnGameEntityNumHitsChange(fgChar, numComboHits[fgChar]);
+                                        gamemode.OnGameEntityNumHitsChange(fgChar, numComboHits[fgChar]);
 
-                            comboScalingIndex[fgChar]++;
+                                        tuple.Item4?.Invoke(AttackPriority.None, GetComboScale(tuple.Item1, tuple.Item3));
+                                    }
+                                }
+                                else {
+                                    // TODO: Implement Blocking.
+                                    //foreach ((InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>, Action<AttackPriority, int>) tuple in relevantTuples) {
+                                    //    tuple.Item5?.Invoke(AttackPriority.None, tuple.Item3.blockDamage);
+                                    //}
+                                }
+                            }
                         }
-
-                        info0.Item4?.Invoke(AttackPriority.None, GetComboScale(info0.Item1, info0.Item3));
+                        else {
+                            IEnumerable<(InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>, Action<AttackPriority, int>)> relevantTuples = hitQueue.Where(tuple => tuple.Item1 == ent0);
+                            foreach ((InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>, Action<AttackPriority, int>) tuple in relevantTuples) {
+                                tuple.Item4?.Invoke(AttackPriority.None, GetComboScale(tuple.Item1, tuple.Item3));
+                            }
+                        }
                     }
                 }
 

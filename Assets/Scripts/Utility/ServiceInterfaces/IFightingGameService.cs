@@ -17,7 +17,7 @@ namespace ResonantSpark {
             void ResetCamera();
             Transform GetCameraStart();
             List<Transform> GetLevelBoundaries();
-            void Hit(InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority, int> callback);
+            void Hit(InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority, int> onHit, Action<AttackPriority, int> onBlock);
             bool IsCurrentFGChar(InGameEntity entity);
             void DisableControl();
         }

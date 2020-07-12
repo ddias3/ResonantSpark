@@ -8,6 +8,7 @@ using ResonantSpark.Character;
 using ResonantSpark.Input;
 using ResonantSpark.Utility;
 using ResonantSpark.Service;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -19,6 +20,8 @@ namespace ResonantSpark {
             public int redashDisallowed = 28;
             [Tooltip("These many frames of the start of the dodge may not be cancelled into an attack")]
             public int attackDisallowed = 24;
+            [Tooltip("These many frames of the start of the dash may not be cancelled into an attack")]
+            public int blockDisallowed = 12;
 
             public AnimationCurve dodgePositionCurve;
 
@@ -148,12 +151,47 @@ namespace ResonantSpark {
                 }
             }
 
-            public override void GetHit(bool launch) {
+            public override void BeHit(bool launch) {
                 if (launch) {
                     changeState(states.Get("hitStunAirborne"));
                 }
                 else {
                     changeState(states.Get("hitStunStand"));
+                }
+            }
+
+            public override void BeBlocked(bool forceCrouch) {
+                if (forceCrouch) {
+                    changeState(states.Get("blockStunCrouch"));
+                }
+                else {
+                    if (dodgeDir == FightingGameInputCodeDir.DownBack) {
+                        changeState(states.Get("blockStunCrouch"));
+                    }
+                    else if (dodgeDir == FightingGameInputCodeDir.Back) {
+                        changeState(states.Get("blockStunStand"));
+                    }
+                }
+            }
+
+            public override void BeGrabbed() {
+                changeState(states.Get("grabbed"));
+            }
+
+            public override bool CheckBlockSuccess(Hit hit) {
+                if (tracker.frameCount < blockDisallowed) {
+                    return false;
+                }
+                else {
+                    if (dodgeDir == FightingGameInputCodeDir.DownBack) {
+                        return hit.validBlocks.Contains(Character.Block.LOW);
+                    }
+                    else if (dodgeDir == FightingGameInputCodeDir.Back) {
+                        return hit.validBlocks.Contains(Character.Block.HIGH);
+                    }
+                    else {
+                        return false;
+                    }
                 }
             }
 

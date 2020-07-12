@@ -8,6 +8,7 @@ using ResonantSpark.Input;
 using ResonantSpark.Character;
 using ResonantSpark.Utility;
 using ResonantSpark.Service;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -135,7 +136,7 @@ namespace ResonantSpark {
                 };
             }
 
-            public override void GetHit(bool launch) {
+            public override void BeHit(bool launch) {
                 if (frameCount > 4) {
                     changeState(states.Get("hitStunAirborne"));
                 }
@@ -147,6 +148,18 @@ namespace ResonantSpark {
                         changeState(states.Get("hitStunStand"));
                     }
                 }
+            }
+
+            public override void BeBlocked(bool forceCrouch) {
+                throw new InvalidOperationException("A character jumping is successfully blocking");
+            }
+
+            public override void BeGrabbed() {
+                throw new InvalidOperationException("A character jumping is being grabbed");
+            }
+
+            public override bool CheckBlockSuccess(Hit hit) {
+                return false;
             }
 
             private void OnButtonPress(Action stop, Combination combo) {

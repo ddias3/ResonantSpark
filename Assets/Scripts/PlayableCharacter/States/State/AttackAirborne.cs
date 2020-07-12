@@ -66,14 +66,30 @@ namespace ResonantSpark {
                 return fgChar.GetAttackCharacterVulnerability();
             }
 
-            public override void GetHit(bool launch) {
-                CharacterProperties.Attack activeAttack = fgChar.GetCurrentAttack();
-                if (activeAttack.CounterHit()) {
-                    changeState(states.Get("hitStunAirborne"));
-                }
-                else {
-                    changeState(states.Get("hitStunAirborne"));
-                }
+            //public override void BeHit(bool launch) {
+            //    CharacterProperties.Attack activeAttack = fgChar.GetCurrentAttack();
+            //    if (activeAttack.CounterHit()) {
+            //        changeState(states.Get("hitStunAirborne"));
+            //    }
+            //    else {
+            //        changeState(states.Get("hitStunAirborne"));
+            //    }
+            //}
+
+            public override void BeHit(bool launch) {
+                changeState(states.Get("hitStunAirborne"));
+            }
+
+            public override void BeBlocked(bool forceCrouch) {
+                throw new InvalidOperationException("AttackAirborne is somehow being told to block");
+            }
+
+            public override void BeGrabbed() {
+                throw new InvalidOperationException("There shouldn't be any air grabs right now");
+            }
+
+            public override bool CheckBlockSuccess(Hit hit) {
+                return false;
             }
 
             private void OnDirectionPress(Action stop, Combination combo) {

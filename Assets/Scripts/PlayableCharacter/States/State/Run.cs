@@ -7,6 +7,7 @@ using ResonantSpark.Input.Combinations;
 using ResonantSpark.Character;
 using ResonantSpark.Utility;
 using ResonantSpark.Service;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -63,13 +64,25 @@ namespace ResonantSpark {
                 };
             }
 
-            public override void GetHit(bool launch) {
+            public override void BeHit(bool launch) {
                 if (launch) {
                     changeState(states.Get("hitStunAirborne"));
                 }
                 else {
                     changeState(states.Get("hitStunStand"));
                 }
+            }
+
+            public override void BeBlocked(bool forceCrouch) {
+                throw new InvalidOperationException("A character is blocking while running");
+            }
+
+            public override void BeGrabbed() {
+                throw new InvalidOperationException("A character in block stun is being grabbed");
+            }
+
+            public override bool CheckBlockSuccess(Hit hit) {
+                return false;
             }
 
             private void OnNeutralReturn(Action stop, Combination combo) {

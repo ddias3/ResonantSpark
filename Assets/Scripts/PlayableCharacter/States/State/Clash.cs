@@ -8,6 +8,7 @@ using ResonantSpark.Character;
 using ResonantSpark.Input;
 using ResonantSpark.Utility;
 using ResonantSpark.Service;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -83,8 +84,25 @@ namespace ResonantSpark {
                 };
             }
 
-            public override void GetHit(bool launch) {
-                changeState(states.Get("blockStunStand"));
+            public override void BeHit(bool launch) {
+                if (launch) {
+                    changeState(states.Get("hitStunAirborne"));
+                }
+                else {
+                    changeState(states.Get("hitStunStand"));
+                }
+            }
+
+            public override void BeBlocked(bool forceCrouch) {
+                throw new InvalidOperationException("Clash is somehow trying to block");
+            }
+
+            public override void BeGrabbed() {
+                changeState(states.Get("grabbed"));
+            }
+
+            public override bool CheckBlockSuccess(Hit hit) {
+                return false;
             }
 
             public void SetClashAnimation(string clashAnimation) {

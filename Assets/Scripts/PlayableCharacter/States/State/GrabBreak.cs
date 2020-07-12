@@ -7,6 +7,7 @@ using ResonantSpark.Input.Combinations;
 using ResonantSpark.Character;
 using ResonantSpark.Utility;
 using ResonantSpark.Service;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -69,7 +70,7 @@ namespace ResonantSpark {
                 };
             }
 
-            public override void GetHit(bool launch) {
+            public override void BeHit(bool launch) {
                 // TODO: Make it clear that the attack is ignored by displaying a particle.
 
                 if (launch) {
@@ -78,6 +79,18 @@ namespace ResonantSpark {
                 else {
                     changeState(states.Get("hitStunStand"));
                 }
+            }
+
+            public override void BeBlocked(bool forceCrouch) {
+                // TODO: something...
+            }
+
+            public override void BeGrabbed() {
+                // TODO: something...
+            }
+
+            public override bool CheckBlockSuccess(Hit hit) {
+                return false;
             }
 
             private void OnDirectionPress(Action stop, Combination combo) {

@@ -69,6 +69,7 @@ namespace ResonantSpark {
             }
 
             public CharacterVulnerability GetCharacterVulnerability() {
+                // TODO: make sure this doesn't ever fuck up.
                 return activeAttack.GetCharacterVulnerability();
             }
 

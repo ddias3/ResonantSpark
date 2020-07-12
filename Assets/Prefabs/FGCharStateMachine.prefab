@@ -175,6 +175,7 @@ MonoBehaviour:
   dashLength: 18
   redashDisallowed: 10
   attackDisallowed: 16
+  blockDisallowed: 30
   dashPositionCurve:
     serializedVersion: 2
     m_Curve:
@@ -346,8 +347,8 @@ Transform:
   - {fileID: 2630261498285926132}
   - {fileID: 6095904966797098311}
   - {fileID: 1095020692871649084}
-  - {fileID: 8147897146673362570}
   - {fileID: 8067122287443546856}
+  - {fileID: 8147897146673362570}
   - {fileID: 1468726516969812308}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -501,7 +502,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2152161314391702300}
-  m_RootOrder: 24
+  m_RootOrder: 23
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &9159975323115269696
 MonoBehaviour:
@@ -546,7 +547,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2152161314391702300}
-  m_RootOrder: 23
+  m_RootOrder: 24
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8434313463453899074
 MonoBehaviour:
@@ -648,6 +649,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c32c7bcdf96ba294dad2c3a992b5d4cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gravityExtra: {x: 0, y: 0, z: 0}
 --- !u!1 &4752437365165763681
 GameObject:
   m_ObjectHideFlags: 0
@@ -691,7 +693,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1894b1ce84b2384089702cca2ff48bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxRotation: 600
+  maxRotation: 360
   gravityExtra: {x: 0, y: -10, z: 0}
 --- !u!1 &5206494667171976667
 GameObject:
@@ -782,6 +784,7 @@ MonoBehaviour:
   dashLength: 10
   redashDisallowed: 10
   attackDisallowed: 8
+  blockDisallowed: 15
   dashPositionCurve:
     serializedVersion: 2
     m_Curve:
@@ -904,6 +907,7 @@ MonoBehaviour:
   dashLength: 12
   redashDisallowed: 10
   attackDisallowed: 12
+  blockDisallowed: 15
   dashPositionCurve:
     serializedVersion: 2
     m_Curve:
@@ -1026,6 +1030,7 @@ MonoBehaviour:
   dashLength: 32
   redashDisallowed: 28
   attackDisallowed: 24
+  blockDisallowed: 36
   dashPositionCurve:
     serializedVersion: 2
     m_Curve:
@@ -1335,6 +1340,7 @@ MonoBehaviour:
   dodgeLength: 15
   redashDisallowed: 999
   attackDisallowed: 999
+  blockDisallowed: 12
   dodgePositionCurve:
     serializedVersion: 2
     m_Curve:

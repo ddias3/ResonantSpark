@@ -5,11 +5,11 @@ using UnityEngine;
 using ResonantSpark.Builder;
 using ResonantSpark.Service;
 using ResonantSpark.Gameplay;
+using ResonantSpark.Character;
 
 namespace ResonantSpark {
     namespace CharacterProperties {
         public partial class HitBuilder : IHitCallbackObject {
-
             private AllServices services;
 
             private IHitBoxService hitBoxService;
@@ -23,6 +23,7 @@ namespace ResonantSpark {
                 this.tracking = false;
                 this.comboScaling = 1.0f;
                 this.onHitCallback = null;
+                this.requiredBlocks = new List<Block>();
 
                 hitBoxes = new List<HitBox>();
             }

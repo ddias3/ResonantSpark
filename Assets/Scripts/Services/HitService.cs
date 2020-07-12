@@ -13,6 +13,7 @@ namespace ResonantSpark {
             public void Start() {
                 FrameEnforcer frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
                 frame.AddUpdate((int)FramePriority.ServiceHit, new System.Action<int>(FrameUpdate));
+                frame.AddUpdate((int)FramePriority.LateService, new System.Action<int>(LateFrameUpdate));
 
                 hitMap = new Dictionary<int, Hit>();
 
@@ -35,7 +36,14 @@ namespace ResonantSpark {
                             hit.InvokeCallback(inGameEntity, entitiesKvp.Value.hurt, entitiesKvp.Value.hit);
                         }
                     }
+                        // This HAS to run on the LateFrameUpdate or else it clears important dictionaries before they are used.
+                    //hit.ClearHitQueue();
+                }
+            }
 
+            private void LateFrameUpdate(int frameIndex) {
+                foreach (KeyValuePair<int, Hit> kvp in hitMap) {
+                    Hit hit = kvp.Value;
                     hit.ClearHitQueue();
                 }
             }

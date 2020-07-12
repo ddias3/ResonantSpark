@@ -8,6 +8,7 @@ using ResonantSpark.Character;
 using ResonantSpark.Utility;
 using ResonantSpark.Input;
 using ResonantSpark.Service;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -65,15 +66,42 @@ namespace ResonantSpark {
                 };
             }
 
-            public override void GetHit(bool launch) {
-                if (dirCurr == FightingGameInputCodeDir.Back) {
-                    changeState(states.Get("blockStunStand"));
+            public override void BeHit(bool launch) {
+                if (launch) {
+                    changeState(states.Get("hitStunAirborne"));
                 }
-                else if (dirCurr == FightingGameInputCodeDir.DownBack) {
+                else {
+                    changeState(states.Get("hitStunStand"));
+                }
+            }
+
+            public override void BeBlocked(bool forceCrouch) {
+                if (forceCrouch) {
                     changeState(states.Get("blockStunCrouch"));
                 }
                 else {
-                    changeState(states.Get("hitStunCrouch"));
+                    if (dirCurr == FightingGameInputCodeDir.DownBack) {
+                        changeState(states.Get("blockStunCrouch"));
+                    }
+                    else if (dirCurr == FightingGameInputCodeDir.Back) {
+                        changeState(states.Get("blockStunStand"));
+                    }
+                }
+            }
+
+            public override void BeGrabbed() {
+                throw new InvalidOperationException("A character in block stun is being grabbed");
+            }
+
+            public override bool CheckBlockSuccess(Hit hit) {
+                if (dirCurr == FightingGameInputCodeDir.DownBack) {
+                    return hit.validBlocks.Contains(Character.Block.LOW);
+                }
+                else if (dirCurr == FightingGameInputCodeDir.Back) {
+                    return hit.validBlocks.Contains(Character.Block.HIGH);
+                }
+                else {
+                    return false;
                 }
             }
 

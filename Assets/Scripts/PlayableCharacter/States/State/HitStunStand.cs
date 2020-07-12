@@ -57,7 +57,7 @@ namespace ResonantSpark {
                 return GroundRelation.GROUNDED;
             }
 
-            public override void GetHit(bool launch) {
+            public override void BeHit(bool launch) {
                 if (launch) {
                     changeState(states.Get("hitStunAirborne"));
                 }

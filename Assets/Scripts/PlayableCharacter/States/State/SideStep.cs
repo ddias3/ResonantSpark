@@ -6,6 +6,7 @@ using ResonantSpark.Input.Combinations;
 using ResonantSpark.Character;
 using ResonantSpark.Utility;
 using ResonantSpark.Service;
+using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterStates {
@@ -55,7 +56,7 @@ namespace ResonantSpark {
                 };
             }
 
-            public override void GetHit(bool launch) {
+            public override void BeHit(bool launch) {
                 changeState(states.Get("hitStunStand"));
             }
 
@@ -65,6 +66,18 @@ namespace ResonantSpark {
 
             public void OnDoubleTap(Action stop, Combination combo) {
 
+            }
+
+            public override void BeBlocked(bool forceCrouch) {
+                throw new NotImplementedException();
+            }
+
+            public override void BeGrabbed() {
+                throw new NotImplementedException();
+            }
+
+            public override bool CheckBlockSuccess(Hit hit) {
+                throw new NotImplementedException();
             }
         }
     }

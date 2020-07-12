@@ -41,7 +41,6 @@ namespace ResonantSpark {
                 return id;
             }
 
-            public abstract string HitBoxEventType(HitBox hitBox);
             public abstract void AddSelf();
             public abstract void RemoveSelf();
             public abstract ComboState GetComboState();

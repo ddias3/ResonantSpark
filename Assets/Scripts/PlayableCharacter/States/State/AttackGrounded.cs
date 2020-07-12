@@ -66,24 +66,45 @@ namespace ResonantSpark {
                 return fgChar.GetAttackCharacterVulnerability();
             }
 
-            public override void GetHit(bool launch) {
-                CharacterProperties.Attack activeAttack = fgChar.GetCurrentAttack();
-                if (activeAttack.CounterHit()) {
-                    if (launch) {
-                        changeState(states.Get("hitStunAirborne"));
-                    }
-                    else {
-                        changeState(states.Get("hitStunStand"));
-                    }
+            //public override void BeHit(bool launch) {
+            //    CharacterProperties.Attack activeAttack = fgChar.GetCurrentAttack();
+            //    if (activeAttack.CounterHit()) {
+            //        if (launch) {
+            //            changeState(states.Get("hitStunAirborne"));
+            //        }
+            //        else {
+            //            changeState(states.Get("hitStunStand"));
+            //        }
+            //    }
+            //    else {
+            //        if (launch) {
+            //            changeState(states.Get("hitStunAirborne"));
+            //        }
+            //        else {
+            //            changeState(states.Get("hitStunStand"));
+            //        }
+            //    }
+            //}
+
+            public override void BeHit(bool launch) {
+                if (launch) {
+                    changeState(states.Get("hitStunAirborne"));
                 }
                 else {
-                    if (launch) {
-                        changeState(states.Get("hitStunAirborne"));
-                    }
-                    else {
-                        changeState(states.Get("hitStunStand"));
-                    }
+                    changeState(states.Get("hitStunStand"));
                 }
+            }
+
+            public override void BeBlocked(bool forceCrouch) {
+                throw new InvalidOperationException("AttackGrounded is somehow being told to block");
+            }
+
+            public override void BeGrabbed() {
+                changeState(states.Get("grabbed"));
+            }
+
+            public override bool CheckBlockSuccess(Hit hit) {
+                return false;
             }
 
             private void OnDirectionPress(Action stop, Combination combo) {

@@ -13,7 +13,7 @@ namespace ResonantSpark {
             private static int hitCounter = 0;
             public int id { get; private set; }
 
-            public List<Block> requiredBlocks { get; private set; }
+            public List<Block> validBlocks { get; private set; }
             public AttackPriority priority { get; private set; }
             public int hitDamage { get; private set; }
             public int blockDamage { get; private set; }
@@ -55,7 +55,6 @@ namespace ResonantSpark {
             public void Build(HitBuilder hitBuilder) {
                 this.onHitCallback = hitBuilder.onHitCallback;
 
-                this.requiredBlocks = hitBuilder.requiredBlocks;
                 this.priority = hitBuilder.priority;
                 this.hitDamage = hitBuilder.hitDamage;
                 this.blockDamage = hitBuilder.blockDamage;
@@ -63,6 +62,13 @@ namespace ResonantSpark {
                 this.blockStun = hitBuilder.blockStun;
                 this.comboScaling = hitBuilder.comboScaling;
                 this.tracking = hitBuilder.tracking;
+
+                this.validBlocks = new List<Block>();
+                foreach (Block block in Enum.GetValues(typeof(Block))) {
+                    if (!hitBuilder.requiredBlocks.Contains(block) && block != Block.AIR) { // Allow air blocking in future version of the game.
+                        this.validBlocks.Add(block);
+                    }
+                }
             }
 
             public void AddHitBox(HitBox hitBox) {
@@ -129,7 +135,6 @@ namespace ResonantSpark {
                 foreach (HurtBox hb in hurtBoxes) {
                     InGameEntity entity = hb.GetEntity();
                     if (!hitEntities.Contains(entity)) {
-                        hitEntities.Add(entity);
                         if (!entityMap.ContainsKey(entity)) {
                             entityMap.Add(entity, (new List<HurtBox>(), new List<HitBox>()));
                         }
@@ -139,11 +144,25 @@ namespace ResonantSpark {
                 foreach (HitBox hb in hitBoxes) {
                     InGameEntity entity = hb.GetEntity();
                     if (!hitEntities.Contains(entity)) {
-                        hitEntities.Add(entity);
                         if (!entityMap.ContainsKey(entity)) {
                             entityMap.Add(entity, (new List<HurtBox>(), new List<HitBox>()));
                         }
                         entityMap[entity].hit.Add(hb);
+                    }
+                }
+
+                    // Adding the entity has to be done after populating the entity map, or else only
+                    //  1 hurtbox/hitbox will be added to the entity map
+                foreach (HurtBox hb in hurtBoxes) {
+                    InGameEntity entity = hb.GetEntity();
+                    if (!hitEntities.Contains(entity)) {
+                        hitEntities.Add(entity);
+                    }
+                }
+                foreach (HitBox hb in hitBoxes) {
+                    InGameEntity entity = hb.GetEntity();
+                    if (!hitEntities.Contains(entity)) {
+                        hitEntities.Add(entity);
                     }
                 }
 
