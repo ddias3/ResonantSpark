@@ -98,8 +98,6 @@ namespace ResonantSpark {
                                                 // This exists to make characters hitting each other async
                                                 fgService.Hit(entity, fgChar, thisHit, onHit:(hitAtSameTimeByAttackPriority, damage) => {
                                                     audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["weakHit"]);
-                                                    opponent.ChangeHealth(damage); // damage includes combo scaling.
-
                                                     switch (opponent.GetGroundRelation()) {
                                                         case GroundRelation.GROUNDED:
                                                             opponent.BeHit(thisHit.hitStun, false);
@@ -116,13 +114,16 @@ namespace ResonantSpark {
                                                                 knockback: fgChar.rigidFG.rotation * new Vector3(0.0f, 1.0f, 1.0f) * 0.7071f);
                                                             break;
                                                     }
+                                                    opponent.ChangeHealth(damage); // damage includes combo scaling.
+
                                                 }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
-                                                    opponent.ChangeHealth(damage); // damage is hit.blockDamage
+                                                        // I may put all of these functions into the same call.
                                                     opponent.BeHit(thisHit.blockStun, false);
                                                     opponent.KnockBack(
                                                         thisHit.priority,
                                                         launch: false,
                                                         knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
+                                                    opponent.ChangeHealth(damage); // damage is hit.blockDamage
                                                 });
                                             }
                                         });
@@ -193,7 +194,6 @@ namespace ResonantSpark {
                                                 // This exists to make characters hitting each other async
                                                 fgService.Hit(entity, fgChar, thisHit, (hitAtSameTimeByAttackPriority, damage) => {
                                                     audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
-                                                    opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                                     switch (opponent.GetGroundRelation()) {
                                                         case GroundRelation.GROUNDED:
@@ -211,13 +211,15 @@ namespace ResonantSpark {
                                                                 knockback: fgChar.rigidFG.rotation * new Vector3(0.0f, 1.0f, 1.0f) * 0.7071f);
                                                             break;
                                                     }
+                                                    opponent.ChangeHealth(damage); // damage includes combo scaling.
+
                                                 }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
-                                                    opponent.ChangeHealth(damage); // damage is hit.blockDamage
                                                     opponent.BeHit(thisHit.blockStun, false);
                                                     opponent.KnockBack(
                                                         thisHit.priority,
                                                         launch: false,
                                                         knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
+                                                    opponent.ChangeHealth(damage); // damage is hit.blockDamage
                                                 });
                                             }
                                         });
@@ -306,19 +308,20 @@ namespace ResonantSpark {
                                                     audioService.PlayOneShot(hitLocations[closeHitBox], audioMap["mediumHit"]);
                                                     audioService.PlayOneShot(hitLocations[closeHitBox], audioMap["weakHit"]);
 
-                                                    opponent.ChangeHealth(damage); // damage includes combo scaling.
                                                     opponent.BeHit(thisHit.hitStun, true);
                                                     opponent.KnockBack(
                                                         thisHit.priority,
                                                         launch: true,
                                                         knockback: fgChar.rigidFG.rotation * new Vector3(0.0f, 4.5f, 1.5f));
+                                                    opponent.ChangeHealth(damage); // damage includes combo scaling.
+
                                                 }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
-                                                    opponent.ChangeHealth(damage); // damage is hit.blockDamage
                                                     opponent.BeBlocked(thisHit.blockStun, false);
                                                     opponent.KnockBack(
                                                         thisHit.priority,
                                                         launch: false,
                                                         knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
+                                                    opponent.ChangeHealth(damage); // damage is hit.blockDamage
                                                 });
                                             }
                                         });

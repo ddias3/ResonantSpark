@@ -5,7 +5,7 @@ using UnityEngine;
 namespace ResonantSpark {
     namespace MenuStates {
         public class ControllerSelect : MenuBaseState {
-            public Menu.ControllerSelect controllerSelect;
+            public Menu.ControllerSelectMenu controllerSelect;
 
             public new void Start() {
                 base.Start();

@@ -16,8 +16,11 @@ namespace ResonantSpark {
             }
 
             protected void OnComplete() {
-                // TODO: Figure out what to do.
-                Debug.Log("Hit Stun ending");
+                fgChar.HitStunEnd();
+            }
+
+            public override void Exit(int frameIndex) {
+                // do nothing
             }
 
             public override ComboState GetComboState() {

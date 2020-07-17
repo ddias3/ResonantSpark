@@ -14,6 +14,7 @@ namespace ResonantSpark {
             public List<int> controllerIndex;
 
             public GameObject oneOnOneRoundBasedPrefab;
+            public GameObject trainingModePrefab;
 
             public GameObject fightingGameCameraPrefab;
 
@@ -38,7 +39,7 @@ namespace ResonantSpark {
                     case "oneOnOneRoundBased":
                         return oneOnOneRoundBasedPrefab;
                     case "training":
-                        return null;
+                        return trainingModePrefab;
                     default:
                         return null;
                 }

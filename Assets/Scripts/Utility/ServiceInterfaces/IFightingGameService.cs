@@ -18,6 +18,8 @@ namespace ResonantSpark {
             Transform GetCameraStart();
             List<Transform> GetLevelBoundaries();
             void Hit(InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority, int> onHit, Action<AttackPriority, int> onBlock);
+            void HitStunStart(FightingGameCharacter fgChar);
+            void HitStunEnd(FightingGameCharacter fgChar);
             bool IsCurrentFGChar(InGameEntity entity);
             void DisableControl();
         }

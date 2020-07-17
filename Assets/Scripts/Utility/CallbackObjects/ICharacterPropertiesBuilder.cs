@@ -24,7 +24,7 @@ namespace ResonantSpark {
         public partial class CharacterPropertiesBuilder : ICharacterPropertiesCallbackObj {
             protected List<(Attack, Func<CharacterStates.CharacterBaseState, Attack, List<Attack>, bool>)> attacks { get; private set; }
             protected string version;
-            protected int maxHealth = 100000;//10000;
+            protected int maxHealth = 10000;
 
             public ICharacterPropertiesCallbackObj MaxHealth(int maxHealth) {
                 this.maxHealth = maxHealth;

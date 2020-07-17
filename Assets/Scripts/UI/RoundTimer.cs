@@ -10,11 +10,15 @@ namespace ResonantSpark {
 
             public void SetTime(float time) {
                 if (time < 0) {
-                    roundTimer.text = "∞";
+                    roundTimer.text = "00";
                 }
                 else {
-                    roundTimer.text = Mathf.CeilToInt(time).ToString();
+                    roundTimer.text = Mathf.CeilToInt(time).ToString("D2");
                 }
+            }
+
+            public void SetNoTime() {
+                roundTimer.text = "∞";
             }
 
             //public void Update() {

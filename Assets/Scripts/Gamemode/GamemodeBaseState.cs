@@ -9,14 +9,12 @@ using ResonantSpark.Service;
 namespace ResonantSpark {
     namespace GamemodeStates {
         public abstract class GamemodeBaseState : MultipassBaseState {
-            protected OneOnOneRoundBased oneOnOne;
             protected UiService uiService;
             protected FightingGameService fgService;
 
             public new void Awake() {
                 base.Awake();
 
-                oneOnOne = gameObject.GetComponentInParent<OneOnOneRoundBased>();
                 uiService = GameObject.FindGameObjectWithTag("rspService").GetComponent<UiService>();
                 fgService = GameObject.FindGameObjectWithTag("rspService").GetComponent<FightingGameService>();
             }

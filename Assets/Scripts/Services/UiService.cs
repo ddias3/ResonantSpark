@@ -28,12 +28,34 @@ namespace ResonantSpark {
                 roundTimer.SetTime(time);
             }
 
+            public void SetNoTime() {
+                roundTimer.SetNoTime();
+            }
+
             public void SetMainScreenText(string text) {
                 openingText.SetOpeningText(text);
             }
 
             public void HideMainScreenText() {
                 openingText.Hide();
+            }
+
+            public void HealthBarSyncPause(int playerId, bool pause) {
+                if (playerId == 0) {
+                    healthBarP1.FreezeSync(pause);
+                }
+                else if (playerId == 1) {
+                    healthBarP2.FreezeSync(pause);
+                }
+            }
+
+            public void HealthBarSync(int playerId) {
+                if (playerId == 0) {
+                    healthBarP1.SyncHealthValues();
+                }
+                else if (playerId == 1) {
+                    healthBarP2.SyncHealthValues();
+                }
             }
 
             public void SetHealth(int playerId, int health) {

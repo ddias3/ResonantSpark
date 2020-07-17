@@ -67,10 +67,6 @@ namespace ResonantSpark {
                 fgChar.IncrementHitStun();
             }
 
-            public override void Exit(int frameIndex) {
-                // do nothing
-            }
-
             public override GroundRelation GetGroundRelation() {
                 return GroundRelation.AIRBORNE;
             }

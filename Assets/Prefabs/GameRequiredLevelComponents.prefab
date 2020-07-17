@@ -798,6 +798,8 @@ MonoBehaviour:
   controllerIndex: 00000000ffffffff
   oneOnOneRoundBasedPrefab: {fileID: 5907818410644016008, guid: 6fa9e18f57b8a7c45bb71178501ca6d8,
     type: 3}
+  trainingModePrefab: {fileID: 5907818410644016008, guid: 865b3eab28da7bb40bbb17db4dce2fb6,
+    type: 3}
   fightingGameCameraPrefab: {fileID: 4063835550487571392, guid: 80e20bc8a04a4f941940b2925bdf66cc,
     type: 3}
   lawrenceBuilderPrefab: {fileID: 8557177467078201262, guid: 880c011c99fbc664296a31457b717cd6,

@@ -67,6 +67,7 @@ namespace ResonantSpark {
             private Vector2 screenOrientation = Vector2.zero;
 
             public float hitStun { private set; get; }
+            public float blockStun { private set; get; }
 
             private CharacterData charData;
 
@@ -173,8 +174,16 @@ namespace ResonantSpark {
                 this.hitStun = newHitStun;
             }
 
+            public void SetBlockStun(float newBlockStun) {
+                blockRunner.SetBlockStun(newBlockStun);
+            }
+
             public void IncrementHitStun() {
                 hitStun -= 1.0f;
+            }
+
+            public void IncrementBlockStun() {
+                blockRunner.IncrementBlockStun();
             }
 
             public FightingGameInputCodeDir MapAbsoluteToRelative(FightingGameAbsInputCodeDir absInput) {
@@ -381,6 +390,10 @@ namespace ResonantSpark {
             }
 
             public void BeHit(float hitStun, bool launch) {
+                if (!stateMachine.GetCurrentState().GetType().IsSubclassOf(typeof(CharacterStates.HitStun))) {
+                    HitStunStart();
+                }
+
                 comboRunner.AddNumHits(1);
                 this.hitStun = comboRunner.GetFilteredHitStun(hitStun);
 
@@ -433,6 +446,14 @@ namespace ResonantSpark {
                         onEmptyHealthCallbacks[n].Invoke(this);
                     }
                 }
+            }
+
+            public void HitStunStart() {
+                fgService.HitStunStart(this);
+            }
+
+            public void HitStunEnd() {
+                fgService.HitStunEnd(this);
             }
 
             public void KnockBack(AttackPriority attackPriority, bool launch, Vector3 knockback) {

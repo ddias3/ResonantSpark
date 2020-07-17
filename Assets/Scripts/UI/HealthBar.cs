@@ -10,7 +10,7 @@ namespace ResonantSpark {
             public Image fillHealth;
             public Image fillRed;
 
-            public float delayTime = 1.5f;
+            public float delayTime = 0.0f; //1.5f;
             public float flushSpeed = 1.0f;
             public float flushEndingLinearSpeed = 16f;
 
@@ -104,7 +104,7 @@ namespace ResonantSpark {
                 SetFillDimensions();
 
                 if (!freezeSync) {
-                    timer += gameTime.DeltaTime("frameDelta", "game");
+                    timer += Time.deltaTime; // this doesn't work here -> gameTime.DeltaTime("frameDelta", "game");
                 }
             }
         }

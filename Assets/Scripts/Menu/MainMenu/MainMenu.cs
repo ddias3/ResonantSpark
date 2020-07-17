@@ -68,12 +68,22 @@ namespace ResonantSpark {
                 //    currSelected.TriggerEvent("right");
                 //});
                 eventHandler.On("submit", () => {
-                    currSelected.TriggerEvent("submit");
+                    if (currSelected == quit) {
+                        cursor2d.Select(quit);
+
+                        menuStack.AddMenu(exitGameDialogue);
+                        changeState("exitGameDialogue");
+                    }
+                    else {
+                        currSelected.TriggerEvent("submit");
+                    }
                 });
                 eventHandler.On("cancel", () => {
                     if (currSelected == quit) {
                         HideQuitButton();
-                        changeState("mainMenu");
+
+                        menuStack.AddMenu(exitGameDialogue);
+                        changeState("exitGameDialogue");
                     }
                     else {
                         cursor3d.Fade();
@@ -92,12 +102,14 @@ namespace ResonantSpark {
 
                     currSelected = quit;
                 }).On("submit", () => {
-                    cursor3d.Select(versus);
+                    Persistence.Get().SetGamemode("oneOnOneRoundBased");
 
-                    menuStack.Pop(this);
-                    menuStack.AddMenu(controllerSelect);
-                    camera.Play("mainMenuToControllerSelect");
-                    changeState("controllerSelect");
+                    cursor3d.Select(versus, () => {
+                        menuStack.Pop(this);
+                        menuStack.AddMenu(controllerSelect);
+                        camera.Play("mainMenuToControllerSelect");
+                        changeState("controllerSelect");
+                    });
                 });
 
                 training.On("down", () => {
@@ -109,12 +121,14 @@ namespace ResonantSpark {
 
                     currSelected = versus;
                 }).On("submit", () => {
-                    cursor3d.Select(training);
+                    Persistence.Get().SetGamemode("training");
 
-                    menuStack.Pop(this);
-                    menuStack.AddMenu(controllerSelect);
-                    camera.Play("mainMenuToControllerSelect");
-                    changeState("controllerSelect");
+                    cursor3d.Select(training, () => {
+                        menuStack.Pop(this);
+                        menuStack.AddMenu(controllerSelect);
+                        camera.Play("mainMenuToControllerSelect");
+                        changeState("controllerSelect");
+                    });
                 });
 
                 options.On("down", () => {
@@ -126,7 +140,9 @@ namespace ResonantSpark {
 
                     currSelected = training;
                 }).On("submit", () => {
-                    cursor3d.Select(options);
+                    cursor3d.Select(options, () => {
+                        Debug.Log("Go To Options Menu");
+                    });
                 });
 
                 credits.On("down", () => {
@@ -139,7 +155,9 @@ namespace ResonantSpark {
 
                     currSelected = options;
                 }).On("submit", () => {
-                    cursor3d.Select(credits);
+                    cursor3d.Select(credits, () => {
+                        Debug.Log("Go To Credits Menu");
+                    });
                 });
 
                 quit.On("down", () => {
@@ -152,11 +170,6 @@ namespace ResonantSpark {
                     cursor3d.Highlight(credits);
 
                     currSelected = credits;
-                }).On("submit", () => {
-                    cursor2d.Select(quit);
-
-                    menuStack.AddMenu(exitGameDialogue);
-                    changeState("exitGameDialogue");
                 });
             }
 

@@ -25,15 +25,14 @@ namespace ResonantSpark {
             private Vector2 startPoint;
             private Vector2 endPoint;
 
-            private bool selectAnimationPlaying = false;
-            private float selectTime = -Mathf.Infinity;
             private float selectWaitTime = 0.3f;
 
-            private Action currCallback;
+            private Queue<(Action cb, float selectTime)> callbacks;
 
             public void Awake() {
                 animator = GetComponent<Animator>();
                 rectTransform = GetComponent<RectTransform>();
+                callbacks = new Queue<(Action cb, float selectTime)>();
             }
 
             public void Update() {
@@ -69,40 +68,44 @@ namespace ResonantSpark {
                     }
                 }
 
-                if (currCallback != null) {
-                    if (Time.time > selectTime + selectWaitTime) {
+                if (callbacks.Count > 0) {
+                    if (Time.time > callbacks.Peek().selectTime + selectWaitTime) {
+                        Action currCallback = callbacks.Dequeue().cb;
                         currCallback();
-                        currCallback = null;
                     }
                 }
             }
 
             public void Fade() {
-                currCallback = PlayAnimationOnCallback("fade");
+                callbacks.Enqueue((PlayAnimationOnCallback("fade"), Mathf.NegativeInfinity));
             }
 
             public void Hide() {
-                currCallback = PlayAnimationOnCallback("hidden");
+                callbacks.Enqueue((PlayAnimationOnCallback("hidden"), Mathf.NegativeInfinity));
             }
 
-            public void Highlight(Selectable selectable) {
+            public void Highlight(Selectable selectable, Action callback = null) {
                 targetSelectable = selectable;
                 animator.Play("idle");
 
                 currState = CursorState.Seeking;
                 startPoint = transform.position;
                 endPoint = ((RectTransform)targetSelectable.GetTransform()).position;
+                if (callback != null) {
+                    callbacks.Enqueue((callback, Mathf.NegativeInfinity));
+                }
             }
 
-            public void Select(Selectable selectable) {
+            public void Select(Selectable selectable, Action callback = null) {
                 targetSelectable = selectable;
                 animator.Play("select");
-                selectAnimationPlaying = true;
-                selectTime = Time.time;
 
                 currState = CursorState.Seeking;
                 startPoint = transform.position;
                 endPoint = ((RectTransform)targetSelectable.GetTransform()).position;
+                if (callback != null) {
+                    callbacks.Enqueue((callback, Time.time));
+                }
             }
 
             private Action PlayAnimationOnCallback(string animationState) {

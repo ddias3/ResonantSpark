@@ -5,26 +5,27 @@ using UnityEngine;
 namespace ResonantSpark {
     namespace MenuStates {
         public class ControllerButtonBind : MenuBaseState {
-            public Menu.MainMenu mainMenu;
+            public Menu.CharacterSelectMenu characterSelectMenu;
+            public Menu.ControllerButtonBind buttonBind;
 
             public new void Start() {
                 base.Start();
                 states.Register(this, "controllerButtonBind");
 
-                //mainMenu.SetChangeStateCallback(stateName => {
-                //    changeState(states.Get(stateName));
-                //});
+                buttonBind.SetChangeStateCallback(stateName => {
+                    changeState(states.Get(stateName));
+                });
             }
 
             public override void TriggerEvent(string eventName) {
-                mainMenu.TriggerEvent(eventName);
+                characterSelectMenu.TriggerEvent(eventName);
             }
 
             public override void Enter(int frameIndex, IState previousState) {
                 inputManager.SetActiveState(this);
-                menuStack.AddMenu(mainMenu);
+                menuStack.AddMenu(buttonBind);
 
-                mainMenu.ShowQuitButton();
+                characterSelectMenu.ShowReturnButton();
             }
 
             public override void Execute(int frameIndex) {
@@ -32,8 +33,7 @@ namespace ResonantSpark {
             }
 
             public override void Exit(int frameIndex) {
-                mainMenu.HideQuitButton();
-                mainMenu.DeactivateCursors();
+                characterSelectMenu.HideReturnButton();
             }
         }
     }

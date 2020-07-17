@@ -110,6 +110,14 @@ namespace ResonantSpark {
                 hitQueue.Add((hitEntity, byEntity, hit, onHit, onBlock));
             }
 
+            public void HitStunStart(FightingGameCharacter fgChar) {
+                gamemode.OnHitStunStart(fgChar);
+            }
+
+            public void HitStunEnd(FightingGameCharacter fgChar) {
+                gamemode.OnHitStunEnd(fgChar);
+            }
+
             private void ResolveHits() {
                 if (hitQueue.Count == 0) {
                     return;

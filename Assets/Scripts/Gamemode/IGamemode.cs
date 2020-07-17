@@ -11,7 +11,10 @@ namespace ResonantSpark {
             void SetUp(PlayerService playerService, FightingGameService fgService, UiService uiService);
             bool IsCurrentFGChar(InGameEntity entity);
             int GetMaxPlayers();
+
             void OnGameEntityNumHitsChange(InGameEntity entity, int numHits);
+            void OnHitStunEnd(FightingGameCharacter fgChar);
+            void OnHitStunStart(FightingGameCharacter fgChar);
         }
     }
 }

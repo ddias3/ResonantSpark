@@ -17,12 +17,12 @@ namespace ResonantSpark {
 
             public float roundTime = 60.0f;
             public float maxCharacterDistance = 8.0f;
-            private PlayerService playerService;
-            private UiService uiService;
-            private FightingGameService fgService;
+            protected PlayerService playerService;
+            protected UiService uiService;
+            protected FightingGameService fgService;
 
-            private FightingGameCharacter player1;
-            private FightingGameCharacter player2;
+            protected FightingGameCharacter player1;
+            protected FightingGameCharacter player2;
 
             private int char0RoundWins = 0;
             private int char1RoundWins = 0;
@@ -30,8 +30,8 @@ namespace ResonantSpark {
             [Tooltip("the rate of in-game time")]
             public float gameTime = 1.0f;
 
-            private FrameEnforcer frame;
-            private GameTimeManager gameTimeManager;
+            protected FrameEnforcer frame;
+            protected GameTimeManager gameTimeManager;
 
             private UnityAction enablePlayersCallback;
             private UnityAction resetGameCallback;
@@ -238,6 +238,26 @@ namespace ResonantSpark {
                     else {
                         uiService.HideComboCounter(0);
                     }
+                }
+            }
+
+            public void OnHitStunStart(FightingGameCharacter fgChar) {
+                if (fgChar == player1) {
+                    uiService.HealthBarSync(0);
+                    uiService.HealthBarSyncPause(0, true);
+                }
+                else if (fgChar == player2) {
+                    uiService.HealthBarSync(1);
+                    uiService.HealthBarSyncPause(1, true);
+                }
+            }
+
+            public void OnHitStunEnd(FightingGameCharacter fgChar) {
+                if (fgChar == player1) {
+                    uiService.HealthBarSyncPause(0, false);
+                }
+                else if (fgChar == player2) {
+                    uiService.HealthBarSyncPause(1, false);
                 }
             }
 

@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using UnityEngine.SceneManagement;
+
 namespace ResonantSpark {
     namespace Menu {
         public class MainMenuRunner : MenuRunner {
@@ -24,6 +26,10 @@ namespace ResonantSpark {
                 yield return new WaitForEndOfFrame();
                 executeCallback = stateMachine.Enable(states.Get("fadeIn"));
                 this.enabled = true;
+            }
+
+            public void LoadGame() {
+                SceneManager.LoadScene(Persistence.Get().levelPath);
             }
         }
     }

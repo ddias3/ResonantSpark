@@ -14,7 +14,8 @@ namespace ResonantSpark {
         }
 
         public bool firstTimeLoad { get; private set; }
-        public string gamemode { get; set; }
+        public string gamemode { get; private set; }
+        public string levelPath { get; private set; }
         public Dictionary<string, float> optionValues { get; private set; }
         public List<string> characterSelection { get; private set; }
         public List<int> colorSelection { get; private set; }
@@ -54,6 +55,14 @@ namespace ResonantSpark {
             optionValues[key] = value;
         }
 
+        public void SetGamemode(string gamemode) {
+            this.gamemode = gamemode;
+        }
+
+        public void SetLevel(string levelPath) {
+            this.levelPath = levelPath;
+        }
+
         public float GetOptionValue(string key) {
             return optionValues[key];
         }
@@ -64,6 +73,7 @@ namespace ResonantSpark {
 
         private Persistence() {
             firstTimeLoad = true;
+            gamemode = "training";
             optionValues = new Dictionary<string, float> {
                 { "masterVolume", 1.0f },
                 { "effectsVolume", 1.0f },
