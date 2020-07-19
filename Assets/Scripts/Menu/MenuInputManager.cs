@@ -31,6 +31,10 @@ namespace ResonantSpark {
                     activeState.TriggerEvent("cancel");
                 }
 
+                if (Keyboard.current.escapeKey.wasPressedThisFrame) {
+                    activeState.TriggerEvent("pause");
+                }
+
                 if (Keyboard.current.uKey.wasPressedThisFrame) {
 
                 }

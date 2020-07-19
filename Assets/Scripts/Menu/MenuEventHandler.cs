@@ -13,6 +13,8 @@ namespace ResonantSpark {
             private List<Action> onSubmitCallbacks;
             private List<Action> onCancelCallbacks;
 
+            private List<Action> onPauseCallbacks;
+
             private List<Action> onActivateCallbacks;
             private List<Action> onDeactivateCallbacks;
 
@@ -24,6 +26,8 @@ namespace ResonantSpark {
 
                 onSubmitCallbacks = new List<Action>();
                 onCancelCallbacks = new List<Action>();
+
+                onPauseCallbacks = new List<Action>();
 
                 onActivateCallbacks = new List<Action>();
                 onDeactivateCallbacks = new List<Action>();
@@ -47,6 +51,9 @@ namespace ResonantSpark {
                         onSubmitCallbacks.Add(callback);
                         break;
                     case "cancel":
+                        onCancelCallbacks.Add(callback);
+                        break;
+                    case "pause":
                         onCancelCallbacks.Add(callback);
                         break;
                     case "activate":
@@ -81,6 +88,9 @@ namespace ResonantSpark {
                         break;
                     case "cancel":
                         callbacks = onCancelCallbacks;
+                        break;
+                    case "pause":
+                        callbacks = onPauseCallbacks;
                         break;
                     case "activate":
                         callbacks = onActivateCallbacks;

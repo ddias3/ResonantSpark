@@ -22,8 +22,8 @@ namespace ResonantSpark {
 
             private CursorState currState;
             private Selectable targetSelectable;
-            private Vector2 startPoint;
-            private Vector2 endPoint;
+            private Vector3 startPoint;
+            private Vector3 endPoint;
 
             private float selectWaitTime = 0.3f;
 
@@ -46,18 +46,18 @@ namespace ResonantSpark {
                             // do nothing
                             break;
                         case CursorState.Following:
-                            rectTransform.anchoredPosition = targetRectTransform.anchoredPosition;
+                            rectTransform.position = targetRectTransform.position;
                             break;
                         case CursorState.Seeking:
                             float distance = 0.0f;
-                            if ((distance = Vector2.Distance(transform.position, startPoint)) < easeInDistance) {
-                                rectTransform.anchoredPosition += (endPoint - rectTransform.anchoredPosition) * easeIn.Evaluate(distance / easeInDistance) * maxSpeed * Time.deltaTime;
+                            if ((distance = Vector3.Distance(transform.position, startPoint)) < easeInDistance) {
+                                rectTransform.position += (endPoint - rectTransform.position) * easeIn.Evaluate(distance / easeInDistance) * maxSpeed * Time.deltaTime;
                             }
-                            else if ((distance = Vector2.Distance(transform.position, endPoint)) < easeOutDistance) {
-                                rectTransform.anchoredPosition += (endPoint - rectTransform.anchoredPosition) * easeOut.Evaluate(distance / easeOutDistance) * maxSpeed * Time.deltaTime;
+                            else if ((distance = Vector3.Distance(transform.position, endPoint)) < easeOutDistance) {
+                                rectTransform.position += (endPoint - rectTransform.position) * easeOut.Evaluate(distance / easeOutDistance) * maxSpeed * Time.deltaTime;
                             }
                             else {
-                                rectTransform.anchoredPosition += (endPoint - rectTransform.anchoredPosition) * maxSpeed * Time.deltaTime;
+                                rectTransform.position += (endPoint - rectTransform.position) * maxSpeed * Time.deltaTime;
                             }
 
                             if (Vector2.Distance(transform.position, endPoint) < 0.01f) {
@@ -89,7 +89,9 @@ namespace ResonantSpark {
                 animator.Play("idle");
 
                 currState = CursorState.Seeking;
-                startPoint = transform.position;
+                Debug.LogFormat("Start: {0}", rectTransform.position);
+                Debug.LogFormat("End: {0}", ((RectTransform)targetSelectable.GetTransform()).position);
+                startPoint = rectTransform.position;
                 endPoint = ((RectTransform)targetSelectable.GetTransform()).position;
                 if (callback != null) {
                     callbacks.Enqueue((callback, Mathf.NegativeInfinity));
@@ -101,7 +103,7 @@ namespace ResonantSpark {
                 animator.Play("select");
 
                 currState = CursorState.Seeking;
-                startPoint = transform.position;
+                startPoint = rectTransform.position;
                 endPoint = ((RectTransform)targetSelectable.GetTransform()).position;
                 if (callback != null) {
                     callbacks.Enqueue((callback, Time.time));

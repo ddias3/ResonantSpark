@@ -9,8 +9,6 @@ namespace ResonantSpark {
     namespace Menu {
         public class MainMenuRunner : MenuRunner {
 
-            public Menu mainMenu;
-
             public new void Start() {
                 base.Start();
 

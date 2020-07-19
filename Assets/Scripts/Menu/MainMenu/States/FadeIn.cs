@@ -9,6 +9,8 @@ using ResonantSpark.Menu;
 namespace ResonantSpark {
     namespace MenuStates {
         public class FadeIn : MenuBaseState {
+            public Menu.MainMenu mainMenu;
+
             public Animator camera;
             public FadeInOut fadeIn;
 
@@ -56,6 +58,7 @@ namespace ResonantSpark {
                         changeState(states.Get("intro"));
                     }
                     else {
+                        menuStack.AddMenu(mainMenu);
                         changeState(states.Get("mainMenu"));
                     }
                 }

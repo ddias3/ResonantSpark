@@ -9,16 +9,14 @@ namespace ResonantSpark {
     namespace MenuStates {
         public class IntroSkip : MenuBaseState {
             public Animator camera;
+            public Menu.MainMenu mainMenu;
 
             public float introTime = 0.4f;
             private float startTime = 0.0f;
 
             public new void Start() {
                 base.Start();
-
                 states.Register(this, "introSkip");
-
-                // TODO: camera.onEvent("end intro"); or something like that
             }
 
             public override void TriggerEvent(string eventName) {
@@ -26,6 +24,7 @@ namespace ResonantSpark {
             }
 
             public override void Enter(int frameIndex, IState previousState) {
+                inputManager.SetActiveState(this);
                 camera.Play("introSkip");
 
                 startTime = Time.time;
@@ -33,12 +32,14 @@ namespace ResonantSpark {
 
             public override void Execute(int frameIndex) {
                 if (Time.time - startTime > introTime) {
+                    Debug.Log("Change State to Main Menu");
                     changeState(states.Get("mainMenu"));
                 }
             }
 
             public override void Exit(int frameIndex) {
-                // do nothing
+                camera.Play("mainMenu");
+                menuStack.AddMenu(mainMenu);
             }
         }
     }
