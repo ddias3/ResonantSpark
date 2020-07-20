@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+using ResonantSpark.Service;
+
 namespace ResonantSpark {
     namespace Menu {
         public class PauseMenuRunner : MenuRunner {
+            public FightingGameService fgService;
+            public PhysicsService physicsService;
 
             public new void Start() {
                 base.Start();
@@ -26,6 +30,16 @@ namespace ResonantSpark {
 
             public void LoadMainMenu() {
                 SceneManager.LoadScene("Scenes/Menu/MainMenu2");
+            }
+
+            public void PauseGame() {
+                physicsService.enableStep = false;
+                fgService.SetGameTimeScaling(0.0f);
+            }
+
+            public void UnpauseGame() {
+                physicsService.enableStep = true;
+                fgService.SetGameTimeScaling(1.0f);
             }
         }
     }

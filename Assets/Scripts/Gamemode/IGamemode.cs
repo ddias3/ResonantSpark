@@ -15,6 +15,9 @@ namespace ResonantSpark {
             void OnGameEntityNumHitsChange(InGameEntity entity, int numHits);
             void OnHitStunEnd(FightingGameCharacter fgChar);
             void OnHitStunStart(FightingGameCharacter fgChar);
+
+            void SetGameTimeScaling(float scaling);
+            float GetGameTimeScaling();
         }
     }
 }

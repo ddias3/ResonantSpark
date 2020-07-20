@@ -261,6 +261,14 @@ namespace ResonantSpark {
                 }
             }
 
+            public void SetGameTimeScaling(float scaling) {
+                gameTime = scaling;
+            }
+
+            public float GetGameTimeScaling() {
+                return gameTime;
+            }
+
             public int GetMaxPlayers() {
                 return 2;
             }

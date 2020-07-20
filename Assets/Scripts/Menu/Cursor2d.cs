@@ -89,8 +89,8 @@ namespace ResonantSpark {
                 animator.Play("idle");
 
                 currState = CursorState.Seeking;
-                Debug.LogFormat("Start: {0}", rectTransform.position);
-                Debug.LogFormat("End: {0}", ((RectTransform)targetSelectable.GetTransform()).position);
+                //Debug.LogFormat("Start: {0}", rectTransform.position);
+                //Debug.LogFormat("End: {0}", ((RectTransform)targetSelectable.GetTransform()).position);
                 startPoint = rectTransform.position;
                 endPoint = ((RectTransform)targetSelectable.GetTransform()).position;
                 if (callback != null) {

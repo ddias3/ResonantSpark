@@ -10,12 +10,16 @@ namespace ResonantSpark {
         public class PhysicsService : MonoBehaviour {
             public List<GlobalConstraint> constraints;
 
+            public bool enableStep { set; get; }
+
             private PhysicsTracker physics;
 
             private GameTimeManager gameTime;
 
             public void Start() {
                 Physics.autoSimulation = false;
+                enableStep = true;
+
                 physics = PhysicsTracker.Get();
 
                 FrameEnforcer frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
@@ -31,11 +35,14 @@ namespace ResonantSpark {
 
             public void OnDestroy() {
                 Physics.autoSimulation = true;
+                enableStep = false;
                 physics.Clear();
             }
 
             public void FramePhysicsSimulate(int frameIndex) {
-                Physics.Simulate(gameTime.DeltaTime("frameDelta", "game"));
+                if (enableStep) {
+                    Physics.Simulate(gameTime.DeltaTime("frameDelta", "game"));
+                }
             }
 
             public void FrameUpdateMovement(int frameIndex) {

@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using ResonantSpark.Menu;
+
 namespace ResonantSpark {
     namespace MenuStates {
         public class Inactive : MenuBaseState {
+            public PauseMenuRunner runner;
             public Menu.PauseMenu pauseMenu;
 
             public new void Start() {
@@ -21,6 +24,8 @@ namespace ResonantSpark {
 
             public override void Enter(int frameIndex, IState previousState) {
                 inputManager.SetActiveState(this);
+
+                runner.UnpauseGame();
             }
 
             public override void Execute(int frameIndex) {
@@ -28,7 +33,8 @@ namespace ResonantSpark {
             }
 
             public override void Exit(int frameIndex) {
-                // do nothing
+                runner.PauseGame();
+
                 //menuStack.AddMenu(mainMenu);
             }
         }

@@ -5,105 +5,50 @@ using UnityEngine;
 namespace ResonantSpark {
     namespace Menu {
         public class MenuEventHandler {
-            private List<Action> onDownCallbacks;
-            private List<Action> onUpCallbacks;
-            private List<Action> onLeftCallbacks;
-            private List<Action> onRightCallbacks;
+            private static readonly List<string> validEvents = new List<string> {
+                "down",
+                "up",
+                "left",
+                "right",
 
-            private List<Action> onSubmitCallbacks;
-            private List<Action> onCancelCallbacks;
+                "submit",
+                "cancel",
 
-            private List<Action> onPauseCallbacks;
+                "pause",
 
-            private List<Action> onActivateCallbacks;
-            private List<Action> onDeactivateCallbacks;
+                "activate",
+                "deactivate",
+            };
+            private Dictionary<string, List<Action>> callbacks;
 
             public MenuEventHandler() {
-                onDownCallbacks = new List<Action>();
-                onUpCallbacks = new List<Action>();
-                onLeftCallbacks = new List<Action>();
-                onRightCallbacks = new List<Action>();
-
-                onSubmitCallbacks = new List<Action>();
-                onCancelCallbacks = new List<Action>();
-
-                onPauseCallbacks = new List<Action>();
-
-                onActivateCallbacks = new List<Action>();
-                onDeactivateCallbacks = new List<Action>();
+                callbacks = new Dictionary<string, List<Action>>();
+                for (int n = 0; n < validEvents.Count; ++n) {
+                    callbacks.Add(validEvents[n], new List<Action>());
+                }
             }
 
             public void On(string eventName, Action callback) {
-                switch (eventName) {
-                    case "down":
-                        onDownCallbacks.Add(callback);
-                        break;
-                    case "up":
-                        onUpCallbacks.Add(callback);
-                        break;
-                    case "left":
-                        onLeftCallbacks.Add(callback);
-                        break;
-                    case "right":
-                        onRightCallbacks.Add(callback);
-                        break;
-                    case "submit":
-                        onSubmitCallbacks.Add(callback);
-                        break;
-                    case "cancel":
-                        onCancelCallbacks.Add(callback);
-                        break;
-                    case "pause":
-                        onCancelCallbacks.Add(callback);
-                        break;
-                    case "activate":
-                        onActivateCallbacks.Add(callback);
-                        break;
-                    case "deactivate":
-                        onDeactivateCallbacks.Add(callback);
-                        break;
-                    default:
-                        throw new InvalidOperationException("Invalid menu event binding: " + eventName);
+                if (validEvents.Contains(eventName)) {
+                    callbacks[eventName].Add(callback);
+                }
+                else {
+                    throw new InvalidOperationException("Invalid menu event binding: " + eventName);
                 }
             }
 
             public void TriggerEvent(string eventName) {
-                List<Action> callbacks = null;
+                List<Action> callbackList = null;
 
-                switch (eventName) {
-                    case "down":
-                        callbacks = onDownCallbacks;
-                        break;
-                    case "up":
-                        callbacks = onUpCallbacks;
-                        break;
-                    case "left":
-                        callbacks = onLeftCallbacks;
-                        break;
-                    case "right":
-                        callbacks = onRightCallbacks;
-                        break;
-                    case "submit":
-                        callbacks = onSubmitCallbacks;
-                        break;
-                    case "cancel":
-                        callbacks = onCancelCallbacks;
-                        break;
-                    case "pause":
-                        callbacks = onPauseCallbacks;
-                        break;
-                    case "activate":
-                        callbacks = onActivateCallbacks;
-                        break;
-                    case "deactivate":
-                        callbacks = onDeactivateCallbacks;
-                        break;
-                    default:
-                        throw new InvalidOperationException("Invalid menu event triggered: " + eventName);
+                if (validEvents.Contains(eventName)) {
+                    callbackList = this.callbacks[eventName];
+                }
+                else {
+                    throw new InvalidOperationException("Invalid menu event triggered: " + eventName);
                 }
 
-                if (callbacks != null) {
-                    foreach (Action action in callbacks) {
+                if (callbackList != null) {
+                    foreach (Action action in callbackList) {
                         action.Invoke();
                     }
                 }

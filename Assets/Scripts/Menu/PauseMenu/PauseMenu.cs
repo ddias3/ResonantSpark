@@ -34,6 +34,10 @@ namespace ResonantSpark {
                     cursor2d.Fade();
                 });
 
+                eventHandler.On("pause", () => {
+                    ResumeGame();
+                });
+
                 eventHandler.On("down", () => {
                     currSelected.TriggerEvent("down");
                 });
@@ -50,8 +54,6 @@ namespace ResonantSpark {
                     if (currSelected == resume) {
                         cursor2d.Select(resume, () => {
                             ResumeGame();
-                            menuStack.Pop(this);
-                            changeState("inactive");
                         });
                     }
                     else if (currSelected == exit) {
@@ -77,7 +79,8 @@ namespace ResonantSpark {
             }
 
             private void ResumeGame() {
-                // TODO: stuff to unpause.
+                menuStack.Pop(this);
+                changeState("inactive");
             }
         }
     }

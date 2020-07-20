@@ -301,6 +301,14 @@ namespace ResonantSpark {
             public List<Transform> GetLevelBoundaries() {
                 return levelBoundaries;
             }
+
+            public void SetGameTimeScaling(float scaling) {
+                gamemode.SetGameTimeScaling(scaling);
+            }
+
+            public float GetGameTimeScaling() {
+                return gamemode.GetGameTimeScaling();
+            }
         }
     }
 }
