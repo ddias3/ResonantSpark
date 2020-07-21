@@ -8,8 +8,7 @@ using ResonantSpark.Service;
 namespace ResonantSpark {
     namespace Menu {
         public class PauseMenuRunner : MenuRunner {
-            public FightingGameService fgService;
-            public PhysicsService physicsService;
+            public FrameEnforcer frame;
 
             public new void Start() {
                 base.Start();
@@ -33,13 +32,11 @@ namespace ResonantSpark {
             }
 
             public void PauseGame() {
-                physicsService.enableStep = false;
-                fgService.SetGameTimeScaling(0.0f);
+                frame.PauseExecution(true);
             }
 
             public void UnpauseGame() {
-                physicsService.enableStep = true;
-                fgService.SetGameTimeScaling(1.0f);
+                frame.PauseExecution(false);
             }
         }
     }

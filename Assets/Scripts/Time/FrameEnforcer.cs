@@ -55,7 +55,10 @@ namespace ResonantSpark {
         private float startTime = 0.0f;
         private float prevTime = 0.0f;
 
-        private float elapsedTime = 0f;
+        private uint elapsedTimeSec = 0;
+        private double elapsedTimeMilliSec = 0f;
+
+        private float frameSkipTime = 0f;
 
         private int frameIndex = 0;
 
@@ -63,7 +66,7 @@ namespace ResonantSpark {
 
         public void Awake() {
             this.enabled = false;
-            elapsedTime = FRAME_TIME;
+            elapsedTimeMilliSec = FRAME_TIME;
             frameIndex = 0;
 
             gameTime = gameObject.GetComponent<GameTimeManager>();
@@ -91,14 +94,12 @@ namespace ResonantSpark {
         public void FixedUpdate() {
             int stepsInFrame = 0;
 
-            deltaTime = Time.time - prevTime;
+            //deltaTime = Time.time - prevTime;
 
-            while (elapsedTime > FRAME_TIME * frameIndex) {
+            while (frameSkipTime > FRAME_TIME) {
                 foreach (FrameEnforcerCallback action in updateActions) {
                     action.callback.Invoke(frameIndex);
                 }
-
-                prevTime = Time.time;
 
                 stepsInFrame++;
                 updateCounter++;
@@ -106,24 +107,27 @@ namespace ResonantSpark {
                 frameIndex++;
                 frameIndexText.text = string.Format("Fr#: {0}", frameIndex.ToString());
 
-                elapsedTime -= FRAME_TIME;
+                frameSkipTime -= FRAME_TIME;
             }
 
-            //elapsedTime += Time.fixedDeltaTime;
-            elapsedTime = Time.time - startTime;
+            frameSkipTime += Time.fixedDeltaTime;
 
-            //if (stepsInFrame > 1) {
-            //    Debug.LogWarning("Frame Skip at frame(" + frameIndex + "). Stepped " + stepsInFrame + " times in single frame");
-            //}
+            elapsedTimeMilliSec += Time.fixedDeltaTime;
+            if (elapsedTimeMilliSec > 1.0) {
+                elapsedTimeSec += 1;
+                elapsedTimeMilliSec -= 1.0;
+            }
 
-            if (Time.time - timeSnapshot >= 0.45) {
-                fpsCounterText.text = ((updateCounter - updateCounterSnapshot) / (Time.time - timeSnapshot)).ToString("F1") + " FPS";
-                timeSnapshot = Time.time;
+            if ((elapsedTimeSec + elapsedTimeMilliSec) - timeSnapshot >= 0.45) {
+                fpsCounterText.text = ((updateCounter - updateCounterSnapshot) / ((elapsedTimeSec + elapsedTimeMilliSec) - timeSnapshot)).ToString("F1") + " FPS";
+                timeSnapshot = (float)(elapsedTimeSec + elapsedTimeMilliSec);
                 updateCounterSnapshot = updateCounter;
             }
         }
 
         public void Update() {
+            deltaTime = Time.deltaTime;
+
             if (UnityEngine.InputSystem.Keyboard.current.spaceKey.wasPressedThisFrame) {
                 Debug.LogFormat("Frame : {0}", frameIndex);
                 Debug.LogFormat("Time : {0}", Time.time);
@@ -138,6 +142,10 @@ namespace ResonantSpark {
 
             this.updateActions.Add(feCb);
             this.updateActions.Sort();
+        }
+
+        public void PauseExecution(bool pause) {
+            this.enabled = !pause;
         }
 
         public void StartFrameEnforcer() {

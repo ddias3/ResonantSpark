@@ -74,7 +74,6 @@ namespace ResonantSpark {
             }
 
             public void CalculateFinalVelocity() {
-                Debug.Log(rigidbody.velocity.ToString("F3"));
                 rigidbody.velocity = charVelocity.CalculateVelocity(rigidbody.velocity);
 
                 for (int n = 0; n < forces.Count; ++n) {

@@ -8,7 +8,8 @@ namespace ResonantSpark {
     namespace MenuStates {
         public class Inactive : MenuBaseState {
             public PauseMenuRunner runner;
-            public Menu.PauseMenu pauseMenu;
+            public Menu.PauseMenuVersus pauseMenu;
+            public Menu.PauseMenuTraining trainingMenu;
 
             public new void Start() {
                 base.Start();
@@ -17,8 +18,8 @@ namespace ResonantSpark {
 
             public override void TriggerEvent(string eventName) {
                 if (eventName == "pause") {
-                    menuStack.AddMenu(pauseMenu);
-                    changeState(states.Get("pauseMenu"));
+                    menuStack.AddMenu(trainingMenu);
+                    changeState(states.Get("pauseMenuTraining"));
                 }
             }
 
@@ -34,8 +35,6 @@ namespace ResonantSpark {
 
             public override void Exit(int frameIndex) {
                 runner.PauseGame();
-
-                //menuStack.AddMenu(mainMenu);
             }
         }
     }
