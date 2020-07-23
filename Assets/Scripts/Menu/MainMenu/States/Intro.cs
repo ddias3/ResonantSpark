@@ -4,6 +4,7 @@ using UnityEngine;
 
 using ResonantSpark.Utility;
 using ResonantSpark.Menu;
+using ResonantSpark.DeviceManagement;
 
 namespace ResonantSpark {
     namespace MenuStates {
@@ -23,6 +24,10 @@ namespace ResonantSpark {
                 if (eventName == "submit") {
                     changeState(states.Get("mainMenu"));
                 }
+            }
+
+            public override void TriggerEvent(string eventName, GameDeviceMapping devMap) {
+                // do nothing
             }
 
             public override void Enter(int frameIndex, IState previousState) {

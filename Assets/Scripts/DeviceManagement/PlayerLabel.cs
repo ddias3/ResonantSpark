@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace ResonantSpark {
-    namespace Character {
+    namespace DeviceManagement {
         public enum PlayerLabel : int {
             None,
             Player1,

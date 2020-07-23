@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 
+using ResonantSpark.DeviceManagement;
+
 namespace ResonantSpark {
     namespace Menu {
         public class ControllerSelectMenu : Menu {
@@ -28,6 +30,9 @@ namespace ResonantSpark {
                 }
 
                 cursor2d.Hide();
+                animator3d.Play("hidden");
+                animator2d.Play("hidden");
+                controllerSelect.TriggerEvent("deactivate");
 
                 eventHandler.On("activate", () => {
                     animator3d.SetFloat("speed", 1.0f);
@@ -77,16 +82,6 @@ namespace ResonantSpark {
                         currSelected.TriggerEvent("up");
                     }
                 });
-                eventHandler.On("left", () => {
-                    if (currSelected != retSelectable) {
-                        currSelected.TriggerEvent("left");
-                    }
-                });
-                eventHandler.On("right", () => {
-                    if (currSelected != retSelectable) {
-                        currSelected.TriggerEvent("right");
-                    }
-                });
                 eventHandler.On("submit", () => {
                     if (currSelected == retSelectable) {
                         cursor2d.Select(retSelectable, () => {
@@ -108,24 +103,51 @@ namespace ResonantSpark {
                         changeState("mainMenu");
                     }
                     else {
-                        cursor2d.Highlight(retSelectable);
-                        currSelected = retSelectable;
+                        currSelected.TriggerEvent("cancel");
+
+                        //cursor2d.Highlight(retSelectable);
+                        //currSelected = retSelectable;
+                    }
+                });
+
+                eventHandler_devMapping.On("left", (devMap) => {
+                    if (currSelected != retSelectable) {
+                        currSelected.TriggerEvent("left", devMap);
+                    }
+                });
+                eventHandler_devMapping.On("right", (devMap) => {
+                    if (currSelected != retSelectable) {
+                        currSelected.TriggerEvent("right", devMap);
+                    }
+                });
+
+                eventHandler_devMapping.On("submit", (devMap) => {
+                    if (currSelected == controllerSelect) {
+                        currSelected.TriggerEvent("submit", devMap);
+                    }
+                });
+                eventHandler_devMapping.On("cancel", (devMap) => {
+                    if (currSelected == controllerSelect) {
+                        currSelected.TriggerEvent("cancel", devMap);
                     }
                 });
 
                 controllerSelect.On("down", () => {
                     cursor2d.Highlight(retSelectable);
                     currSelected = retSelectable;
-                }).On("submit", () => {
-                    if (controllerSelect.ValidateControllers()) {
-                        // TODO: set up which controller for which player.
-                        menuStack.Pop(this);
-                        menuStack.AddMenu(characterSelectMenu);
-                        animatorPlayerDesignation.Play("controllerSelectToCharacterSelect", 0, 0.0f);
+                });
 
-                        camera.Play("controllerSelectToCharacterSelect");
-                        changeState("characterSelect");
-                    }
+                controllerSelect.OnMenuComplete((player1, player2) => {
+                    Persistence persistence = Persistence.Get();
+                    persistence.SetDeviceMappingP1(player1);
+                    persistence.SetDeviceMappingP2(player2);
+
+                    menuStack.Pop(this);
+                    menuStack.AddMenu(characterSelectMenu);
+                    animatorPlayerDesignation.Play("controllerSelectToCharacterSelect", 0, 0.0f);
+
+                    camera.Play("controllerSelectToCharacterSelect");
+                    changeState("characterSelect");
                 });
             }
 

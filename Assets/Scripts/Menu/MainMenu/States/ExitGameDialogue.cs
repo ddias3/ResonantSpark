@@ -4,6 +4,7 @@ using UnityEngine;
 
 using ResonantSpark.Utility;
 using ResonantSpark.Menu;
+using ResonantSpark.DeviceManagement;
 
 namespace ResonantSpark {
     namespace MenuStates {
@@ -22,6 +23,10 @@ namespace ResonantSpark {
 
             public override void TriggerEvent(string eventName) {
                 exitGameDialogue.TriggerEvent(eventName);
+            }
+
+            public override void TriggerEvent(string eventName, GameDeviceMapping devMap) {
+                exitGameDialogue.TriggerEvent(eventName, devMap);
             }
 
             public override void Enter(int frameIndex, IState previousState) {

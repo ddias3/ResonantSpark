@@ -1,78 +1,143 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-using ResonantSpark.Character;
+using ResonantSpark.DeviceManagement;
 
 namespace ResonantSpark {
     namespace Menu {
         public class ControllerSelect : Selectable {
             public ControllerIconSelectable controllerIconPrefab;
+            public ControllerIconSelectable keyboardIconPrefab;
 
             public Transform controllerPointsStart;
             public Transform controllerPointsOffset;
-            public int numControllers = 1;
 
+            private DeviceManager deviceManager;
+            private Vector3 offset;
+
+            private Dictionary<GameDeviceMapping, ControllerIconSelectable> devToIconMap;
             private List<ControllerIconSelectable> controllers;
-            private ControllerIconSelectable player1 = null;
-            private ControllerIconSelectable player2 = null;
+
+            private GameDeviceMapping player1 = null;
+            private GameDeviceMapping player2 = null;
+
+            private bool active = false;
+
+            private Action<GameDeviceMapping, GameDeviceMapping> onMenuCompleteCallback;
 
             public void Start() {
+                active = false;
+
+                devToIconMap = new Dictionary<GameDeviceMapping, ControllerIconSelectable>();
                 controllers = new List<ControllerIconSelectable>();
 
-                Vector3 offset = controllerPointsOffset.position - controllerPointsStart.position;
-                for (int n = 0; n < numControllers; ++n) {
-                    ControllerIconSelectable controller = Instantiate(controllerIconPrefab,
-                            controllerPointsStart.position + n * offset,
-                            Quaternion.identity,
-                            transform)
-                        .GetComponent<ControllerIconSelectable>();
+                deviceManager = DeviceManager.Get();
 
-                    controller.TriggerEvent("deactivate");
-                    controllers.Add(controller);
-                }
+                deviceManager.AddOnDeviceAdded(OnDeviceAdded);
+                deviceManager.AddOnDeviceRemoved(OnDeviceRemoved);
 
-                eventHandler.On("activate", () => {
+                offset = controllerPointsOffset.position - controllerPointsStart.position;
+
+                deviceManager.ForEach((devMap, index) => {
+                    CreateControllerIcon(devMap);
+                });
+
+                On("activate", () => {
+                    active = true;
                     player1 = null;
                     player2 = null;
                     for (int n = 0; n < controllers.Count; ++n) {
                         controllers[n].TriggerEvent("activate");
                     }
                 });
-                eventHandler.On("deactivate", () => {
+                On("deactivate", () => {
+                    active = false;
                     for (int n = 0; n < controllers.Count; ++n) {
                         controllers[n].TriggerEvent("deactivate");
                     }
                 });
-                eventHandler.On("left", () => {
-                    // NEED to pass in controller information to determine which one moves left.
-                    for (int n = 0; n < numControllers; ++n) {
-                        controllers[n].MovePosition(-1);
+                On("left", (GameDeviceMapping devMap) => {
+                    ControllerIconSelectable currIcon = devToIconMap[devMap];
+                    if (!currIcon.Readied()) {
+                        currIcon.MovePosition(-1);
                     }
                 });
-                eventHandler.On("right", () => {
-                    // NEED to pass in controller information to determine which one moves right.
-                    for (int n = 0; n < numControllers; ++n) {
-                        controllers[n].MovePosition(1);
+                On("right", (GameDeviceMapping devMap) => {
+                    ControllerIconSelectable currIcon = devToIconMap[devMap];
+                    if (!currIcon.Readied()) {
+                        currIcon.MovePosition(1);
                     }
+                });
+                On("submit", (GameDeviceMapping devMap) => {
+                    ControllerIconSelectable currIcon = devToIconMap[devMap];
+                    if (!currIcon.Readied()) {
+                        if (currIcon.GetPosition() == -1) {
+                            player1 = devMap;
+                            MoveOtherIcons(currIcon, invalidPosition: -1, moveAmount: 1);
+                        }
+                        else if (currIcon.GetPosition() == 1) {
+                            player2 = devMap;
+                            MoveOtherIcons(currIcon, invalidPosition: 1, moveAmount: -1);
+                        }
+                    }
+                    else {
+                        onMenuCompleteCallback(player1, player2);
+                    }
+                    currIcon.TriggerEvent("submit");
+                });
+                On("cancel", (GameDeviceMapping devMap) => {
+                    ControllerIconSelectable currIcon = devToIconMap[devMap];
+                    if (currIcon.GetPosition() == -1) {
+                        player1 = null;
+                        EnablePosition(-1);
+                    }
+                    else if (currIcon.GetPosition() == 1) {
+                        player2 = null;
+                        EnablePosition(1);
+                    }
+                    currIcon.TriggerEvent("cancel");
                 });
             }
 
-            public bool ValidateControllers() {
-                for (int n = 0; n < numControllers; ++n) {
-                    controllers[n].TriggerEvent("submit");
-                }
+            public void OnDestroy() {
+                deviceManager.RemoveOnDeviceAdded(OnDeviceAdded);
+                deviceManager.RemoveOnDeviceRemoved(OnDeviceRemoved);
+            }
 
+            public void OnDeviceAdded(GameDeviceMapping devMap) {
+                CreateControllerIcon(devMap);
+            }
+
+            public void OnDeviceRemoved(GameDeviceMapping devMap) {
+                ControllerIconSelectable currIcon = devToIconMap[devMap];
+                controllers.Remove(currIcon);
+                devToIconMap.Remove(devMap);
+
+                Destroy(currIcon.gameObject);
+            }
+
+            public void OnMenuComplete(Action<GameDeviceMapping, GameDeviceMapping> callback) {
+                onMenuCompleteCallback = callback;
+            }
+
+            private void MoveOtherIcons(ControllerIconSelectable currIcon, int invalidPosition, int moveAmount) {
                 for (int n = 0; n < controllers.Count; ++n) {
-                    ControllerIconSelectable curr = controllers[n];
-                    if (curr.GetPlayerLabel() == PlayerLabel.Player1) {
-                        player1 = curr;
-                    }
-                    else if (curr.GetPlayerLabel() == PlayerLabel.Player2) {
-                        player2 = curr;
+                    if (controllers[n] != currIcon) {
+                        var otherIcon = controllers[n];
+
+                        otherIcon.DisablePosition(invalidPosition);
+                        if (currIcon.GetPosition() == otherIcon.GetPosition()) {
+                            otherIcon.MovePosition(moveAmount);
+                        }
                     }
                 }
+            }
 
-                return player1 != null || player2 != null;
+            private void EnablePosition(int validPosition) {
+                for (int n = 0; n < controllers.Count; ++n) {
+                    controllers[n].EnablePosition(validPosition);
+                }
             }
 
             public override float Width() {
@@ -85,6 +150,34 @@ namespace ResonantSpark {
 
             public override Vector3 Offset() {
                 return Vector3.forward;
+            }
+
+            private void CreateControllerIcon(GameDeviceMapping devMap) {
+                ControllerIconSelectable currIcon;
+                if (deviceManager.IsKeyboard(devMap)) {
+                    currIcon = Instantiate(keyboardIconPrefab,
+                        controllerPointsStart.position + 0 * offset,
+                        Quaternion.identity,
+                        transform)
+                    .GetComponent<ControllerIconSelectable>();
+                }
+                else {
+                    currIcon = Instantiate(controllerIconPrefab,
+                        controllerPointsStart.position + devMap.displayNumber * offset,
+                        Quaternion.identity,
+                        transform)
+                    .GetComponent<ControllerIconSelectable>();
+                    currIcon.SetText("Controller " + devMap.displayNumber);
+                }
+
+                if (active) {
+                    currIcon.TriggerEvent("activate");
+                }
+                else {
+                    currIcon.TriggerEvent("deactivate");
+                }
+                devToIconMap.Add(devMap, currIcon);
+                controllers.Add(currIcon);
             }
         }
     }

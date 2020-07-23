@@ -4,6 +4,7 @@ using UnityEngine;
 
 using ResonantSpark.Utility;
 using ResonantSpark.Menu;
+using ResonantSpark.DeviceManagement;
 
 namespace ResonantSpark {
     namespace MenuStates {
@@ -25,6 +26,7 @@ namespace ResonantSpark {
             }
 
             public abstract void TriggerEvent(string eventName);
+            public abstract void TriggerEvent(string eventName, GameDeviceMapping devMap);
 
             public abstract void Enter(int frameIndex, IState previousState);
             public abstract void Execute(int frameIndex);

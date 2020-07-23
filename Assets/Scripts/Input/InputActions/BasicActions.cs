@@ -269,7 +269,7 @@ namespace ResonantSpark
                     ""id"": ""a80c2d57-3806-4372-9038-b3fa922fe834"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """"
+                    ""interactions"": ""Press""
                 },
                 {
                     ""name"": ""Cancel"",
@@ -277,7 +277,7 @@ namespace ResonantSpark
                     ""id"": ""c77a51cc-4711-437c-98f9-b66d23866275"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """"
+                    ""interactions"": ""Press""
                 },
                 {
                     ""name"": ""Navigate"",
@@ -286,6 +286,14 @@ namespace ResonantSpark
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Pause"",
+                    ""type"": ""Button"",
+                    ""id"": ""0cb9307a-8a9b-4015-bb0a-8eb407cb4489"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press""
                 }
             ],
             ""bindings"": [
@@ -326,6 +334,17 @@ namespace ResonantSpark
                     ""name"": """",
                     ""id"": ""28ba5a0b-f8e6-4739-b91f-fc72d8e514ba"",
                     ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b529ae83-9c32-4a19-8dcc-7fe257314485"",
+                    ""path"": ""<Gamepad>/select"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
@@ -392,7 +411,7 @@ namespace ResonantSpark
                     ""name"": """",
                     ""id"": ""62b2de9a-f413-4e8f-890a-934537513f2d"",
                     ""path"": ""<Gamepad>/leftStick"",
-                    ""interactions"": """",
+                    ""interactions"": ""Press"",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
                     ""action"": ""Navigate"",
@@ -407,6 +426,28 @@ namespace ResonantSpark
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
                     ""action"": ""Navigate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0bdd92af-0e8a-41b2-860c-e45d7b414652"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b509b18c-9c25-498a-8aa4-05409cb81259"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Pause"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -451,6 +492,7 @@ namespace ResonantSpark
             m_Ui_Submit = m_Ui.FindAction("Submit", throwIfNotFound: true);
             m_Ui_Cancel = m_Ui.FindAction("Cancel", throwIfNotFound: true);
             m_Ui_Navigate = m_Ui.FindAction("Navigate", throwIfNotFound: true);
+            m_Ui_Pause = m_Ui.FindAction("Pause", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -576,6 +618,7 @@ namespace ResonantSpark
         private readonly InputAction m_Ui_Submit;
         private readonly InputAction m_Ui_Cancel;
         private readonly InputAction m_Ui_Navigate;
+        private readonly InputAction m_Ui_Pause;
         public struct UiActions
         {
             private @BasicActions m_Wrapper;
@@ -583,6 +626,7 @@ namespace ResonantSpark
             public InputAction @Submit => m_Wrapper.m_Ui_Submit;
             public InputAction @Cancel => m_Wrapper.m_Ui_Cancel;
             public InputAction @Navigate => m_Wrapper.m_Ui_Navigate;
+            public InputAction @Pause => m_Wrapper.m_Ui_Pause;
             public InputActionMap Get() { return m_Wrapper.m_Ui; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -601,6 +645,9 @@ namespace ResonantSpark
                     @Navigate.started -= m_Wrapper.m_UiActionsCallbackInterface.OnNavigate;
                     @Navigate.performed -= m_Wrapper.m_UiActionsCallbackInterface.OnNavigate;
                     @Navigate.canceled -= m_Wrapper.m_UiActionsCallbackInterface.OnNavigate;
+                    @Pause.started -= m_Wrapper.m_UiActionsCallbackInterface.OnPause;
+                    @Pause.performed -= m_Wrapper.m_UiActionsCallbackInterface.OnPause;
+                    @Pause.canceled -= m_Wrapper.m_UiActionsCallbackInterface.OnPause;
                 }
                 m_Wrapper.m_UiActionsCallbackInterface = instance;
                 if (instance != null)
@@ -614,6 +661,9 @@ namespace ResonantSpark
                     @Navigate.started += instance.OnNavigate;
                     @Navigate.performed += instance.OnNavigate;
                     @Navigate.canceled += instance.OnNavigate;
+                    @Pause.started += instance.OnPause;
+                    @Pause.performed += instance.OnPause;
+                    @Pause.canceled += instance.OnPause;
                 }
             }
         }
@@ -650,6 +700,7 @@ namespace ResonantSpark
             void OnSubmit(InputAction.CallbackContext context);
             void OnCancel(InputAction.CallbackContext context);
             void OnNavigate(InputAction.CallbackContext context);
+            void OnPause(InputAction.CallbackContext context);
         }
     }
 }

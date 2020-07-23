@@ -28,9 +28,9 @@ namespace ResonantSpark {
 
             public void SetUpControllers() {
                 for (int n = 0; n < playerService.GetMaxPlayers(); ++n) {
-                    if (persistenceService.GetControllerIndex(n) >= 0) {
+                    if (persistenceService.GetDeviceMapping(n) != null) {
                         HumanInputController humanInput = GameObject.Instantiate<HumanInputController>(prefab, inputs.transform);
-                        humanInput.SetControllerId(n);
+                        humanInput.SetDeviceMap(persistenceService.GetDeviceMapping(n));
 
                         controllers.Add(n, humanInput);
                     }

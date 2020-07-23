@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using ResonantSpark.DeviceManagement;
+
 namespace ResonantSpark {
     public class Persistence {
         private static Persistence pers = null;
@@ -19,7 +21,9 @@ namespace ResonantSpark {
         public Dictionary<string, float> optionValues { get; private set; }
         public List<string> characterSelection { get; private set; }
         public List<int> colorSelection { get; private set; }
-        public List<int> controllerIndex { get; private set; }
+
+        public GameDeviceMapping player1 { get; private set; }
+        public GameDeviceMapping player2 { get; private set; }
 
         public void SetCharacterSelected(int index, string characterName) {
             if (characterSelection.Count <= index) {
@@ -41,14 +45,12 @@ namespace ResonantSpark {
             colorSelection[index] = colorIndex;
         }
 
-        public void SetControllerSelected(int index, int controllerIndex) {
-            if (this.controllerIndex.Count <= index) {
-                for (int n = this.controllerIndex.Count; n < index + 1; ++n) {
-                    this.controllerIndex.Add(-1);
-                }
-            }
+        public void SetDeviceMappingP1(GameDeviceMapping devMap) {
+            player1 = devMap;
+        }
 
-            this.controllerIndex[index] = controllerIndex;
+        public void SetDeviceMappingP2(GameDeviceMapping devMap) {
+            player2 = devMap;
         }
 
         public void SetOptionValue(string key, float value) {
@@ -67,6 +69,17 @@ namespace ResonantSpark {
             return optionValues[key];
         }
 
+        public int GetHumanPlayers() {
+            int humanPlayers = 0;
+            if (player1 != null) {
+                humanPlayers += 1;
+            }
+            if (player2 != null) {
+                humanPlayers += 1;
+            }
+            return humanPlayers;
+        }
+
         public void MenuLoaded() {
             firstTimeLoad = false;
         }
@@ -79,9 +92,8 @@ namespace ResonantSpark {
                 { "effectsVolume", 1.0f },
                 { "musicVolume", 1.0f },
             };
-            characterSelection = new List<string>();
+            characterSelection = new List<string> { "lawrence", "lawrence" };
             colorSelection = new List<int> { 0, 0 };
-            controllerIndex = new List<int> { 0, -1 };
         }
     }
 }

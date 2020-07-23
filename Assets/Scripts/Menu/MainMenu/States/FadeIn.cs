@@ -5,6 +5,7 @@ using UnityEngine;
 using ResonantSpark.Utility;
 using ResonantSpark.UI;
 using ResonantSpark.Menu;
+using ResonantSpark.DeviceManagement;
 
 namespace ResonantSpark {
     namespace MenuStates {
@@ -30,6 +31,10 @@ namespace ResonantSpark {
             }
 
             public override void TriggerEvent(string eventName) {
+                // do nothing
+            }
+
+            public override void TriggerEvent(string eventName, GameDeviceMapping devMap) {
                 // do nothing
             }
 

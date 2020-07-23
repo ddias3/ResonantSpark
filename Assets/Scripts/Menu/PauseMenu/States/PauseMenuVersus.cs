@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using ResonantSpark.DeviceManagement;
+
 namespace ResonantSpark {
     namespace MenuStates {
         public class PauseMenuVersus : MenuBaseState {
@@ -9,7 +11,7 @@ namespace ResonantSpark {
 
             public new void Start() {
                 base.Start();
-                states.Register(this, "pauseMenu");
+                states.Register(this, "pauseMenuVersus");
 
                 pauseMenu.SetChangeStateCallback(stateName => {
                     changeState(states.Get(stateName));
@@ -21,8 +23,13 @@ namespace ResonantSpark {
                 pauseMenu.TriggerEvent(eventName);
             }
 
+            public override void TriggerEvent(string eventName, GameDeviceMapping devMap) {
+                pauseMenu.TriggerEvent(eventName, devMap);
+            }
+
             public override void Enter(int frameIndex, IState previousState) {
                 inputManager.SetActiveState(this);
+                menuStack.AddMenu(pauseMenu);
             }
 
             public override void Execute(int frameIndex) {

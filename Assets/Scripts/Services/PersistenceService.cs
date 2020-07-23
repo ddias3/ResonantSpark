@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using ResonantSpark.DeviceManagement;
+
 namespace ResonantSpark {
     namespace Service {
         public class PersistenceService : MonoBehaviour, IPersistenceService {
@@ -10,8 +12,7 @@ namespace ResonantSpark {
             [Tooltip("List of strings with the character names, use in-house names for these")]
             public List<string> characterSelections;
 
-            [Tooltip("The controller index for each character in the game. For an NPC, use number -1. Human players are derived from controllers")]
-            public List<int> controllerIndex;
+            public List<GameDeviceMapping> deviceMapping;
 
             public GameObject oneOnOneRoundBasedPrefab;
             public GameObject trainingModePrefab;
@@ -23,12 +24,20 @@ namespace ResonantSpark {
             private Persistence persObj;
 
             public void Start() {
+                deviceMapping = new List<GameDeviceMapping>();
+
                 if (Persistence.Exists()) {
                     persObj = Persistence.Get();
 
-                    gamemodeStr         = persObj.gamemode;
+                    gamemodeStr = persObj.gamemode;
                     characterSelections = persObj.characterSelection;
-                    controllerIndex     = persObj.controllerIndex;
+
+                    deviceMapping.Add(persObj.player1);
+                    deviceMapping.Add(persObj.player2);
+                }
+                else {
+                    deviceMapping.Add(new GameDeviceMapping(null));
+                    deviceMapping.Add(null);
                 }
 
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(PersistenceService));
@@ -64,18 +73,12 @@ namespace ResonantSpark {
                 }
             }
 
-            public int GetControllerIndex(int playerIndex) {
-                return controllerIndex[playerIndex];
+            public GameDeviceMapping GetDeviceMapping(int playerIndex) {
+                return deviceMapping[playerIndex];
             }
 
             public int GetTotalHumanPlayers() {
-                int counter = 0;
-                for (int n = 0; n < controllerIndex.Count; ++n) {
-                    if (controllerIndex[n] < 0) {
-                        ++counter;
-                    }
-                }
-                return counter;
+                return persObj.GetHumanPlayers();
             }
         }
     }

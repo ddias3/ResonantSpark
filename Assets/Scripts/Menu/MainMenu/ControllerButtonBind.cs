@@ -9,7 +9,8 @@ namespace ResonantSpark {
                 //}
 
                 //cursor2d.Hide();
-
+                //animator2d.Play("hidden");
+                //
                 //eventHandler.On("activate", () => {
                 //    animator3d.SetFloat("speed", 1.0f);
                 //    animator2d.SetFloat("speed", 1.0f);

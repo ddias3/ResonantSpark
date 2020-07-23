@@ -13,6 +13,7 @@ namespace ResonantSpark {
 
             public void Start() {
                 cursor.Hide();
+                animator.Play("hidden");
 
                 eventHandler.On("activate", () => {
                     animator.Play("appear", 0, 0.0f);

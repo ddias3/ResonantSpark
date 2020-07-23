@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 
+using ResonantSpark.DeviceManagement;
+
 namespace ResonantSpark {
     namespace Menu {
         public class CharacterSelectMenu : Menu {
@@ -23,7 +25,8 @@ namespace ResonantSpark {
             public TMPro.TMP_Text player1Name;
             public TMPro.TMP_Text player2Name;
 
-            public CharacterSelect characterSelect;
+            public CharacterSelect1Player characterSelect1P;
+            public CharacterSelect2Player characterSelect2P;
             public Selectable retSelectable;
 
             private Selectable currSelected = null;
@@ -32,17 +35,27 @@ namespace ResonantSpark {
 
             public void Start() {
                 if (currSelected == null) {
-                    currSelected = characterSelect;
+                    currSelected = characterSelect1P;
                 }
 
+                characterSelect1P.SetCharacterSelectMenu(this);
+                characterSelect2P.SetCharacterSelectMenu(this);
+
+                characterSelect1P.SetOnMenuCompleteCallback(OnMenuComplete);
+                characterSelect2P.SetOnMenuCompleteCallback(OnMenuComplete);
+
+                characterSelect1P.SetOnMenuCancelCallback(OnMenuCancel);
+                characterSelect2P.SetOnMenuCancelCallback(OnMenuCancel);
+
+                Persistence persistence = Persistence.Get();
+
                 cursor2d.Hide();
+                characterSelect1P.TriggerEvent("deactivate");
+                characterSelect2P.TriggerEvent("deactivate");
 
                 eventHandler.On("activate", () => {
-                    playerChoosing = 1;
-                    player1Billboard.materials = new Material[] { defaultMaterial };
-                    player2Billboard.materials = new Material[] { defaultMaterial };
-                    player1Name.text = "";
-                    player2Name.text = "";
+                    ResetBillboard(1);
+                    ResetBillboard(2);
 
                     animator3d.SetFloat("speed", 1.0f);
                     animator2d.SetFloat("speed", 1.0f);
@@ -59,8 +72,13 @@ namespace ResonantSpark {
                     animatorRet.Play("appear", 0, 0.0f);
 
                     cursor2d.Hide();
-                    currSelected = characterSelect;
-                    characterSelect.TriggerEvent("activate");
+                    if (persistence.GetHumanPlayers() == 1) {
+                        currSelected = characterSelect1P;
+                    }
+                    else if (persistence.GetHumanPlayers() == 2) {
+                        currSelected = characterSelect2P;
+                    }
+                    currSelected.TriggerEvent("activate");
                 });
                 eventHandler.On("deactivate", () => {
                     animator3d.SetFloat("speed", -1.0f);
@@ -78,7 +96,12 @@ namespace ResonantSpark {
                     animatorRet.Play("disappear", 0, 1.0f);
 
                     cursor2d.Fade();
-                    characterSelect.TriggerEvent("deactivate");
+                    if (persistence.GetHumanPlayers() == 1) {
+                        characterSelect1P.TriggerEvent("deactivate");
+                    }
+                    else if (persistence.GetHumanPlayers() == 2) {
+                        characterSelect2P.TriggerEvent("deactivate");
+                    }
                 });
 
                 eventHandler.On("submit", () => {
@@ -92,15 +115,15 @@ namespace ResonantSpark {
                         currSelected.TriggerEvent("submit");
                     }
                 });
-                eventHandler.On("cancel", () => {
-                    if (currSelected == retSelectable) {
-                        GoToControllerSelect();
-                    }
-                    else {
-                        cursor2d.Highlight(retSelectable);
-                        currSelected = retSelectable;
-                    }
-                });
+                //eventHandler.On("cancel", () => {
+                //    if (currSelected == retSelectable) {
+                //        GoToControllerSelect();
+                //    }
+                //    else {
+                //        cursor2d.Highlight(retSelectable);
+                //        currSelected = retSelectable;
+                //    }
+                //});
                 eventHandler.On("left", () => {
                     if (currSelected != retSelectable) {
                         currSelected.TriggerEvent("left");
@@ -114,7 +137,7 @@ namespace ResonantSpark {
                 eventHandler.On("up", () => {
                     if (currSelected == retSelectable) {
                         cursor2d.Fade();
-                        currSelected = characterSelect;
+                        //currSelected = characterSelect;
                     }
                     else {
                         currSelected.TriggerEvent("up");
@@ -124,30 +147,64 @@ namespace ResonantSpark {
                     currSelected.TriggerEvent("down");
                 });
 
-                characterSelect.On("down", () => {
-                    characterSelect.FadeCursor();
-                    cursor2d.Highlight(retSelectable);
-
-                    currSelected = retSelectable;
-                }).On("submit", () => {
-                    if (playerChoosing == 1) {
-                        player1Billboard.materials = new Material[] { characterSelect.GetPlayerPortrait() };
-                        player1Name.text = characterSelect.GetPlayerName();
-                        Persistence.Get().SetCharacterSelected(0, "lawrence");
-                        playerChoosing = 2;
+                eventHandler_devMapping.On("left", (GameDeviceMapping devMap) => {
+                    if (currSelected != retSelectable) {
+                        currSelected.TriggerEvent("left", devMap);
                     }
-                    else if (playerChoosing == 2) {
-                        player2Billboard.materials = new Material[] { characterSelect.GetPlayerPortrait() };
-                        player2Name.text = characterSelect.GetPlayerName();
-                        Persistence.Get().SetCharacterSelected(1, "lawrence");
-                        GoToLevelSelect();
-                    }
-                }).On("cancel", () => {
-                    characterSelect.FadeCursor();
-                    cursor2d.Highlight(retSelectable);
-
-                    currSelected = retSelectable;
                 });
+                eventHandler_devMapping.On("right", (GameDeviceMapping devMap) => {
+                    if (currSelected != retSelectable) {
+                        currSelected.TriggerEvent("right", devMap);
+                    }
+                });
+                eventHandler_devMapping.On("up", (GameDeviceMapping devMap) => {
+                    if (currSelected == retSelectable) {
+                        cursor2d.Fade();
+                        //currSelected = characterSelect;
+                    }
+                    else {
+                        currSelected.TriggerEvent("up", devMap);
+                    }
+                });
+                eventHandler_devMapping.On("down", (GameDeviceMapping devMap) => {
+                    currSelected.TriggerEvent("down", devMap);
+                });
+                eventHandler_devMapping.On("submit", (GameDeviceMapping devMap) => {
+                    if (currSelected != retSelectable) {
+                        currSelected.TriggerEvent("submit", devMap);
+                    }
+                });
+                eventHandler_devMapping.On("cancel", (GameDeviceMapping devMap) => {
+                    if (currSelected != retSelectable) {
+                        currSelected.TriggerEvent("cancel", devMap);
+                    }
+                });
+
+                //characterSelect1P.On("down", (GameDeviceMapping devMap) => {
+                //    if (persistence.player1 == devMap || persistence.player2 == devMap) {
+                //        characterSelect1P.FadeCursor();
+                //        cursor2d.Highlight(retSelectable);
+                //        currSelected = retSelectable;
+                //    }
+                //});
+
+                //characterSelect2P.On("down", (GameDeviceMapping devMap) => {
+                //    if (persistence.player1 == devMap) {
+                //        characterSelect2P.FadeCursor(1);
+                //    }
+                //    else if (persistence.player2 == devMap) {
+                //        characterSelect2P.FadeCursor(2);
+                //    }
+                //    cursor2d.Highlight(retSelectable);
+                //});
+            }
+
+            public void OnMenuComplete() {
+                GoToLevelSelect();
+            }
+
+            public void OnMenuCancel() {
+                GoToControllerSelect();
             }
 
             public void HideReturnButton() {
@@ -162,11 +219,31 @@ namespace ResonantSpark {
                 animatorRet.Play("appear", 0, 0.0f);
             }
 
+            public void UpdateBillboard(int playerId, Material portrait, string name) {
+                if (playerId == 1) {
+                    player1Billboard.materials = new Material[] { portrait };
+                    player1Name.text = name;
+                }
+                else if (playerId == 2) {
+                    player2Billboard.materials = new Material[] { portrait };
+                    player2Name.text = name;
+                }
+            }
+
+            public void ResetBillboard(int playerId) {
+                if (playerId == 1) {
+                    player1Billboard.materials = new Material[] { defaultMaterial };
+                    player1Name.text = "";
+                }
+                else if (playerId == 2) {
+                    player2Billboard.materials = new Material[] { defaultMaterial };
+                    player2Name.text = "";
+                }
+            }
+
             private void GoToControllerSelect() {
-                player1Billboard.materials = new Material[] { defaultMaterial };
-                player2Billboard.materials = new Material[] { defaultMaterial };
-                player1Name.text = "";
-                player2Name.text = "";
+                ResetBillboard(1);
+                ResetBillboard(2);
 
                 animatorPlayerDesignation.Play("characterSelectToControllerSelect", 0, 0.0f);
                 menuStack.Pop(this);

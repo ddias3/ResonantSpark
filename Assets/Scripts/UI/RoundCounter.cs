@@ -7,7 +7,7 @@ using UnityEngine;
 namespace ResonantSpark {
     namespace UI {
         public class RoundCounter : GameUiElement {
-            public List<RectTransform> roundDisplays;
+            public List<RoundCounterElement> roundDisplays;
             public Vector3 offset;
 
             private List<Vector3> positions;
@@ -17,7 +17,7 @@ namespace ResonantSpark {
 
                 positions = new List<Vector3>();
                 for (int n = 0; n < roundDisplays.Count; ++n) {
-                    positions.Add(roundDisplays[n].position);
+                    positions.Add(roundDisplays[n].transform.position);
                 }
             }
 
@@ -25,10 +25,12 @@ namespace ResonantSpark {
                 Debug.Log("Set Round Count : " + numRounds);
                 int n;
                 for (n = 0; n < numRounds; ++n) {
-                    roundDisplays[n].position = positions[n] + offset;
+                    roundDisplays[n].transform.position = positions[n] + offset;
+                    roundDisplays[n].DisplayFill(true);
                 }
                 for (; n < roundDisplays.Count; ++n) {
-                    roundDisplays[n].position = positions[n];
+                    roundDisplays[n].transform.position = positions[n];
+                    roundDisplays[n].DisplayFill(false);
                 }
             }
         }

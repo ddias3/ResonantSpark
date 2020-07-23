@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using ResonantSpark.DeviceManagement;
+
 namespace ResonantSpark {
     namespace MenuStates {
         public class LevelSelect : MenuBaseState {
@@ -19,6 +21,10 @@ namespace ResonantSpark {
 
             public override void TriggerEvent(string eventName) {
                 levelSelectMenu.TriggerEvent(eventName);
+            }
+
+            public override void TriggerEvent(string eventName, GameDeviceMapping devMap) {
+                levelSelectMenu.TriggerEvent(eventName, devMap);
             }
 
             public override void Enter(int frameIndex, IState previousState) {

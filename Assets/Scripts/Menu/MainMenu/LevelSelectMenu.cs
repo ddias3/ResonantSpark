@@ -29,6 +29,10 @@ namespace ResonantSpark {
                 }
 
                 cursor2d.Hide();
+                animator3d.Play("hidden");
+                animatorRet.Play("hidden");
+
+                levelSelect.TriggerEvent("deactivate");
 
                 eventHandler.On("activate", () => {
                     Debug.Log("Activate");

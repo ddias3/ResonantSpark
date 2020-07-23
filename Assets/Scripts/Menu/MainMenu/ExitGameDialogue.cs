@@ -20,6 +20,7 @@ namespace ResonantSpark {
                 }
 
                 cursor.Hide();
+                animator.Play("hidden");
 
                 eventHandler.On("activate", () => {
                     Debug.Log("Activate Exit Game Dialogue");
@@ -61,20 +62,21 @@ namespace ResonantSpark {
                     cursor.Highlight(quit);
                     currSelected = quit;
                 }).On("submit", () => {
-                    cursor.Select(cancel);
+                    cursor.Select(cancel, () => {
 
-                    menuStack.Pop(this);
-                    changeState("mainMenu");
+                        menuStack.Pop(this);
+                        changeState("mainMenu");
+                    });
                 });
 
                 quit.On("left", () => {
                     cursor.Highlight(cancel);
                     currSelected = cancel;
                 }).On("submit", () => {
-                    cursor.Select(quit);
-
-                    Debug.Log("Quit Application");
-                    Application.Quit();
+                    cursor.Select(quit, () => {
+                        Debug.Log("Quit Application");
+                        Application.Quit();
+                    });
                 });
             }
         }

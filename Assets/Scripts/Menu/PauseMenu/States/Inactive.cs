@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Menu;
+using ResonantSpark.DeviceManagement;
 
 namespace ResonantSpark {
     namespace MenuStates {
@@ -18,8 +19,13 @@ namespace ResonantSpark {
 
             public override void TriggerEvent(string eventName) {
                 if (eventName == "pause") {
-                    menuStack.AddMenu(trainingMenu);
-                    changeState(states.Get("pauseMenuTraining"));
+                    changeState(states.Get("pauseMenuVersus"));
+                }
+            }
+
+            public override void TriggerEvent(string eventName, GameDeviceMapping devMap) {
+                if (eventName == "pause") {
+                    changeState(states.Get("pauseMenuVersus"));
                 }
             }
 

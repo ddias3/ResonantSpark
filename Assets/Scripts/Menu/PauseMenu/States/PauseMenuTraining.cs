@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using ResonantSpark.DeviceManagement;
 using UnityEngine;
 
 namespace ResonantSpark {
@@ -21,8 +22,13 @@ namespace ResonantSpark {
                 trainingMenu.TriggerEvent(eventName);
             }
 
+            public override void TriggerEvent(string eventName, GameDeviceMapping devMap) {
+                trainingMenu.TriggerEvent(eventName, devMap);
+            }
+
             public override void Enter(int frameIndex, IState previousState) {
                 inputManager.SetActiveState(this);
+                menuStack.AddMenu(trainingMenu);
             }
 
             public override void Execute(int frameIndex) {

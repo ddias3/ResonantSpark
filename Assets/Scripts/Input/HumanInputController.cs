@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 using ResonantSpark.Gameplay;
+using ResonantSpark.DeviceManagement;
 
 namespace ResonantSpark {
     namespace Input {
@@ -20,7 +21,7 @@ namespace ResonantSpark {
             [SerializeField]
             private BasicActions inputActions;
 
-            private int controllerId = -1;
+            private GameDeviceMapping devMapping;
 
             private float horizontalInput = 0;
             private float verticalInput = 0;
@@ -29,6 +30,7 @@ namespace ResonantSpark {
 
             public void Awake() {
                 inputBuffer = GetComponent<InputBuffer>();
+                devMapping = null;
 
                 inputActions = new BasicActions();
 
@@ -41,6 +43,15 @@ namespace ResonantSpark {
 
                 FrameEnforcer frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
                 frame.AddUpdate((int)FramePriority.InputBuffer, new Action<int>(FrameUpdate));
+            }
+
+            public void OnDestroy() {
+                inputActions.GamePlay.Move.performed -= OnMove;
+                inputActions.GamePlay.ButtonA.performed -= OnButtonA;
+                inputActions.GamePlay.ButtonB.performed -= OnButtonB;
+                inputActions.GamePlay.ButtonC.performed -= OnButtonC;
+                inputActions.GamePlay.ButtonD.performed -= OnButtonD;
+                inputActions.GamePlay.ButtonS.performed -= OnButtonS;
             }
 
             public void OnEnable() {
@@ -97,8 +108,11 @@ namespace ResonantSpark {
                 buttonInputCode = buttonInputCode & ~((int)bitMask) | ((buttonValue > buttonDeadZone) ? (int)bitMask : 0);
             }
 
-            public void SetControllerId(int controllerId) {
-                this.controllerId = controllerId;
+            public void SetDeviceMap(GameDeviceMapping devMapping) {
+                this.devMapping = devMapping;
+                if (devMapping.device != null) {
+                    inputActions.devices = new[] { devMapping.device };
+                }
             }
 
             public void ConnectToCharacter(FightingGameCharacter fgChar) {

@@ -22,6 +22,7 @@ namespace ResonantSpark {
                 }
 
                 cursor2d.Hide();
+                animator2d.Play("hidden");
 
                 eventHandler.On("activate", () => {
                     Debug.Log("Pause Menu Activate");
