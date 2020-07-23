@@ -19,9 +19,13 @@ namespace ResonantSpark {
                     currSelected = cancel;
                 }
 
-                cursor.Hide();
-                animator.Play("hidden");
+                GameObject.FindGameObjectWithTag("rspMenu")
+                    .GetComponent<MenuManager>().AddMenu(this);
 
+                eventHandler.On("init", () => {
+                    cursor.Hide();
+                    animator.Play("hidden");
+                });
                 eventHandler.On("activate", () => {
                     Debug.Log("Activate Exit Game Dialogue");
                     animator.SetFloat("speed", 1.0f);

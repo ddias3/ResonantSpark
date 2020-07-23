@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 
 using ResonantSpark.Level;
+using ResonantSpark.DeviceManagement;
 
 namespace ResonantSpark {
     namespace Menu {
@@ -28,12 +29,17 @@ namespace ResonantSpark {
                     currSelected = levelSelect;
                 }
 
-                cursor2d.Hide();
-                animator3d.Play("hidden");
-                animatorRet.Play("hidden");
+                GameObject.FindGameObjectWithTag("rspMenu")
+                    .GetComponent<MenuManager>().AddMenu(this);
 
-                levelSelect.TriggerEvent("deactivate");
+                Persistence persistence = Persistence.Get();
 
+                eventHandler.On("init", () => {
+                    cursor2d.Hide();
+                    animator3d.Play("hidden");
+                    animatorRet.Play("hidden");
+                    levelSelect.TriggerEvent("deactivate");
+                });
                 eventHandler.On("activate", () => {
                     Debug.Log("Activate");
                     animator3d.SetFloat("speed", 1.0f);
@@ -68,59 +74,69 @@ namespace ResonantSpark {
                     levelSelect.TriggerEvent("deactivate");
                 });
 
-                eventHandler.On("submit", () => {
-                    if (currSelected == retSelectable) {
-                        cursor2d.Select(retSelectable, () => {
-                            Debug.Log("cursor2d.Select");
+                eventHandler_devMapping.On("left", (GameDeviceMapping devMap) => {
+                    if (persistence.player1 == devMap || persistence.player2 == devMap) {
+                        if (currSelected != retSelectable) {
+                            currSelected.TriggerEvent("left", devMap);
+                        }
+                    }
+                });
+                eventHandler_devMapping.On("right", (GameDeviceMapping devMap) => {
+                    if (persistence.player1 == devMap || persistence.player2 == devMap) {
+                        if (currSelected != retSelectable) {
+                            currSelected.TriggerEvent("right", devMap);
+                        }
+                    }
+                });
+                eventHandler_devMapping.On("up", (GameDeviceMapping devMap) => {
+                    if (persistence.player1 == devMap || persistence.player2 == devMap) {
+                        if (currSelected == retSelectable) {
+                            cursor2d.Fade();
+                            currSelected = levelSelect;
+                        }
+                        else {
+                            currSelected.TriggerEvent("up", devMap);
+                        }
+                    }
+                });
+                eventHandler_devMapping.On("down", (GameDeviceMapping devMap) => {
+                    if (persistence.player1 == devMap || persistence.player2 == devMap) {
+                        currSelected.TriggerEvent("down", devMap);
+                    }
+                });
+                eventHandler_devMapping.On("submit", (GameDeviceMapping devMap) => {
+                    if (persistence.player1 == devMap || persistence.player2 == devMap) {
+                        if (currSelected == retSelectable) {
+                            cursor2d.Select(retSelectable, () => {
+                                GoToCharacterSelect();
+                            });
+                        }
+                        else {
+                            currSelected.TriggerEvent("submit", devMap);
+                        }
+                    }
+                });
+                eventHandler_devMapping.On("cancel", (GameDeviceMapping devMap) => {
+                    if (persistence.player1 == devMap || persistence.player2 == devMap) {
+                        if (currSelected == retSelectable) {
                             GoToCharacterSelect();
-                        });
+                        }
+                        else {
+                            currSelected.TriggerEvent("cancel", devMap);
+                        }
                     }
-                    else {
-                        currSelected.TriggerEvent("submit");
-                    }
-                });
-                eventHandler.On("cancel", () => {
-                    if (currSelected == retSelectable) {
-                        GoToCharacterSelect();
-                    }
-                    else {
-                        cursor2d.Highlight(retSelectable);
-                        currSelected = retSelectable;
-                    }
-                });
-                eventHandler.On("left", () => {
-                    if (currSelected != retSelectable) {
-                        currSelected.TriggerEvent("left");
-                    }
-                });
-                eventHandler.On("right", () => {
-                    if (currSelected != retSelectable) {
-                        currSelected.TriggerEvent("right");
-                    }
-                });
-                eventHandler.On("up", () => {
-                    if (currSelected == retSelectable) {
-                        cursor2d.Fade();
-                        currSelected = levelSelect;
-                    }
-                    else {
-                        currSelected.TriggerEvent("up");
-                    }
-                });
-                eventHandler.On("down", () => {
-                    currSelected.TriggerEvent("down");
                 });
 
-                levelSelect.On("down", () => {
+                levelSelect.On("down", (GameDeviceMapping devMap) => {
                     //levelSelect.FadeCursor();
                     cursor2d.Highlight(retSelectable);
 
                     currSelected = retSelectable;
-                }).On("submit", () => {
+                }).On("submit", (GameDeviceMapping devMap) => {
                     LevelInfo levelInfo = levelSelect.GetSelection();
                     Persistence.Get().SetLevel(levelInfo.path);
                     GoToConfirm();
-                }).On("cancel", () => {
+                }).On("cancel", (GameDeviceMapping devMap) => {
                     //levelSelect.FadeCursor();
                     cursor2d.Highlight(retSelectable);
 

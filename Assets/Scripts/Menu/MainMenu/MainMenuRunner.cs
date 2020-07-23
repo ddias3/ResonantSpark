@@ -22,6 +22,7 @@ namespace ResonantSpark {
 
             public IEnumerator DelayedStart() {
                 yield return new WaitForEndOfFrame();
+                GetComponent<MenuManager>().InitMenus();
                 executeCallback = stateMachine.Enable(states.Get("fadeIn"));
                 this.enabled = true;
             }

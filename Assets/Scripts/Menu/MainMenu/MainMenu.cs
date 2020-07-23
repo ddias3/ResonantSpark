@@ -30,11 +30,15 @@ namespace ResonantSpark {
                     currSelected = versus;
                 }
 
-                cursor3d.Hide();
-                cursor2d.Hide();
-                animator3d.Play("hidden");
-                animator2d.Play("hidden");
+                GameObject.FindGameObjectWithTag("rspMenu")
+                    .GetComponent<MenuManager>().AddMenu(this);
 
+                eventHandler.On("init", () => {
+                    cursor3d.Hide();
+                    cursor2d.Hide();
+                    animator3d.Play("hidden");
+                    animator2d.Play("hidden");
+                });
                 eventHandler.On("activate", () => {
                     animator3d.SetFloat("speed", 1.0f);
                     animator2d.SetFloat("speed", 1.0f);

@@ -12,8 +12,13 @@ namespace ResonantSpark {
             public Cursor2d cursor;
 
             public void Start() {
-                cursor.Hide();
-                animator.Play("hidden");
+                GameObject.FindGameObjectWithTag("rspMenu")
+                    .GetComponent<MenuManager>().AddMenu(this);
+
+                eventHandler.On("init", () => {
+                    cursor.Hide();
+                    animator.Play("hidden");
+                });
 
                 eventHandler.On("activate", () => {
                     animator.Play("appear", 0, 0.0f);

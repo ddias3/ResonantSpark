@@ -9,6 +9,12 @@ namespace ResonantSpark {
             public PostMatchSubmenu p2Menu;
 
             public void Start() {
+                GameObject.FindGameObjectWithTag("rspMenu")
+                    .GetComponent<MenuManager>().AddMenu(this);
+
+                eventHandler.On("init", () => {
+                    // do nothing
+                });
                 eventHandler.On("activate", () => {
                     p1Menu.TriggerEvent("activate");
                     p2Menu.TriggerEvent("activate");

@@ -23,6 +23,7 @@ namespace ResonantSpark {
 
             public IEnumerator DelayedStart() {
                 yield return new WaitForEndOfFrame();
+                GetComponent<MenuManager>().InitMenus();
                 executeCallback = stateMachine.Enable(states.Get("inactive"));
                 this.enabled = true;
             }

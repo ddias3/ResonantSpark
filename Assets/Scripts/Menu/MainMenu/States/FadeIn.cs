@@ -46,7 +46,7 @@ namespace ResonantSpark {
                 Persistence persistence = Persistence.Get();
                 if (persistence.firstTimeLoad) {
                     persistence.MenuLoaded();
-                    camera.Play("preintro");
+                    camera.Play("titleDisplay");
                     playIntro = true;
                 }
                 else {
@@ -60,7 +60,7 @@ namespace ResonantSpark {
                     camera.SetTrigger("start");
 
                     if (playIntro) {
-                        changeState(states.Get("intro"));
+                        changeState(states.Get("titleDisplay"));
                     }
                     else {
                         menuStack.AddMenu(mainMenu);

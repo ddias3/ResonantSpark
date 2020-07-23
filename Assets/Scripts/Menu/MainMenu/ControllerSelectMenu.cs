@@ -29,11 +29,15 @@ namespace ResonantSpark {
                     currSelected = initSelectable;
                 }
 
-                cursor2d.Hide();
-                animator3d.Play("hidden");
-                animator2d.Play("hidden");
-                controllerSelect.TriggerEvent("deactivate");
+                GameObject.FindGameObjectWithTag("rspMenu")
+                    .GetComponent<MenuManager>().AddMenu(this);
 
+                eventHandler.On("init", () => {
+                    cursor2d.Hide();
+                    animator3d.Play("hidden");
+                    animator2d.Play("hidden");
+                    controllerSelect.TriggerEvent("deactivate");
+                });
                 eventHandler.On("activate", () => {
                     animator3d.SetFloat("speed", 1.0f);
                     animator2d.SetFloat("speed", 1.0f);

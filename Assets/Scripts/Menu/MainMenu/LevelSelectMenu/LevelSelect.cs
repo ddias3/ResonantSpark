@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Level;
+using ResonantSpark.DeviceManagement;
 
 namespace ResonantSpark {
     namespace Menu {
@@ -50,15 +51,15 @@ namespace ResonantSpark {
                         levelDisplays[n].gameObject.SetActive(false);
                     }
                 });
-                eventHandler.On("left", () => {
-                    // NEED to pass in controller information to determine which one moves left.
+
+                On("left", (GameDeviceMapping devMap) => {
                     currSelected -= 1;
                     if (currSelected < 0) {
                         currSelected = levels.Count - 1;
                     }
                     MovePortraits();
                 });
-                eventHandler.On("right", () => {
+                On("right", (GameDeviceMapping devMap) => {
                     // NEED to pass in controller information to determine which one moves right.
                     currSelected += 1;
                     if (currSelected >= levels.Count) {
