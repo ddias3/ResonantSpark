@@ -23,14 +23,16 @@ namespace ResonantSpark {
                 public override void Enter(int frameIndex, MultipassBaseState previousState) {
                     elapsedTime = 0.0f;
                     clearedMainScreenText = false;
-                    uiService.SetMainScreenText("Fight");
+                    inGameUi.SetMainScreenText("Fight");
+                    //uiService.SetValue(element: "mainScreenText", field: "text", value0: "Fight");
 
                     fgService.EnableControl();
                 }
 
                 public override void ExecutePass0(int frameIndex) {
                     if (elapsedTime > 1.2f && !clearedMainScreenText) {
-                        uiService.HideMainScreenText();
+                        inGameUi.HideMainScreenText();
+                        //uiService.SetValue("mainScreenText", field: "hide");
                         clearedMainScreenText = true;
                     }
 

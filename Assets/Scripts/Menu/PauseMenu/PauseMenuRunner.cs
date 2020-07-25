@@ -1,14 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 using ResonantSpark.Service;
 
 namespace ResonantSpark {
     namespace Menu {
+        public class PauseEvent : UnityEvent<bool> { }
+
         public class PauseMenuRunner : MenuRunner {
-            public FrameEnforcer frame;
+            public PauseEvent pauseEvent = new PauseEvent();
 
             public new void Start() {
                 base.Start();
@@ -33,11 +36,11 @@ namespace ResonantSpark {
             }
 
             public void PauseGame() {
-                frame.PauseExecution(true);
+                pauseEvent.Invoke(true);
             }
 
             public void UnpauseGame() {
-                frame.PauseExecution(false);
+                pauseEvent.Invoke(false);
             }
         }
     }

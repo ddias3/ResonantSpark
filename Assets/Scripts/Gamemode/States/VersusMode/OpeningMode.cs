@@ -6,8 +6,8 @@ using ResonantSpark.Gamemode;
 
 namespace ResonantSpark {
     namespace GamemodeStates {
-        namespace OneOnOneRoundBasedStates {
-            public class OpeningMode : OneOnOneRoundBasedBaseState {
+        namespace VersusModeStates {
+            public class OpeningMode : VersusModeBaseState {
                 public float openingTime = 3.0f;
                 private GameTimeManager gameTimeManager;
                 private float elapsedTime;
@@ -20,12 +20,13 @@ namespace ResonantSpark {
                 }
 
                 public override void Enter(int frameIndex, MultipassBaseState previousState) {
-                    oneOnOne.OpeningMode();
-                    oneOnOne.ResetGame();
-                    oneOnOne.ResetRound();
+                    versus.OpeningMode();
+                    versus.ResetGame();
+                    versus.ResetRound();
 
                     elapsedTime = 0;
-                    uiService.SetMainScreenText("Versus");
+                    inGameUi.SetMainScreenText("Versus");
+                    //uiService.SetValue(element: "mainScreenText", field: "text", value0: "Versus");
                     fgService.DisableControl();
                 }
 
@@ -33,7 +34,8 @@ namespace ResonantSpark {
                     elapsedTime += gameTimeManager.DeltaTime("frameDelta", "game");
 
                     if (elapsedTime > openingTime) {
-                        uiService.HideMainScreenText();
+                        inGameUi.HideMainScreenText();
+                        //uiService.SetValue(element: "mainScreenText", field: "hide");
 
                         // after VS animation, switch to the RoundStart state
                         changeState(states.Get("roundStartMode"));
@@ -41,7 +43,7 @@ namespace ResonantSpark {
                 }
 
                 public override void LateExecute(int frameIndex) {
-                    oneOnOne.RestrictDistance();
+                    versus.RestrictDistance();
                 }
 
                 public override void Exit(int frameIndex) {

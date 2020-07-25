@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -28,8 +29,8 @@ namespace ResonantSpark {
 
             private UnityAction startGameCallback;
 
-            public new void Start() {
-                base.Start();
+            public new void Awake() {
+                base.Awake();
 
                 this.enabled = false;
                 anchorOffset = fillHealth.rectTransform.anchoredPosition.x;
@@ -105,6 +106,49 @@ namespace ResonantSpark {
 
                 if (!freezeSync) {
                     timer += Time.deltaTime; // this doesn't work here -> gameTime.DeltaTime("frameDelta", "game");
+                }
+            }
+
+                // TODO: look into this as a possibility.
+            //public override void Serialize() {
+            //    fieldMap = new Dictionary<string, UnityAction>();
+            //    fieldMap.Add("healthSync", new UnityAction(SyncHealthValues));
+            //    fieldMap1Value = new Dictionary<string, UnityAction<object>>();
+            //    fieldMap1Value.Add("maxHealth", new UnityAction<int>(SetMaxHealth));
+            //    fieldMap1Value.Add("health", new UnityAction<int>(SetHealthValue));
+            //    fieldMap1Value.Add("healthSyncPause", new UnityAction<bool>(FreezeSync));
+            //}
+
+            public override void SetValue(string field) {
+                switch (field) {
+                    case "healthSync":
+                        SyncHealthValues();
+                        break;
+                    default:
+                        throw new InvalidOperationException("Health bar field invalid: " + field);
+                }
+            }
+
+            public override void SetValue(string field, object value0) {
+                switch (field) {
+                    case "maxHealth":
+                        SetMaxHealth((int) value0);
+                        break;
+                    case "health":
+                        SetHealthValue((int) value0);
+                        break;
+                    case "healthSyncPause":
+                        FreezeSync((bool) value0);
+                        break;
+                    default:
+                        throw new InvalidOperationException("Health bar field with 1 value invalid: " + field);
+                }
+            }
+
+            public override void SetValue(string field, object value0, object value1) {
+                switch (field) {
+                    default:
+                        throw new InvalidOperationException("Health bar field with 2 values invalid: " + field);
                 }
             }
         }

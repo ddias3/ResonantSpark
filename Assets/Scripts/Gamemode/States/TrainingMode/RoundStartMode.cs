@@ -29,7 +29,8 @@ namespace ResonantSpark {
                     elapsedTime = 0;
 
                     fgService.DisableControl();
-                    uiService.SetTime(-1);
+                    inGameUi.SetNoTime();
+                    //uiService.SetValue(element: "roundTimer", field: "noTime");
 
                     training.FightingGameMode();
                     training.ResetRound();
@@ -41,7 +42,8 @@ namespace ResonantSpark {
                         changeState(states.Get("fightingMode"));
                     }
                     else {
-                        uiService.SetMainScreenText(countdownArr[0]);
+                        inGameUi.SetMainScreenText(countdownArr[0]);
+                        //uiService.SetValue(element: "mainScreenText", field: "text", value0: countdownArr[0]);
                     }
 
                     elapsedTime += gameTimeManager.DeltaTime("frameDelta", "game");
@@ -53,7 +55,8 @@ namespace ResonantSpark {
                 }
 
                 public override void Exit(int frameIndex) {
-                    uiService.HideMainScreenText();
+                    inGameUi.HideMainScreenText();
+                    //uiService.SetValue(element: "mainScreenText", field: "hide");
                 }
             }
         }

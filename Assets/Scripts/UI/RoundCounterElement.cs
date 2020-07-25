@@ -10,7 +10,7 @@ namespace ResonantSpark {
             public Image border;
             public Image fill;
 
-            public void Start() {
+            public void Awake() {
                 DisplayFill(false);
             }
 

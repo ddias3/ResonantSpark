@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
-
-using ResonantSpark.Input.Combinations;
-using ResonantSpark.Character;
+﻿using ResonantSpark.Character;
+using ResonantSpark.CharacterProperties;
 using ResonantSpark.Input;
+using ResonantSpark.Input.Combinations;
 using ResonantSpark.Service;
 using ResonantSpark.Utility;
-using ResonantSpark.CharacterProperties;
+using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace ResonantSpark {
     namespace Gameplay {
@@ -33,12 +32,12 @@ namespace ResonantSpark {
             public Transform standCollider;
 
             public TMPro.TextMeshPro __debugState;
-            public UI.UIDebug.AttackInfo attackInfoDisplay;
 
             public int fgCharId { get; private set; }
             private int teamId;
 
             private FightingGameService fgService;
+            private UiService uiService;
 
             private CharacterMovementAnimation charMovementAnimation;
 
@@ -91,6 +90,8 @@ namespace ResonantSpark {
                 fgService = GameObject.FindGameObjectWithTag("rspService").GetComponent<FightingGameService>();
                 AddSelf();
 
+                uiService = GameObject.FindGameObjectWithTag("rspService").GetComponent<UiService>();
+
                 parent = null;
 
                 attackRunner.Init(this);
@@ -137,7 +138,8 @@ namespace ResonantSpark {
 
             public void StartAttackIfRequired(int frameIndex) {
                 attackRunner.StartAttackIfRequired(frameIndex);
-                attackInfoDisplay?.DisplayAttack(attackRunner.GetCurrentAttack());
+                //attackInfoDisplay?.DisplayAttack(attackRunner.GetCurrentAttack());
+                uiService.SetValue<Attack>("attackInfo", field: "display", value0: attackRunner.GetCurrentAttack());
             }
 
             public void ChooseAttack(CharacterStates.CharacterBaseState currState, CharacterProperties.Attack currAttack, FightingGameInputCodeBut button, FightingGameInputCodeDir direction = FightingGameInputCodeDir.None) {

@@ -6,8 +6,8 @@ using ResonantSpark.Gamemode;
 
 namespace ResonantSpark {
     namespace GamemodeStates {
-        namespace OneOnOneRoundBasedStates {
-            public class FightingMode : OneOnOneRoundBasedBaseState {
+        namespace VersusModeStates {
+            public class FightingMode : VersusModeBaseState {
                 private GameTimeManager gameTimeManager;
                 private float currRoundTime;
                 private float elapsedTime;
@@ -24,23 +24,25 @@ namespace ResonantSpark {
                 public override void Enter(int frameIndex, MultipassBaseState previousState) {
                     elapsedTime = 0.0f;
                     clearedMainScreenText = false;
-                    uiService.SetMainScreenText("Fight");
+                    inGameUi.SetMainScreenText("Fight");
+                    //uiService.SetValue(element: "mainScreenText", field: "text", value0: "Fight");
 
-                    currRoundTime = oneOnOne.GetRoundLength();
+                    currRoundTime = versus.GetRoundLength();
                     fgService.EnableControl();
                 }
 
                 public override void ExecutePass0(int frameIndex) {
                     if (elapsedTime > 1.2f && !clearedMainScreenText) {
-                        uiService.HideMainScreenText();
+                        inGameUi.HideMainScreenText();
+                        //uiService.SetValue(element: "mainScreenText", field: "hide");
                         clearedMainScreenText = true;
                     }
 
-                    oneOnOne.CalculateScreenOrientation();
-                    oneOnOne.SetDisplayTime(currRoundTime);
+                    versus.CalculateScreenOrientation();
+                    versus.SetDisplayTime(currRoundTime);
 
                     if (currRoundTime < 0) {
-                        oneOnOne.TimeOutRound();
+                        versus.TimeOutRound();
                     }
 
                     elapsedTime += gameTimeManager.DeltaTime("frameDelta", "game");
@@ -48,7 +50,7 @@ namespace ResonantSpark {
                 }
 
                 public override void LateExecute(int frameIndex) {
-                    oneOnOne.RestrictDistance();
+                    versus.RestrictDistance();
                 }
 
                 public override void Exit(int frameIndex) {

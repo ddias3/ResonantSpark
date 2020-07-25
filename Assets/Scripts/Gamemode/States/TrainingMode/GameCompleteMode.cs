@@ -19,7 +19,8 @@ namespace ResonantSpark {
                 }
 
                 public override void Enter(int frameIndex, MultipassBaseState previousState) {
-                    uiService.HideMainScreenText();
+                    inGameUi.HideMainScreenText();
+                    //uiService.SetValue("mainScreenText", field: "hide");
                 }
 
                 public override void ExecutePass0(int frameIndex) {

@@ -25,7 +25,8 @@ namespace ResonantSpark {
                     training.ResetRound();
 
                     elapsedTime = 0;
-                    uiService.SetMainScreenText("Versus");
+                    inGameUi.SetMainScreenText("Versus");
+                    //uiService.SetValue(element: "mainScreenText", field: "text", value0: "Versus");
                     fgService.DisableControl();
                 }
 
@@ -33,7 +34,8 @@ namespace ResonantSpark {
                     elapsedTime += gameTimeManager.DeltaTime("frameDelta", "game");
 
                     if (elapsedTime > openingTime) {
-                        uiService.HideMainScreenText();
+                        inGameUi.HideMainScreenText();
+                        //uiService.SetValue(element: "mainScreenText", field: "hide");
 
                         // after VS animation, switch to the RoundStart state
                         changeState(states.Get("roundStartMode"));

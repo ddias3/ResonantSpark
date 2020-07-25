@@ -6,8 +6,8 @@ using ResonantSpark.Gamemode;
 
 namespace ResonantSpark {
     namespace GamemodeStates {
-        namespace OneOnOneRoundBasedStates {
-            public class GameCompleteMode : OneOnOneRoundBasedBaseState {
+        namespace VersusModeStates {
+            public class GameCompleteMode : VersusModeBaseState {
                 private GameTimeManager gameTimeManager;
                 private float elapsedTime;
 
@@ -22,7 +22,8 @@ namespace ResonantSpark {
                 }
 
                 public override void Enter(int frameIndex, MultipassBaseState previousState) {
-                    uiService.HideMainScreenText();
+                    inGameUi.HideMainScreenText();
+                    //uiService.SetValue(element: "mainScreenText", field: "hide");
                 }
 
                 public override void ExecutePass0(int frameIndex) {
@@ -30,7 +31,7 @@ namespace ResonantSpark {
                 }
 
                 public override void LateExecute(int frameIndex) {
-                    oneOnOne.RestrictDistance();
+                    versus.RestrictDistance();
                 }
 
                 public override void Exit(int frameIndex) {

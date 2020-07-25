@@ -12,6 +12,8 @@ namespace ResonantSpark {
             public Menu.PauseMenuVersus pauseMenu;
             public Menu.PauseMenuTraining trainingMenu;
 
+            public string pauseStateName;
+
             public new void Start() {
                 base.Start();
                 states.Register(this, "inactive");
@@ -19,13 +21,13 @@ namespace ResonantSpark {
 
             public override void TriggerEvent(string eventName) {
                 if (eventName == "pause") {
-                    changeState(states.Get("pauseMenuVersus"));
+                    changeState(states.Get(pauseStateName));
                 }
             }
 
             public override void TriggerEvent(string eventName, GameDeviceMapping devMap) {
                 if (eventName == "pause") {
-                    changeState(states.Get("pauseMenuVersus"));
+                    changeState(states.Get(pauseStateName));
                 }
             }
 

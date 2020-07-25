@@ -108,7 +108,7 @@ namespace ResonantSpark {
 
                     currSelected = quit;
                 }).On("submit", () => {
-                    Persistence.Get().SetGamemode("oneOnOneRoundBased");
+                    Persistence.Get().SetGamemode("versus");
 
                     cursor3d.Select(versus, () => {
                         menuStack.Pop(this);

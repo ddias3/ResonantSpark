@@ -61,7 +61,6 @@ namespace ResonantSpark {
 
             private void TurnCharacter() {
                 charRotation = fgChar.LookToMoveAngle();
-                Debug.Log(charRotation);
                 if (Mathf.Abs(charRotation) > 5.0f) {
                     fgChar.Rotate(Quaternion.AngleAxis(Mathf.Clamp(charRotation / fgChar.gameTime, -maxRotation, maxRotation) * fgChar.gameTime, Vector3.up));
                 }

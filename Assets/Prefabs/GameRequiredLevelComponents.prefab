@@ -791,12 +791,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3a1424160a7a2741b3d7ecb610c99d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gamemodeStr: oneOnOneRoundBased
+  gamemodeStr: versus
   characterSelections:
   - lawrence
   - lawrence
-  controllerIndex: 00000000ffffffff
-  oneOnOneRoundBasedPrefab: {fileID: 5907818410644016008, guid: 6fa9e18f57b8a7c45bb71178501ca6d8,
+  versusModePrefab: {fileID: 5907818410644016008, guid: 6fa9e18f57b8a7c45bb71178501ca6d8,
     type: 3}
   trainingModePrefab: {fileID: 5907818410644016008, guid: 865b3eab28da7bb40bbb17db4dce2fb6,
     type: 3}

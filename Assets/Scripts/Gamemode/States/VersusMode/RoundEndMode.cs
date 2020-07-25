@@ -6,8 +6,8 @@ using ResonantSpark.Gamemode;
 
 namespace ResonantSpark {
     namespace GamemodeStates {
-        namespace OneOnOneRoundBasedStates {
-            public class RoundEndMode : OneOnOneRoundBasedBaseState {
+        namespace VersusModeStates {
+            public class RoundEndMode : VersusModeBaseState {
                 private GameTimeManager gameTimeManager;
                 private float elapsedTime;
                 private int char0Wins;
@@ -22,11 +22,13 @@ namespace ResonantSpark {
 
                 public override void Enter(int frameIndex, MultipassBaseState previousState) {
                     elapsedTime = 0;
-                    char0Wins = oneOnOne.GetCharNumWins(0);
-                    char1Wins = oneOnOne.GetCharNumWins(1);
+                    char0Wins = versus.GetCharNumWins(0);
+                    char1Wins = versus.GetCharNumWins(1);
 
-                    uiService.SetRoundWins(0, char0Wins);
-                    uiService.SetRoundWins(1, char1Wins);
+                    //uiService.SetValue(element: "roundCounterP1", field: "roundWins", value0: char0Wins);
+                    //uiService.SetValue(element: "roundCounterP2", field: "roundWins", value0: char1Wins);
+                    inGameUi.SetRoundWins(0, char0Wins);
+                    inGameUi.SetRoundWins(1, char1Wins);
                 }
 
                 public override void ExecutePass0(int frameIndex) {
@@ -43,7 +45,7 @@ namespace ResonantSpark {
                 }
 
                 public override void LateExecute(int frameIndex) {
-                    oneOnOne.RestrictDistance();
+                    versus.RestrictDistance();
                 }
 
                 public override void Exit(int frameIndex) {

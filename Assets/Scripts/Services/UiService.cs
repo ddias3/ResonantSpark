@@ -8,100 +8,36 @@ namespace ResonantSpark {
     namespace Service {
         public class UiService : MonoBehaviour, IUiService {
 
-            public HealthBar healthBarP1;
-            public HealthBar healthBarP2;
-
-            public RoundTimer roundTimer;
-            public OpeningText openingText;
-
-            public RoundCounter roundCounterP1;
-            public RoundCounter roundCounterP2;
-
-            public ComboCounter comboCounterP1;
-            public ComboCounter comboCounterP2;
+            private Dictionary<string, GameUiElement> elements = new Dictionary<string, GameUiElement>();
 
             public void Start() {
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(UiService));
             }
 
-            public void SetTime(float time) {
-                roundTimer.SetTime(time);
+            public void RegisterElement(string id, GameUiElement element) {
+                elements.Add(id, element);
+                Debug.Log("Registering UI Element: " + id);
             }
 
-            public void SetNoTime() {
-                roundTimer.SetNoTime();
+            public void SetValue(string element, string field) {
+                elements[element].SetValue(field);
             }
 
-            public void SetMainScreenText(string text) {
-                openingText.SetOpeningText(text);
+            public void SetValue<T0>(string element, string field, T0 value0) {
+                elements[element].SetValue(field, value0);
             }
 
-            public void HideMainScreenText() {
-                openingText.Hide();
+            public void SetValue<T0, T1>(string element, string field, T0 value0, T1 value1) {
+                elements[element].SetValue(field, value0, value1);
             }
 
-            public void HealthBarSyncPause(int playerId, bool pause) {
-                if (playerId == 0) {
-                    healthBarP1.FreezeSync(pause);
-                }
-                else if (playerId == 1) {
-                    healthBarP2.FreezeSync(pause);
-                }
-            }
+            //public void SetValue<T0, T1, T2>(string element, string field, T0 value0, T1 value1, T2 value2) {
+            //    elements[element].SetValue(field, value0, value1, value2);
+            //}
 
-            public void HealthBarSync(int playerId) {
-                if (playerId == 0) {
-                    healthBarP1.SyncHealthValues();
-                }
-                else if (playerId == 1) {
-                    healthBarP2.SyncHealthValues();
-                }
-            }
-
-            public void SetHealth(int playerId, int health) {
-                if (playerId == 0) {
-                    healthBarP1.SetHealthValue(health);
-                }
-                else if (playerId == 1) {
-                    healthBarP2.SetHealthValue(health);
-                }
-            }
-
-            public void SetMaxHealth(int playerId, int health) {
-                if (playerId == 0) {
-                    healthBarP1.SetMaxHealth(health);
-                }
-                else if (playerId == 1) {
-                    healthBarP2.SetMaxHealth(health);
-                }
-            }
-
-            public void SetComboCounter(int playerId, int comboCounter) {
-                if (playerId == 0) {
-                    comboCounterP1.SetNumHits(comboCounter);
-                }
-                else if (playerId == 1) {
-                    comboCounterP2.SetNumHits(comboCounter);
-                }
-            }
-
-            public void HideComboCounter(int playerId) {
-                if (playerId == 0) {
-                    comboCounterP1.Hide();
-                }
-                else if (playerId == 1) {
-                    comboCounterP2.Hide();
-                }
-            }
-
-            public void SetRoundWins(int playerId, int numWins) {
-                if (playerId == 0) {
-                    roundCounterP1.SetRoundCount(numWins);
-                }
-                else if (playerId == 1) {
-                    roundCounterP2.SetRoundCount(numWins);
-                }
-            }
+            //public void SetValue<T0, T1, T2, T3>(string element, string field, T0 value0, T1 value1, T2 value2, T3 value3) {
+            //    elements[element].SetValue(field, value0, value1, value2, value3);
+            //}
         }
     }
 }

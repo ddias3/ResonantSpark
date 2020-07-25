@@ -12,6 +12,8 @@ namespace ResonantSpark {
     namespace Gamemode {
         public class OneOnOneRoundBased : MonoBehaviour, IGamemode {
 
+            public GameObject inGameUiPrefab;
+
             public MultipassStateMachine stateMachine;
             public MultipassStateDict states;
 
@@ -36,12 +38,17 @@ namespace ResonantSpark {
             private UnityAction enablePlayersCallback;
             private UnityAction resetGameCallback;
 
+            private UI.InGameUi inGameUi;
+            private UnityEvent<UI.InGameUi> unityEventSetInGameUiWhenReady;
+
             public void Awake() {
                 frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
 
                 gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
                 gameTimeManager.AddNode(new Func<float, float>(GameTime), new List<string> { "frameDelta", "game" });
                 gameTimeManager.AddNode(new Func<float, float>(GameTime), new List<string> { "realDelta", "game" });
+
+                unityEventSetInGameUiWhenReady = new InGameUiCreated();
 
                 EventManager.StartListening<Events.FrameEnforcerReady>(enablePlayersCallback = new UnityAction(EnablePlayers));
                 EventManager.StartListening<Events.StartGame>(enablePlayersCallback = new UnityAction(ResetGame));
@@ -52,10 +59,17 @@ namespace ResonantSpark {
                 EventManager.StopListening<Events.StartGame>(enablePlayersCallback);
             }
 
-            public void SetUp(PlayerService playerService, FightingGameService fgService, UiService uiService) {
+            public virtual void SetUp(PlayerService playerService, FightingGameService fgService, UiService uiService) {
                 this.playerService = playerService;
                 this.fgService = fgService;
                 this.uiService = uiService;
+
+                Debug.Log("Instantiating in game UI");
+                inGameUi = GameObject.Instantiate(inGameUiPrefab).GetComponent<UI.InGameUi>();
+                inGameUi.RegisterElements(uiService);
+
+                unityEventSetInGameUiWhenReady.Invoke(inGameUi);
+                unityEventSetInGameUiWhenReady.RemoveAllListeners(); // this line might not be necessary.
 
                 player1 = playerService.GetFGChar(0);
                 player2 = playerService.GetFGChar(1);
@@ -96,12 +110,18 @@ namespace ResonantSpark {
                 fgService.FightingGameCamera();
             }
 
+            public void PauseGame(bool pause) {
+                frame.PauseExecution(pause);
+            }
+
             public void ResetGame() {
                 char0RoundWins = 0;
                 char1RoundWins = 0;
 
-                uiService.SetRoundWins(0, char0RoundWins);
-                uiService.SetRoundWins(1, char1RoundWins);
+                inGameUi.SetRoundWins(0, char0RoundWins);
+                inGameUi.SetRoundWins(1, char1RoundWins);
+                //uiService.SetValue(element: "roundCounterP1", field: "roundWins", value0: char0RoundWins);
+                //uiService.SetValue(element: "roundCounterP2", field: "roundWins", value0: char1RoundWins);
             }
 
             public void ResetRound() {
@@ -115,8 +135,10 @@ namespace ResonantSpark {
 
                 playerService.EachFGChar((id, fgChar) => {
                     fgChar.RoundReset();
-                    uiService.SetMaxHealth(id, fgChar.maxHealth);
-                    uiService.SetHealth(id, fgChar.maxHealth);
+                    inGameUi.SetMaxHealth(id, fgChar.maxHealth);
+                    inGameUi.SetHealth(id, fgChar.maxHealth);
+                    //uiService.SetValue("healthBarP" + (id+1), field: "maxHealth", value0: fgChar.maxHealth);
+                    //uiService.SetValue("healthBarP" + (id+1), field: "health", value0: fgChar.maxHealth);
                 });
 
                 fgService.ResetCamera();
@@ -131,24 +153,28 @@ namespace ResonantSpark {
 
                 if (player1.health > player2.health) {
                     char0RoundWins += 1;
-                    uiService.SetMainScreenText("K.O.");
+                    inGameUi.SetMainScreenText("K.O.");
+                    //uiService.SetValue(element: "mainScreenText", field: "text", value0: "K.O.");
                 }
                 else if (player2.health > player1.health) {
                     char1RoundWins += 1;
-                    uiService.SetMainScreenText("K.O.");
+                    inGameUi.SetMainScreenText("K.O.");
+                    //uiService.SetValue(element: "mainScreenText", field: "text", value0: "K.O.");
                 }
                 else {
                     // double K.O.
                     char0RoundWins += 1;
                     char1RoundWins += 1;
 
-                    uiService.SetMainScreenText("Double K.O.");
+                    inGameUi.SetMainScreenText("Double K.O.");
+                    //uiService.SetValue(element: "mainScreenText", field: "text", value0: "Double K.O.");
                 }
             }
 
             public void TimeOutRound() {
                 EndRound();
-                uiService.SetMainScreenText("Time");
+                inGameUi.SetMainScreenText("Time");
+                //uiService.SetValue(element: "mainScreenText", field: "text", value0: "Time");
             }
 
             public void EndRound() {
@@ -158,7 +184,8 @@ namespace ResonantSpark {
 
             private Action<int, int> OnPlayerHealthChange(int playerId) {
                 return (hpChange, newHealth) => {
-                    uiService.SetHealth(playerId, newHealth);
+                    inGameUi.SetHealth(playerId, newHealth);
+                    //uiService.SetValue("healthBarP" + (playerId + 1), field: "health", value0: newHealth);
                 };
             }
 
@@ -219,45 +246,56 @@ namespace ResonantSpark {
             }
 
             public void SetDisplayTime(float currRoundTime) {
-                uiService.SetTime(currRoundTime);
+                inGameUi.SetTime(currRoundTime);
+                //uiService.SetValue(element: "roundTimer", field: "time", value0: currRoundTime);
             }
 
             public void OnGameEntityNumHitsChange(InGameEntity entity, int numHits) {
                 if (entity == player1) {
                     if (numHits > 0) {
-                        uiService.SetComboCounter(1, numHits);
+                        inGameUi.SetComboCounter(1, numHits);
+                        //uiService.SetValue(element: "comboCounterP1", field: "numHits", value0: numHits);
                     }
                     else {
-                        uiService.HideComboCounter(1);
+                        inGameUi.HideComboCounter(1);
+                        //uiService.SetValue(element: "comboCounterP1", field: "hide");
                     }
                 }
                 else if (entity == player2) {
                     if (numHits > 0) {
-                        uiService.SetComboCounter(0, numHits);
+                        inGameUi.SetComboCounter(0, numHits);
+                        //uiService.SetValue(element: "comboCounterP2", field: "numHits", value0: numHits);
                     }
                     else {
-                        uiService.HideComboCounter(0);
+                        inGameUi.HideComboCounter(0);
+                        //uiService.SetValue(element: "comboCounterP2", field: "hide");
                     }
                 }
             }
 
             public void OnHitStunStart(FightingGameCharacter fgChar) {
                 if (fgChar == player1) {
-                    uiService.HealthBarSync(0);
-                    uiService.HealthBarSyncPause(0, true);
+                    inGameUi.HealthBarSync(0);
+                    inGameUi.HealthBarSyncPause(0, true);
+                    //uiService.SetValue("healthBarP1", field: "healthSync");
+                    //uiService.SetValue("healthBarP1", field: "healthSyncPause", value0: true);
                 }
                 else if (fgChar == player2) {
-                    uiService.HealthBarSync(1);
-                    uiService.HealthBarSyncPause(1, true);
+                    inGameUi.HealthBarSync(1);
+                    inGameUi.HealthBarSyncPause(1, true);
+                    //uiService.SetValue("healthBarP2", field: "healthSync");
+                    //uiService.SetValue("healthBarP2", field: "healthSyncPause", value0: true);
                 }
             }
 
             public void OnHitStunEnd(FightingGameCharacter fgChar) {
                 if (fgChar == player1) {
-                    uiService.HealthBarSyncPause(0, false);
+                    inGameUi.HealthBarSyncPause(0, false);
+                    //uiService.SetValue("healthBarP2", field: "healthSyncPause", value0: false);
                 }
                 else if (fgChar == player2) {
-                    uiService.HealthBarSyncPause(1, false);
+                    inGameUi.HealthBarSyncPause(1, false);
+                    //uiService.SetValue("healthBarP2", field: "healthSyncPause", value0: false);
                 }
             }
 
@@ -267,6 +305,14 @@ namespace ResonantSpark {
 
             public float GetGameTimeScaling() {
                 return gameTime;
+            }
+
+            public UI.InGameUi GetInGameUi() {
+                return inGameUi;
+            }
+
+            public void GetInGameUiWhenReady(UnityAction<UI.InGameUi> callback) {
+                unityEventSetInGameUiWhenReady.AddListener(callback);
             }
 
             public int GetMaxPlayers() {
@@ -285,5 +331,7 @@ namespace ResonantSpark {
                 }
             }
         }
+
+        public class InGameUiCreated : UnityEvent<UI.InGameUi> { }
     }
 }

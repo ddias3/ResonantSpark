@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -36,8 +36,8 @@ namespace ResonantSpark {
 
             public UnityAction startGameCallback;
 
-            public new void Start() {
-                base.Start();
+            public new void Awake() {
+                base.Awake();
 
                 rectTransform = GetComponent<RectTransform>();
                 numberGui.text = this.numHits.ToString();
@@ -127,6 +127,33 @@ namespace ResonantSpark {
                 }
 
                 timer += Time.deltaTime;
+            }
+
+            public override void SetValue(string field) {
+                switch (field) {
+                    case "hide":
+                        Hide();
+                        break;
+                    default:
+                        throw new InvalidOperationException("Combo counter field invalid: " + field);
+                }
+            }
+
+            public override void SetValue(string field, object value0) {
+                switch (field) {
+                    case "numHits":
+                        SetNumHits((int) value0);
+                        break;
+                    default:
+                        throw new InvalidOperationException("Combo counter field with 1 value invalid: " + field);
+                }
+            }
+
+            public override void SetValue(string field, object value0, object value1) {
+                switch (field) {
+                    default:
+                        throw new InvalidOperationException("Combo counter field with 2 values invalid: " + field);
+                }
             }
         }
     }

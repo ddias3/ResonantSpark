@@ -6,8 +6,8 @@ using ResonantSpark.Gamemode;
 
 namespace ResonantSpark {
     namespace GamemodeStates {
-        namespace OneOnOneRoundBasedStates {
-            public class RoundStartMode : OneOnOneRoundBasedBaseState {
+        namespace VersusModeStates {
+            public class RoundStartMode : VersusModeBaseState {
                 private GameTimeManager gameTimeManager;
                 private float elapsedTime;
                 private int frameCount;
@@ -29,10 +29,11 @@ namespace ResonantSpark {
                     elapsedTime = 0;
 
                     fgService.DisableControl();
-                    uiService.SetTime(oneOnOne.GetRoundLength());
+                    inGameUi.SetTime(versus.GetRoundLength());
+                    //uiService.SetValue(element: "roundTimer", field: "time", value0: versus.GetRoundLength());
 
-                    oneOnOne.FightingGameMode();
-                    oneOnOne.ResetRound();
+                    versus.FightingGameMode();
+                    versus.ResetRound();
                     frameCount = 0;
                 }
 
@@ -41,7 +42,8 @@ namespace ResonantSpark {
                         changeState(states.Get("fightingMode"));
                     }
                     else {
-                        uiService.SetMainScreenText(countdownArr[0]);
+                        inGameUi.SetMainScreenText(countdownArr[0]);
+                        //uiService.SetValue(element: "mainScreenText", field: "text", value0: countdownArr[0]);
                     }
 
                     elapsedTime += gameTimeManager.DeltaTime("frameDelta", "game");
@@ -49,11 +51,12 @@ namespace ResonantSpark {
                 }
 
                 public override void LateExecute(int frameIndex) {
-                    oneOnOne.RestrictDistance();
+                    versus.RestrictDistance();
                 }
 
                 public override void Exit(int frameIndex) {
-                    uiService.HideMainScreenText();
+                    inGameUi.HideMainScreenText();
+                    //uiService.SetValue("mainScreenText", field: "hide");
                 }
             }
         }

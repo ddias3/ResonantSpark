@@ -14,7 +14,7 @@ namespace ResonantSpark {
 
             public List<GameDeviceMapping> deviceMapping;
 
-            public GameObject oneOnOneRoundBasedPrefab;
+            public GameObject versusModePrefab;
             public GameObject trainingModePrefab;
 
             public GameObject fightingGameCameraPrefab;
@@ -45,8 +45,8 @@ namespace ResonantSpark {
 
             public GameObject GetGamemode() {
                 switch (gamemodeStr) {
-                    case "oneOnOneRoundBased":
-                        return oneOnOneRoundBasedPrefab;
+                    case "versus":
+                        return versusModePrefab;
                     case "training":
                         return trainingModePrefab;
                     default:
@@ -56,7 +56,7 @@ namespace ResonantSpark {
 
             public GameObject GetCamera() {
                 switch (gamemodeStr) {
-                    case "oneOnOneRoundBased":
+                    case "versus":
                     case "training":
                         return fightingGameCameraPrefab;
                     default:

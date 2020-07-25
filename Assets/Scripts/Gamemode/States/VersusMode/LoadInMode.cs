@@ -6,8 +6,8 @@ using ResonantSpark.Gamemode;
 
 namespace ResonantSpark {
     namespace GamemodeStates {
-        namespace OneOnOneRoundBasedStates {
-            public class LoadInMode : OneOnOneRoundBasedBaseState {
+        namespace VersusModeStates {
+            public class LoadInMode : VersusModeBaseState {
                 private GameTimeManager gameTimeManager;
                 private float elapsedTime;
 
@@ -31,7 +31,7 @@ namespace ResonantSpark {
                 }
 
                 public override void LateExecute(int frameIndex) {
-                    oneOnOne.RestrictDistance();
+                    versus.RestrictDistance();
                 }
 
                 public override void Exit(int frameIndex) {

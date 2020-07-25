@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -12,8 +12,8 @@ namespace ResonantSpark {
 
             private List<Vector3> positions;
 
-            public new void Start() {
-                base.Start();
+            public new void Awake() {
+                base.Awake();
 
                 positions = new List<Vector3>();
                 for (int n = 0; n < roundDisplays.Count; ++n) {
@@ -21,8 +21,7 @@ namespace ResonantSpark {
                 }
             }
 
-            public void SetRoundCount(int numRounds) {
-                Debug.Log("Set Round Count : " + numRounds);
+            public void SetRoundWins(int numRounds) {
                 int n;
                 for (n = 0; n < numRounds; ++n) {
                     roundDisplays[n].transform.position = positions[n] + offset;
@@ -31,6 +30,30 @@ namespace ResonantSpark {
                 for (; n < roundDisplays.Count; ++n) {
                     roundDisplays[n].transform.position = positions[n];
                     roundDisplays[n].DisplayFill(false);
+                }
+            }
+
+            public override void SetValue(string field) {
+                switch (field) {
+                    default:
+                        throw new InvalidOperationException("Round counter field invalid: " + field);
+                }
+            }
+
+            public override void SetValue(string field, object value0) {
+                switch (field) {
+                    case "roundWins":
+                        SetRoundWins((int) value0);
+                        break;
+                    default:
+                        throw new InvalidOperationException("Round counter field with 1 value invalid: " + field);
+                }
+            }
+
+            public override void SetValue(string field, object value0, object value1) {
+                switch (field) {
+                    default:
+                        throw new InvalidOperationException("Round counter field with 2 values invalid: " + field);
                 }
             }
         }

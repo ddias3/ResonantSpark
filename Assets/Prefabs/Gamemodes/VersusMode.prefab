@@ -138,10 +138,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5907818410644016003}
-  - component: {fileID: 5907818410644016004}
+  - component: {fileID: 6261849324702367436}
   - component: {fileID: 4204782087996913149}
   m_Layer: 0
-  m_Name: OneOnOneRoundBased
+  m_Name: VersusMode
   m_TagString: rspGamemode
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -162,7 +162,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5907818410644016004
+--- !u!114 &6261849324702367436
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -171,14 +171,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 5907818410644016008}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 94ac5d75c1e028a40a415194831c0c23, type: 3}
+  m_Script: {fileID: 11500000, guid: 356511126031dc74db04c1df696708fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  inGameUiPrefab: {fileID: 1461409556741052766, guid: f568de96f13df80428a6538b75fc9134,
+    type: 3}
   stateMachine: {fileID: 5006741397487736226}
   states: {fileID: 8138733489031963274}
   roundTime: 60
   maxCharacterDistance: 8
   gameTime: 1
+  menuPrefab: {fileID: 8717479005336855736, guid: 691325265de4d5441b26e946bbde5fd8,
+    type: 3}
 --- !u!114 &4204782087996913149
 MonoBehaviour:
   m_ObjectHideFlags: 0

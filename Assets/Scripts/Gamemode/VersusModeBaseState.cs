@@ -8,15 +8,15 @@ using ResonantSpark.UI;
 
 namespace ResonantSpark {
     namespace GamemodeStates {
-        public abstract class TrainingModeBaseState : GamemodeBaseState {
-            protected TrainingMode training;
+        public abstract class VersusModeBaseState : GamemodeBaseState {
+            protected VersusMode versus;
             protected InGameUi inGameUi;
 
             public new void Awake() {
                 base.Awake();
 
-                training = gameObject.GetComponentInParent<TrainingMode>();
-                training.GetInGameUiWhenReady(new UnityAction<InGameUi>((obj) => {
+                versus = gameObject.GetComponentInParent<VersusMode>();
+                versus.GetInGameUiWhenReady(new UnityAction<InGameUi>((obj) => {
                     inGameUi = obj;
                 }));
             }
