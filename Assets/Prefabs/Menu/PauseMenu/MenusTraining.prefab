@@ -1776,9 +1776,10 @@ GameObject:
   m_Component:
   - component: {fileID: 3565117294399891240}
   - component: {fileID: 7702399771175173089}
+  - component: {fileID: 7118321950445391551}
   m_Layer: 0
   m_Name: MenusTraining
-  m_TagString: Untagged
+  m_TagString: rspMenu
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1813,6 +1814,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dummyBlock: {fileID: 7722524821292611536}
   pauseMenuRunner: {fileID: 3565117294652841723}
+--- !u!114 &7118321950445391551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3565117294399891247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 264cecff0e41ad64da51bc70fa31e29c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3565117294425350470
 GameObject:
   m_ObjectHideFlags: 0
@@ -2238,13 +2251,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3565117294652841716}
-  - component: {fileID: 3565117294652841717}
   - component: {fileID: 3565117294652841723}
   - component: {fileID: 3565117294652841722}
   - component: {fileID: 3565117294652841721}
   m_Layer: 0
   m_Name: MenuRunner
-  m_TagString: rspMenu
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2264,18 +2276,6 @@ Transform:
   m_Father: {fileID: 3565117294399891240}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3565117294652841717
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3565117294652841720}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 264cecff0e41ad64da51bc70fa31e29c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &3565117294652841723
 MonoBehaviour:
   m_ObjectHideFlags: 0

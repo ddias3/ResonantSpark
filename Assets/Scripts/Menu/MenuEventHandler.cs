@@ -18,8 +18,6 @@ namespace ResonantSpark {
 
                 "activate",
                 "deactivate",
-
-                "init",
             };
             private Dictionary<string, List<Action>> callbacks;
 

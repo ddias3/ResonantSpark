@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.SceneManagement;
-
-using ResonantSpark.Service;
 
 namespace ResonantSpark {
     namespace Menu {
@@ -12,6 +9,7 @@ namespace ResonantSpark {
 
         public class PauseMenuRunner : MenuRunner {
             public PauseEvent pauseEvent = new PauseEvent();
+            public LoadMainMenu loadMainMenuEvent = new LoadMainMenu();
 
             public new void Start() {
                 base.Start();
@@ -26,13 +24,17 @@ namespace ResonantSpark {
 
             public IEnumerator DelayedStart() {
                 yield return new WaitForEndOfFrame();
-                GetComponent<MenuManager>().InitMenus();
                 executeCallback = stateMachine.Enable(states.Get("inactive"));
                 this.enabled = true;
             }
 
+            public void ChangeState(string stateName) {
+                stateMachine.QueueStateChange(states.Get(stateName));
+            }
+
             public void LoadMainMenu() {
-                SceneManager.LoadScene("Scenes/Menu/MainMenu2");
+                //SceneManager.LoadScene("Scenes/Menu/MainMenu2");
+                loadMainMenuEvent.Invoke();
             }
 
             public void PauseGame() {

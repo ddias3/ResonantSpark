@@ -2,11 +2,14 @@
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 using ResonantSpark.Gameplay;
 using ResonantSpark.Gamemode;
 using ResonantSpark.Camera;
 using ResonantSpark.Character;
+using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace Service {
@@ -48,6 +51,7 @@ namespace ResonantSpark {
             private FrameEnforcer frame;
 
             private IGamemode gamemode;
+            private IHookExpose gamemodeHooks;
 
             public void Start() {
                 frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
@@ -85,7 +89,8 @@ namespace ResonantSpark {
             public void CreateGamemode() {
                 GameObject newGameMode = GameObject.Instantiate(persistenceService.GetGamemode());
                 newGameMode.name = "Gamemode";
-                this.gamemode = newGameMode.GetComponent<OneOnOneRoundBased>();
+                this.gamemode = newGameMode.GetComponent<IGamemode>();
+                this.gamemodeHooks = newGameMode.GetComponent<IHookExpose>();
 
                 GameObject newCamera = GameObject.Instantiate(persistenceService.GetCamera());
                 newCamera.name = "FightingGameCamera";
@@ -99,6 +104,13 @@ namespace ResonantSpark {
             public void SetUpGamemode() {
                 gamemode.SetUp(playerService, this, GetComponent<UiService>());
                 camera.SetUpCamera(this);
+
+                HookUpGamemode(gamemodeHooks.GetHooks());
+            }
+
+            private void HookUpGamemode(Dictionary<string, UnityEventBase> hooks) {
+                HookReceive hookReceive = new HookReceive(hooks);
+                hookReceive.HookIn("loadMainMenu", new UnityAction(LoadMainMenu));
             }
 
             public bool IsCurrentFGChar(InGameEntity entity) {
@@ -250,6 +262,11 @@ namespace ResonantSpark {
                         gamemode.OnGameEntityNumHitsChange(fgChar, 0);
                     }
                 });
+            }
+
+            public void LoadMainMenu() {
+                Debug.Log("LoadMainMenu called");
+                SceneManager.LoadScene("Scenes/Menu/MainMenu2");
             }
 
             public int GetNumHits(InGameEntity fgChar) {

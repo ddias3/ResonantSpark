@@ -33,13 +33,10 @@ namespace ResonantSpark {
 
             private int playerChoosing = 1;
 
-            public void Start() {
+            public override void Init() {
                 if (currSelected == null) {
                     currSelected = characterSelect1P;
                 }
-
-                GameObject.FindGameObjectWithTag("rspMenu")
-                    .GetComponent<MenuManager>().AddMenu(this);
 
                 characterSelect1P.SetCharacterSelectMenu(this);
                 characterSelect2P.SetCharacterSelectMenu(this);
@@ -52,11 +49,10 @@ namespace ResonantSpark {
 
                 Persistence persistence = Persistence.Get();
 
-                eventHandler.On("init", () => {
-                    cursor2d.Hide();
-                    characterSelect1P.TriggerEvent("deactivate");
-                    characterSelect2P.TriggerEvent("deactivate");
-                });
+                cursor2d.Hide();
+                characterSelect1P.TriggerEvent("deactivate");
+                characterSelect2P.TriggerEvent("deactivate");
+
                 eventHandler.On("activate", () => {
                     ResetBillboard(1);
                     ResetBillboard(2);

@@ -15,7 +15,7 @@ namespace ResonantSpark {
 
             public void InitMenus() {
                 foreach (Menu menu in menus) {
-                    menu.TriggerEvent("init");
+                    menu.Init();
                 }
             }
         }

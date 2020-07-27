@@ -8,7 +8,6 @@ namespace ResonantSpark {
             None,
             Player1,
             Player2,
-            CPU,
         }
     }
 }

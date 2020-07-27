@@ -15,18 +15,14 @@ namespace ResonantSpark {
 
             private Selectable currSelected = null;
 
-            public void Start() {
+            public override void Init() {
                 if (currSelected == null) {
                     currSelected = resume;
                 }
 
-                GameObject.FindGameObjectWithTag("rspMenu")
-                    .GetComponent<MenuManager>().AddMenu(this);
+                cursor2d.Hide();
+                animator2d.Play("hidden");
 
-                eventHandler.On("init", () => {
-                    cursor2d.Hide();
-                    animator2d.Play("hidden");
-                });
                 eventHandler.On("activate", () => {
                     Debug.Log("Pause Menu Activate");
                     animator2d.Play("appear", 0, 0.0f);

@@ -261,7 +261,8 @@ namespace ResonantSpark {
                                 .To(20)
                                 .From(14)
                                     .Hit(hit => {
-                                        hit.HitDamage(1000)
+                                        //hit.HitDamage(1000)
+                                        hit.HitDamage(10000000)
                                             .BlockDamage(0)
                                             .HitStun(30.0f)
                                             .BlockStun(12.0f)

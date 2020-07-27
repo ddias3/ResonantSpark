@@ -24,22 +24,18 @@ namespace ResonantSpark {
 
             private Selectable currSelected = null;
 
-            public void Start() {
+            public override void Init() {
                 if (currSelected == null) {
                     currSelected = levelSelect;
                 }
 
-                GameObject.FindGameObjectWithTag("rspMenu")
-                    .GetComponent<MenuManager>().AddMenu(this);
-
                 Persistence persistence = Persistence.Get();
 
-                eventHandler.On("init", () => {
-                    cursor2d.Hide();
-                    animator3d.Play("hidden");
-                    animatorRet.Play("hidden");
-                    levelSelect.TriggerEvent("deactivate");
-                });
+                cursor2d.Hide();
+                animator3d.Play("hidden");
+                animatorRet.Play("hidden");
+                levelSelect.TriggerEvent("deactivate");
+
                 eventHandler.On("activate", () => {
                     Debug.Log("Activate");
                     animator3d.SetFloat("speed", 1.0f);

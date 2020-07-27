@@ -66,16 +66,11 @@ namespace ResonantSpark {
 
         public void Awake() {
             this.enabled = false;
-            elapsedTimeMilliSec = FRAME_TIME;
-            frameIndex = 0;
+            ResetTime();
 
             gameTime = gameObject.GetComponent<GameTimeManager>();
             gameTime.AddNode(x => FRAME_TIME, new List<string> { "frameDelta" });
             gameTime.AddNode(x => deltaTime, new List<string> { "realDelta" });
-        }
-
-        public void Start() {
-            StartTimeCount();
         }
 
         public int index {
@@ -85,23 +80,12 @@ namespace ResonantSpark {
             }
         }
 
-        public void StartTimeCount() {
-            startTime = Time.time;
-            prevTime = startTime;
-            frameIndex = 0;
-        }
-
         public void FixedUpdate() {
-            int stepsInFrame = 0;
-
-            //deltaTime = Time.time - prevTime;
-
             while (frameSkipTime > FRAME_TIME) {
                 foreach (FrameEnforcerCallback action in updateActions) {
                     action.callback.Invoke(frameIndex);
                 }
 
-                stepsInFrame++;
                 updateCounter++;
 
                 frameIndex++;
@@ -146,6 +130,14 @@ namespace ResonantSpark {
 
         public void PauseExecution(bool pause) {
             this.enabled = !pause;
+        }
+
+        public void ResetTime() {
+            frameSkipTime = FRAME_TIME;
+            frameIndex = 0;
+
+            elapsedTimeMilliSec = 0.0;
+            elapsedTimeSec = 0;
         }
 
         public void StartFrameEnforcer() {

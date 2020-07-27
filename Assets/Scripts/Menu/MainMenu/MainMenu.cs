@@ -25,20 +25,16 @@ namespace ResonantSpark {
 
             private Selectable currSelected = null;
 
-            public void Start() {
+            public override void Init() {
                 if (currSelected == null) {
                     currSelected = versus;
                 }
 
-                GameObject.FindGameObjectWithTag("rspMenu")
-                    .GetComponent<MenuManager>().AddMenu(this);
+                cursor3d.Hide();
+                cursor2d.Hide();
+                animator3d.Play("hidden");
+                animator2d.Play("hidden");
 
-                eventHandler.On("init", () => {
-                    cursor3d.Hide();
-                    cursor2d.Hide();
-                    animator3d.Play("hidden");
-                    animator2d.Play("hidden");
-                });
                 eventHandler.On("activate", () => {
                     animator3d.SetFloat("speed", 1.0f);
                     animator2d.SetFloat("speed", 1.0f);

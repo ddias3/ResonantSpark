@@ -5,6 +5,10 @@ using UnityEngine;
 namespace ResonantSpark {
     namespace Service {
         public class TimeService : MonoBehaviour, ITimeService {
+
+            public GameTimeManager gameTime;
+            public FrameEnforcer frame;
+
             public void Start() {
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(TimeService));
             }

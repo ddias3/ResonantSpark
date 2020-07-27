@@ -11,14 +11,9 @@ namespace ResonantSpark {
             public Selectable confirm;
             public Cursor2d cursor;
 
-            public void Start() {
-                GameObject.FindGameObjectWithTag("rspMenu")
-                    .GetComponent<MenuManager>().AddMenu(this);
-
-                eventHandler.On("init", () => {
-                    cursor.Hide();
-                    animator.Play("hidden");
-                });
+            public override void Init() {
+                cursor.Hide();
+                animator.Play("hidden");
 
                 eventHandler.On("activate", () => {
                     animator.Play("appear", 0, 0.0f);

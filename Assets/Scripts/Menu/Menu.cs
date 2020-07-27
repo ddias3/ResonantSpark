@@ -21,7 +21,12 @@ namespace ResonantSpark {
             public void Awake() {
                 eventHandler = new MenuEventHandler();
                 eventHandler_devMapping = new MenuEventHandler<GameDeviceMapping>();
+
+                GameObject.FindGameObjectWithTag("rspMenu")
+                    .GetComponent<MenuManager>().AddMenu(this);
             }
+
+            public abstract void Init();
 
             public void TriggerEvent(string eventName) {
                 eventHandler.TriggerEvent(eventName);

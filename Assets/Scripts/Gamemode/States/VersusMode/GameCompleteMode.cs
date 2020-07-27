@@ -24,6 +24,8 @@ namespace ResonantSpark {
                 public override void Enter(int frameIndex, MultipassBaseState previousState) {
                     inGameUi.HideMainScreenText();
                     //uiService.SetValue(element: "mainScreenText", field: "hide");
+
+                    versusMenu.DisplayPostMatchMenu();
                 }
 
                 public override void ExecutePass0(int frameIndex) {

@@ -931,14 +931,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a037f0db006b5f045bb4c8c4ecb6b35e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthBarP1: {fileID: 0}
-  healthBarP2: {fileID: 0}
-  roundTimer: {fileID: 0}
-  openingText: {fileID: 0}
-  roundCounterP1: {fileID: 0}
-  roundCounterP2: {fileID: 0}
-  comboCounterP1: {fileID: 0}
-  comboCounterP2: {fileID: 0}
 --- !u!114 &6293366847377294897
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -975,6 +967,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1fb0357cc056d341be0de1c822e8b24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameTime: {fileID: 1184226374591764635}
+  frame: {fileID: 1184226374591764632}
 --- !u!114 &346015930430113308
 MonoBehaviour:
   m_ObjectHideFlags: 0

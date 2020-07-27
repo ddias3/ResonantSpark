@@ -3,18 +3,14 @@
 namespace ResonantSpark {
     namespace Menu {
         public class ControllerButtonBind : Menu {
-            public void Start() {
+            public override void Init() {
                 //if (currSelected == null) {
                 //    currSelected = controllerBinding;
                 //}
 
-                GameObject.FindGameObjectWithTag("rspMenu")
-                    .GetComponent<MenuManager>().AddMenu(this);
+                //cursor2d.Hide();
+                //animator2d.Play("hidden");
 
-                eventHandler.On("init", () => {
-                    //cursor2d.Hide();
-                    //animator2d.Play("hidden");
-                });
                 //eventHandler.On("activate", () => {
                 //    animator3d.SetFloat("speed", 1.0f);
                 //    animator2d.SetFloat("speed", 1.0f);

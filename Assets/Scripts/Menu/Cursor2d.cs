@@ -37,7 +37,7 @@ namespace ResonantSpark {
 
             public void Update() {
                 //baseColor.a = (maxAlpha - minAlpha) * 0.5f * (Mathf.Sin(glowRate * Time.time * 2 * Mathf.PI) + 1.0f) + minAlpha;
-                image.color = baseColor;
+                //image.color = baseColor;
                 if (targetSelectable != null) {
                     RectTransform targetRectTransform = (RectTransform)targetSelectable.GetTransform();
 
@@ -82,6 +82,10 @@ namespace ResonantSpark {
 
             public void Hide() {
                 callbacks.Enqueue((PlayAnimationOnCallback("hidden"), Mathf.NegativeInfinity));
+            }
+
+            public void DisplaySelected() {
+                callbacks.Enqueue((PlayAnimationOnCallback("selected"), Mathf.NegativeInfinity));
             }
 
             public void Highlight(Selectable selectable, Action callback = null) {

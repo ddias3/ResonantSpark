@@ -35,11 +35,12 @@ namespace ResonantSpark {
             protected FrameEnforcer frame;
             protected GameTimeManager gameTimeManager;
 
+            protected UI.InGameUi inGameUi;
+            protected UnityEvent<UI.InGameUi> unityEventSetInGameUiWhenReady;
+            protected UnityEvent<Menu.PauseMenu> unityEventSetPauseMenuWhenReady;
+
             private UnityAction enablePlayersCallback;
             private UnityAction resetGameCallback;
-
-            private UI.InGameUi inGameUi;
-            private UnityEvent<UI.InGameUi> unityEventSetInGameUiWhenReady;
 
             public void Awake() {
                 frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
@@ -49,6 +50,7 @@ namespace ResonantSpark {
                 gameTimeManager.AddNode(new Func<float, float>(GameTime), new List<string> { "realDelta", "game" });
 
                 unityEventSetInGameUiWhenReady = new InGameUiCreated();
+                unityEventSetPauseMenuWhenReady = new PauseMenuCreated();
 
                 EventManager.StartListening<Events.FrameEnforcerReady>(enablePlayersCallback = new UnityAction(EnablePlayers));
                 EventManager.StartListening<Events.StartGame>(enablePlayersCallback = new UnityAction(ResetGame));
@@ -315,6 +317,10 @@ namespace ResonantSpark {
                 unityEventSetInGameUiWhenReady.AddListener(callback);
             }
 
+            public void GetPauseMenuWhenReady(UnityAction<Menu.PauseMenu> callback) {
+                unityEventSetPauseMenuWhenReady.AddListener(callback);
+            }
+
             public int GetMaxPlayers() {
                 return 2;
             }
@@ -333,5 +339,6 @@ namespace ResonantSpark {
         }
 
         public class InGameUiCreated : UnityEvent<UI.InGameUi> { }
+        public class PauseMenuCreated : UnityEvent<Menu.PauseMenu> { }
     }
 }

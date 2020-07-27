@@ -18,10 +18,12 @@ namespace ResonantSpark {
             public override void SetUp(PlayerService playerService, FightingGameService fgService, UiService uiService) {
                 base.SetUp(playerService, fgService, uiService);
 
-                GameObject trainingMenus = GameObject.Instantiate(menuPrefab);
-                IHookExpose hookExpose = trainingMenus.GetComponent<IHookExpose>();
+                Persistence persistence = Persistence.Get();
 
-                HookUpMenu(hookExpose.GetHooks());
+                Menu.PauseMenu trainingMenus = GameObject.Instantiate(menuPrefab).GetComponent<Menu.PauseMenu>();
+
+                trainingMenus.Init(persistence.GetHumanPlayers(), persistence.CreatePlayerDeviceMap());
+                HookUpMenu(trainingMenus.GetHooks());
             }
 
             private void HookUpMenu(Dictionary<string, UnityEventBase> hooks) {

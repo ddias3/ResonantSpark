@@ -80,6 +80,13 @@ namespace ResonantSpark {
             return humanPlayers;
         }
 
+        public Dictionary<PlayerLabel, GameDeviceMapping> CreatePlayerDeviceMap() {
+            return new Dictionary<PlayerLabel, GameDeviceMapping> {
+                { PlayerLabel.Player1, player1 },
+                { PlayerLabel.Player2, player2 },
+            };
+        }
+
         public void MenuLoaded() {
             firstTimeLoad = false;
         }
