@@ -11,12 +11,14 @@ namespace ResonantSpark {
         public abstract class GamemodeBaseState : MultipassBaseState {
             protected UiService uiService;
             protected FightingGameService fgService;
+            protected TimeService timeService;
 
             public new void Awake() {
                 base.Awake();
 
                 uiService = GameObject.FindGameObjectWithTag("rspService").GetComponent<UiService>();
                 fgService = GameObject.FindGameObjectWithTag("rspService").GetComponent<FightingGameService>();
+                timeService = GameObject.FindGameObjectWithTag("rspService").GetComponent<TimeService>();
             }
 
             public override void ExecutePass1(int frameIndex) {

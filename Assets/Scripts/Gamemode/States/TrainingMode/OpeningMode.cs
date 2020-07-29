@@ -25,8 +25,8 @@ namespace ResonantSpark {
                     training.ResetRound();
 
                     elapsedTime = 0;
-                    inGameUi.SetMainScreenText("Versus");
-                    //uiService.SetValue(element: "mainScreenText", field: "text", value0: "Versus");
+                    inGameUi.SetMainScreenText("Training");
+                    //uiService.SetValue(element: "mainScreenText", field: "text", value0: "Training");
                     fgService.DisableControl();
                 }
 
