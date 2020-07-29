@@ -36,14 +36,22 @@ namespace ResonantSpark {
             public float outOfBoundsMaxHeight = 3.0f;
             public float maxOutOfBoundsDistance = 6.0f;
 
+            public SphereCollider debugCollider;
+
+            public AnimationCurve overlapDistance;
+            public float maxOverlapAngle = 30.0f;
+
             private Transform cameraTransform;
             private new Rigidbody rigidbody;
 
             private Transform char0;
             private Transform char1;
 
-            private LayerMask staticLevel;
-            private LayerMask cameraLeak;
+            private LayerMask staticLevelGeometry;
+            private LayerMask inStageDebris;
+
+            private LayerMask staticLevelGeometryMask;
+            private LayerMask sphereOverlapMask;
 
             private Transform startTransform;
             private List<Transform> levelBoundaries;
@@ -55,9 +63,10 @@ namespace ResonantSpark {
             private Vector2 facingLeft;
             private Vector2 ambiguous;
 
-            private GameObject testTransform0;
-            private GameObject testTransform1;
-            private GameObject testTransform2;
+            private Collider[] colliderBuffer;
+            private RaycastHit[] raycastBuffer;
+
+            private Dictionary<GameObject, MeshRenderer> meshRendererCache;
 
             public void Awake() {
                 this.enabled = false;
@@ -65,13 +74,21 @@ namespace ResonantSpark {
                 facingLeft = new Vector2(-1.0f, 1.0f);
                 ambiguous = new Vector2(0.0f, 1.0f);
 
+                colliderBuffer = new Collider[1024];
+                raycastBuffer = new RaycastHit[512];
+
+                meshRendererCache = new Dictionary<GameObject, MeshRenderer>();
+
                 currDisabledRenderers = new List<MeshRenderer>();
                 prevDisabledRenderers = new List<MeshRenderer>();
 
                 rigidbody = GetComponent<Rigidbody>();
 
-                staticLevel = LayerMask.NameToLayer("StaticLevelGeometry");
-                cameraLeak = LayerMask.NameToLayer("CameraLeakGeometry");
+                staticLevelGeometry = LayerMask.NameToLayer("StaticLevelGeometry");
+                inStageDebris = LayerMask.NameToLayer("InStageDebris");
+
+                staticLevelGeometryMask = LayerMask.GetMask("StaticLevelGeometry");
+                sphereOverlapMask = LayerMask.GetMask("InStageDebris", "StaticLevelGeometry");
             }
 
             public void SetUpCamera(FightingGameService fgService) {
@@ -87,18 +104,6 @@ namespace ResonantSpark {
 
                 char0 = playerService.GetFGChar(0).transform;
                 char1 = playerService.GetFGChar(1).transform;
-
-                testTransform0 = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                testTransform0.GetComponent<Collider>().enabled = false;
-                testTransform0.transform.localScale = new Vector3(0.1f, 0.2f, 0.1f);
-
-                testTransform1 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                testTransform1.GetComponent<Collider>().enabled = false;
-                testTransform1.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
-
-                testTransform2 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                testTransform2.GetComponent<Collider>().enabled = false;
-                testTransform2.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
             }
 
             public void ResetCameraPosition() {
@@ -136,24 +141,11 @@ namespace ResonantSpark {
                 }
             }
 
-                // Not using OnTriggerEnter/Exit because it doesn't pair nicely with the raycast method
-            public void OnTriggerStay(Collider other) {
-                if (other.gameObject.layer == cameraLeak) {
-                    MeshRenderer rend = other.gameObject.GetComponent<MeshRenderer>();
-
-                    if (!currDisabledRenderers.Contains(rend)) {
-                        currDisabledRenderers.Add(rend);
-                    }
-                }
-            }
-
             private void LateUpdate() {
                 Vector3 direction = char1.position - char0.position;
                 Vector3 midPoint = char0.position + (direction / 2);
 
                 Vector3 currPosition = rigidbody.position;
-
-                testTransform0.transform.position = midPoint;
 
                 Vector3 dirLeft = Vector3.Cross(direction, Vector3.up).normalized;
                 Vector3 dirRight = Vector3.Cross(-direction, Vector3.up).normalized;
@@ -165,11 +157,9 @@ namespace ResonantSpark {
 
                 Vector3 desiredPosition;
                 if (((midPoint + dirLeft) - rigidbody.position).sqrMagnitude < ((midPoint + dirRight) - rigidbody.position).sqrMagnitude) {
-                    testTransform1.transform.position = midPoint + dirLeft;
                     desiredPosition = midPoint + dirLeft * cameraDistance + Vector3.up * cameraHeight;
                 }
                 else {
-                    testTransform1.transform.position = midPoint + dirRight;
                     desiredPosition = midPoint + dirRight * cameraDistance + Vector3.up * cameraHeight;
                 }
 
@@ -192,7 +182,8 @@ namespace ResonantSpark {
                     cameraTransform.localRotation = Quaternion.identity;
                 }
 
-                PerformRaycasts(newPosition, characterCenterPoint, direction);
+                PerformOverlapClearing(cameraTransform.position, midPoint + Vector3.up * 0.8f, char0.position, char1.position);
+                PerformRaycasts(cameraTransform.position, characterCenterPoint, direction);
                 ResetActivePolling();
 
                 //cameraTransform.LookAt(midPoint + Vector3.up * heightLook);
@@ -235,107 +226,88 @@ namespace ResonantSpark {
                 return true;
             }
 
-            private void PerformRaycasts(Vector3 newPosition, Vector3 characterCenterPoint, Vector3 direction) {
+            private void DisableRenderer(Collider collider) {
+                MeshRenderer rend;
+                if (meshRendererCache.ContainsKey(collider.gameObject)) {
+                    rend = meshRendererCache[collider.gameObject];
+                }
+                else {
+                    rend = collider.gameObject.GetComponent<MeshRenderer>();
+                    meshRendererCache[collider.gameObject] = rend;
+                }
+
+                if (!currDisabledRenderers.Contains(rend)) {
+                    currDisabledRenderers.Add(rend);
+                }
+            }
+
+            private Vector3 ClosestPointToLine(Vector3 point, Vector3 a, Vector3 b) {
+                return a + Vector3.Project(point - a, b - a);
+            }
+
+            private void PerformOverlapClearing(Vector3 cameraPos, Vector3 charactersCenter, Vector3 charPos0, Vector3 charPos1) {
+                Vector3 targetDir = 1.3f * (charactersCenter - cameraPos);
+                Vector3 targetChar0 = charPos0 - cameraPos;
+                Vector3 targetChar1 = charPos1 - cameraPos;
+
+                //float angle = Mathf.Tan((charactersDistance * 0.5f) / targetDir.magnitude) * Mathf.Rad2Deg;
+
+                int numCollisions = Physics.OverlapSphereNonAlloc(cameraPos, targetDir.magnitude, colliderBuffer, sphereOverlapMask, QueryTriggerInteraction.Ignore);
+                debugCollider.radius = targetDir.magnitude;
+                debugCollider.transform.position = cameraPos;
+
+                for (int n = 0; n < numCollisions; ++n) {
+                    Collider curr = colliderBuffer[n];
+                    if (curr.gameObject.layer == inStageDebris) {
+                        float x0 = Vector3.Angle(curr.transform.position - cameraPos, targetChar0);
+                        float x1 = Vector3.Angle(curr.transform.position - cameraPos, targetChar1);
+                        float angle = Mathf.Min(x0, x1);
+
+                        float dist0 = Vector3.Distance(curr.transform.position, cameraPos);
+                        float x2 = overlapDistance.Evaluate(angle / maxOverlapAngle);
+                        if (dist0 < targetDir.magnitude * x2) {
+                            DisableRenderer(curr);
+                        }
+                    }
+                    else if (curr.gameObject.layer == staticLevelGeometry) {
+                        if (Vector3.Angle(curr.transform.position - cameraPos, targetDir) < 60.0f) {
+                            Vector3 closestPoint0;
+                            Vector3 closestPoint1;
+                            if (Math3d.ClosestPointsOnTwoLines(out closestPoint0, out closestPoint1, cameraPos, curr.transform.position, charPos0, charPos1)) {
+                                Vector3 targetPoint = closestPoint0 + closestPoint1 * 0.5f;
+
+                                if (Vector3.Distance(curr.transform.position, cameraPos) < Vector3.Distance(targetPoint, cameraPos)) {
+                                    DisableRenderer(curr);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            private void PerformRaycasts(Vector3 cameraPos, Vector3 characterCenterPoint, Vector3 direction) {
                 Vector3 cameraCheckDirection;
-                RaycastHit[] currHits;
 
-                    // Check for small objects in the scene.
-                for (int n = 0; n < raycastNumSubdivisions; ++n) {
-
-                    for (int leftRight = 0; leftRight < 2; ++leftRight) {
-                        if (n == 0 && leftRight != 0) continue;
-
-                        int counter = n;
-                        if (leftRight == 0) {
-                            counter = -n;
-                        }
-
-                        Vector3 currCameraCheckDirection = (characterCenterPoint + counter * direction * raycastDirectionScaling * 0.5f / raycastNumSubdivisions) - newPosition;
-                        currHits = Physics.RaycastAll(
-                            newPosition,
-                            currCameraCheckDirection,
-                            raycastDistance,
-                            LayerMask.GetMask("CameraLeakGeometry"),
-                            QueryTriggerInteraction.Ignore);
-
-                        //Debug.DrawLine(newPosition + currCameraCheckDirection.normalized * raycastDistance, newPosition + currCameraCheckDirection.normalized * raycastDistance + Vector3.up * 0.1f, Color.red);
-                        Debug.DrawLine(newPosition, newPosition + currCameraCheckDirection.normalized * raycastDistance, Color.cyan);
-
-                        for (int hitCounter = 0; hitCounter < currHits.Length; ++hitCounter) {
-                            if (currHits[hitCounter].collider.gameObject.layer == cameraLeak) {
-                                MeshRenderer rend = currHits[hitCounter].collider.gameObject.GetComponent<MeshRenderer>();
-                                if (!currDisabledRenderers.Contains(rend)) {
-                                    currDisabledRenderers.Add(rend);
-                                }
-                            }
-                            else {
-                                Debug.LogError("THIS IS NEVER CALLED, remove the if-statement above");
-                            }
-                        }
-                    }
-                }
-
-                    // Check for walls/ side objects in the way.
-                for (int n = 0; n < raycastNumSubdivisions; ++n) {
-
-                    for (int leftRight = 0; leftRight < 2; ++leftRight) {
-                        if (n == 0 && leftRight != 0) continue;
-
-                        int counter = n;
-                        if (leftRight == 0) {
-                            counter = -n;
-                        }
-
-                        float wallCheckBetweenCharsScalar = 0.8f;
-                        Vector3 currCameraCheckDirection = (characterCenterPoint + counter * direction * wallCheckBetweenCharsScalar * 0.5f / raycastNumSubdivisions) - newPosition;
-
-                        currHits = Physics.RaycastAll(
-                            newPosition + currCameraCheckDirection * 1.1f,
-                            -currCameraCheckDirection,
-                            currCameraCheckDirection.magnitude,
-                            LayerMask.GetMask("StaticLevelGeometry"),
-                            QueryTriggerInteraction.Ignore);
-
-                        for (int hitCounter = 0; hitCounter < currHits.Length; ++hitCounter) {
-                            if (currHits[hitCounter].collider.gameObject.layer == staticLevel) {
-                                MeshRenderer rend = currHits[hitCounter].collider.gameObject.GetComponent<MeshRenderer>();
-                                if (!currDisabledRenderers.Contains(rend)) {
-                                    currDisabledRenderers.Add(rend);
-                                }
-                            }
-                            else {
-                                Debug.LogError("THIS IS NEVER CALLED, remove the if-statement above");
-                            }
-                        }
-                    }
-                }
-
-                    // Check for small objects directly in front of the playable characters.
+                // Check for large objects directly in front of the playable characters. These objects may be so large that
+                //   their center and the raycast position are far apart that the sphere overlap method doesn't work.
                 for (int charId = 0; charId < 2; ++charId) {
 
                     if (charId == 0) {
-                        cameraCheckDirection = (char0.position + 0.5f * Vector3.up) - newPosition;
+                        cameraCheckDirection = (char0.position + 0.5f * Vector3.up) - cameraPos;
                     }
                     else {
-                        cameraCheckDirection = (char1.position + 0.5f * Vector3.up) - newPosition;
+                        cameraCheckDirection = (char1.position + 0.5f * Vector3.up) - cameraPos;
                     }
 
-                    currHits = Physics.SphereCastAll(
-                        newPosition,
-                        0.25f,
-                        cameraCheckDirection,
-                        cameraCheckDirection.magnitude,
-                        LayerMask.GetMask("CameraLeakGeometry"),
-                        QueryTriggerInteraction.Ignore);
+                    int numCollisions = Physics.SphereCastNonAlloc(
+                        cameraPos, 0.25f, cameraCheckDirection, raycastBuffer, cameraCheckDirection.magnitude, staticLevelGeometryMask, QueryTriggerInteraction.Ignore);
 
-                    Debug.DrawLine(newPosition, newPosition + cameraCheckDirection, Color.blue);
+                    Debug.DrawLine(cameraPos, cameraPos + cameraCheckDirection, Color.blue);
 
-                    for (int hitCounter = 0; hitCounter < currHits.Length; ++hitCounter) {
-                        if (currHits[hitCounter].collider.gameObject.layer == staticLevel || currHits[hitCounter].collider.gameObject.layer == cameraLeak) {
-                            MeshRenderer rend = currHits[hitCounter].collider.gameObject.GetComponent<MeshRenderer>();
-                            if (!currDisabledRenderers.Contains(rend)) {
-                                currDisabledRenderers.Add(rend);
-                            }
+                    for (int n = 0; n < numCollisions; ++n) {
+                        Collider curr = raycastBuffer[n].collider;
+                        if (curr.gameObject.layer == staticLevelGeometry) {
+                            DisableRenderer(curr);
                         }
                     }
                 }
