@@ -77,6 +77,10 @@ namespace ResonantSpark {
                 get { return gameTimeManager.DeltaTime("realDelta"); }
             }
 
+            public bool isAttacking {
+                get { return stateMachine.GetCurrentState() is CharacterStates.Attack; }
+            }
+
             public void Init(CharacterData charData) {
                 base.Init();
                 this.fgCharId = fgCharCounter++;
@@ -296,7 +300,8 @@ namespace ResonantSpark {
 
             public void SetState(CharacterStates.CharacterBaseState nextState) {
                 prevState = (CharacterStates.CharacterBaseState) stateMachine.GetCurrentState();
-                if (nextState.GetType() != typeof(CharacterStates.AttackGrounded) && nextState.GetType() != typeof(CharacterStates.AttackAirborne)) {
+                //if (nextState.GetType() != typeof(CharacterStates.AttackGrounded) && nextState.GetType() != typeof(CharacterStates.AttackAirborne)) {
+                if (nextState is CharacterStates.Attack) {
                     attackRunner.ClearPrevAttacks();
                 }
                 stateMachine.QueueStateChange(nextState);
@@ -390,7 +395,7 @@ namespace ResonantSpark {
                 }
             }
 
-            public void BeHit(float hitStun, bool launch) {
+            public void ReceiveHit(float hitStun, bool launch) {
                 if (!stateMachine.GetCurrentState().GetType().IsSubclassOf(typeof(CharacterStates.HitStun))) {
                     HitStunStart();
                 }
@@ -398,13 +403,17 @@ namespace ResonantSpark {
                 comboRunner.AddNumHits(1);
                 this.hitStun = comboRunner.GetFilteredHitStun(hitStun);
 
-                ((CharacterStates.CharacterBaseState) stateMachine.GetCurrentState()).BeHit(launch);
+                ((CharacterStates.CharacterBaseState) stateMachine.GetCurrentState()).ReceiveHit(launch);
             }
 
-            public void BeBlocked(float blockStun, bool forceCrouch) {
+            public void ReceiveBlocked(float blockStun, bool forceCrouch) {
                 blockRunner.SetBlockStun(blockStun);
 
-                ((CharacterStates.CharacterBaseState) stateMachine.GetCurrentState()).BeBlocked(forceCrouch);
+                ((CharacterStates.CharacterBaseState) stateMachine.GetCurrentState()).ReceiveBlocked(forceCrouch);
+            }
+
+            public void ReceiveGrabbed() {
+                ((CharacterStates.CharacterBaseState) stateMachine.GetCurrentState()).ReceiveGrabbed();
             }
 
             public bool CheckBlockSuccess(Hit hit) {

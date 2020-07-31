@@ -74,7 +74,7 @@ namespace ResonantSpark {
                 };
             }
 
-            public override void BeHit(bool launch) {
+            public override void ReceiveHit(bool launch) {
                 if (launch) {
                     changeState(states.Get("hitStunAirborne"));
                 }
@@ -83,7 +83,7 @@ namespace ResonantSpark {
                 }
             }
 
-            public override void BeBlocked(bool forceCrouch) {
+            public override void ReceiveBlocked(bool forceCrouch) {
                 if (forceCrouch) {
                     changeState(states.Get("blockStunCrouch"));
                 }
@@ -97,7 +97,7 @@ namespace ResonantSpark {
                 }
             }
 
-            public override void BeGrabbed() {
+            public override void ReceiveGrabbed() {
                 changeState(states.Get("grabbed"));
             }
 

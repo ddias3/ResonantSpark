@@ -252,13 +252,13 @@ namespace ResonantSpark {
                 //uiService.SetValue(element: "roundTimer", field: "time", value0: currRoundTime);
             }
 
-            public void OnGameEntityNumHitsChange(InGameEntity entity, int numHits) {
+            public void OnGameEntityNumHitsChange(InGameEntity entity, int numHits, int prevNumHits) {
                 if (entity == player1) {
                     if (numHits > 0) {
                         inGameUi.SetComboCounter(1, numHits);
                         //uiService.SetValue(element: "comboCounterP1", field: "numHits", value0: numHits);
                     }
-                    else {
+                    else if (prevNumHits >= 2) {
                         inGameUi.HideComboCounter(1);
                         //uiService.SetValue(element: "comboCounterP1", field: "hide");
                     }
@@ -268,7 +268,7 @@ namespace ResonantSpark {
                         inGameUi.SetComboCounter(0, numHits);
                         //uiService.SetValue(element: "comboCounterP2", field: "numHits", value0: numHits);
                     }
-                    else {
+                    else if (prevNumHits >= 2) {
                         inGameUi.HideComboCounter(0);
                         //uiService.SetValue(element: "comboCounterP2", field: "hide");
                     }

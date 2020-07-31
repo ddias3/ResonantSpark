@@ -136,7 +136,7 @@ namespace ResonantSpark {
                 };
             }
 
-            public override void BeHit(bool launch) {
+            public override void ReceiveHit(bool launch) {
                 if (frameCount > 4) {
                     changeState(states.Get("hitStunAirborne"));
                 }
@@ -150,11 +150,11 @@ namespace ResonantSpark {
                 }
             }
 
-            public override void BeBlocked(bool forceCrouch) {
+            public override void ReceiveBlocked(bool forceCrouch) {
                 throw new InvalidOperationException("A character jumping is successfully blocking");
             }
 
-            public override void BeGrabbed() {
+            public override void ReceiveGrabbed() {
                 throw new InvalidOperationException("A character jumping is being grabbed");
             }
 

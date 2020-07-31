@@ -44,6 +44,8 @@ namespace ResonantSpark {
             private Dictionary<InGameEntity, int> numComboHits;
             private Dictionary<InGameEntity, int> comboScalingIndex;
 
+            private HashSet<Block> requiredBlocks;
+
             private Dictionary<InGameEntity, ComboState> prevComboState;
 
             private List<(InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>, Action<AttackPriority, int>)> hitQueue;
@@ -64,6 +66,8 @@ namespace ResonantSpark {
                 entities = new List<InGameEntity>();
                 numComboHits = new Dictionary<InGameEntity, int>();
                 comboScalingIndex = new Dictionary<InGameEntity, int>();
+
+                requiredBlocks = new HashSet<Block>();
 
                 prevComboState = new Dictionary<InGameEntity, ComboState>();
 
@@ -157,15 +161,17 @@ namespace ResonantSpark {
 
                         if (IsCurrentFGChar(info0.Item1)) {
                             InGameEntity fgChar = info0.Item1;
+                            int prevNumHits = numComboHits[fgChar];
                             numComboHits[fgChar]++;
-                            gamemode.OnGameEntityNumHitsChange(fgChar, numComboHits[fgChar]);
+                            gamemode.OnGameEntityNumHitsChange(fgChar, numComboHits[fgChar], prevNumHits);
 
                             comboScalingIndex[fgChar]++;
                         }
                         if (IsCurrentFGChar(info1.Item1)) {
                             InGameEntity fgChar = info1.Item1;
+                            int prevNumHits = numComboHits[fgChar];
                             numComboHits[fgChar]++;
-                            gamemode.OnGameEntityNumHitsChange(fgChar, numComboHits[fgChar]);
+                            gamemode.OnGameEntityNumHitsChange(fgChar, numComboHits[fgChar], prevNumHits);
 
                             comboScalingIndex[fgChar]++;
                         }
@@ -185,18 +191,18 @@ namespace ResonantSpark {
                                 if (hitSuccessful) {
                                     foreach ((InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>, Action<AttackPriority, int>) tuple in relevantTuples) {
                                         numComboHits[fgChar]++;
+                                        int prevNumHits = numComboHits[fgChar];
                                         comboScalingIndex[fgChar]++;
 
-                                        gamemode.OnGameEntityNumHitsChange(fgChar, numComboHits[fgChar]);
+                                        gamemode.OnGameEntityNumHitsChange(fgChar, numComboHits[fgChar], prevNumHits);
 
                                         tuple.Item4?.Invoke(AttackPriority.None, GetComboScale(tuple.Item1, tuple.Item3));
                                     }
                                 }
                                 else {
-                                    // TODO: Implement Blocking.
-                                    //foreach ((InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>, Action<AttackPriority, int>) tuple in relevantTuples) {
-                                    //    tuple.Item5?.Invoke(AttackPriority.None, tuple.Item3.blockDamage);
-                                    //}
+                                    foreach ((InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>, Action<AttackPriority, int>) tuple in relevantTuples) {
+                                        tuple.Item5?.Invoke(AttackPriority.None, tuple.Item3.blockDamage);
+                                    }
                                 }
                             }
                         }
@@ -222,6 +228,28 @@ namespace ResonantSpark {
                 }
 
                 return false;
+            }
+
+            public void PopulateRequiredBlocking(in HashSet<Block> requiredBlocks, in List<Block> validBlocks) {
+                if (!validBlocks.Contains(Block.AIR)) requiredBlocks.Add(Block.AIR);
+                if (!validBlocks.Contains(Block.HIGH)) requiredBlocks.Add(Block.HIGH);
+                if (!validBlocks.Contains(Block.LOW)) requiredBlocks.Add(Block.LOW);
+            }
+
+            public bool ValidateValidBlocking(params List<Block>[] validBlocks) {
+                requiredBlocks.Clear();
+                for (int n = 0; n < validBlocks.Length; ++n) {
+                    PopulateRequiredBlocking(requiredBlocks, validBlocks[n]);
+                }
+
+                return !(requiredBlocks.Contains(Block.HIGH) && requiredBlocks.Contains(Block.LOW));
+            }
+
+            public void PopulateValidBlocking(in List<Block> validBlocks, in HashSet<Block> requiredBlocks) {
+                validBlocks.Clear();
+                if (!requiredBlocks.Contains(Block.AIR)) validBlocks.Add(Block.AIR);
+                if (!requiredBlocks.Contains(Block.HIGH)) validBlocks.Add(Block.HIGH);
+                if (!requiredBlocks.Contains(Block.LOW)) validBlocks.Add(Block.LOW);
             }
 
             private void FrameUpdate(int frameIndex) {
@@ -256,10 +284,11 @@ namespace ResonantSpark {
             private void ResetComboCounter() {
                 playerService.EachFGChar((id, fgChar) => {
                     if (fgChar.GetComboState() == ComboState.None && prevComboState[fgChar] == ComboState.InCombo) {
+                        int prevNumHits = numComboHits[fgChar];
                         numComboHits[fgChar] = 0;
                         comboScalingIndex[fgChar] = 0;
 
-                        gamemode.OnGameEntityNumHitsChange(fgChar, 0);
+                        gamemode.OnGameEntityNumHitsChange(fgChar, 0, prevNumHits);
                     }
                 });
             }

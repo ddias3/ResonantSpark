@@ -168,14 +168,11 @@ namespace ResonantSpark {
 
                 rigidbody.position = newPosition;
 
-                Vector3 cameraTransformPosition = cameraTransform.position;
                 if (!InBoundary(desiredPosition, levelBoundaries, out float distanceOutOfBounds)) {
                     float outOfBoundaryCameraHeight = outOfBoundsMaxHeight * outOfBoundsMovementFuncY.Evaluate(distanceOutOfBounds / maxOutOfBoundsDistance);
 
                     cameraTransform.localPosition = new Vector3(0.0f, outOfBoundaryCameraHeight, 0.0f);
                     cameraTransform.localRotation = Quaternion.Euler(20f * outOfBoundsMovementFuncY.Evaluate(distanceOutOfBounds / maxOutOfBoundsDistance), 0.0f, 0.0f);
-
-                    cameraTransformPosition = cameraTransform.position;
                 }
                 else {
                     cameraTransform.localPosition = Vector3.zero;
@@ -187,8 +184,7 @@ namespace ResonantSpark {
                 ResetActivePolling();
 
                 //cameraTransform.LookAt(midPoint + Vector3.up * heightLook);
-                transform.LookAt(midPoint + Vector3.up * heightLook);   // This moves the local Transform if it's offset.
-                cameraTransform.position = cameraTransformPosition;     // Reset it back to where it used to be.
+                transform.LookAt(midPoint + Vector3.up * heightLook);
             }
 
             private bool InBoundary(Vector3 cameraPos, List<Transform> boundaries, out float distanceOutOfBounds) {
@@ -300,7 +296,7 @@ namespace ResonantSpark {
                     }
 
                     int numCollisions = Physics.SphereCastNonAlloc(
-                        cameraPos, 0.25f, cameraCheckDirection, raycastBuffer, cameraCheckDirection.magnitude, staticLevelGeometryMask, QueryTriggerInteraction.Ignore);
+                        cameraPos, 0.25f, cameraCheckDirection.normalized, raycastBuffer, cameraCheckDirection.magnitude, staticLevelGeometryMask, QueryTriggerInteraction.Ignore);
 
                     Debug.DrawLine(cameraPos, cameraPos + cameraCheckDirection, Color.blue);
 

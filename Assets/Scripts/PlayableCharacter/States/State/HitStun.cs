@@ -44,11 +44,11 @@ namespace ResonantSpark {
                 }
             }
 
-            public override void BeBlocked(bool forceCrouch) {
+            public override void ReceiveBlocked(bool forceCrouch) {
                 throw new InvalidOperationException("HitStun shouldn't be able to block");
             }
 
-            public override void BeGrabbed() {
+            public override void ReceiveGrabbed() {
                 // TODO: Make throws in a combo a thing. but for this version, it won't be a thing.
                 //if (GetGroundRelation() == Character.GroundRelation.GROUNDED) {
                 //    ...

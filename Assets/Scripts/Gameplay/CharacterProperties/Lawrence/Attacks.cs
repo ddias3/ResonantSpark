@@ -100,14 +100,14 @@ namespace ResonantSpark {
                                                     audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["weakHit"]);
                                                     switch (opponent.GetGroundRelation()) {
                                                         case GroundRelation.GROUNDED:
-                                                            opponent.BeHit(thisHit.hitStun, false);
+                                                            opponent.ReceiveHit(thisHit.hitStun, false);
                                                             opponent.KnockBack(
                                                                 thisHit.priority,
                                                                 launch: false,
                                                                 knockback: fgChar.rigidFG.rotation * Vector3.forward * 2.0f);
                                                             break;
                                                         case GroundRelation.AIRBORNE:
-                                                            opponent.BeHit(thisHit.hitStun, true);
+                                                            opponent.ReceiveHit(thisHit.hitStun, true);
                                                             opponent.KnockBack(
                                                                 thisHit.priority,
                                                                 launch: true,
@@ -118,7 +118,7 @@ namespace ResonantSpark {
 
                                                 }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
                                                         // I may put all of these functions into the same call.
-                                                    opponent.BeHit(thisHit.blockStun, false);
+                                                    opponent.ReceiveHit(thisHit.blockStun, false);
                                                     opponent.KnockBack(
                                                         thisHit.priority,
                                                         launch: false,
@@ -197,14 +197,14 @@ namespace ResonantSpark {
 
                                                     switch (opponent.GetGroundRelation()) {
                                                         case GroundRelation.GROUNDED:
-                                                            opponent.BeHit(thisHit.hitStun, false);
+                                                            opponent.ReceiveHit(thisHit.hitStun, false);
                                                             opponent.KnockBack(
                                                                 thisHit.priority,
                                                                 launch: false,
                                                                 knockback: fgChar.transform.rotation * Vector3.forward * 3.0f);
                                                             break;
                                                         case GroundRelation.AIRBORNE:
-                                                            opponent.BeHit(thisHit.hitStun, true);
+                                                            opponent.ReceiveHit(thisHit.hitStun, true);
                                                             opponent.KnockBack(
                                                                 thisHit.priority,
                                                                 launch: true,
@@ -214,7 +214,7 @@ namespace ResonantSpark {
                                                     opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                                 }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
-                                                    opponent.BeHit(thisHit.blockStun, false);
+                                                    opponent.ReceiveHit(thisHit.blockStun, false);
                                                     opponent.KnockBack(
                                                         thisHit.priority,
                                                         launch: false,
@@ -261,8 +261,8 @@ namespace ResonantSpark {
                                 .To(20)
                                 .From(14)
                                     .Hit(hit => {
-                                        //hit.HitDamage(1000)
-                                        hit.HitDamage(10000000)
+                                        hit.HitDamage(1000)
+                                        //hit.HitDamage(10000000)
                                             .BlockDamage(0)
                                             .HitStun(30.0f)
                                             .BlockStun(12.0f)
@@ -309,7 +309,7 @@ namespace ResonantSpark {
                                                     audioService.PlayOneShot(hitLocations[closeHitBox], audioMap["mediumHit"]);
                                                     audioService.PlayOneShot(hitLocations[closeHitBox], audioMap["weakHit"]);
 
-                                                    opponent.BeHit(thisHit.hitStun, true);
+                                                    opponent.ReceiveHit(thisHit.hitStun, true);
                                                     opponent.KnockBack(
                                                         thisHit.priority,
                                                         launch: true,
@@ -317,7 +317,7 @@ namespace ResonantSpark {
                                                     opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                                 }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
-                                                    opponent.BeBlocked(thisHit.blockStun, false);
+                                                    opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                     opponent.KnockBack(
                                                         thisHit.priority,
                                                         launch: false,

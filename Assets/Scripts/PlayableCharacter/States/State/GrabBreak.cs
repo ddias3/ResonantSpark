@@ -70,7 +70,7 @@ namespace ResonantSpark {
                 };
             }
 
-            public override void BeHit(bool launch) {
+            public override void ReceiveHit(bool launch) {
                 // TODO: Make it clear that the attack is ignored by displaying a particle.
 
                 if (launch) {
@@ -81,11 +81,11 @@ namespace ResonantSpark {
                 }
             }
 
-            public override void BeBlocked(bool forceCrouch) {
+            public override void ReceiveBlocked(bool forceCrouch) {
                 // TODO: something...
             }
 
-            public override void BeGrabbed() {
+            public override void ReceiveGrabbed() {
                 // TODO: something...
             }
 

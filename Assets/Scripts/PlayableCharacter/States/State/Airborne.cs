@@ -80,15 +80,15 @@ namespace ResonantSpark {
                 };
             }
 
-            public override void BeHit(bool launch) {
+            public override void ReceiveHit(bool launch) {
                 changeState(states.Get("hitStunAirborne"));
             }
 
-            public override void BeBlocked(bool forceCrouch) {
+            public override void ReceiveBlocked(bool forceCrouch) {
                 throw new InvalidOperationException("Airborne is somehow being told to block");
             }
 
-            public override void BeGrabbed() {
+            public override void ReceiveGrabbed() {
                 throw new InvalidOperationException("There shouldn't be any air grabs right now");
             }
 

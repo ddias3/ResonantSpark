@@ -81,15 +81,15 @@ namespace ResonantSpark {
                 };
             }
 
-            public override void BeHit(bool launch) {
+            public override void ReceiveHit(bool launch) {
                 throw new InvalidOperationException("Shouldn't be able to be hit while recovering airborne");
             }
 
-            public override void BeBlocked(bool forceCrouch) {
+            public override void ReceiveBlocked(bool forceCrouch) {
                 throw new InvalidOperationException("Shouldn't be able to be block while recovering airborne");
             }
 
-            public override void BeGrabbed() {
+            public override void ReceiveGrabbed() {
                 throw new InvalidOperationException("A character in block stun is being grabbed");
             }
 

@@ -95,9 +95,9 @@ namespace ResonantSpark {
             public abstract GroundRelation GetGroundRelation();
             public abstract ComboState GetComboState();
             public abstract CharacterVulnerability GetCharacterVulnerability();
-            public abstract void BeHit(bool launch);
-            public abstract void BeBlocked(bool forceCrouch);
-            public abstract void BeGrabbed();
+            public abstract void ReceiveHit(bool launch);
+            public abstract void ReceiveBlocked(bool forceCrouch);
+            public abstract void ReceiveGrabbed();
             public abstract bool CheckBlockSuccess(Hit hit);
 
             public struct CallbackRegistry<Tcallback> {

@@ -36,8 +36,8 @@ namespace ResonantSpark {
                     deviceMapping.Add(persObj.player2);
                 }
                 else {
-                    deviceMapping.Add(new GameDeviceMapping(null));
-                    deviceMapping.Add(null);
+                    deviceMapping.Add(new GameDeviceMapping(UnityEngine.InputSystem.Keyboard.current));
+                    deviceMapping.Add(new GameDeviceMapping(UnityEngine.InputSystem.Gamepad.all[0]));
                 }
 
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(PersistenceService));

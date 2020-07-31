@@ -56,7 +56,7 @@ namespace ResonantSpark {
                 };
             }
 
-            public override void BeHit(bool launch) {
+            public override void ReceiveHit(bool launch) {
                 changeState(states.Get("hitStunStand"));
             }
 
@@ -68,11 +68,11 @@ namespace ResonantSpark {
 
             }
 
-            public override void BeBlocked(bool forceCrouch) {
+            public override void ReceiveBlocked(bool forceCrouch) {
                 throw new NotImplementedException();
             }
 
-            public override void BeGrabbed() {
+            public override void ReceiveGrabbed() {
                 throw new NotImplementedException();
             }
 
