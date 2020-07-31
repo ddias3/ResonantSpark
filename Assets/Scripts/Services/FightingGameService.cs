@@ -44,7 +44,7 @@ namespace ResonantSpark {
             private Dictionary<InGameEntity, int> numComboHits;
             private Dictionary<InGameEntity, int> comboScalingIndex;
 
-            private HashSet<Block> requiredBlocks;
+            private HashSet<BlockType> requiredBlocks;
 
             private Dictionary<InGameEntity, ComboState> prevComboState;
 
@@ -67,7 +67,7 @@ namespace ResonantSpark {
                 numComboHits = new Dictionary<InGameEntity, int>();
                 comboScalingIndex = new Dictionary<InGameEntity, int>();
 
-                requiredBlocks = new HashSet<Block>();
+                requiredBlocks = new HashSet<BlockType>();
 
                 prevComboState = new Dictionary<InGameEntity, ComboState>();
 
@@ -230,26 +230,26 @@ namespace ResonantSpark {
                 return false;
             }
 
-            public void PopulateRequiredBlocking(in HashSet<Block> requiredBlocks, in List<Block> validBlocks) {
-                if (!validBlocks.Contains(Block.AIR)) requiredBlocks.Add(Block.AIR);
-                if (!validBlocks.Contains(Block.HIGH)) requiredBlocks.Add(Block.HIGH);
-                if (!validBlocks.Contains(Block.LOW)) requiredBlocks.Add(Block.LOW);
+            public void PopulateRequiredBlocking(in HashSet<BlockType> requiredBlocks, in List<BlockType> validBlocks) {
+                if (!validBlocks.Contains(BlockType.AIR)) requiredBlocks.Add(BlockType.AIR);
+                if (!validBlocks.Contains(BlockType.HIGH)) requiredBlocks.Add(BlockType.HIGH);
+                if (!validBlocks.Contains(BlockType.LOW)) requiredBlocks.Add(BlockType.LOW);
             }
 
-            public bool ValidateValidBlocking(params List<Block>[] validBlocks) {
+            public bool ValidateValidBlocking(params List<BlockType>[] validBlocks) {
                 requiredBlocks.Clear();
                 for (int n = 0; n < validBlocks.Length; ++n) {
                     PopulateRequiredBlocking(requiredBlocks, validBlocks[n]);
                 }
 
-                return !(requiredBlocks.Contains(Block.HIGH) && requiredBlocks.Contains(Block.LOW));
+                return !(requiredBlocks.Contains(BlockType.HIGH) && requiredBlocks.Contains(BlockType.LOW));
             }
 
-            public void PopulateValidBlocking(in List<Block> validBlocks, in HashSet<Block> requiredBlocks) {
+            public void PopulateValidBlocking(in List<BlockType> validBlocks, in HashSet<BlockType> requiredBlocks) {
                 validBlocks.Clear();
-                if (!requiredBlocks.Contains(Block.AIR)) validBlocks.Add(Block.AIR);
-                if (!requiredBlocks.Contains(Block.HIGH)) validBlocks.Add(Block.HIGH);
-                if (!requiredBlocks.Contains(Block.LOW)) validBlocks.Add(Block.LOW);
+                if (!requiredBlocks.Contains(BlockType.AIR)) validBlocks.Add(BlockType.AIR);
+                if (!requiredBlocks.Contains(BlockType.HIGH)) validBlocks.Add(BlockType.HIGH);
+                if (!requiredBlocks.Contains(BlockType.LOW)) validBlocks.Add(BlockType.LOW);
             }
 
             private void FrameUpdate(int frameIndex) {

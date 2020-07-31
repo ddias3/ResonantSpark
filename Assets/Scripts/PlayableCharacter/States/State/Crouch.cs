@@ -109,10 +109,10 @@ namespace ResonantSpark {
 
             public override bool CheckBlockSuccess(Hit hit) {
                 if (dirPress == FightingGameInputCodeDir.DownBack) {
-                    return hit.validBlocks.Contains(Character.Block.LOW);
+                    return hit.validBlocks.Contains(Character.BlockType.LOW);
                 }
                 else if (dirPress == FightingGameInputCodeDir.Back) {
-                    return hit.validBlocks.Contains(Character.Block.HIGH);
+                    return hit.validBlocks.Contains(Character.BlockType.HIGH);
                 }
                 else {
                     return false;

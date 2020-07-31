@@ -13,7 +13,7 @@ namespace ResonantSpark {
             private static int hitCounter = 0;
             public int id { get; private set; }
 
-            public List<Block> validBlocks { get; private set; }
+            public List<BlockType> validBlocks { get; private set; }
             public AttackPriority priority { get; private set; }
             public int hitDamage { get; private set; }
             public int blockDamage { get; private set; }
@@ -63,9 +63,9 @@ namespace ResonantSpark {
                 this.comboScaling = hitBuilder.comboScaling;
                 this.tracking = hitBuilder.tracking;
 
-                this.validBlocks = new List<Block>();
-                foreach (Block block in Enum.GetValues(typeof(Block))) {
-                    if (!hitBuilder.requiredBlocks.Contains(block) && block != Block.AIR) { // Allow air blocking in future version of the game.
+                this.validBlocks = new List<BlockType>();
+                foreach (BlockType block in Enum.GetValues(typeof(BlockType))) {
+                    if (!hitBuilder.requiredBlocks.Contains(block) && block != BlockType.AIR) { // Allow air blocking in future version of the game.
                         this.validBlocks.Add(block);
                     }
                 }

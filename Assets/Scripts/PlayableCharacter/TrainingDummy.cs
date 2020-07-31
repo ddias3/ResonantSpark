@@ -24,12 +24,12 @@ namespace ResonantSpark {
 
             private DummyBlock blockMode;
 
-            private HashSet<Block> nextHitRequiredBlocks;
-            private List<Block> validBlocks;
+            private HashSet<BlockType> nextHitRequiredBlocks;
+            private List<BlockType> validBlocks;
 
             public void Awake() {
-                nextHitRequiredBlocks = new HashSet<Block>();
-                validBlocks = new List<Block>();
+                nextHitRequiredBlocks = new HashSet<BlockType>();
+                validBlocks = new List<BlockType>();
             }
 
             public void SetBlockMode(string mode) {
@@ -56,10 +56,10 @@ namespace ResonantSpark {
 
                     fgService.PopulateValidBlocking(validBlocks, nextHitRequiredBlocks);
 
-                    if (validBlocks.Contains(Block.LOW)) {
+                    if (validBlocks.Contains(BlockType.LOW)) {
                         //TODO: fgChar.SetInput(Factory.Get<DirectionCurrent>(FightingGameInputDir.DownBack));
                     }
-                    else if (validBlocks.Contains(Block.HIGH)) {
+                    else if (validBlocks.Contains(BlockType.HIGH)) {
                         //TODO: fgChar.SetInput(Factory.Get<DirectionCurrent>(FightingGameInputDir.Back));
                     }
                     else {

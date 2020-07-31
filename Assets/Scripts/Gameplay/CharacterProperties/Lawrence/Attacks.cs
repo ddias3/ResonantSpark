@@ -356,7 +356,7 @@ namespace ResonantSpark {
                                             .HitStun(10.0f)
                                             .BlockStun(8.0f);
 
-                                        hit.Block(Block.LOW);
+                                        hit.Block(BlockType.LOW);
 
                                         hit.HitBox(hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
@@ -417,7 +417,7 @@ namespace ResonantSpark {
                                             .BlockStun(20.0f)
                                             .ComboScaling(0.5f);
 
-                                        hit.Block(Block.LOW);
+                                        hit.Block(BlockType.LOW);
 
                                         hit.HitBox(hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);

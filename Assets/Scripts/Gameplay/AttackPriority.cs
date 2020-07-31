@@ -22,7 +22,7 @@ namespace ResonantSpark {
             HeavyAttack,
         }
 
-        public enum Block : int {
+        public enum BlockType : int {
             LOW,
             HIGH,
             AIR,

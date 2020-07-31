@@ -124,7 +124,7 @@ namespace ResonantSpark {
                 tracker.Increment();
             }
 
-            public void GetNextBlockRequirements(in HashSet<Block> nextHitRequiredBlocks) {
+            public void GetNextBlockRequirements(in HashSet<BlockType> nextHitRequiredBlocks) {
                 nextHitRequiredBlocks.Clear();
 
                 int n = tracker.frameCount;
