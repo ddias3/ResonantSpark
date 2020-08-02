@@ -17,13 +17,13 @@ namespace ResonantSpark {
 
         public bool firstTimeLoad { get; private set; }
         public string gamemode { get; private set; }
-        public string levelPath { get; private set; }
+        public Dictionary<string, object> gamemodeDetails { get; private set; }
+        public List<GameDeviceMapping> devices { get; private set; }
         public Dictionary<string, float> optionValues { get; private set; }
+        public string levelPath { get; private set; }
+        public List<string> playerInfo { get; private set; }
         public List<string> characterSelection { get; private set; }
         public List<int> colorSelection { get; private set; }
-
-        public GameDeviceMapping player1 { get; private set; }
-        public GameDeviceMapping player2 { get; private set; }
 
         public void SetCharacterSelected(int index, string characterName) {
             if (characterSelection.Count <= index) {
@@ -45,12 +45,14 @@ namespace ResonantSpark {
             colorSelection[index] = colorIndex;
         }
 
-        public void SetDeviceMappingP1(GameDeviceMapping devMap) {
-            player1 = devMap;
-        }
+        public void SetPlayerInfo(int index, string data) {
+            if (playerInfo.Count <= index) {
+                for (int n = playerInfo.Count; n < index + 1; ++n) {
+                    playerInfo.Add("");
+                }
+            }
 
-        public void SetDeviceMappingP2(GameDeviceMapping devMap) {
-            player2 = devMap;
+            playerInfo[index] = data;
         }
 
         public void SetOptionValue(string key, float value) {
@@ -69,22 +71,28 @@ namespace ResonantSpark {
             return optionValues[key];
         }
 
+        public void SetDeviceMapping(int index, GameDeviceMapping devMap) {
+            if (devices.Count <= index) {
+                for (int n = devices.Count; n < index + 1; ++n) {
+                    devices.Add(null);
+                }
+            }
+
+            devices[index] = devMap;
+        }
+
         public int GetHumanPlayers() {
             int humanPlayers = 0;
-            if (player1 != null) {
-                humanPlayers += 1;
-            }
-            if (player2 != null) {
-                humanPlayers += 1;
+            foreach (string data in playerInfo) {
+                if (data == "player") {
+                    ++humanPlayers;
+                }
             }
             return humanPlayers;
         }
 
-        public Dictionary<PlayerLabel, GameDeviceMapping> CreatePlayerDeviceMap() {
-            return new Dictionary<PlayerLabel, GameDeviceMapping> {
-                { PlayerLabel.Player1, player1 },
-                { PlayerLabel.Player2, player2 },
-            };
+        public bool IsAlreadySetDeviceMap(GameDeviceMapping devMap) {
+            return devices.Contains(devMap);
         }
 
         public void MenuLoaded() {
@@ -94,13 +102,21 @@ namespace ResonantSpark {
         private Persistence() {
             firstTimeLoad = true;
             gamemode = "training";
+            gamemodeDetails = new Dictionary<string, object> {
+                { "players", playerInfo = new List<string> { "player", "dummy" } },
+                { "winRounds", 3 },
+                { "characters", new Dictionary<string, object> {
+                    { "selection", characterSelection = new List<string> { "lawrence", "lawrence" } },
+                    { "color", colorSelection = new List<int> { 0, 1 } },
+                } },
+            };
+            devices = new List<GameDeviceMapping> { null, null };
             optionValues = new Dictionary<string, float> {
                 { "masterVolume", 1.0f },
                 { "effectsVolume", 1.0f },
                 { "musicVolume", 1.0f },
             };
-            characterSelection = new List<string> { "lawrence", "lawrence" };
-            colorSelection = new List<int> { 0, 0 };
+            levelPath = "";
         }
     }
 }

@@ -176,6 +176,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inGameUiPrefab: {fileID: 1461409556741052766, guid: f568de96f13df80428a6538b75fc9134,
     type: 3}
+  fightingGameCamera: {fileID: 4063835550487571392, guid: 80e20bc8a04a4f941940b2925bdf66cc,
+    type: 3}
   stateMachine: {fileID: 5006741397487736226}
   states: {fileID: 8138733489031963274}
   roundTime: 60

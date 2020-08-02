@@ -12,89 +12,53 @@ namespace ResonantSpark {
 
             private BuildService buildService;
             private PersistenceService persistenceService;
+            private FightingGameService fgService;
             private InputService inputService;
 
-            private int maxTotalPlayers = 0;
-
-            private Dictionary<int, FightingGameCharacter> fgChars;
+            private List<FightingGameCharacter> fgChars;
+            private Dictionary<string, FightingGameCharacter> fgCharTags;
             private Dictionary<int, ICharacterBuilder> selectedFGChars;
-
-            private Dictionary<int, List<FightingGameCharacter>> otherChars;
 
             public void Start() {
                 buildService = GetComponent<BuildService>();
                 persistenceService = GetComponent<PersistenceService>();
+                fgService = GetComponent<FightingGameService>();
                 inputService = GetComponent<InputService>();
 
-                fgChars = new Dictionary<int, FightingGameCharacter>();
+                fgChars = new List<FightingGameCharacter>();
+                fgCharTags = new Dictionary<string, FightingGameCharacter>();
                 selectedFGChars = new Dictionary<int, ICharacterBuilder>();
-
-                otherChars = new Dictionary<int, List<FightingGameCharacter>>();
 
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(PlayerService));
             }
 
-            public void SetUpCharacters() {
-                for (int n = 0; n < maxTotalPlayers; ++n) {
-                    GameObject charBuilderPrefab = persistenceService.GetSelectedCharacter(n);
-                    GameObject newGameMode = GameObject.Instantiate(charBuilderPrefab);
-                    newGameMode.name = "Player" + n;
+            public void CreateCharacter(string charSelection, int charColor, Action<FightingGameCharacter> fgCharCallback = null) {
+                GameObject charBuilderPrefab = persistenceService.GetSelectedCharacter(charSelection);
+                GameObject newChar = GameObject.Instantiate(charBuilderPrefab);
 
-                    SetCharacterSelected(n, newGameMode.GetComponent<ICharacterBuilder>());
-                }
+                FightingGameCharacter builtFGChar = buildService.Build(newChar.GetComponent<ICharacterBuilder>());
+
+                fgChars.Add(builtFGChar);
+
+                //HumanInputController humanInputController = inputService.GetInputController(playerId);
+                //if (humanInputController != null) {
+                //    humanInputController.ConnectToCharacter(builtFGChar);
+                //}
+
+                fgCharCallback?.Invoke(builtFGChar);
             }
 
-            public void StartCharacterBuild(Action<FightingGameCharacter> fgCharCallback = null) {
-                foreach (KeyValuePair<int, ICharacterBuilder> charBuilder in selectedFGChars) {
-                    int playerId = charBuilder.Key;
-                    FightingGameCharacter builtFGChar = buildService.Build(charBuilder.Value);
-
-                    fgChars.Add(playerId, builtFGChar);
-
-                    HumanInputController humanInputController = inputService.GetInputController(playerId);
-                    if (humanInputController != null) {
-                        humanInputController.ConnectToCharacter(builtFGChar);
-                    }
-
-                    fgCharCallback?.Invoke(builtFGChar);
-                }
-
-                foreach (KeyValuePair<int, FightingGameCharacter> curr in fgChars) {
-                    List<FightingGameCharacter> othersList = new List<FightingGameCharacter>();
-                    foreach (KeyValuePair<int, FightingGameCharacter> other in fgChars) {
-                        if (curr.Value != other.Value) {
-                            othersList.Add(other.Value);
-                        }
-                    }
-                    otherChars.Add(curr.Key, othersList);
-                }
+            public void SetTag(string tag, FightingGameCharacter fgChar) {
+                fgCharTags.Add(tag, fgChar);
             }
 
-            public void SetMaxPlayers(int maxTotalPlayers) {
-                this.maxTotalPlayers = maxTotalPlayers;
+            public FightingGameCharacter GetFGChar(string tag) {
+                return fgCharTags[tag];
             }
 
-            public int GetMaxPlayers() {
-                return maxTotalPlayers;
-            }
-
-            public void SetCharacterSelected(int playerId, ICharacterBuilder charSelected) {
-                selectedFGChars.Add(playerId, charSelected);
-            }
-
-            public FightingGameCharacter GetFGChar(int playerIndex) {
-                return fgChars[playerIndex];
-            }
-
-            public void EachFGChar(Action<int, FightingGameCharacter> callback) {
-                foreach (KeyValuePair<int, FightingGameCharacter> kvp in fgChars) {
-                    callback(kvp.Key, kvp.Value);
-                }
-            }
-
-            public void OneToOthers(Action<int, FightingGameCharacter, List<FightingGameCharacter>> callback) {
-                foreach (KeyValuePair<int, List<FightingGameCharacter>> kvp in otherChars) {
-                    callback(kvp.Key, fgChars[kvp.Key], kvp.Value);
+            public void ForEach(Action<FightingGameCharacter, int> callback) {
+                for (int n = 0; n < fgChars.Count; ++n) {
+                    callback(fgChars[n], n);
                 }
             }
         }

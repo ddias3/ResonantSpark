@@ -139,8 +139,23 @@ namespace ResonantSpark {
 
                 controllerSelect.OnMenuComplete((player1, player2) => {
                     Persistence persistence = Persistence.Get();
-                    persistence.SetDeviceMappingP1(player1);
-                    persistence.SetDeviceMappingP2(player2);
+                    persistence.SetDeviceMapping(0, player1);
+                    persistence.SetDeviceMapping(1, player2);
+
+                    switch (persistence.gamemode) {
+                        case "versus":
+                            if (player1 == null) persistence.SetPlayerInfo(0, "ai");
+                            else persistence.SetPlayerInfo(0, "player");
+                            if (player2 == null) persistence.SetPlayerInfo(1, "ai");
+                            else persistence.SetPlayerInfo(1, "player");
+                            break;
+                        case "training":
+                            if (player1 == null) persistence.SetPlayerInfo(0, "dummy");
+                            else persistence.SetPlayerInfo(0, "player");
+                            if (player2 == null) persistence.SetPlayerInfo(1, "dummy");
+                            else persistence.SetPlayerInfo(1, "player");
+                            break;
+                    }
 
                     menuStack.Pop(this);
                     menuStack.AddMenu(characterSelectMenu);

@@ -12,9 +12,9 @@ namespace ResonantSpark {
             void RemoveInGameEntity(InGameEntity entity);
             void CreateGamemode();
             void SetUpGamemode();
+            int GetMaxPlayers();
             Transform GetSpawnPoint();
             float GetSpawnPointOffset();
-            void ResetCamera();
             Transform GetCameraStart();
             List<Transform> GetLevelBoundaries();
             void Hit(InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority, int> onHit, Action<AttackPriority, int> onBlock);

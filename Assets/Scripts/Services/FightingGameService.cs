@@ -38,8 +38,6 @@ namespace ResonantSpark {
             private PlayerService playerService;
             private PersistenceService persistenceService;
 
-            private new StageLeakCamera camera;
-
             private List<InGameEntity> entities;
             private Dictionary<InGameEntity, int> numComboHits;
             private Dictionary<InGameEntity, int> comboScalingIndex;
@@ -72,6 +70,7 @@ namespace ResonantSpark {
                 prevComboState = new Dictionary<InGameEntity, ComboState>();
 
                 hitQueue = new List<(InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>, Action<AttackPriority, int>)>();
+                mapCamera.SetActive(false);
 
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(FightingGameService));
             }
@@ -96,18 +95,11 @@ namespace ResonantSpark {
                 this.gamemode = newGameMode.GetComponent<IGamemode>();
                 this.gamemodeHooks = newGameMode.GetComponent<IHookExpose>();
 
-                GameObject newCamera = GameObject.Instantiate(persistenceService.GetCamera());
-                newCamera.name = "FightingGameCamera";
-                this.camera = newCamera.GetComponent<StageLeakCamera>();
-
-                mapCamera.SetActive(false);
-
-                playerService.SetMaxPlayers(gamemode.GetMaxPlayers());
+                this.gamemode.CreateDependencies(persistenceService, playerService, this, GetComponent<UiService>(), GetComponent<InputService>());
             }
 
             public void SetUpGamemode() {
-                gamemode.SetUp(playerService, this, GetComponent<UiService>());
-                camera.SetUpCamera(this);
+                gamemode.SetUp();
 
                 HookUpGamemode(gamemodeHooks.GetHooks());
             }
@@ -282,7 +274,7 @@ namespace ResonantSpark {
             }
 
             private void ResetComboCounter() {
-                playerService.EachFGChar((id, fgChar) => {
+                playerService.ForEach((fgChar, id) => {
                     if (fgChar.GetComboState() == ComboState.None && prevComboState[fgChar] == ComboState.InCombo) {
                         int prevNumHits = numComboHits[fgChar];
                         numComboHits[fgChar] = 0;
@@ -298,30 +290,34 @@ namespace ResonantSpark {
                 SceneManager.LoadScene("Scenes/Menu/MainMenu2");
             }
 
+            public int GetMaxPlayers() {
+                return gamemode.GetMaxPlayers();
+            }
+
             public int GetNumHits(InGameEntity fgChar) {
                 return numComboHits[fgChar];
             }
 
             public void DisableControl() {
-                playerService.EachFGChar((id, fgChar) => {
+                playerService.ForEach((fgChar, id) => {
                     fgChar.SetControlEnable(false);
                 });
             }
 
             public void EnableControl() {
-                playerService.EachFGChar((id, fgChar) => {
+                playerService.ForEach((fgChar, id) => {
                     fgChar.SetControlEnable(true);
                 });
             }
 
             public void OpeningCamera() {
-                camera.gameObject.SetActive(false);
+                gamemode.CameraEnable(false);
                 mapCamera.SetActive(true);
             }
 
             public void FightingGameCamera() {
                 mapCamera.SetActive(false);
-                camera.gameObject.SetActive(true);
+                gamemode.CameraEnable(true);
             }
 
             public Transform GetSpawnPoint() {
@@ -332,12 +328,8 @@ namespace ResonantSpark {
                 return offset;
             }
 
-            public void ResetCamera() {
-                camera.ResetCameraPosition();
-            }
-
             public Vector2 ScreenOrientation(FightingGameCharacter fgChar) {
-                return camera.ScreenOrientation(fgChar.transform);
+                return gamemode.ScreenOrientation(fgChar);
             }
 
             public Transform GetCameraStart() {

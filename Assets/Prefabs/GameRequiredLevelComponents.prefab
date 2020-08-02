@@ -795,11 +795,10 @@ MonoBehaviour:
   characterSelections:
   - lawrence
   - lawrence
+  colorSelections: 0000000001000000
   versusModePrefab: {fileID: 5907818410644016008, guid: 6fa9e18f57b8a7c45bb71178501ca6d8,
     type: 3}
   trainingModePrefab: {fileID: 5907818410644016008, guid: 865b3eab28da7bb40bbb17db4dce2fb6,
-    type: 3}
-  fightingGameCameraPrefab: {fileID: 4063835550487571392, guid: 80e20bc8a04a4f941940b2925bdf66cc,
     type: 3}
   lawrenceBuilderPrefab: {fileID: 8557177467078201262, guid: 880c011c99fbc664296a31457b717cd6,
     type: 3}
@@ -918,7 +917,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputs: {fileID: 1184226375601759937}
-  prefab: {fileID: 5393400291318313908, guid: 372259e5d190f1d45adf05b9f3b7f35d, type: 3}
+  humanInputControllerPrefab: {fileID: 5393400291318313908, guid: 372259e5d190f1d45adf05b9f3b7f35d,
+    type: 3}
+  dummyInputControllerPrefab: {fileID: 1084256227730916630, guid: 166fd0783f6c84548837181a07761340,
+    type: 3}
+  aiInputControllerPrefab: {fileID: 655711550644878907, guid: 6f2c20fb5838cac4cb1a23c428e0c517,
+    type: 3}
+  noneInputControllerPrefab: {fileID: 5161139879316946113, guid: a0286764e0cea8f4d9be77c7f3a93122,
+    type: 3}
 --- !u!114 &1184226376533119854
 MonoBehaviour:
   m_ObjectHideFlags: 0

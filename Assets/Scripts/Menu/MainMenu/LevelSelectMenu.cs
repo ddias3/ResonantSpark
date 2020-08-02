@@ -71,21 +71,21 @@ namespace ResonantSpark {
                 });
 
                 eventHandler_devMapping.On("left", (GameDeviceMapping devMap) => {
-                    if (persistence.player1 == devMap || persistence.player2 == devMap) {
+                    if (persistence.IsAlreadySetDeviceMap(devMap)) {
                         if (currSelected != retSelectable) {
                             currSelected.TriggerEvent("left", devMap);
                         }
                     }
                 });
                 eventHandler_devMapping.On("right", (GameDeviceMapping devMap) => {
-                    if (persistence.player1 == devMap || persistence.player2 == devMap) {
+                    if (persistence.IsAlreadySetDeviceMap(devMap)) {
                         if (currSelected != retSelectable) {
                             currSelected.TriggerEvent("right", devMap);
                         }
                     }
                 });
                 eventHandler_devMapping.On("up", (GameDeviceMapping devMap) => {
-                    if (persistence.player1 == devMap || persistence.player2 == devMap) {
+                    if (persistence.IsAlreadySetDeviceMap(devMap)) {
                         if (currSelected == retSelectable) {
                             cursor2d.Fade();
                             currSelected = levelSelect;
@@ -96,12 +96,12 @@ namespace ResonantSpark {
                     }
                 });
                 eventHandler_devMapping.On("down", (GameDeviceMapping devMap) => {
-                    if (persistence.player1 == devMap || persistence.player2 == devMap) {
+                    if (persistence.IsAlreadySetDeviceMap(devMap)) {
                         currSelected.TriggerEvent("down", devMap);
                     }
                 });
                 eventHandler_devMapping.On("submit", (GameDeviceMapping devMap) => {
-                    if (persistence.player1 == devMap || persistence.player2 == devMap) {
+                    if (persistence.IsAlreadySetDeviceMap(devMap)) {
                         if (currSelected == retSelectable) {
                             cursor2d.Select(retSelectable, () => {
                                 GoToCharacterSelect();
@@ -113,7 +113,7 @@ namespace ResonantSpark {
                     }
                 });
                 eventHandler_devMapping.On("cancel", (GameDeviceMapping devMap) => {
-                    if (persistence.player1 == devMap || persistence.player2 == devMap) {
+                    if (persistence.IsAlreadySetDeviceMap(devMap)) {
                         if (currSelected == retSelectable) {
                             GoToCharacterSelect();
                         }

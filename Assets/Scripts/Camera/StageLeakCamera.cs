@@ -102,8 +102,8 @@ namespace ResonantSpark {
 
                 PlayerService playerService = serviceObj.GetComponent<PlayerService>();
 
-                char0 = playerService.GetFGChar(0).transform;
-                char1 = playerService.GetFGChar(1).transform;
+                char0 = playerService.GetFGChar("player1").transform;
+                char1 = playerService.GetFGChar("player2").transform;
             }
 
             public void ResetCameraPosition() {

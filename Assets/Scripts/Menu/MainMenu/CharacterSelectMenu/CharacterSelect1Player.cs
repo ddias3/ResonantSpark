@@ -70,7 +70,7 @@ namespace ResonantSpark {
                 On("left", (GameDeviceMapping devMap) => {
                     if (playerSelecting > 2) return;
 
-                    if (persistence.player1 == devMap || persistence.player2 == devMap) {
+                    if (persistence.IsAlreadySetDeviceMap(devMap)) {
                         currSelected -= 1;
                         if (currSelected < 0) {
                             currSelected = 2;
@@ -82,7 +82,7 @@ namespace ResonantSpark {
                 On("right", (GameDeviceMapping devMap) => {
                     if (playerSelecting > 2) return;
 
-                    if (persistence.player1 == devMap || persistence.player2 == devMap) {
+                    if (persistence.IsAlreadySetDeviceMap(devMap)) {
                         currSelected += 1;
                         if (currSelected > 2) {
                             currSelected = 0;
@@ -92,7 +92,7 @@ namespace ResonantSpark {
                 });
 
                 On("submit", (GameDeviceMapping devMap) => {
-                    if (persistence.player1 == devMap || persistence.player2 == devMap) {
+                    if (persistence.IsAlreadySetDeviceMap(devMap)) {
                         if (playerSelecting == 1) {
                             charSelectMenu.UpdateBillboard(1, charInfos[currSelected].preview, charInfos[currSelected].name);
                             persistence.SetCharacterSelected(0, "lawrence");
@@ -111,7 +111,7 @@ namespace ResonantSpark {
                 });
 
                 On("cancel", (GameDeviceMapping devMap) => {
-                    if (persistence.player1 == devMap || persistence.player2 == devMap) {
+                    if (persistence.IsAlreadySetDeviceMap(devMap)) {
                         if (playerSelecting == 3) {
                             charSelectMenu.ResetBillboard(2);
                             playerSelecting = 2;

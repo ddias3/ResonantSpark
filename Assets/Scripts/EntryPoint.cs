@@ -52,9 +52,6 @@ namespace ResonantSpark {
             yield return new WaitForEndOfFrame();
 
             fgService.CreateGamemode();
-            inputService.SetUpControllers();
-            playerService.SetUpCharacters();
-            playerService.StartCharacterBuild();
             fgService.SetUpGamemode();
 
             EventManager.TriggerEvent<Events.StartGame>();

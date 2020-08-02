@@ -9,14 +9,12 @@ using ResonantSpark.DeviceManagement;
 namespace ResonantSpark {
     namespace Input {
         [RequireComponent(typeof(InputBuffer))]
-        public class HumanInputController : MonoBehaviour, ICharacterControlSystem {
+        public class HumanInputController : InputController {
             // These are empirically good numbers
             public Vector2 deadZone = new Vector2(0.25f, 0.25f);
             public float cardinalOverlap = 0.4f;
             [Tooltip("Buttons will only ever return 0 or 1, but some continuous inputs can be used as buttons, like triggers")]
             public float buttonDeadZone = 0.5f;
-
-            private InputBuffer inputBuffer;
 
             [SerializeField]
             private BasicActions inputActions;
@@ -28,7 +26,9 @@ namespace ResonantSpark {
 
             private int buttonInputCode = 0;
 
-            public void Awake() {
+            public new void Awake() {
+                base.Awake();
+
                 inputBuffer = GetComponent<InputBuffer>();
                 devMapping = null;
 
@@ -113,10 +113,6 @@ namespace ResonantSpark {
                 if (devMapping.device != null) {
                     inputActions.devices = new[] { devMapping.device };
                 }
-            }
-
-            public void ConnectToCharacter(FightingGameCharacter fgChar) {
-                fgChar.SetInputBuffer(inputBuffer);
             }
 
             public void FrameUpdate(int frameIndex) {

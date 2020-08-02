@@ -52,8 +52,8 @@ namespace ResonantSpark {
                     selectedP1 = false;
                     selectedP2 = false;
 
-                    devMapP1 = persistence.player1;
-                    devMapP2 = persistence.player2;
+                    devMapP1 = persistence.devices[0];
+                    devMapP2 = persistence.devices[1];
 
                     gameObject.SetActive(true);
                     cursor3dP1.Highlight(selectableIcons[currHighlightedP1]);

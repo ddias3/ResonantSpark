@@ -7,24 +7,30 @@ using UnityEngine.InputSystem;
 using ResonantSpark.Gameplay;
 using ResonantSpark.Service;
 using ResonantSpark.Utility;
+using ResonantSpark.Camera;
 
 namespace ResonantSpark {
     namespace Gamemode {
         public class OneOnOneRoundBased : MonoBehaviour, IGamemode {
 
             public GameObject inGameUiPrefab;
+            public GameObject fightingGameCamera;
 
             public MultipassStateMachine stateMachine;
             public MultipassStateDict states;
 
             public float roundTime = 60.0f;
             public float maxCharacterDistance = 8.0f;
+            protected PersistenceService persService;
             protected PlayerService playerService;
             protected UiService uiService;
             protected FightingGameService fgService;
+            protected InputService inputService;
 
             protected FightingGameCharacter player1;
             protected FightingGameCharacter player2;
+
+            protected new StageLeakCamera camera;
 
             private int char0RoundWins = 0;
             private int char1RoundWins = 0;
@@ -61,20 +67,41 @@ namespace ResonantSpark {
                 EventManager.StopListening<Events.StartGame>(enablePlayersCallback);
             }
 
-            public virtual void SetUp(PlayerService playerService, FightingGameService fgService, UiService uiService) {
+            public virtual void CreateDependencies(PersistenceService persService, PlayerService playerService, FightingGameService fgService, UiService uiService, InputService inputService) {
+                this.persService = persService;
                 this.playerService = playerService;
                 this.fgService = fgService;
                 this.uiService = uiService;
+                this.inputService = inputService;
 
                 Debug.Log("Instantiating in game UI");
                 inGameUi = GameObject.Instantiate(inGameUiPrefab).GetComponent<UI.InGameUi>();
                 inGameUi.RegisterElements(uiService);
 
+                GameObject newCamera = GameObject.Instantiate(fightingGameCamera);
+                newCamera.name = "FightingGameCamera";
+                this.camera = newCamera.GetComponent<StageLeakCamera>();
+
+                Dictionary<string, object> characters = (Dictionary<string, object>)persService.GetGamemodeDetails()["characters"];
+                List<string> charSelection = (List<string>)characters["selection"];
+                List<int> charColor = (List<int>)characters["color"];
+
+                playerService.CreateCharacter(charSelection[0], charColor[0], (fgChar) => {
+                    playerService.SetTag("player1", fgChar);
+                });
+                playerService.CreateCharacter(charSelection[1], charColor[1], (fgChar) => {
+                    playerService.SetTag("player2", fgChar);
+                });
+            }
+
+            public virtual void SetUp() {
                 unityEventSetInGameUiWhenReady.Invoke(inGameUi);
                 unityEventSetInGameUiWhenReady.RemoveAllListeners(); // this line might not be necessary.
 
-                player1 = playerService.GetFGChar(0);
-                player2 = playerService.GetFGChar(1);
+                this.camera.SetUpCamera(fgService);
+
+                player1 = playerService.GetFGChar("player1");
+                player2 = playerService.GetFGChar("player2");
                 player1.name += "P1";
                 player2.name += "P2";
 
@@ -135,7 +162,7 @@ namespace ResonantSpark {
                 player1.transform.LookAt(player2.position);
                 player2.transform.LookAt(player1.position);
 
-                playerService.EachFGChar((id, fgChar) => {
+                playerService.ForEach((fgChar, id) => {
                     fgChar.RoundReset();
                     inGameUi.SetMaxHealth(id, fgChar.maxHealth);
                     inGameUi.SetHealth(id, fgChar.maxHealth);
@@ -143,7 +170,7 @@ namespace ResonantSpark {
                     //uiService.SetValue("healthBarP" + (id+1), field: "health", value0: fgChar.maxHealth);
                 });
 
-                fgService.ResetCamera();
+                camera.ResetCameraPosition();
             }
 
             public float GetRoundLength() {
@@ -242,9 +269,13 @@ namespace ResonantSpark {
             }
 
             public void CalculateScreenOrientation() {
-                playerService.EachFGChar((id, fgChar) => {
+                playerService.ForEach((fgChar, id) => {
                     fgChar.CalculateScreenOrientation();
                 });
+            }
+
+            public Vector2 ScreenOrientation(FightingGameCharacter fgChar) {
+                return camera.ScreenOrientation(fgChar.transform);
             }
 
             public void SetDisplayTime(float currRoundTime) {
@@ -307,6 +338,10 @@ namespace ResonantSpark {
 
             public float GetGameTimeScaling() {
                 return gameTime;
+            }
+
+            public void CameraEnable(bool enable) {
+                camera.gameObject.SetActive(enable);
             }
 
             public UI.InGameUi GetInGameUi() {

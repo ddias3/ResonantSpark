@@ -8,43 +8,37 @@ namespace ResonantSpark {
     namespace Service {
         public class PersistenceService : MonoBehaviour, IPersistenceService {
             public string gamemodeStr;
-
             [Tooltip("List of strings with the character names, use in-house names for these")]
             public List<string> characterSelections;
-
-            public List<GameDeviceMapping> deviceMapping;
+            public List<int> colorSelections;
 
             public GameObject versusModePrefab;
             public GameObject trainingModePrefab;
 
-            public GameObject fightingGameCameraPrefab;
-
             public GameObject lawrenceBuilderPrefab;
 
-            private Persistence persObj;
+            private Persistence persistence;
 
             public void Start() {
-                deviceMapping = new List<GameDeviceMapping>();
-
-                if (Persistence.Exists()) {
-                    persObj = Persistence.Get();
-
-                    gamemodeStr = persObj.gamemode;
-                    characterSelections = persObj.characterSelection;
-
-                    deviceMapping.Add(persObj.player1);
-                    deviceMapping.Add(persObj.player2);
+                if (!Persistence.Exists()) {
+                    persistence = Persistence.Get();
+                    persistence.SetDeviceMapping(0, new GameDeviceMapping(UnityEngine.InputSystem.Keyboard.current));
+                    persistence.SetDeviceMapping(1, new GameDeviceMapping(UnityEngine.InputSystem.Gamepad.all[0]));
+                    persistence.SetCharacterSelected(0, characterSelections[0]);
+                    persistence.SetCharacterSelected(1, characterSelections[1]);
+                    persistence.SetColorSelected(0, colorSelections[0]);
+                    persistence.SetColorSelected(1, colorSelections[1]);
+                    persistence.SetGamemode(gamemodeStr);
                 }
                 else {
-                    deviceMapping.Add(new GameDeviceMapping(UnityEngine.InputSystem.Keyboard.current));
-                    deviceMapping.Add(new GameDeviceMapping(UnityEngine.InputSystem.Gamepad.all[0]));
+                    persistence = Persistence.Get();
                 }
 
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(PersistenceService));
             }
 
             public GameObject GetGamemode() {
-                switch (gamemodeStr) {
+                switch (persistence.gamemode) {
                     case "versus":
                         return versusModePrefab;
                     case "training":
@@ -54,18 +48,12 @@ namespace ResonantSpark {
                 }
             }
 
-            public GameObject GetCamera() {
-                switch (gamemodeStr) {
-                    case "versus":
-                    case "training":
-                        return fightingGameCameraPrefab;
-                    default:
-                        return null;
-                }
+            public Dictionary<string, object> GetGamemodeDetails() {
+                return persistence.gamemodeDetails;
             }
 
-            public GameObject GetSelectedCharacter(int playerIndex) {
-                switch (characterSelections[playerIndex]) {
+            public GameObject GetSelectedCharacter(string charSelection) {
+                switch (charSelection) {
                     case "lawrence":
                         return lawrenceBuilderPrefab;
                     default:
@@ -73,12 +61,16 @@ namespace ResonantSpark {
                 }
             }
 
-            public GameDeviceMapping GetDeviceMapping(int playerIndex) {
-                return deviceMapping[playerIndex];
+            public List<GameDeviceMapping> GetDevices() {
+                return persistence.devices;
             }
 
-            public int GetTotalHumanPlayers() {
-                return persObj.GetHumanPlayers();
+            public int GetHumanPlayers() {
+                return persistence.GetHumanPlayers();
+            }
+
+            public GameDeviceMapping GetDeviceMapping(int playerIndex) {
+                return persistence.devices[playerIndex];
             }
         }
     }

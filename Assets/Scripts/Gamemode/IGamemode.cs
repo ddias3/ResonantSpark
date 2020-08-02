@@ -8,7 +8,8 @@ using ResonantSpark.Service;
 namespace ResonantSpark {
     namespace Gamemode {
         public interface IGamemode {
-            void SetUp(PlayerService playerService, FightingGameService fgService, UiService uiService);
+            void CreateDependencies(PersistenceService persService, PlayerService playerService, FightingGameService fgService, UiService uiService, InputService inputService);
+            void SetUp();
             bool IsCurrentFGChar(InGameEntity entity);
             int GetMaxPlayers();
 
@@ -18,6 +19,9 @@ namespace ResonantSpark {
 
             void SetGameTimeScaling(float scaling);
             float GetGameTimeScaling();
+
+            void CameraEnable(bool enable);
+            Vector2 ScreenOrientation(FightingGameCharacter fgChar);
         }
     }
 }

@@ -301,7 +301,7 @@ namespace ResonantSpark {
             public void SetState(CharacterStates.CharacterBaseState nextState) {
                 prevState = (CharacterStates.CharacterBaseState) stateMachine.GetCurrentState();
                 //if (nextState.GetType() != typeof(CharacterStates.AttackGrounded) && nextState.GetType() != typeof(CharacterStates.AttackAirborne)) {
-                if (nextState is CharacterStates.Attack) {
+                if (!(nextState is CharacterStates.Attack)) {
                     attackRunner.ClearPrevAttacks();
                 }
                 stateMachine.QueueStateChange(nextState);

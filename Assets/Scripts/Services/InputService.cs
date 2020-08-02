@@ -9,39 +9,50 @@ namespace ResonantSpark {
         public class InputService : MonoBehaviour, IInputService {
 
             public GameObject inputs;
-            public HumanInputController prefab;
+            public HumanInputController humanInputControllerPrefab;
+            public DummyInputController dummyInputControllerPrefab;
+            public AiInputController aiInputControllerPrefab;
+            public NoneInputController noneInputControllerPrefab;
 
             private PersistenceService persistenceService;
-            private PlayerService playerService;
+            private FightingGameService fgService;
 
-            private int numHumanPlayers = 0;
-            private Dictionary<int, HumanInputController> controllers;
+            private List<InputController> controllers;
 
             public void Start() {
                 persistenceService = GetComponent<PersistenceService>();
-                playerService = GetComponent<PlayerService>();
+                fgService = GetComponent<FightingGameService>();
 
-                controllers = new Dictionary<int, HumanInputController>();
+                controllers = new List<InputController>();
 
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(InputService));
             }
 
-            public void SetUpControllers() {
-                for (int n = 0; n < playerService.GetMaxPlayers(); ++n) {
-                    if (persistenceService.GetDeviceMapping(n) != null) {
-                        HumanInputController humanInput = GameObject.Instantiate<HumanInputController>(prefab, inputs.transform);
-                        humanInput.SetDeviceMap(persistenceService.GetDeviceMapping(n));
-
-                        controllers.Add(n, humanInput);
-                    }
+            public int CreateController(InputControllerType type) {
+                InputController controller = null;
+                switch (type) {
+                    case InputControllerType.Human:
+                        controller = GameObject.Instantiate<HumanInputController>(humanInputControllerPrefab, inputs.transform);
+                        break;
+                    case InputControllerType.Dummy:
+                        controller = GameObject.Instantiate<DummyInputController>(dummyInputControllerPrefab, inputs.transform);
+                        break;
+                    case InputControllerType.AI:
+                        controller = GameObject.Instantiate<AiInputController>(aiInputControllerPrefab, inputs.transform);
+                        break;
+                    case InputControllerType.None:
+                        controller = GameObject.Instantiate<NoneInputController>(noneInputControllerPrefab, inputs.transform);
+                        break;
                 }
+                int index = controllers.Count;
+                if (controller != null) {
+                    controllers.Add(controller);
+                }
+                return index;
             }
 
-            public HumanInputController GetInputController(int controllerIndex) {
-                if (controllers.TryGetValue(controllerIndex, out HumanInputController inputController)) {
-                    return inputController;
-                }
-                return null;
+            public InputController GetInputController(int controllerIndex) {
+                return controllers[controllerIndex];
             }
         }
     }

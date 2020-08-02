@@ -6,8 +6,7 @@ using ResonantSpark.Input;
 namespace ResonantSpark {
     namespace Service {
         public interface IInputService {
-            void SetUpControllers();
-            HumanInputController GetInputController(int controllerIndex);
+            InputController GetInputController(int controllerIndex);
         }
     }
 }
