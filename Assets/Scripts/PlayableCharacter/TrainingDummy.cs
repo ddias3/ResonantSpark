@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -43,6 +44,8 @@ namespace ResonantSpark {
                 this.controller = controller;
                 this.fgService = fgService;
                 this.opponent = opponent;
+
+                blockMode = DummyBlock.None;
             }
 
             public void SetBlockMode(string mode) {
@@ -63,27 +66,59 @@ namespace ResonantSpark {
             }
 
             public void FrameUpdate(int frameIndex) {
-                if (opponent.isAttacking) {
-                    Attack attack = opponent.GetCurrentAttack();
-                    if (attack == null) return;
+                switch (blockMode) {
+                    case DummyBlock.All:
+                        if (opponent.isAttacking) {
+                            Attack attack = opponent.GetCurrentAttack();
+                            if (attack == null) return;
 
-                    attack.GetNextBlockRequirements(nextHitRequiredBlocks);
+                            attack.GetNextBlockRequirements(nextHitRequiredBlocks);
 
-                    fgService.PopulateValidBlocking(validBlocks, nextHitRequiredBlocks);
+                            fgService.PopulateValidBlocking(validBlocks, nextHitRequiredBlocks);
+                            System.Text.StringBuilder toString = new System.Text.StringBuilder();
+                            toString.Append("ValidBlocks(");
+                            toString.Append(frameIndex);
+                            toString.Append(") [");
+                            for (int n = 0; n < validBlocks.Count; ++n) {
+                                toString.Append(validBlocks[n].ToString());
+                                toString.Append(", ");
+                            }
+                            toString.Append("]");
+                            Debug.LogFormat(toString.ToString());
 
-                    if (validBlocks.Contains(BlockType.LOW)) {
-                        //TODO: fgChar.SetInput(Factory.Get<DirectionCurrent>(FightingGameInputDir.DownBack));
-                        Debug.Log("Blocking Low");
-                        controller.SetInput();
-                    }
-                    else if (validBlocks.Contains(BlockType.HIGH)) {
-                        //TODO: fgChar.SetInput(Factory.Get<DirectionCurrent>(FightingGameInputDir.Back));
-                        Debug.Log("Blocking High");
-                        controller.SetInput();
-                    }
-                    else {
-                        throw new Exception("Attack requires both high and low blocking");
-                    }
+                            if (validBlocks.Contains(BlockType.LOW)) {
+                                controller.SetInput(fgChar.MapRelativeToAbsolute(FightingGameInputCodeDir.DownBack));
+                            }
+                            else if (validBlocks.Contains(BlockType.HIGH)) {
+                                controller.SetInput(fgChar.MapRelativeToAbsolute(FightingGameInputCodeDir.Back));
+                            }
+                            else {
+                                throw new Exception("Attack requires both high and low blocking");
+                            }
+                        }
+                        else {
+                            controller.SetInput(FightingGameAbsInputCodeDir.Neutral);
+                        }
+                        break;
+                    case DummyBlock.High:
+                        if (opponent.isAttacking) {
+                            controller.SetInput(fgChar.MapRelativeToAbsolute(FightingGameInputCodeDir.Back));
+                        }
+                        else {
+                            controller.SetInput(FightingGameAbsInputCodeDir.Neutral);
+                        }
+                        break;
+                    case DummyBlock.Low:
+                        if (opponent.isAttacking) {
+                            controller.SetInput(fgChar.MapRelativeToAbsolute(FightingGameInputCodeDir.DownBack));
+                        }
+                        else {
+                            controller.SetInput(FightingGameAbsInputCodeDir.Neutral);
+                        }
+                        break;
+                    case DummyBlock.None:
+                        controller.SetInput(FightingGameAbsInputCodeDir.Neutral);
+                        break;
                 }
             }
         }

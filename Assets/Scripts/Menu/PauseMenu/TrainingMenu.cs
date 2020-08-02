@@ -7,7 +7,7 @@ namespace ResonantSpark {
         public class TrainingMenu : Menu {
             public Animator animator2d;
 
-            public Selectable dummyBlock;
+            public ScrollSelect dummyBlock;
             public Selectable retSelected;
 
             public Cursor2d cursor2d;
@@ -18,6 +18,13 @@ namespace ResonantSpark {
                 if (currSelected == null) {
                     currSelected = dummyBlock;
                 }
+
+                dummyBlock.options = new List<ScrollSelectOption<string>> {
+                    new ScrollSelectOption<string> { name = "None", callbackData = "none" },
+                    new ScrollSelectOption<string> { name = "All", callbackData = "all" },
+                    new ScrollSelectOption<string> { name = "Low", callbackData = "low" },
+                    new ScrollSelectOption<string> { name = "High", callbackData = "high" },
+                };
 
                 cursor2d.Hide();
                 animator2d.Play("hidden");

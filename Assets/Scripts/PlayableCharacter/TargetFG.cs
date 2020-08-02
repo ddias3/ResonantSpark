@@ -27,6 +27,10 @@ namespace ResonantSpark {
                 height = transform.position.y;
             }
 
+            public void SetHeight(float height) {
+                this.height = height;
+            }
+
             public void SetNewTarget(InGameEntity newTargetChar) {
                 targetChar = newTargetChar;
             }

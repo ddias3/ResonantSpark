@@ -791,7 +791,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3a1424160a7a2741b3d7ecb610c99d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gamemodeStr: versus
+  gamemodeStr: training
+  playerInfos:
+  - player
+  - dummy
   characterSelections:
   - lawrence
   - lawrence

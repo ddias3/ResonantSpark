@@ -9,8 +9,16 @@ namespace ResonantSpark {
     namespace Input {
         [RequireComponent(typeof(InputBuffer))]
         public class DummyInputController : InputController {
-            public void SetInput() {
+            public new void Awake() {
+                base.Awake();
 
+                inputBuffer.inputDelay = 0;
+                inputBuffer.inputBufferSize = 30;
+                inputBuffer.ResetBuffer();
+            }
+
+            public void SetInput(FightingGameAbsInputCodeDir direction) {
+                inputBuffer.SetCurrentInputState(direction);
             }
         }
     }

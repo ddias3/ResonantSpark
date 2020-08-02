@@ -8,6 +8,8 @@ namespace ResonantSpark {
     namespace Service {
         public class PersistenceService : MonoBehaviour, IPersistenceService {
             public string gamemodeStr;
+            [Tooltip("List of strings with the character info: 'player' for human controlled, 'dummy' for training dummy, 'ai' for CPU controlled")]
+            public List<string> playerInfos;
             [Tooltip("List of strings with the character names, use in-house names for these")]
             public List<string> characterSelections;
             public List<int> colorSelections;
@@ -29,6 +31,8 @@ namespace ResonantSpark {
                     persistence.SetColorSelected(0, colorSelections[0]);
                     persistence.SetColorSelected(1, colorSelections[1]);
                     persistence.SetGamemode(gamemodeStr);
+                    persistence.SetPlayerInfo(0, playerInfos[0]);
+                    persistence.SetPlayerInfo(1, playerInfos[1]);
                 }
                 else {
                     persistence = Persistence.Get();

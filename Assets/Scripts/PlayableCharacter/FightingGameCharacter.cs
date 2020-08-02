@@ -105,6 +105,7 @@ namespace ResonantSpark {
                 inputDoNothingList = new List<Combination> { ScriptableObject.CreateInstance<DirectionCurrent>().Init(0, Input.FightingGameAbsInputCodeDir.Neutral) };
 
                 targetFG = gameObject.GetComponentInChildren<TargetFG>();
+                targetFG.SetHeight(fgService.GetSpawnPoint().position.y);
 
                 charMovementAnimation = new CharacterMovementAnimation(this);
 

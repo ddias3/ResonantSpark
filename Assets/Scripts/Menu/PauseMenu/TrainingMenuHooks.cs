@@ -19,13 +19,6 @@ namespace ResonantSpark {
 
             public void Awake() {
                 menuManager = GetComponent<MenuManager>();
-
-                dummyBlock.options = new List<ScrollSelectOption<string>> {
-                    new ScrollSelectOption<string> { name = "None", callbackData = "none" },
-                    new ScrollSelectOption<string> { name = "All", callbackData = "all" },
-                    new ScrollSelectOption<string> { name = "Low", callbackData = "low" },
-                    new ScrollSelectOption<string> { name = "High", callbackData = "high" },
-                };
                 dummyBlock.AddListener(new UnityAction<string>(DummyBlock));
 
                 hooks = new Dictionary<string, UnityEventBase> {

@@ -39,7 +39,6 @@ namespace ResonantSpark {
                 frame.AddUpdate((int) FramePriority.InputBuffer, new Action<int>(ServeBuffer));
 
                 inputFactory = new Input.Factory();
-                inputBuffer = new GameInputStruct[bufferLength];
                 currState = new GameInputStruct {
                     direction = FightingGameAbsInputCodeDir.Neutral,
                     butA = false,
@@ -49,16 +48,7 @@ namespace ResonantSpark {
                     butS = false,
                 };
 
-                for (int n = 0; n < inputBuffer.Length; ++n) {
-                    inputBuffer[n] = new GameInputStruct {
-                        direction = FightingGameAbsInputCodeDir.Neutral,
-                        butA = false,
-                        butB = false,
-                        butC = false,
-                        butD = false,
-                        butS = false,
-                    };
-                }
+                ResetBuffer();
 
                 currDirection = inputFactory.CreateCombination<Combinations.DirectionCurrent>(0);
                 currButtons = inputFactory.CreateCombination<Combinations.ButtonsCurrent>(0);
@@ -69,6 +59,20 @@ namespace ResonantSpark {
                 foundInputCombinations = new List<Input.Combinations.Combination>();
                 servedInputCombinations = new List<Input.Combinations.Combination>();
                 inUseInputCombinations = new List<Input.Combinations.Combination>();
+            }
+
+            public void ResetBuffer() {
+                inputBuffer = new GameInputStruct[bufferLength];
+                for (int n = 0; n < inputBuffer.Length; ++n) {
+                    inputBuffer[n] = new GameInputStruct {
+                        direction = FightingGameAbsInputCodeDir.Neutral,
+                        butA = false,
+                        butB = false,
+                        butC = false,
+                        butD = false,
+                        butS = false,
+                    };
+                }
             }
 
             public void SetCurrentInputState(FightingGameAbsInputCodeDir dirInputCode = FightingGameAbsInputCodeDir.Neutral, int buttonInputCode = 0) {
@@ -98,6 +102,7 @@ namespace ResonantSpark {
             }
 
             private void FindCombinations(int frameIndex) {
+                    // TODO: Change the reader to not be instantiated every frame.
                 InputBufferReader reader = new InputBufferReader(inputBuffer, frameIndex, inputBufferSize, inputIndex, inputDelay, bufferLength);
                 if (Keyboard.current.backspaceKey.wasPressedThisFrame) {
                     breakPoint = true;

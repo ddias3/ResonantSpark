@@ -123,6 +123,7 @@ MonoBehaviour:
   - jump_5AAA.y
   - jump_5AAA.z
   - orth_1C.z
+  - orth_6B.z
   values:
   - serializedVersion: 2
     m_Curve:
@@ -484,6 +485,56 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 29.94556
       value: 0.70532286
+      inSlope: 0.0003878884
+      outSlope: 0.0003878884
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.09280307
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  - serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.0019328623
+      outSlope: 0.0019328623
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.38596454
+    - serializedVersion: 3
+      time: 6.9208813
+      value: 0.055652503
+      inSlope: 0.028537843
+      outSlope: 0.028537843
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.3861151
+    - serializedVersion: 3
+      time: 12.792087
+      value: 0.25618988
+      inSlope: 0.03193722
+      outSlope: 0.03193722
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.26934415
+      outWeight: 0.19524756
+    - serializedVersion: 3
+      time: 22.07704
+      value: 0.4116978
+      inSlope: -0.00081471185
+      outSlope: -0.00081471185
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.20808671
+    - serializedVersion: 3
+      time: 29.888845
+      value: 0.42197496
       inSlope: 0.0003878884
       outSlope: 0.0003878884
       tangentMode: 0

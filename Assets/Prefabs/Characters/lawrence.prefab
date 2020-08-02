@@ -286,7 +286,6 @@ MonoBehaviour:
   landAnimationFrameTarget: 3
   standCollider: {fileID: 7426682292546004176}
   __debugState: {fileID: 4651849404587844392}
-  attackInfoDisplay: {fileID: 0}
 --- !u!114 &111043910640003404
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -325,6 +324,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxGrabs: 1
   maxWallBounces: 2
+  numHitsStunDecreaseLevel1: 6
+  stunDecreaseLevel1: 4
+  numHitsStunDecreaseLevel2: 12
+  stunDecreaseLevel2: 7
 --- !u!114 &276836322316426626
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1079,6 +1082,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5080582916421185792}
     m_Modifications:
+    - target: {fileID: 506091139094625599, guid: 3effedf85c688414f9f72cedea167daf,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 506091139437704477, guid: 3effedf85c688414f9f72cedea167daf,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 506091139774159418, guid: 3effedf85c688414f9f72cedea167daf,
         type: 3}
       propertyPath: m_Name
@@ -1143,6 +1156,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 506091140044022539, guid: 3effedf85c688414f9f72cedea167daf,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3effedf85c688414f9f72cedea167daf, type: 3}

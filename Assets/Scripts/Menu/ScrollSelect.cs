@@ -24,6 +24,8 @@ namespace ResonantSpark {
             private Transform wordRight;
 
             public void Start() {
+                currSelected = 0;
+
                 On("left", () => {
                     //if (persistence.player1 == devMap || persistence.player2 == devMap) {
                     currSelected -= 1;
