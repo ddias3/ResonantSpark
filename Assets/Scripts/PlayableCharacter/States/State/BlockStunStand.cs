@@ -12,9 +12,7 @@ using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class BlockStunStand : CharacterBaseState {
-
-            private FightingGameInputCodeDir dirCurr;
+        public class BlockStunStand : BlockStun {
 
             public new void Awake() {
                 base.Awake();
@@ -27,43 +25,30 @@ namespace ResonantSpark {
             public override void Enter(int frameIndex, MultipassBaseState previousState) {
                 fgChar.__debugSetStateText("Block Stun", Color.white);
 
-                fgChar.Play("idle");
+                fgChar.Play("block_standing");
             }
 
             public override void ExecutePass0(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
-                fgChar.CalculateFinalVelocity();
+
+                if (fgChar.blockStun <= 0.0f) {
+                    OnComplete();
+                    changeState(states.Get("stand"));
+                }
+                else if (fgChar.blockStun <= 5.0f) {
+                    fgChar.Play("block_standing_to_idle");
+                }
             }
 
             public override void ExecutePass1(int frameIndex) {
                 //fgChar.UpdateTarget();
                 //fgChar.UpdateCharacterMovement();
-                //fgChar.CalculateFinalVelocity();
+                fgChar.CalculateFinalVelocity();
                 //fgChar.AnimationWalkVelocity();
             }
 
             public override void LateExecute(int frameIndex) {
-                //fgChar.UpdateCharacterMovement();
-                //fgChar.AnimationWalkVelocity();
-            }
-
-            public override void Exit(int frameIndex) {
-                // do nothing
-            }
-
-            public override GroundRelation GetGroundRelation() {
-                return GroundRelation.GROUNDED;
-            }
-
-            public override ComboState GetComboState() {
-                return ComboState.None;
-            }
-
-            public override CharacterVulnerability GetCharacterVulnerability() {
-                return new CharacterVulnerability {
-                    strikable = true,
-                    throwable = false,
-                };
+                fgChar.IncrementBlockStun();
             }
 
             public override void ReceiveHit(bool launch) {
@@ -73,41 +58,6 @@ namespace ResonantSpark {
                 else {
                     changeState(states.Get("hitStunStand"));
                 }
-            }
-
-            public override void ReceiveBlocked(bool forceCrouch) {
-                if (forceCrouch) {
-                    changeState(states.Get("blockStunCrouch"));
-                }
-                else {
-                    if (dirCurr == FightingGameInputCodeDir.DownBack) {
-                        changeState(states.Get("blockStunCrouch"));
-                    }
-                    else if (dirCurr == FightingGameInputCodeDir.Back) {
-                        changeState(states.Get("blockStunStand"));
-                    }
-                }
-            }
-
-            public override void ReceiveGrabbed() {
-                throw new InvalidOperationException("A character in block stun is being grabbed");
-            }
-
-            public override bool CheckBlockSuccess(Hit hit) {
-                if (dirCurr == FightingGameInputCodeDir.DownBack) {
-                    return hit.validBlocks.Contains(Character.BlockType.LOW);
-                }
-                else if (dirCurr == FightingGameInputCodeDir.Back) {
-                    return hit.validBlocks.Contains(Character.BlockType.HIGH);
-                }
-                else {
-                    return false;
-                }
-            }
-
-            private void OnDirectionCurrent(Action stop, Combination combo) {
-                var dirPress = (DirectionCurrent) combo;
-                dirCurr = fgChar.MapAbsoluteToRelative(dirPress.direction);
             }
         }
     }

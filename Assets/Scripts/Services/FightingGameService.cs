@@ -113,9 +113,13 @@ namespace ResonantSpark {
                 return gamemode.IsCurrentFGChar(entity);
             }
 
-            public void Hit(InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority, int> onHit, Action<AttackPriority, int> onBlock) {
+            public void Strike(InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority, int> onHit, Action<AttackPriority, int> onBlock) {
                 Debug.Log(hitEntity);
                 hitQueue.Add((hitEntity, byEntity, hit, onHit, onBlock));
+            }
+
+            public void Throw(InGameEntity hitEntity, InGameEntity byEntity, Action<AttackPriority, int> onSuccess, Action<AttackPriority, int> onBreak) {
+
             }
 
             public void HitStunStart(FightingGameCharacter fgChar) {

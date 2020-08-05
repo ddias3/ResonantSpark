@@ -5,9 +5,9 @@ using UnityEngine;
 namespace ResonantSpark {
     namespace Gameplay {
         public class BlockRunner : MonoBehaviour {
-            private FightingGameCharacter fgChar;
+            public float blockStun { private set; get; }
 
-            private float blockStun = 0.0f;
+            private FightingGameCharacter fgChar;
 
             public void Init(FightingGameCharacter fgChar) {
                 this.fgChar = fgChar;

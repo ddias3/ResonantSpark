@@ -65,7 +65,7 @@ namespace ResonantSpark {
             private Vector2 screenOrientation = Vector2.zero;
 
             public float hitStun { private set; get; }
-            public float blockStun { private set; get; }
+            public float blockStun { get { return blockRunner.blockStun; } }
 
             private CharacterData charData;
 
@@ -79,6 +79,10 @@ namespace ResonantSpark {
 
             public bool isAttacking {
                 get { return stateMachine.GetCurrentState() is CharacterStates.Attack; }
+            }
+
+            public bool isBlocking {
+                get { return stateMachine.GetCurrentState() is CharacterStates.BlockStun; }
             }
 
             public void Init(CharacterData charData) {
@@ -406,7 +410,7 @@ namespace ResonantSpark {
                 }
 
                 comboRunner.AddNumHits(1);
-                this.hitStun = comboRunner.GetFilteredHitStun(hitStun);
+                SetHitStun(comboRunner.GetFilteredHitStun(hitStun));
 
                 ((CharacterStates.CharacterBaseState) stateMachine.GetCurrentState()).ReceiveHit(launch);
             }

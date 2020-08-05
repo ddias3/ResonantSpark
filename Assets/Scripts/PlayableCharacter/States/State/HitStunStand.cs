@@ -15,10 +15,6 @@ namespace ResonantSpark {
             public new void Awake() {
                 base.Awake();
                 states.Register(this, "hitStunStand");
-
-                RegisterInputCallbacks()
-                    .On<DirectionPress>(OnDirectionPress)
-                    .On<DoubleTap>(OnDoubleTap);
             }
 
             public override void Enter(int frameIndex, MultipassBaseState previousState) {
@@ -59,24 +55,6 @@ namespace ResonantSpark {
                 }
                 else {
                     changeState(states.Get("hitStunStand"));
-                }
-            }
-
-            private void OnDirectionPress(Action stop, Combination combo) {
-                var dirPress = (DirectionPress)combo;
-                if (!dirPress.Stale(frame.index)) {
-                    dirPress.inUse = true;
-                    stop.Invoke();
-                    changeState(states.Get("walk"));//.Message(dirPress));
-                }
-            }
-
-            private void OnDoubleTap(Action stop, Combination combo) {
-                var doubleTap = (DoubleTap)combo;
-                if (!doubleTap.Stale(frame.index)) {
-                    doubleTap.inUse = true;
-                    stop.Invoke();
-                    changeState(states.Get("run"));//.Message(doubleTap));
                 }
             }
         }

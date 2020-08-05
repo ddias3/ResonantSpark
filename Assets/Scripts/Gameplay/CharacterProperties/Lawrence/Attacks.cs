@@ -96,7 +96,7 @@ namespace ResonantSpark {
                                                 FightingGameCharacter opponent = (FightingGameCharacter) entity;
 
                                                 // This exists to make characters hitting each other async
-                                                fgService.Hit(entity, fgChar, thisHit, onHit:(hitAtSameTimeByAttackPriority, damage) => {
+                                                fgService.Strike(entity, fgChar, thisHit, onHit:(hitAtSameTimeByAttackPriority, damage) => {
                                                     audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["weakHit"]);
                                                     switch (opponent.GetGroundRelation()) {
                                                         case GroundRelation.GROUNDED:
@@ -118,7 +118,7 @@ namespace ResonantSpark {
 
                                                 }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
                                                         // I may put all of these functions into the same call.
-                                                    opponent.ReceiveHit(thisHit.blockStun, false);
+                                                    opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                     opponent.KnockBack(
                                                         thisHit.priority,
                                                         launch: false,
@@ -194,7 +194,7 @@ namespace ResonantSpark {
                                                 FightingGameCharacter opponent = (FightingGameCharacter) entity;
 
                                                 // This exists to make characters hitting each other async
-                                                fgService.Hit(entity, fgChar, thisHit, (hitAtSameTimeByAttackPriority, damage) => {
+                                                fgService.Strike(entity, fgChar, thisHit, (hitAtSameTimeByAttackPriority, damage) => {
                                                     audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
 
                                                     switch (opponent.GetGroundRelation()) {
@@ -216,7 +216,7 @@ namespace ResonantSpark {
                                                     opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                                 }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
-                                                    opponent.ReceiveHit(thisHit.blockStun, false);
+                                                    opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                     opponent.KnockBack(
                                                         thisHit.priority,
                                                         launch: false,
@@ -307,7 +307,7 @@ namespace ResonantSpark {
                                                 FightingGameCharacter opponent = (FightingGameCharacter)entity;
 
                                                 // This exists to make characters hitting each other async
-                                                fgService.Hit(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
+                                                fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
                                                     audioService.PlayOneShot(hitLocations[closeHitBox], audioMap["mediumHit"]);
                                                     audioService.PlayOneShot(hitLocations[closeHitBox], audioMap["weakHit"]);
 
@@ -375,7 +375,7 @@ namespace ResonantSpark {
                                                 FightingGameCharacter opponent = (FightingGameCharacter)entity;
 
                                                 // This exists to make characters hitting each other async
-                                                fgService.Hit(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
+                                                fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
                                                     audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["weakHit"]);
                                                     switch (opponent.GetGroundRelation()) {
                                                         case GroundRelation.GROUNDED:
@@ -386,7 +386,7 @@ namespace ResonantSpark {
                                                                 knockback: fgChar.rigidFG.rotation * Vector3.forward * 2.0f);
                                                             break;
                                                         case GroundRelation.AIRBORNE:
-                                                            opponent.ReceiveHit(thisHit.hitStun, true);
+                                                            opponent.ReceiveBlocked(thisHit.hitStun, true);
                                                             opponent.KnockBack(
                                                                 thisHit.priority,
                                                                 launch: true,
@@ -397,7 +397,7 @@ namespace ResonantSpark {
 
                                                 }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
                                                     // I may put all of these functions into the same call.
-                                                    opponent.ReceiveHit(thisHit.blockStun, false);
+                                                    opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                     opponent.KnockBack(
                                                         thisHit.priority,
                                                         launch: false,
@@ -457,7 +457,7 @@ namespace ResonantSpark {
                                                 FightingGameCharacter opponent = (FightingGameCharacter)entity;
 
                                                 // This exists to make characters hitting each other async
-                                                fgService.Hit(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
+                                                fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
                                                     audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["weakHit"]);
                                                     switch (opponent.GetGroundRelation()) {
                                                         case GroundRelation.GROUNDED:
@@ -479,7 +479,7 @@ namespace ResonantSpark {
 
                                                 }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
                                                     // I may put all of these functions into the same call.
-                                                    opponent.ReceiveHit(thisHit.blockStun, false);
+                                                    opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                     opponent.KnockBack(
                                                         thisHit.priority,
                                                         launch: false,
@@ -1149,7 +1149,7 @@ namespace ResonantSpark {
                                             FightingGameCharacter opponent = (FightingGameCharacter)entity;
 
                                             // This exists to make characters hitting each other async
-                                            fgService.Hit(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
+                                            fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
                                                 audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
                                                 switch (opponent.GetGroundRelation()) {
                                                     case GroundRelation.GROUNDED:
@@ -1171,7 +1171,7 @@ namespace ResonantSpark {
 
                                             }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
                                                 // I may put all of these functions into the same call.
-                                                opponent.ReceiveHit(thisHit.blockStun, false);
+                                                opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                 opponent.KnockBack(
                                                     thisHit.priority,
                                                     launch: false,

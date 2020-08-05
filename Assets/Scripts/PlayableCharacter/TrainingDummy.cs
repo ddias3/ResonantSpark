@@ -96,11 +96,11 @@ namespace ResonantSpark {
                                 toString.Append("]");
                                 Debug.LogFormat(toString.ToString());
 
-                                if (nextHitValidBlocks.Contains(BlockType.LOW)) {
-                                    controller.SetInput(fgChar.MapRelativeToAbsolute(FightingGameInputCodeDir.DownBack));
-                                }
-                                else if (nextHitValidBlocks.Contains(BlockType.HIGH)) {
+                                if (nextHitValidBlocks.Contains(BlockType.HIGH)) {
                                     controller.SetInput(fgChar.MapRelativeToAbsolute(FightingGameInputCodeDir.Back));
+                                }
+                                else if(nextHitValidBlocks.Contains(BlockType.LOW)) {
+                                    controller.SetInput(fgChar.MapRelativeToAbsolute(FightingGameInputCodeDir.DownBack));
                                 }
                                 else {
                                     throw new Exception("Attack requires both high and low blocking");
