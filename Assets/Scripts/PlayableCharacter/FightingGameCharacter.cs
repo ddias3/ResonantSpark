@@ -155,6 +155,10 @@ namespace ResonantSpark {
                 return attackRunner.GetCurrentAttack();
             }
 
+            public List<Hit> GetNextHitInCurrentAttack() {
+                return attackRunner.GetNextHitInCurrentAttack();
+            }
+
             public CharacterVulnerability GetAttackCharacterVulnerability() {
                 // TODO: make sure this never fucks up.
                 return attackRunner.GetCharacterVulnerability();
@@ -321,7 +325,7 @@ namespace ResonantSpark {
             }
 
             public Orientation GetOrientation() {
-                //TODO: Determine actual orientation programmatically.
+                // TODO: Determine actual orientation programmatically.
                 return defaultForwardOrientation;
             }
 

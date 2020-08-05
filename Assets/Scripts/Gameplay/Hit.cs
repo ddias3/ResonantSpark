@@ -64,8 +64,9 @@ namespace ResonantSpark {
                 this.tracking = hitBuilder.tracking;
 
                 this.validBlocks = new List<BlockType>();
+                    // This is basically just copying the list.
                 foreach (BlockType block in Enum.GetValues(typeof(BlockType))) {
-                    if (!hitBuilder.requiredBlocks.Contains(block) && block != BlockType.AIR) { // Allow air blocking in future version of the game.
+                    if (hitBuilder.validBlocks.Contains(block) && block != BlockType.AIR) { // Allow air blocking in future version of the game.
                         this.validBlocks.Add(block);
                     }
                 }
@@ -170,7 +171,7 @@ namespace ResonantSpark {
             }
 
             public void InvokeCallback(InGameEntity entity, List<HurtBox> hurt, List<HitBox> hit) {
-                    //TODO: (Maybe) Have a reference to the entity that owns this hit.
+                    // TODO: (Maybe) Have a reference to the entity that owns this hit.
                 onHitCallback?.Invoke(this, hitLocation, entity, hurt, hit);
             }
 

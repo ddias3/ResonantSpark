@@ -31,7 +31,7 @@ namespace ResonantSpark {
                 return charData;
             }
 
-            //TODO:
+            // TODO:
             //public void BuildMovement() {
             //    
             //}

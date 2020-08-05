@@ -71,7 +71,7 @@ namespace ResonantSpark {
         }
 
         public void Reset() {
-            //TODO: Reset StateMachine
+            // TODO: Reset StateMachine
             //   I'm not sure I like this design, so far
         }
 

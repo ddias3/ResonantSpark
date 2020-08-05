@@ -8,8 +8,11 @@ namespace ResonantSpark {
     public enum FramePriority : int {
         InputBuffer = 8,
 
-        StateMachine = 64,
-        StateMachinePass1 = 64 + 1,
+        StateMachine = 32,
+        StateMachinePass1 = 32 + 1,
+
+        Ai = 64,
+        TrainingDummy = 64 + 1,
 
         PhysicsMovement = 128,
         PhysicsCollisions = 128 + 1,

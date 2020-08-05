@@ -55,7 +55,7 @@ namespace ResonantSpark {
             }
 
             public override GroundRelation GetGroundRelation() {
-                    //TODO: This could be for an air grab
+                    // TODO: This could be for an air grab
                 return GroundRelation.GROUNDED;
             }
 

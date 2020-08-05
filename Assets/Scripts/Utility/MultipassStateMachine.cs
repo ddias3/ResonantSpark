@@ -106,7 +106,7 @@ namespace ResonantSpark {
         }
 
         public void Reset() {
-            //TODO: Reset StateMachine
+            // TODO: Reset StateMachine
             //   I'm not sure I like this design, so far
         }
 
@@ -123,7 +123,7 @@ namespace ResonantSpark {
 
         private void ChangeState(int frameIndex) {
             MultipassBaseState nextState = nextStates[0];
-            nextStates.RemoveAt(0);
+            nextStates.Clear(); //nextStates.RemoveAt(0);
 
             curr.Exit(frameIndex);
             nextState.Enter(frameIndex, curr);

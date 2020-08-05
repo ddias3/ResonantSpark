@@ -9,7 +9,7 @@ using ResonantSpark.Gameplay;
 namespace ResonantSpark {
     namespace Builder {
         public interface IHitCallbackObject {
-            IHitCallbackObject Block(params BlockType[] requiredBlocks);
+            IHitCallbackObject ValidBlock(params BlockType[] requiredBlocks);
             IHitCallbackObject HitDamage(int damage);
             IHitCallbackObject BlockDamage(int damage);
             IHitCallbackObject HitStun(float frames);
@@ -24,7 +24,7 @@ namespace ResonantSpark {
 
     namespace CharacterProperties {
         public partial class HitBuilder : IHitCallbackObject {
-            public List<BlockType> requiredBlocks { get; private set; }
+            public List<BlockType> validBlocks { get; private set; }
             public AttackPriority priority { get; private set; }
             public int hitDamage { get; private set; }
             public int blockDamage { get; private set; }
@@ -34,8 +34,8 @@ namespace ResonantSpark {
             public bool tracking { get; private set; }
             public Action<Hit, Dictionary<HitBox, Vector3>, InGameEntity, List<HurtBox>, List<HitBox>> onHitCallback { get; private set; }
 
-            public IHitCallbackObject Block(params BlockType[] requiredBlocks) {
-                this.requiredBlocks = new List<BlockType>(requiredBlocks);
+            public IHitCallbackObject ValidBlock(params BlockType[] requiredBlocks) {
+                this.validBlocks = new List<BlockType>(requiredBlocks);
                 return this;
             }
             public IHitCallbackObject BlockDamage(int blockDamage) {

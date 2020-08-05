@@ -222,28 +222,6 @@ namespace ResonantSpark {
                 return false;
             }
 
-            public void PopulateRequiredBlocking(in HashSet<BlockType> requiredBlocks, in List<BlockType> validBlocks) {
-                if (!validBlocks.Contains(BlockType.AIR)) requiredBlocks.Add(BlockType.AIR);
-                if (!validBlocks.Contains(BlockType.HIGH)) requiredBlocks.Add(BlockType.HIGH);
-                if (!validBlocks.Contains(BlockType.LOW)) requiredBlocks.Add(BlockType.LOW);
-            }
-
-            public bool ValidateValidBlocking(params List<BlockType>[] validBlocks) {
-                requiredBlocks.Clear();
-                for (int n = 0; n < validBlocks.Length; ++n) {
-                    PopulateRequiredBlocking(requiredBlocks, validBlocks[n]);
-                }
-
-                return !(requiredBlocks.Contains(BlockType.HIGH) && requiredBlocks.Contains(BlockType.LOW));
-            }
-
-            public void PopulateValidBlocking(in List<BlockType> validBlocks, in HashSet<BlockType> requiredBlocks) {
-                validBlocks.Clear();
-                if (!requiredBlocks.Contains(BlockType.AIR)) validBlocks.Add(BlockType.AIR);
-                if (!requiredBlocks.Contains(BlockType.HIGH)) validBlocks.Add(BlockType.HIGH);
-                if (!requiredBlocks.Contains(BlockType.LOW)) validBlocks.Add(BlockType.LOW);
-            }
-
             private void FrameUpdate(int frameIndex) {
                 ResetComboCounter();
                 ResolveHits();

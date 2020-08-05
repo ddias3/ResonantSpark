@@ -79,7 +79,7 @@ namespace ResonantSpark {
                                         hit.ComboScaling(0.65f);
                                         hit.Priority(AttackPriority.LightAttack);
 
-                                        // hit.Block(); default is to allow any kind of blocking
+                                        hit.ValidBlock(BlockType.LOW, BlockType.HIGH);
 
                                         HitBox defaultHitBox = hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
@@ -172,6 +172,8 @@ namespace ResonantSpark {
                                         hit.BlockStun(16.0f);
                                         hit.ComboScaling(1.0f);
                                         hit.Priority(AttackPriority.LightAttack);
+
+                                        //hit.ValidBlock(BlockType.LOW, BlockType.HIGH); // defaults to low and high blocking to be valid.
 
                                         HitBox defaultHitBox = hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
@@ -356,7 +358,7 @@ namespace ResonantSpark {
                                             .HitStun(10.0f)
                                             .BlockStun(8.0f);
 
-                                        hit.Block(BlockType.LOW);
+                                        hit.ValidBlock(BlockType.LOW);
 
                                         HitBox defaultHitBox = hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
@@ -438,7 +440,7 @@ namespace ResonantSpark {
                                             .BlockStun(20.0f)
                                             .ComboScaling(0.5f);
 
-                                        hit.Block();
+                                        hit.ValidBlock(BlockType.LOW, BlockType.HIGH);
 
                                         HitBox defaultHitBox = hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
@@ -1130,7 +1132,7 @@ namespace ResonantSpark {
                                     hit.ComboScaling(0.8f);
                                     hit.Priority(AttackPriority.HeavyAttack);
 
-                                    hit.Block(BlockType.HIGH);
+                                    hit.ValidBlock(BlockType.HIGH);
 
                                     HitBox defaultHitBox = hitBoxService.Create(hb => {
                                         hb.Relative(fgChar.transform);

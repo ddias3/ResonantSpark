@@ -19,9 +19,12 @@ namespace ResonantSpark {
             private CharacterProperties.Attack activeAttack;
             private bool startRequired = false;
 
+            private Action onCompleteAttackCallback;
+
             public void Init(FightingGameCharacter fgChar) {
                 this.fgChar = fgChar;
                 this.prevAttacks = new List<CharacterProperties.Attack>();
+                onCompleteAttackCallback = new Action(OnCompleteAttack);
             }
 
             public void ChooseAttack(CharacterData charData, CharacterStates.CharacterBaseState currState, CharacterProperties.Attack currAttack, FightingGameInputCodeBut button, FightingGameInputCodeDir direction = FightingGameInputCodeDir.None) {
@@ -43,7 +46,7 @@ namespace ResonantSpark {
                         prevAttacks.Add(currAttack);
                     }
 
-                    attack.SetOnCompleteCallback(new Action(OnCompleteAttack));
+                    attack.SetOnCompleteCallback(onCompleteAttackCallback);
 
                     this.queuedUpAttack = attack;
                     startRequired = true;
@@ -66,6 +69,15 @@ namespace ResonantSpark {
 
             public CharacterProperties.Attack GetCurrentAttack() {
                 return activeAttack;
+            }
+
+            public List<Gameplay.Hit> GetNextHitInCurrentAttack() {
+                if (activeAttack != null) {
+                    return activeAttack.GetNextHit();
+                }
+                else {
+                    return null;
+                }
             }
 
             public CharacterVulnerability GetCharacterVulnerability() {

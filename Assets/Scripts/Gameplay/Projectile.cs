@@ -36,7 +36,7 @@ namespace ResonantSpark {
             public void FireProjectile() {
                 active = true;
 
-                //TODO: Add self to the active projectile list.
+                // TODO: Add self to the active projectile list.
             }
 
             protected void OnHurtBoxEnter() {

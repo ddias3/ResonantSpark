@@ -21,11 +21,5 @@ namespace ResonantSpark {
             MediumAttack,
             HeavyAttack,
         }
-
-        public enum BlockType : int {
-            LOW,
-            HIGH,
-            AIR,
-        }
     }
 }

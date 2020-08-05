@@ -28,15 +28,15 @@ namespace ResonantSpark {
 
             private DummyBlock blockMode;
 
-            private HashSet<BlockType> nextHitRequiredBlocks;
-            private List<BlockType> validBlocks;
+            private HashSet<BlockType> nextHitValidBlocks;
+            private List<BlockType> blockTypes;
 
             public void Awake() {
                 FrameEnforcer frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
-                frame.AddUpdate((int)FramePriority.InputBuffer, new Action<int>(FrameUpdate));
+                frame.AddUpdate((int)FramePriority.TrainingDummy, new Action<int>(FrameUpdate));
 
-                nextHitRequiredBlocks = new HashSet<BlockType>();
-                validBlocks = new List<BlockType>();
+                nextHitValidBlocks = new HashSet<BlockType>();
+                blockTypes = new List<BlockType>((BlockType[]) Enum.GetValues(typeof(BlockType)));
                 enemyProjectiles = new List<Projectile>();
             }
 
@@ -69,31 +69,45 @@ namespace ResonantSpark {
                 switch (blockMode) {
                     case DummyBlock.All:
                         if (opponent.isAttacking) {
-                            Attack attack = opponent.GetCurrentAttack();
-                            if (attack == null) return;
+                            List<Hit> upComingHits = opponent.GetNextHitInCurrentAttack();
+                            if (upComingHits != null) {
+                                nextHitValidBlocks.Clear();
+                                foreach (BlockType blockType in blockTypes) {
+                                    bool validBlock = true;
+                                    foreach (Hit hit in upComingHits) {
+                                        if (!hit.validBlocks.Contains(blockType)) {
+                                            validBlock = false;
+                                            break;
+                                        }
+                                    }
+                                    if (validBlock) {
+                                        nextHitValidBlocks.Add(blockType);
+                                    }
+                                }
 
-                            attack.GetNextBlockRequirements(nextHitRequiredBlocks);
+                                System.Text.StringBuilder toString = new System.Text.StringBuilder();
+                                toString.Append("ValidBlocks(");
+                                toString.Append(frameIndex);
+                                toString.Append(") [");
+                                foreach (BlockType block in nextHitValidBlocks) {
+                                    toString.Append(block.ToString());
+                                    toString.Append(", ");
+                                }
+                                toString.Append("]");
+                                Debug.LogFormat(toString.ToString());
 
-                            fgService.PopulateValidBlocking(validBlocks, nextHitRequiredBlocks);
-                            System.Text.StringBuilder toString = new System.Text.StringBuilder();
-                            toString.Append("ValidBlocks(");
-                            toString.Append(frameIndex);
-                            toString.Append(") [");
-                            for (int n = 0; n < validBlocks.Count; ++n) {
-                                toString.Append(validBlocks[n].ToString());
-                                toString.Append(", ");
-                            }
-                            toString.Append("]");
-                            Debug.LogFormat(toString.ToString());
-
-                            if (validBlocks.Contains(BlockType.LOW)) {
-                                controller.SetInput(fgChar.MapRelativeToAbsolute(FightingGameInputCodeDir.DownBack));
-                            }
-                            else if (validBlocks.Contains(BlockType.HIGH)) {
-                                controller.SetInput(fgChar.MapRelativeToAbsolute(FightingGameInputCodeDir.Back));
+                                if (nextHitValidBlocks.Contains(BlockType.LOW)) {
+                                    controller.SetInput(fgChar.MapRelativeToAbsolute(FightingGameInputCodeDir.DownBack));
+                                }
+                                else if (nextHitValidBlocks.Contains(BlockType.HIGH)) {
+                                    controller.SetInput(fgChar.MapRelativeToAbsolute(FightingGameInputCodeDir.Back));
+                                }
+                                else {
+                                    throw new Exception("Attack requires both high and low blocking");
+                                }
                             }
                             else {
-                                throw new Exception("Attack requires both high and low blocking");
+                                controller.SetInput(FightingGameAbsInputCodeDir.Neutral);
                             }
                         }
                         else {

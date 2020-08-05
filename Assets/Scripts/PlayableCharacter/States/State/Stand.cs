@@ -145,7 +145,7 @@ namespace ResonantSpark {
                     }
                 }
                 else {
-                    //TODO: don't turn character while in mid air
+                    // TODO: don't turn character while in mid air
                     Debug.LogError("Character not grounded while in 'Stand' character state");
                     changeState(states.Get("airborne"));
                 }
@@ -273,6 +273,8 @@ namespace ResonantSpark {
 
                     fgChar.ChooseAttack(this, null, buttonPress.button0, direction);
                     stop();
+
+                    // TODO: Create a mechanism for a frame 0 action, i.e. run the rest of the stand frame, then run the fist frame of the next action while pausing everything else.
                 }
             }
 

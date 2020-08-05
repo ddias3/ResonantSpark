@@ -32,22 +32,22 @@ namespace ResonantSpark {
             }
 
             public ICharacterPropertiesCallbackObj MaxJumpHeight(float maxJumpHeight) {
-                //TODO: Figure out how to connect this
+                // TODO: Figure out how to connect this
                 return this;
             }
 
             public ICharacterPropertiesCallbackObj MaxJumpHeight(Func<CharacterStates.CharacterBaseState, float> callback) {
-                //TODO: Figure out how to connect this
+                // TODO: Figure out how to connect this
                 return this;
             }
 
             public ICharacterPropertiesCallbackObj RunSpeed(float speed) {
-                //TODO: Figure out how to connect this
+                // TODO: Figure out how to connect this
                 return this;
             }
 
             public ICharacterPropertiesCallbackObj RunSpeed(Func<CharacterStates.CharacterBaseState, float> callback) {
-                //TODO: Figure out how to connect this
+                // TODO: Figure out how to connect this
                 return this;
             }
 
@@ -57,12 +57,12 @@ namespace ResonantSpark {
             }
 
             public ICharacterPropertiesCallbackObj WalkSpeed(float speed) {
-                //TODO: Figure out how to connect this
+                // TODO: Figure out how to connect this
                 return this;
             }
 
             public ICharacterPropertiesCallbackObj WalkSpeed(Func<CharacterStates.CharacterBaseState, float> callback) {
-                //TODO: Figure out how to connect this
+                // TODO: Figure out how to connect this
                 return this;
             }
 

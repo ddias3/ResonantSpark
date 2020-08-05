@@ -81,7 +81,7 @@ namespace ResonantSpark {
                     }
                 }
                 else {
-                    //TODO: don't turn character while in mid air
+                    // TODO: don't turn character while in mid air
                     Debug.LogError("Character not grounded while in 'Stand' character state");
                 }
             }

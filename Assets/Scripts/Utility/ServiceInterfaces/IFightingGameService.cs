@@ -22,9 +22,6 @@ namespace ResonantSpark {
             void HitStunEnd(FightingGameCharacter fgChar);
             bool IsCurrentFGChar(InGameEntity entity);
             void DisableControl();
-            void PopulateRequiredBlocking(in HashSet<BlockType> requiredBlocks, in List<BlockType> validBlocks);
-            void PopulateValidBlocking(in List<BlockType> validBlocks, in HashSet<BlockType> requiredBlocks);
-            bool ValidateValidBlocking(params List<BlockType>[] validBlocks);
         }
     }
 }

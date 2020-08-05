@@ -23,7 +23,7 @@ namespace ResonantSpark {
                 this.tracking = false;
                 this.comboScaling = 1.0f;
                 this.onHitCallback = null;
-                this.requiredBlocks = new List<BlockType>();
+                this.validBlocks = new List<BlockType> { BlockType.LOW, BlockType.HIGH };
 
                 hitBoxes = new List<HitBox>();
             }

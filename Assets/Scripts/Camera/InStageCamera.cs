@@ -81,7 +81,7 @@ namespace ResonantSpark {
                 transform.rotation = startTransform.rotation;
             }
 
-            //TODO: Validate that this math is correct.
+            // TODO: Validate that this math is correct.
             public Vector2 ScreenOrientation(Transform candidateTransform) {
                 Vector3 camToPlayer;
                 Vector3 playerToPlayer;

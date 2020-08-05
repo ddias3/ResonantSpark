@@ -72,7 +72,7 @@ namespace ResonantSpark {
                 //    changeState("mainMenu");
                 //});
 
-                //TODO: Create the controller binding Selectable
+                // TODO: Create the controller binding Selectable
             }
         }
     }

@@ -124,22 +124,17 @@ namespace ResonantSpark {
                 tracker.Increment();
             }
 
-            public void GetNextBlockRequirements(in HashSet<BlockType> nextHitRequiredBlocks) {
-                nextHitRequiredBlocks.Clear();
-
+            public List<Hit> GetNextHit() {
                 int n = tracker.frameCount;
                 while (n < frames.Count) {
                     if (frames[n].hits.Count > 0) {
-                        List<Hit> hits = frames[n].hits;
-                        foreach (Hit hit in hits) {
-                            fgService.PopulateRequiredBlocking(nextHitRequiredBlocks, hit.validBlocks);
-                        }
-                        break;
+                        return frames[n].hits;
                     }
                     else {
                         ++n;
                     }
                 }
+                return null;
             }
 
             public bool CounterHit() {
