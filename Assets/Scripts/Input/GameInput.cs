@@ -91,6 +91,8 @@ namespace ResonantSpark {
             _5Ch,
             _6C,
 
+            _5AD,
+
             _214A,
             _214B,
             _214C,

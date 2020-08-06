@@ -56,6 +56,75 @@ namespace ResonantSpark {
                 public void Init(ICharacterPropertiesCallbackObj charBuilder, FightingGameCharacter newFightingGameChar) {
                     fgChar = newFightingGameChar;
 
+                    Attack throwNormal = new Attack(atkBuilder => {
+                        atkBuilder.Name("orthodox_5A+D");
+                        atkBuilder.Orientation(Orientation.ORTHODOX);
+                        atkBuilder.GroundRelation(GroundRelation.GROUNDED);
+                        atkBuilder.Input(InputNotation._5AD);
+                        atkBuilder.AnimationState("5A");
+                        atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
+                        atkBuilder.Movement(null, null, null);
+                        atkBuilder.Frames(
+                            FrameUtil.CreateList(fl => {
+                                fl.SpecialCancellable(true);
+                                fl.CancellableOnWhiff(false); // TODO: Change this to true when you fix the input buffer
+                                fl.ChainCancellable(true);
+                                fl.CounterHit(true);
+                                fl.From(7);
+                                fl.Hit(hit => {
+                                    hit.HitDamage(800);
+                                    hit.BlockDamage(0);
+                                    hit.HitStun(24.0f);
+                                    hit.BlockStun(8.0f);
+                                    hit.ComboScaling(0.65f);
+                                    hit.Priority(AttackPriority.LightAttack);
+
+                                    HitBox defaultHitBox = hitBoxService.Create(hb => {
+                                        hb.Relative(fgChar.transform);
+                                        hb.Point0(new Vector3(0, 0, 0.5f));
+                                        hb.Point1(new Vector3(0, 1.1f, 1.3f));
+                                        hb.Radius(0.25f);
+                                        hb.InGameEntity(fgChar);
+                                        hb.Validate((HitBox _, HitBox other) => true);
+                                        hb.Validate((HitBox _, HurtBox other) => true);
+                                    });
+
+                                    hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
+                                        if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
+                                            FightingGameCharacter opponent = (FightingGameCharacter)entity;
+
+                                            // This exists to make characters hitting each other async
+                                            fgService.Throw(entity, fgChar, onSuccess: (hitAtSameTimeByAttackPriority, damage) => {
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                opponent.ReceiveGrabbed();
+                                                opponent.KnockBack(
+                                                    thisHit.priority,
+                                                    launch: false,
+                                                    knockback: fgChar.rigidFG.rotation * Vector3.forward * 2.0f);
+                                                opponent.ChangeHealth(damage); // damage includes combo scaling.
+                                            }, onBreak: (hitAtSameTimeByAttackPriority, damage) => {
+                                                // I may put all of these functions into the same call.
+                                                opponent.KnockBack(
+                                                    thisHit.priority,
+                                                    launch: false,
+                                                    knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
+                                            });
+                                        }
+                                    });
+
+                                    hit.HitBox(defaultHitBox);
+                                });
+                                fl.To(8);
+                                fl.From(8);
+                                fl.CounterHit(false);
+                                fl.From(10);
+                                fl.ChainCancellable(true);
+                                fl.To(22);
+                            }));
+                        atkBuilder.CleanUp(ReturnToStand);
+                    });
+
+
                     Attack atkOrt5A = new Attack(atkBuilder => {
                         atkBuilder.Name("orthodox_5A");
                         atkBuilder.Orientation(Orientation.ORTHODOX);
@@ -141,7 +210,7 @@ namespace ResonantSpark {
                     });
 
                     Attack atkOrt5AA = new Attack(atkBuilder => {
-                        atkBuilder.Name("orthodox_5AA");
+                        atkBuilder.Name("orthodox_5A,A");
                         atkBuilder.Orientation(Orientation.ORTHODOX);
                         atkBuilder.GroundRelation(GroundRelation.GROUNDED);
                         atkBuilder.Input(InputNotation._4A, InputNotation._5A);
@@ -237,7 +306,7 @@ namespace ResonantSpark {
                     });
 
                     Attack atkOrt5AAA = new Attack(atkBuilder => {
-                        atkBuilder.Name("orthodox_5AAA");
+                        atkBuilder.Name("orthodox_5A,A,A");
                         atkBuilder.Orientation(Orientation.ORTHODOX);
                         atkBuilder.GroundRelation(GroundRelation.GROUNDED);
                         atkBuilder.Input(InputNotation._4A, InputNotation._5A);
@@ -419,7 +488,7 @@ namespace ResonantSpark {
                     });
 
                     Attack atkOrt2AA = new Attack(atkBuilder => {
-                        atkBuilder.Name("orthodox_2AA");
+                        atkBuilder.Name("orthodox_2A,A");
                         atkBuilder.Orientation(Orientation.ORTHODOX);
                         atkBuilder.GroundRelation(GroundRelation.GROUNDED);
                         atkBuilder.Input(InputNotation._1A, InputNotation._2A, InputNotation._3A);
@@ -560,7 +629,7 @@ namespace ResonantSpark {
                     });
 
                     Attack atkOrt5BB = new Attack(atkBuilder => {
-                        atkBuilder.Name("orthodox_5BB");
+                        atkBuilder.Name("orthodox_5B,B");
                         atkBuilder.Orientation(Orientation.ORTHODOX);
                         atkBuilder.GroundRelation(GroundRelation.GROUNDED);
                         atkBuilder.Input(InputNotation._4B, InputNotation._5B);
@@ -624,7 +693,7 @@ namespace ResonantSpark {
                     });
 
                     Attack atkOrt5BBB = new Attack(atkBuilder => {
-                        atkBuilder.Name("orthodox_5BBB");
+                        atkBuilder.Name("orthodox_5B,B,B");
                         atkBuilder.Orientation(Orientation.ORTHODOX);
                         atkBuilder.GroundRelation(GroundRelation.GROUNDED);
                         atkBuilder.Input(InputNotation._4B, InputNotation._5B);
@@ -681,7 +750,7 @@ namespace ResonantSpark {
                     });
 
                     Attack atkOrt5BBBB = new Attack(atkBuilder => {
-                        atkBuilder.Name("orthodox_5BBBB");
+                        atkBuilder.Name("orthodox_5B,B,B,B");
                         atkBuilder.Orientation(Orientation.ORTHODOX);
                         atkBuilder.GroundRelation(GroundRelation.GROUNDED);
                         atkBuilder.Input(InputNotation._4B, InputNotation._5B);
@@ -797,7 +866,7 @@ namespace ResonantSpark {
                     });
 
                     Attack atkJump5AA = new Attack(atkBuilder => {
-                        atkBuilder.Name("jump_5AA");
+                        atkBuilder.Name("jump_5A,A");
                         atkBuilder.Orientation(Orientation.ORTHODOX);
                         atkBuilder.GroundRelation(GroundRelation.AIRBORNE);
                         atkBuilder.Input(InputNotation._4A, InputNotation._5A, InputNotation._6A, InputNotation._1A, InputNotation._2A, InputNotation._3A);
@@ -860,7 +929,7 @@ namespace ResonantSpark {
                     });
 
                     Attack atkJump5AAA = new Attack(atkBuilder => {
-                        atkBuilder.Name("jump_5AAA");
+                        atkBuilder.Name("jump_5A,A,A");
                         atkBuilder.Orientation(Orientation.ORTHODOX);
                         atkBuilder.GroundRelation(GroundRelation.AIRBORNE);
                         atkBuilder.Input(InputNotation._4A, InputNotation._5A, InputNotation._6A, InputNotation._1A, InputNotation._2A, InputNotation._3A);
