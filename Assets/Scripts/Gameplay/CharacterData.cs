@@ -5,7 +5,8 @@ using UnityEngine;
 
 using ResonantSpark.CharacterProperties;
 using ResonantSpark.Input;
-using System.Collections;
+using ResonantSpark.Input.Combinations;
+using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace Character {
@@ -34,7 +35,6 @@ namespace ResonantSpark {
 
                 List<Attack> validAttacks = attacks
                     .Where(atk => attackSelectableCallbackMap[atk].Invoke(currState, currAttack, prevAttacks))
-                    .OrderBy(atk => atk.priority)
                     .ToList();
 
                 if (validAttacks.Count > 0) {
@@ -45,12 +45,14 @@ namespace ResonantSpark {
                 }
             }
 
-            public List<Attack> SelectAttacks(Orientation orientation, GroundRelation groundRelation, InputNotation attackInput) {
+            public List<Attack> SelectAttacks(Orientation orientation, GroundRelation groundRelation, List<Combination> inputCombos, Func<FightingGameAbsInputCodeDir, FightingGameInputCodeDir> directionMapFunc) {
                 // TODO: Create a new IEnumerable class to pull out the filtered values in-place.
+
+                List<string> inputNotation = GameInputUtil.CreateInputComboNotation(inputCombos, directionMapFunc);
 
                 List<Attack> filteredAttacks = attacks
                     .Select<KeyValuePair<string, Attack>, Attack>(kvp => kvp.Value)
-                    .Where(atk => atk.orientation == orientation && atk.groundRelation == groundRelation && atk.input.Contains(attackInput))
+                    .Where(atk => atk.orientation == orientation && atk.groundRelation == groundRelation && atk.input.ValidInputCombos(inputNotation))
                     .ToList();
 
                 return filteredAttacks;

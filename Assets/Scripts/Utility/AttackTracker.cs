@@ -8,16 +8,17 @@ namespace ResonantSpark {
 
             private int startFrame;
 
-            private readonly int numFrames;
-
-            public AttackTracker(int numFrames) {
+            public AttackTracker() {
                 startFrame = -1;
                 frameCount = 0;
-                this.numFrames = numFrames;
             }
 
             public void Track(int frameIndex) {
                 startFrame = frameIndex;
+                frameCount = 0;
+            }
+
+            public void Track() {
                 frameCount = 0;
             }
 

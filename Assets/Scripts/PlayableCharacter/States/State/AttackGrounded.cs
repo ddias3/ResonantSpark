@@ -12,9 +12,6 @@ using ResonantSpark.Service;
 namespace ResonantSpark {
     namespace CharacterStates {
         public class AttackGrounded : Attack {
-
-            private InputNotation notation;
-
             private FightingGameInputCodeBut button;
             private FightingGameInputCodeDir direction;
 
@@ -120,18 +117,40 @@ namespace ResonantSpark {
 
                 CharacterProperties.Attack activeAttack = fgChar.GetCurrentAttack();
 
-                if (activeAttack.ChainCancellable()) {
-                    if (button != FightingGameInputCodeBut.D) {
-                        FightingGameInputCodeDir direction = FightingGameInputCodeDir.Neutral;
-                        fgChar.Use(combo);
-                        fgChar.UseCombination<DirectionCurrent>(currDir => {
-                            direction = fgChar.MapAbsoluteToRelative(((DirectionCurrent)currDir).direction);
-                        });
+                if (activeAttack.CancellableOnWhiff() && activeAttack.ChainCancellable()) {
+                    List<Combination> inputs = new List<Combination>();
 
-                        fgChar.ChooseAttack(this, activeAttack, button, direction);
-                        stop();
-                    }
+                    fgChar.UseCombination<DirectionCurrent>(currDir => {
+                        fgChar.Use(currDir);
+                        inputs.Add(currDir);
+                    });
+
+                    fgChar.Use(combo);
+                    inputs.Add(combo);
+
+                    inputs.Sort((Combination a, Combination b) => {
+                        return a.GetFrame() - b.GetFrame();
+                    });
+
+                    fgChar.ChooseAttack(this, activeAttack, inputs);
+                    stop();
+
+                    // TODO: Create a mechanism for a frame 0 action, i.e. run the rest of the stand frame, then run the fist frame of the next action while pausing everything else.
                 }
+            }
+
+            private void OnDirectionPlusButton(Action stop, Combination combo) {
+                var dirPlusBut = (DirectionPlusButton)combo;
+
+                List<Combination> inputs = new List<Combination>();
+
+                fgChar.Use(combo);
+                inputs.Add(combo);
+
+                fgChar.ChooseAttack(this, null, inputs);
+                stop();
+
+                // TODO: Create a mechanism for a frame 0 action, i.e. run the rest of the stand frame, then run the fist frame of the next action while pausing everything else.
             }
         }
     }

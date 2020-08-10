@@ -23,6 +23,7 @@ namespace ResonantSpark {
                 private ICameraService cameraService;
                 private ITimeService timeService;
 
+                private IHitService hitService;
                 private IHitBoxService hitBoxService;
 
                 private Dictionary<string, AudioClip> audioMap;
@@ -45,6 +46,7 @@ namespace ResonantSpark {
                     cameraService = services.GetService<ICameraService>();
                     timeService = services.GetService<ITimeService>();
 
+                    hitService = services.GetService<IHitService>();
                     hitBoxService = services.GetService<IHitBoxService>();
 
                     this.audioMap = audioMap;
@@ -56,80 +58,146 @@ namespace ResonantSpark {
                 public void Init(ICharacterPropertiesCallbackObj charBuilder, FightingGameCharacter newFightingGameChar) {
                     fgChar = newFightingGameChar;
 
-                    Attack throwNormal = new Attack(atkBuilder => {
-                        atkBuilder.Name("orthodox_5A+D");
-                        atkBuilder.Orientation(Orientation.ORTHODOX);
-                        atkBuilder.GroundRelation(GroundRelation.GROUNDED);
-                        atkBuilder.Input(InputNotation._5AD);
-                        atkBuilder.AnimationState("5A");
-                        atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
-                        atkBuilder.Movement(null, null, null);
-                        atkBuilder.Frames(
-                            FrameUtil.CreateList(fl => {
-                                fl.SpecialCancellable(true);
-                                fl.CancellableOnWhiff(false); // TODO: Change this to true when you fix the input buffer
-                                fl.ChainCancellable(true);
-                                fl.CounterHit(true);
-                                fl.From(7);
-                                fl.Hit(hit => {
-                                    hit.HitDamage(800);
-                                    hit.BlockDamage(0);
-                                    hit.HitStun(24.0f);
-                                    hit.BlockStun(8.0f);
-                                    hit.ComboScaling(0.65f);
-                                    hit.Priority(AttackPriority.LightAttack);
+                    Attack throwNormal = null;
+                    throwNormal = new Attack(atkBuilder => {
+                        atkBuilder.Name("orthodox_throwNormal");
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
+                        atkBuilder.Input("A+D");
+                        atkBuilder.StartGroup("grabInitiate");
+                        atkBuilder.Group("grabInitiate", atkBuilderGrouping => {
+                            atkBuilderGrouping.AnimationState("grab");
+                            atkBuilderGrouping.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
+                            atkBuilderGrouping.Movement(null, null, zMoveCb: animationCurveMap["orth_throwNormal_init.z"].Evaluate);
+                            atkBuilderGrouping.Frames(
+                                FrameUtil.CreateList(fl => {
+                                    fl.SpecialCancellable(false);
+                                    fl.CancellableOnWhiff(false); // TODO: Change this to true when you fix the input buffer
+                                    fl.ChainCancellable(false);
+                                    fl.CounterHit(true);
+                                    fl.From(12);
+                                    fl.Hit(hit => {
+                                        hit.Priority(AttackPriority.Throw);
 
-                                    HitBox defaultHitBox = hitBoxService.Create(hb => {
-                                        hb.Relative(fgChar.transform);
-                                        hb.Point0(new Vector3(0, 0, 0.5f));
-                                        hb.Point1(new Vector3(0, 1.1f, 1.3f));
-                                        hb.Radius(0.25f);
-                                        hb.InGameEntity(fgChar);
-                                        hb.Validate((HitBox _, HitBox other) => true);
-                                        hb.Validate((HitBox _, HurtBox other) => true);
+                                        HitBox defaultHitBox = hitBoxService.Create(hb => {
+                                            hb.Relative(fgChar.transform);
+                                            hb.Point0(new Vector3(0, 0, 0.5f));
+                                            hb.Point1(new Vector3(0, 1.1f, 0.65f));
+                                            hb.Radius(0.25f);
+                                            hb.InGameEntity(fgChar);
+                                            hb.Validate((HitBox _, HitBox other) => true);
+                                            hb.Validate((HitBox _, HurtBox other) => true);
+                                        });
+
+                                        hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
+                                            if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
+                                                FightingGameCharacter opponent = (FightingGameCharacter)entity;
+
+                                                // This exists to make characters hitting each other async
+                                                //fgService.Throw(entity, fgChar, onSuccess: (hitAtSameTimeByAttackPriority, damage) => {
+                                                //    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                //    opponent.ReceiveGrabbed();
+                                                //    opponent.KnockBack(
+                                                //        thisHit.priority,
+                                                //        launch: false,
+                                                //        knockback: fgChar.rigidFG.rotation * Vector3.forward * 2.0f);
+                                                //    opponent.ChangeHealth(damage); // damage includes combo scaling.
+                                                //}, onBreak: (hitAtSameTimeByAttackPriority, damage) => {
+                                                //    // I may put all of these functions into the same call.
+                                                //    opponent.KnockBack(
+                                                //        thisHit.priority,
+                                                //        launch: false,
+                                                //        knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
+                                                //});
+                                                fgService.Throw(opponent, fgChar, thisHit, onGrabbed: (hitAtSameTimeByAttackPriority) => {
+                                                    if (hitAtSameTimeByAttackPriority == AttackPriority.Throw) {
+                                                        fgChar.PredeterminedActions("grabBreak");
+                                                        opponent.PredeterminedActions("grabBreak");
+                                                    }
+                                                    else if (hitAtSameTimeByAttackPriority == AttackPriority.None) {
+                                                        throwNormal.SaveEntity("opponent", opponent);
+                                                        throwNormal.UseGroup("grabConnect");
+                                                        throwNormal.ResetTracker();
+
+                                                        opponent.PredeterminedActions("grabbed", true);
+                                                    }
+                                                    else {
+                                                        // lose to strike
+                                                    }
+                                                });
+                                            }
+                                        });
+
+                                        hit.HitBox(defaultHitBox);
                                     });
-
-                                    hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
-                                        if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
-                                            FightingGameCharacter opponent = (FightingGameCharacter)entity;
-
-                                            // This exists to make characters hitting each other async
-                                            fgService.Throw(entity, fgChar, onSuccess: (hitAtSameTimeByAttackPriority, damage) => {
-                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
-                                                opponent.ReceiveGrabbed();
-                                                opponent.KnockBack(
-                                                    thisHit.priority,
-                                                    launch: false,
-                                                    knockback: fgChar.rigidFG.rotation * Vector3.forward * 2.0f);
-                                                opponent.ChangeHealth(damage); // damage includes combo scaling.
-                                            }, onBreak: (hitAtSameTimeByAttackPriority, damage) => {
-                                                // I may put all of these functions into the same call.
-                                                opponent.KnockBack(
-                                                    thisHit.priority,
-                                                    launch: false,
-                                                    knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
-                                            });
-                                        }
+                                    fl.To(13);
+                                    fl.From(13);
+                                    fl.CounterHit(false);
+                                    fl.To(22);
+                                }));
+                            atkBuilderGrouping.CleanUp(ReturnToStand);
+                        });
+                        atkBuilder.Group("grabConnect", atkBuilderGrouping => {
+                            atkBuilderGrouping.AnimationState("grab_hit");
+                            atkBuilderGrouping.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
+                            atkBuilderGrouping.Movement(null, null, zMoveCb: animationCurveMap["orth_throwNormal_connect.z"].Evaluate);
+                            Hit grabStrike0 = hitService.Create(ht => {
+                                ht.HitDamage(400);
+                                ht.HitStun(32.0f);
+                                ht.ComboScaling(1.0f);
+                            });
+                            Hit grabStrike1 = hitService.Create(ht => {
+                                ht.HitDamage(800);
+                                ht.HitStun(32.0f);
+                                ht.ComboScaling(1.0f);
+                            });
+                            atkBuilderGrouping.FramesContinuous((localFrame, target) => {
+                                if (localFrame >= 0.0f && localFrame <= 25.0f) {
+                                    fgService.MaintainsGrab(throwNormal.GetEntity("opponent"), fgChar);
+                                }
+                            });
+                            atkBuilderGrouping.Frames(
+                                FrameUtil.CreateList(fl => {
+                                    fl.From(1);
+                                    fl.SpecialCancellable(false);
+                                    fl.CancellableOnWhiff(false); // TODO: Change this to true when you fix the input buffer
+                                    fl.ChainCancellable(false);
+                                    fl.CounterHit(false);
+                                    fl.To(16);
+                                    fl.From(16);
+                                    //fl.Hit(grabStrike0);
+                                    fl.Execute(() => {
+                                        FightingGameCharacter opponent = (FightingGameCharacter) throwNormal.GetEntity("opponent");
+                                        audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["mediumHit"]);
+                                        opponent.ReceiveHit(grabStrike0.hitStun, false);
+                                        opponent.ChangeHealth(fgService.GetComboScaleDamage(opponent, grabStrike0.comboScaling, grabStrike0.hitDamage));
                                     });
-
-                                    hit.HitBox(defaultHitBox);
-                                });
-                                fl.To(8);
-                                fl.From(8);
-                                fl.CounterHit(false);
-                                fl.From(10);
-                                fl.ChainCancellable(true);
-                                fl.To(22);
-                            }));
-                        atkBuilder.CleanUp(ReturnToStand);
+                                    fl.To(17);
+                                    fl.From(24);
+                                    //fl.Hit(grabStrike1);
+                                    fl.Execute(() => {
+                                        FightingGameCharacter opponent = (FightingGameCharacter) throwNormal.GetEntity("opponent");
+                                        audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["mediumHit"]);
+                                        opponent.ReceiveHit(grabStrike1.hitStun, false);
+                                        opponent.KnockBack(
+                                            grabStrike1.priority,
+                                            launch: false,
+                                            knockback: fgChar.rigidFG.rotation * Vector3.forward * 2.0f);
+                                        opponent.ChangeHealth(fgService.GetComboScaleDamage(opponent, grabStrike1.comboScaling, grabStrike1.hitDamage));
+                                    });
+                                    fl.To(25);
+                                    fl.To(30);
+                                }));
+                            atkBuilderGrouping.CleanUp(() => {
+                                fgChar.SetState(fgChar.State("stand"));
+                            });
+                        });
                     });
 
 
                     Attack atkOrt5A = new Attack(atkBuilder => {
                         atkBuilder.Name("orthodox_5A");
-                        atkBuilder.Orientation(Orientation.ORTHODOX);
-                        atkBuilder.GroundRelation(GroundRelation.GROUNDED);
-                        atkBuilder.Input(InputNotation._4A, InputNotation._5A);
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
+                        atkBuilder.Input("4|5", "A");
                         atkBuilder.AnimationState("5A");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
                         atkBuilder.Movement(null, null, null);
@@ -202,6 +270,7 @@ namespace ResonantSpark {
                                 fl.To(8);
                                 fl.From(8);
                                     fl.CounterHit(false);
+                                    fl.CancellableOnWhiff(true);
                                 fl.From(10);
                                     fl.ChainCancellable(true);
                                 fl.To(22);
@@ -211,9 +280,8 @@ namespace ResonantSpark {
 
                     Attack atkOrt5AA = new Attack(atkBuilder => {
                         atkBuilder.Name("orthodox_5A,A");
-                        atkBuilder.Orientation(Orientation.ORTHODOX);
-                        atkBuilder.GroundRelation(GroundRelation.GROUNDED);
-                        atkBuilder.Input(InputNotation._4A, InputNotation._5A);
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
+                        atkBuilder.Input("4|5", "A");
                         atkBuilder.AnimationState("5AA");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
                         atkBuilder.Movement(zMoveCb: animationCurveMap["orth_5AA.z"].Evaluate);
@@ -300,6 +368,7 @@ namespace ResonantSpark {
                                 fl.To(14);
                                 fl.From(14);
                                     fl.CounterHit(false);
+                                    fl.CancellableOnWhiff(true);
                                 fl.To(30);
                             }));
                         atkBuilder.CleanUp(ReturnToStand);
@@ -307,9 +376,8 @@ namespace ResonantSpark {
 
                     Attack atkOrt5AAA = new Attack(atkBuilder => {
                         atkBuilder.Name("orthodox_5A,A,A");
-                        atkBuilder.Orientation(Orientation.ORTHODOX);
-                        atkBuilder.GroundRelation(GroundRelation.GROUNDED);
-                        atkBuilder.Input(InputNotation._4A, InputNotation._5A);
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
+                        atkBuilder.Input("4|5", "A");
                         atkBuilder.AnimationState("5AAA");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
                         //atkBuilder.FramesContinuous((localFrame, targetPos) => {
@@ -399,7 +467,9 @@ namespace ResonantSpark {
                                         });
                                     })
                                 .To(16)
-                                .From(22)
+                                .From(21)
+                                    .ChainCancellable(true)
+                                    .CancellableOnWhiff(true)
                                     .CounterHit(false)
                                 .To(30);
                             }));
@@ -408,9 +478,8 @@ namespace ResonantSpark {
 
                     Attack atkOrt2A = new Attack(atkBuilder => {
                         atkBuilder.Name("orthodox_2A");
-                        atkBuilder.Orientation(Orientation.ORTHODOX);
-                        atkBuilder.GroundRelation(GroundRelation.GROUNDED);
-                        atkBuilder.Input(InputNotation._1A, InputNotation._2A, InputNotation._3A);
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
+                        atkBuilder.Input("1|2|3", "A");
                         atkBuilder.AnimationState("2A");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
                         atkBuilder.Movement();
@@ -481,6 +550,7 @@ namespace ResonantSpark {
                                 .To(9)
                                 .From(14)
                                     .ChainCancellable(true)
+                                    .CancellableOnWhiff(true)
                                     .CounterHit(false)
                                 .To(22);
                             }));
@@ -489,9 +559,8 @@ namespace ResonantSpark {
 
                     Attack atkOrt2AA = new Attack(atkBuilder => {
                         atkBuilder.Name("orthodox_2A,A");
-                        atkBuilder.Orientation(Orientation.ORTHODOX);
-                        atkBuilder.GroundRelation(GroundRelation.GROUNDED);
-                        atkBuilder.Input(InputNotation._1A, InputNotation._2A, InputNotation._3A);
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
+                        atkBuilder.Input("1|2|3", "A");
                         atkBuilder.AnimationState("2AA");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
                         atkBuilder.Movement();
@@ -562,6 +631,7 @@ namespace ResonantSpark {
                                     })
                                 .To(14)
                                 .From(16)
+                                    .CancellableOnWhiff(true)
                                     .ChainCancellable(true)
                                     .CounterHit(true)
                                 .To(28);
@@ -571,9 +641,8 @@ namespace ResonantSpark {
 
                     Attack atkOrt5B = new Attack(atkBuilder => {
                         atkBuilder.Name("orthodox_5B");
-                        atkBuilder.Orientation(Orientation.ORTHODOX);
-                        atkBuilder.GroundRelation(GroundRelation.GROUNDED);
-                        atkBuilder.Input(InputNotation._4B, InputNotation._5B);
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
+                        atkBuilder.Input("4|5", "B");
                         atkBuilder.AnimationState("5B");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
                         atkBuilder.Movement(zMoveCb: animationCurveMap["orth_5B.z"].Evaluate);
@@ -623,6 +692,7 @@ namespace ResonantSpark {
                                 fl.From(20);
                                     fl.CounterHit(false);
                                     fl.ChainCancellable(true);
+                                    fl.CancellableOnWhiff(true);
                                 fl.To(30);
                             }));
                         atkBuilder.CleanUp(ReturnToStand);
@@ -630,9 +700,8 @@ namespace ResonantSpark {
 
                     Attack atkOrt5BB = new Attack(atkBuilder => {
                         atkBuilder.Name("orthodox_5B,B");
-                        atkBuilder.Orientation(Orientation.ORTHODOX);
-                        atkBuilder.GroundRelation(GroundRelation.GROUNDED);
-                        atkBuilder.Input(InputNotation._4B, InputNotation._5B);
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
+                        atkBuilder.Input("4|5", "B");
                         atkBuilder.AnimationState("5BB");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
                         atkBuilder.Movement(zMoveCb: animationCurveMap["orth_5BB.z"].Evaluate);
@@ -687,6 +756,7 @@ namespace ResonantSpark {
                                 fl.From(20);
                                     fl.CounterHit(false);
                                     fl.ChainCancellable(true);
+                                    fl.CancellableOnWhiff(true);
                                 fl.To(30);
                             }));
                         atkBuilder.CleanUp(ReturnToStand);
@@ -694,9 +764,8 @@ namespace ResonantSpark {
 
                     Attack atkOrt5BBB = new Attack(atkBuilder => {
                         atkBuilder.Name("orthodox_5B,B,B");
-                        atkBuilder.Orientation(Orientation.ORTHODOX);
-                        atkBuilder.GroundRelation(GroundRelation.GROUNDED);
-                        atkBuilder.Input(InputNotation._4B, InputNotation._5B);
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
+                        atkBuilder.Input("4|5", "B");
                         atkBuilder.AnimationState("5BBB");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
                         atkBuilder.Movement(zMoveCb: animationCurveMap["orth_5BBB.z"].Evaluate);
@@ -744,6 +813,7 @@ namespace ResonantSpark {
                                 fl.From(35);
                                     fl.CounterHit(false);
                                     fl.ChainCancellable(true);
+                                    fl.CancellableOnWhiff(true);
                                 fl.To(47);
                             }));
                         atkBuilder.CleanUp(ReturnToStand);
@@ -751,9 +821,8 @@ namespace ResonantSpark {
 
                     Attack atkOrt5BBBB = new Attack(atkBuilder => {
                         atkBuilder.Name("orthodox_5B,B,B,B");
-                        atkBuilder.Orientation(Orientation.ORTHODOX);
-                        atkBuilder.GroundRelation(GroundRelation.GROUNDED);
-                        atkBuilder.Input(InputNotation._4B, InputNotation._5B);
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
+                        atkBuilder.Input("4|5", "B");
                         atkBuilder.AnimationState("5BBBB");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
                         atkBuilder.Movement(zMoveCb: animationCurveMap["orth_5BBBB.z"].Evaluate);
@@ -801,6 +870,7 @@ namespace ResonantSpark {
                                 fl.From(20);
                                     fl.CounterHit(false);
                                     fl.ChainCancellable(true);
+                                    fl.CancellableOnWhiff(true);
                                 fl.To(35);
                             }));
                         atkBuilder.CleanUp(ReturnToStand);
@@ -808,9 +878,8 @@ namespace ResonantSpark {
 
                     Attack atkJump5A = new Attack(atkBuilder => {
                         atkBuilder.Name("jump_5A");
-                        atkBuilder.Orientation(Orientation.ORTHODOX);
-                        atkBuilder.GroundRelation(GroundRelation.AIRBORNE);
-                        atkBuilder.Input(InputNotation._4A, InputNotation._5A, InputNotation._6A, InputNotation._1A, InputNotation._2A, InputNotation._3A);
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.AIRBORNE);
+                        atkBuilder.Input("A");
                         atkBuilder.AnimationState("j_A");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackAirborne"));
                         atkBuilder.Movement();
@@ -860,6 +929,7 @@ namespace ResonantSpark {
                                 .From(13)
                                     .CounterHit(false)
                                     .ChainCancellable(true)
+                                    .CancellableOnWhiff(true)
                                 .To(23);
                             }));
                         atkBuilder.CleanUp(ReturnToAirborne);
@@ -867,9 +937,8 @@ namespace ResonantSpark {
 
                     Attack atkJump5AA = new Attack(atkBuilder => {
                         atkBuilder.Name("jump_5A,A");
-                        atkBuilder.Orientation(Orientation.ORTHODOX);
-                        atkBuilder.GroundRelation(GroundRelation.AIRBORNE);
-                        atkBuilder.Input(InputNotation._4A, InputNotation._5A, InputNotation._6A, InputNotation._1A, InputNotation._2A, InputNotation._3A);
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.AIRBORNE);
+                        atkBuilder.Input("A");
                         atkBuilder.AnimationState("j_AA");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackAirborne"));
                         atkBuilder.Movement();
@@ -923,6 +992,7 @@ namespace ResonantSpark {
                                 .From(16)
                                     .CounterHit(false)
                                     .ChainCancellable(true)
+                                    .CancellableOnWhiff(true)
                                 .To(30);
                             }));
                         atkBuilder.CleanUp(ReturnToAirborne);
@@ -930,9 +1000,8 @@ namespace ResonantSpark {
 
                     Attack atkJump5AAA = new Attack(atkBuilder => {
                         atkBuilder.Name("jump_5A,A,A");
-                        atkBuilder.Orientation(Orientation.ORTHODOX);
-                        atkBuilder.GroundRelation(GroundRelation.AIRBORNE);
-                        atkBuilder.Input(InputNotation._4A, InputNotation._5A, InputNotation._6A, InputNotation._1A, InputNotation._2A, InputNotation._3A);
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.AIRBORNE);
+                        atkBuilder.Input("A");
                         atkBuilder.AnimationState("j_AAA");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackAirborne"));
                         atkBuilder.Movement(yMoveCb: animationCurveMap["jump_5AAA.y"].Evaluate, zMoveCb: animationCurveMap["jump_5AAA.z"].Evaluate);
@@ -1028,9 +1097,8 @@ namespace ResonantSpark {
 
                     Attack atkOrt1C = new Attack(atkBuilder => {
                         atkBuilder.Name("orthodox_1C");
-                        atkBuilder.Orientation(Orientation.ORTHODOX);
-                        atkBuilder.GroundRelation(GroundRelation.GROUNDED);
-                        atkBuilder.Input(InputNotation._1C);
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
+                        atkBuilder.Input("1", "C");
                         atkBuilder.AnimationState("1C");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
                         atkBuilder.Movement(zMoveCb: animationCurveMap["orth_1C.z"].Evaluate);
@@ -1085,9 +1153,8 @@ namespace ResonantSpark {
 
                     Attack atkOrt2C = new Attack(atkBuilder => {
                         atkBuilder.Name("orthodox_2C");
-                        atkBuilder.Orientation(Orientation.ORTHODOX);
-                        atkBuilder.GroundRelation(GroundRelation.GROUNDED);
-                        atkBuilder.Input(InputNotation._2C);
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
+                        atkBuilder.Input("2", "C");
                         atkBuilder.AnimationState("2C");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
                         atkBuilder.Movement();
@@ -1142,9 +1209,8 @@ namespace ResonantSpark {
 
                     Attack hadouken = new Attack(atkBuilder => {
                         atkBuilder.Name("hadouken");
-                        atkBuilder.Orientation(Orientation.ORTHODOX);
-                        atkBuilder.GroundRelation(GroundRelation.GROUNDED);
-                        atkBuilder.Input(InputNotation._236C);
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
+                        atkBuilder.Input("236", "C");
                         atkBuilder.AnimationState("hadouken");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
                         atkBuilder.Frames(
@@ -1180,9 +1246,8 @@ namespace ResonantSpark {
 
                     Attack atkOrt6B = new Attack(atkBuilder => {
                         atkBuilder.Name("orthodox_6B");
-                        atkBuilder.Orientation(Orientation.ORTHODOX);
-                        atkBuilder.GroundRelation(GroundRelation.GROUNDED);
-                        atkBuilder.Input(InputNotation._6B);
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
+                        atkBuilder.Input("6", "B");
                         atkBuilder.AnimationState("6B");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
                         atkBuilder.Movement(zMoveCb: animationCurveMap["orth_6B.z"].Evaluate);
@@ -1277,7 +1342,16 @@ namespace ResonantSpark {
                         fgChar.State("attackAirborne"),
                     };
 
-                    charBuilder.Attack(atkOrt5A, (charState, currAttack, prevAttacks) => { // prevAttacks is a List<Attack>
+                    charBuilder.Attack(throwNormal, (charState, currAttack, prevAttacks) => { // prevAttacks is a List<Attack>
+                        if (!validGroundedAttackStates.Contains(charState)) {
+                            return false;
+                        }
+                        if (currAttack == null) {
+                            return true;
+                        }
+                        return false;
+                    });
+                    charBuilder.Attack(atkOrt5A, (charState, currAttack, prevAttacks) => {
                         if (!validGroundedAttackStates.Contains(charState)) {
                             return false;
                         }

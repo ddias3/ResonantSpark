@@ -12,9 +12,6 @@ using ResonantSpark.Service;
 namespace ResonantSpark {
     namespace CharacterStates {
         public class AttackAirborne : Attack {
-
-            private InputNotation notation;
-
             private FightingGameInputCodeBut button;
             private FightingGameInputCodeDir direction;
 
@@ -107,13 +104,25 @@ namespace ResonantSpark {
 
                 if (activeAttack.ChainCancellable()) {
                     if (button != FightingGameInputCodeBut.D) {
-                        FightingGameInputCodeDir direction = FightingGameInputCodeDir.Neutral;
                         fgChar.Use(combo);
-                        fgChar.UseCombination<DirectionCurrent>(currDir => {
-                            direction = fgChar.MapAbsoluteToRelative(((DirectionCurrent)currDir).direction);
-                        });
 
-                        fgChar.ChooseAttack(this, activeAttack, button, direction);
+                        List<Combination> inputs = new List<Combination>();
+                        inputs.Add(combo);
+                        fgChar.UseCombination<QuarterCircle>(currDir => {
+                            inputs.Add(currDir);
+                        });
+                        fgChar.UseCombination<DoubleTap>(doubleTap => {
+                            inputs.Add(doubleTap);
+                        });
+                        fgChar.UseCombination<DirectionPress>(currPress => {
+                            inputs.Add(currPress);
+                        });
+                        fgChar.UseCombination<DirectionCurrent>(currDir => {
+                            inputs.Add(currDir);
+                        });
+                        inputs.Sort();
+
+                        fgChar.ChooseAttack(this, null, inputs);
                         stop();
                     }
                 }

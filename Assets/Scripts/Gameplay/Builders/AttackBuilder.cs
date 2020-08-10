@@ -3,59 +3,63 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Builder;
-using ResonantSpark.Character;
-using ResonantSpark.Gameplay;
 using ResonantSpark.Service;
-using ResonantSpark.Input;
 
 namespace ResonantSpark {
     namespace CharacterProperties {
         public partial class AttackBuilder : IAttackCallbackObj {
-            private List<FrameStateBuilder> frames;
-            private Dictionary<int, Action<IHitCallbackObject>> hitCallbackMap;
-
-            private List<FrameState> builtFrameStates;
-            private List<Hit> builtHits;
+            private Dictionary<string, Action<IAttackCallbackGroupObj>> groupCallbacks;
+            private Dictionary<string, AttackBuilderGroup> groupAttackBuilders;
+            private AttackBuilderGroup defaultGroup;
 
             private AllServices services;
 
             public AttackBuilder(AllServices services) {
                 this.services = services;
 
-                frames = new List<FrameStateBuilder>();
+                startGroup = "default";
+
+                groupCallbacks = new Dictionary<string, Action<IAttackCallbackGroupObj>>();
+                groupAttackBuilders = new Dictionary<string, AttackBuilderGroup>();
+
+                defaultGroup = new AttackBuilderGroup(services);
             }
 
             public void BuildAttack() {
-                builtFrameStates = new List<FrameState>();
-                builtHits = new List<Hit>();
-
-                Dictionary<int, Hit> hitMap = new Dictionary<int, Hit>();
-
-                foreach (KeyValuePair<int, Action<IHitCallbackObject>> entry in hitCallbackMap) {
-                    Action<IHitCallbackObject> callback = entry.Value;
-
-                    HitBuilder builder = new HitBuilder(services);
-
-                    callback(builder);
-
-                    Hit hit = builder.CreateHit();
-
-                    hitMap.Add(entry.Key, hit);
-                    builtHits.Add(hit);
+                // There is no default group callback; that is part of the Attack Builder itself.
+                defaultGroup.BuildAttack();
+                if (!defaultGroup.ValueSet("frames")) {
+                    defaultGroup.SetFrames(new List<Character.FrameState>());
+                    defaultGroup.SetHits(new List<Gameplay.Hit>());
                 }
 
-                for (int n = 0; n < frames.Count; ++n) {
-                    FrameStateBuilder frameStateBuilder = frames[n];
-                    builtFrameStates.Add(frameStateBuilder.Build(hitMap));
+                foreach (KeyValuePair<string, Action<IAttackCallbackGroupObj>> kvp in groupCallbacks) {
+                    AttackBuilderGroup groupBuilder = new AttackBuilderGroup(services);
+                    Action<IAttackCallbackGroupObj> groupCallback = kvp.Value;
+                    groupCallback(groupBuilder);
+                    groupBuilder.BuildAttack();
+
+                    if (!groupBuilder.ValueSet("move")) groupBuilder.Movement(defaultGroup.moveX, defaultGroup.moveY, defaultGroup.moveZ);
+                    if (!groupBuilder.ValueSet("framesContinuous")) groupBuilder.FramesContinuous(defaultGroup.framesContinuous);
+                    if (!groupBuilder.ValueSet("cleanUpCallback")) groupBuilder.CleanUp(defaultGroup.cleanUpCallback);
+                    if (!groupBuilder.ValueSet("animStateName")) groupBuilder.AnimationState(defaultGroup.animStateName);
+                    if (!groupBuilder.ValueSet("initAttackState")) groupBuilder.InitCharState(defaultGroup.initAttackState);
+                    if (!groupBuilder.ValueSet("frames")) {
+                        groupBuilder.SetFrames(defaultGroup.GetFrames());
+                        groupBuilder.SetHits(defaultGroup.GetHits());
+                    }
+
+                    groupAttackBuilders.Add(kvp.Key, groupBuilder);
                 }
+                groupAttackBuilders.Add("default", defaultGroup);
             }
 
-            public List<FrameState> GetFrames() {
-                return builtFrameStates;
+            public Dictionary<string, AttackBuilderGroup> GetAttackBuilderGroups() {
+                return groupAttackBuilders;
             }
 
-            public List<Hit> GetHits() {
-                return builtHits;
+            public AttackBuilderGroup GetDefaultGroup() {
+                return defaultGroup;
             }
         }
     }

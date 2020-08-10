@@ -43,7 +43,7 @@ namespace ResonantSpark {
                 RegisterEnterCallbacks()
                     .On<DoubleTap>(GivenDoubleTap);
 
-                tracker = new Utility.AttackTracker(dashLength);
+                tracker = new Utility.AttackTracker();
             }
 
             public override void Enter(int frameIndex, MultipassBaseState previousState) {
@@ -186,13 +186,21 @@ namespace ResonantSpark {
                     var buttonPress = (ButtonPress)combo;
 
                     if (buttonPress.button0 != FightingGameInputCodeBut.D) {
-                        FightingGameInputCodeDir direction = FightingGameInputCodeDir.Neutral;
-                        fgChar.Use(combo);
+                        List<Combination> inputs = new List<Combination>();
+
                         fgChar.UseCombination<DirectionCurrent>(currDir => {
-                            direction = fgChar.MapAbsoluteToRelative(((DirectionCurrent)currDir).direction);
+                            fgChar.Use(currDir);
+                            inputs.Add(currDir);
                         });
 
-                        fgChar.ChooseAttack(this, null, buttonPress.button0, direction);
+                        fgChar.Use(combo);
+                        inputs.Add(buttonPress);
+
+                        inputs.Sort((Combination a, Combination b) => {
+                            return a.GetFrame() - b.GetFrame();
+                        });
+
+                        fgChar.ChooseAttack(this, null, inputs);
                         stop();
                     }
                     else {

@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+
+using ResonantSpark.Utility;
 
 namespace ResonantSpark {
     namespace Input {
@@ -56,52 +59,45 @@ namespace ResonantSpark {
         };
 
         [Serializable]
-        public enum InputNotation : int {
-            None = 0,
+        public class InputNotation {
+            private List<string> inputString;
+            private List<bool> validateInput;
 
-            _A,
-            _B,
-            _C,
-            _D,
+            public InputNotation(List<string> inputString) {
+                this.inputString = inputString;
+                validateInput = new List<bool>();
+                for (int n = 0; n < this.inputString.Count; ++n) {
+                    validateInput.Add(false);
+                }
+                ResetValidateInput();
+            }
 
-            _1A,
-            _2A,
-            _2Ah,
-            _3A,
-            _4A,
-            _5A,
-            _5Ah,
-            _6A,
+            public bool ValidInputCombos(List<string> inputNotation) {
+                ResetValidateInput();
+                for (int n = 0; n < inputString.Count; ++n) {
+                    string input = inputString[n];
+                    for (int i = 0; i < inputNotation.Count; ++i) {
+                        if (GameInputUtil.ValidateTemplate(input, inputNotation[i])) {
+                            validateInput[n] = true;
+                            break;
+                        }
+                    }
+                }
+                bool ret = true;
+                foreach (bool val in validateInput) {
+                    if (!val) {
+                        ret = false;
+                        break;
+                    }
+                }
+                return ret;
+            }
 
-            _1B,
-            _2B,
-            _2Bh,
-            _3B,
-            _4B,
-            _5B,
-            _5Bh,
-            _6B,
-
-            _1C,
-            _2C,
-            _2Ch,
-            _3C,
-            _4C,
-            _5C,
-            _5Ch,
-            _6C,
-
-            _5AD,
-
-            _214A,
-            _214B,
-            _214C,
-
-            _236A,
-            _236B,
-            _236C,
-
-            _236D,
+            private void ResetValidateInput() {
+                for (int n = 0; n < this.inputString.Count; ++n) {
+                    validateInput[n] = false;
+                }
+            }
         }
 
         [Serializable]

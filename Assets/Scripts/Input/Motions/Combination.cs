@@ -53,6 +53,7 @@ namespace ResonantSpark {
                 }
 
                 public abstract bool Equals(Combination other);
+                public abstract string ToString(Func<FightingGameAbsInputCodeDir, FightingGameInputCodeDir> directionMapFunc);
             }
 
             public class Empty : Combination {
@@ -66,6 +67,10 @@ namespace ResonantSpark {
 
                 public override bool Equals(Combination other) {
                     return other.GetType() == typeof(Empty);
+                }
+
+                public override string ToString(Func<FightingGameAbsInputCodeDir, FightingGameInputCodeDir> directionMapFunc) {
+                    return "";
                 }
             }
 
@@ -85,6 +90,10 @@ namespace ResonantSpark {
 
                 public override bool Equals(Combination other) {
                     return other.GetType() == typeof(DirectionCurrent) && other.GetFrame() == this.frameTrigger;
+                }
+
+                public override string ToString(Func<FightingGameAbsInputCodeDir, FightingGameInputCodeDir> directionMapFunc) {
+                    return ((int)directionMapFunc(direction)).ToString();
                 }
             }
 
@@ -113,6 +122,32 @@ namespace ResonantSpark {
                 public override bool Equals(Combination other) {
                     return other.GetType() == typeof(ButtonsCurrent) && other.GetFrame() == this.frameTrigger;
                 }
+
+                public override string ToString(Func<FightingGameAbsInputCodeDir, FightingGameInputCodeDir> directionMapFunc) {
+                    string retString = "";
+                    bool first = true;
+                    if (butA) {
+                        retString += (first) ? "A" : "+A";
+                        first = false;
+                    }
+                    if (butB) {
+                        retString += (first) ? "B" : "+B";
+                        first = false;
+                    }
+                    if (butC) {
+                        retString += (first) ? "C" : "+C";
+                        first = false;
+                    }
+                    if (butD) {
+                        retString += (first) ? "D" : "+D";
+                        first = false;
+                    }
+                    if (butS) {
+                        retString += (first) ? "S" : "+S";
+                        first = false;
+                    }
+                    return retString;
+                }
             }
 
             public class DirectionPress : Combination {
@@ -134,6 +169,10 @@ namespace ResonantSpark {
                         && other.GetFrame() == this.frameTrigger
                         && ((DirectionPress) other).direction == this.direction;
                 }
+
+                public override string ToString(Func<FightingGameAbsInputCodeDir, FightingGameInputCodeDir> directionMapFunc) {
+                    return ((int)directionMapFunc(direction)).ToString();
+                }
             }
 
             public class DirectionLongHold : DirectionPress {
@@ -154,6 +193,10 @@ namespace ResonantSpark {
                         && other.GetFrame() == this.frameTrigger
                         && ((DirectionLongHold) other).direction == this.direction
                         && ((DirectionLongHold) other).holdLength == this.holdLength;
+                }
+
+                public override string ToString(Func<FightingGameAbsInputCodeDir, FightingGameInputCodeDir> directionMapFunc) {
+                    return "[" + ((int)directionMapFunc(direction)).ToString() + "]";
                 }
             }
 
@@ -182,6 +225,10 @@ namespace ResonantSpark {
                         && ((DoubleTap) other).frameStart == this.frameStart
                         && ((DoubleTap) other).direction == this.direction;
                 }
+
+                public override string ToString(Func<FightingGameAbsInputCodeDir, FightingGameInputCodeDir> directionMapFunc) {
+                    return ((int)directionMapFunc(direction)).ToString() + ((int)directionMapFunc(direction)).ToString();
+                }
             }
 
             public class NeutralReturn : Combination {
@@ -197,6 +244,10 @@ namespace ResonantSpark {
                 public override bool Equals(Combination other) {
                     return other.GetType() == typeof(NeutralReturn)
                         && other.GetFrame() == this.frameTrigger;
+                }
+
+                public override string ToString(Func<FightingGameAbsInputCodeDir, FightingGameInputCodeDir> directionMapFunc) {
+                    return "5";
                 }
             }
 
@@ -225,6 +276,23 @@ namespace ResonantSpark {
                         && other.GetFrame() == this.frameTrigger
                         && ((ButtonRelease) other).button0 == this.button0;
                 }
+
+                public override string ToString(Func<FightingGameAbsInputCodeDir, FightingGameInputCodeDir> directionMapFunc) {
+                    switch (button0) {
+                        case FightingGameInputCodeBut.A:
+                            return "]A[";
+                        case FightingGameInputCodeBut.B:
+                            return "]B[";
+                        case FightingGameInputCodeBut.C:
+                            return "]C[";
+                        case FightingGameInputCodeBut.D:
+                            return "]D[";
+                        case FightingGameInputCodeBut.S:
+                            return "]S[";
+                        default:
+                            return "][";
+                    }
+                }
             }
 
             public class ButtonPress : Combination {
@@ -251,6 +319,23 @@ namespace ResonantSpark {
                     return other.GetType() == typeof(ButtonPress)
                         && other.GetFrame() == this.frameTrigger
                         && ((ButtonPress) other).button0 == this.button0;
+                }
+
+                public override string ToString(Func<FightingGameAbsInputCodeDir, FightingGameInputCodeDir> directionMapFunc) {
+                    switch (button0) {
+                        case FightingGameInputCodeBut.A:
+                            return "A";
+                        case FightingGameInputCodeBut.B:
+                            return "B";
+                        case FightingGameInputCodeBut.C:
+                            return "C";
+                        case FightingGameInputCodeBut.D:
+                            return "D";
+                        case FightingGameInputCodeBut.S:
+                            return "S";
+                        default:
+                            return "";
+                    }
                 }
             }
 
@@ -285,6 +370,24 @@ namespace ResonantSpark {
                         && other.GetFrame() == this.frameTrigger
                         && ((Button2Press) other).button0 == this.button0
                         && ((Button2Press) other).button1 == this.button1;
+                }
+
+                public override string ToString(Func<FightingGameAbsInputCodeDir, FightingGameInputCodeDir> directionMapFunc) {
+                    string but0 = base.ToString(directionMapFunc);
+                    switch (button1) {
+                        case FightingGameInputCodeBut.A:
+                            return but0 + "+A";
+                        case FightingGameInputCodeBut.B:
+                            return but0 + "+B";
+                        case FightingGameInputCodeBut.C:
+                            return but0 + "+C";
+                        case FightingGameInputCodeBut.D:
+                            return but0 + "+D";
+                        case FightingGameInputCodeBut.S:
+                            return but0 + "+S";
+                        default:
+                            return but0 + "";
+                    }
                 }
             }
 
@@ -337,6 +440,24 @@ namespace ResonantSpark {
                         && ((Button3Press) other).button1 == this.button1
                         && ((Button3Press) other).button2 == this.button2;
                 }
+
+                public override string ToString(Func<FightingGameAbsInputCodeDir, FightingGameInputCodeDir> directionMapFunc) {
+                    string but01 = base.ToString(directionMapFunc);
+                    switch (button1) {
+                        case FightingGameInputCodeBut.A:
+                            return but01 + "+A";
+                        case FightingGameInputCodeBut.B:
+                            return but01 + "+B";
+                        case FightingGameInputCodeBut.C:
+                            return but01 + "+C";
+                        case FightingGameInputCodeBut.D:
+                            return but01 + "+D";
+                        case FightingGameInputCodeBut.S:
+                            return but01 + "+S";
+                        default:
+                            return but01 + "";
+                    }
+                }
             }
 
             public class DirectionPlusButton : Combination {
@@ -369,6 +490,23 @@ namespace ResonantSpark {
                         && ((DirectionPlusButton) other).button0 == this.button0
                         && ((DirectionPlusButton) other).direction == this.direction;
                 }
+
+                public override string ToString(Func<FightingGameAbsInputCodeDir, FightingGameInputCodeDir> directionMapFunc) {
+                    switch (button0) {
+                        case FightingGameInputCodeBut.A:
+                            return ((int)directionMapFunc(direction)).ToString() + "⋅A";
+                        case FightingGameInputCodeBut.B:
+                            return ((int)directionMapFunc(direction)).ToString() + "⋅B";
+                        case FightingGameInputCodeBut.C:
+                            return ((int)directionMapFunc(direction)).ToString() + "⋅C";
+                        case FightingGameInputCodeBut.D:
+                            return ((int)directionMapFunc(direction)).ToString() + "⋅D";
+                        case FightingGameInputCodeBut.S:
+                            return ((int)directionMapFunc(direction)).ToString() + "⋅S";
+                        default:
+                            return ((int)directionMapFunc(direction)).ToString() + "";
+                    }
+                }
             }
 
             public class QuarterCircle : Combination {
@@ -390,6 +528,17 @@ namespace ResonantSpark {
                     return other.GetType() == typeof(QuarterCircle)
                         && other.GetFrame() == this.frameTrigger
                         && ((QuarterCircle) other).endDirection == this.endDirection;
+                }
+
+                public override string ToString(Func<FightingGameAbsInputCodeDir, FightingGameInputCodeDir> directionMapFunc) {
+                    switch (directionMapFunc(endDirection)) {
+                        case FightingGameInputCodeDir.Forward:
+                            return "236";
+                        case FightingGameInputCodeDir.Back:
+                            return "214";
+                        default:
+                            return "";
+                    }
                 }
             }
 
@@ -419,6 +568,24 @@ namespace ResonantSpark {
                         && other.GetFrame() == this.frameTrigger
                         && ((QuarterCircleButtonPress) other).endDirection == this.endDirection
                         && ((QuarterCircleButtonPress) other).button0 == this.button0;
+                }
+
+                public override string ToString(Func<FightingGameAbsInputCodeDir, FightingGameInputCodeDir> directionMapFunc) {
+                    string quarterCircle = base.ToString(directionMapFunc);
+                    switch (button0) {
+                        case FightingGameInputCodeBut.A:
+                            return quarterCircle + "⋅A";
+                        case FightingGameInputCodeBut.B:
+                            return quarterCircle + "⋅B";
+                        case FightingGameInputCodeBut.C:
+                            return quarterCircle + "⋅C";
+                        case FightingGameInputCodeBut.D:
+                            return quarterCircle + "⋅D";
+                        case FightingGameInputCodeBut.S:
+                            return quarterCircle + "⋅S";
+                        default:
+                            return quarterCircle;
+                    }
                 }
             }
         }

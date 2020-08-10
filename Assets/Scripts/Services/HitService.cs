@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Gameplay;
+using ResonantSpark.Builder;
+using ResonantSpark.CharacterProperties;
 
 namespace ResonantSpark {
     namespace Service {
         public class HitService : MonoBehaviour, IHitService {
+
+            private BuildService buildService;
 
             private Dictionary<int, Hit> hitMap;
 
@@ -15,9 +19,18 @@ namespace ResonantSpark {
                 frame.AddUpdate((int)FramePriority.ServiceHit, new System.Action<int>(FrameUpdate));
                 frame.AddUpdate((int)FramePriority.LateService, new System.Action<int>(LateFrameUpdate));
 
+                buildService = GetComponent<BuildService>();
                 hitMap = new Dictionary<int, Hit>();
 
+                AllServices allServices = new AllServices();
+                allServices.AddServiceAs<IHitBoxService>(this);
+
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(HitService));
+            }
+
+            public Hit Create(Action<IHitCallbackObject> buildCallback) {
+                HitBuilder hitBuilder = new HitBuilder(buildService.GetAllServices());
+                return hitBuilder.CreateHit();
             }
 
             public void RegisterHit(Hit hit) {

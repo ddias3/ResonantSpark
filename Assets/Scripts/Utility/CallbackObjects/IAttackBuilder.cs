@@ -10,10 +10,11 @@ using ResonantSpark.Input;
 namespace ResonantSpark {
     namespace Builder {
         public interface IAttackCallbackObj {
+            IAttackCallbackObj Group(string groupId, Action<IAttackCallbackGroupObj> attackCallback);
             IAttackCallbackObj Name(string name);
-            IAttackCallbackObj Orientation(Orientation orientation);
-            IAttackCallbackObj GroundRelation(GroundRelation groundRelation);
-            IAttackCallbackObj Input(params InputNotation[] input);
+            IAttackCallbackObj Requires(Orientation orientation, GroundRelation groundRelation);
+            IAttackCallbackObj Input(params string[] inputStrings);
+            IAttackCallbackObj StartGroup(string startGroup);
             IAttackCallbackObj Movement(Func<float, float> xMoveCb = null, Func<float, float> yMoveCb = null, Func<float, float> zMoveCb = null);
             IAttackCallbackObj AnimationState(string animStateName);
             IAttackCallbackObj InitCharState(CharacterStates.Attack attackState);
@@ -25,67 +26,57 @@ namespace ResonantSpark {
 
     namespace CharacterProperties {
         public partial class AttackBuilder : IAttackCallbackObj {
-            public string name { get; private set; }
+
+            public string name { private set; get; }
             public Orientation orientation { get; private set; }
             public GroundRelation groundRelation { get; private set; }
-            public List<InputNotation> input { get; private set; }
-            public Func<float, float> moveX { get; private set; }
-            public Func<float, float> moveY { get; private set; }
-            public Func<float, float> moveZ { get; private set; }
-            public Action<float, Vector3> framesCountinuous { get; private set; }
-            public Action cleanUpCallback { get; private set; }
-            public string animStateName { get; private set; }
-            public CharacterStates.Attack initAttackState { get; private set; }
+            public InputNotation input { get; private set; }
+            public string startGroup { private set; get; }
 
-            private Func<float, float> return0Callback = frame => 0.0f;
-
+            public IAttackCallbackObj Group(string groupId, Action<IAttackCallbackGroupObj> attackCallback) {
+                this.groupCallbacks.Add(groupId, attackCallback);
+                return this;
+            }
             public IAttackCallbackObj Name(string name) {
                 this.name = name;
                 return this;
             }
-            public IAttackCallbackObj Orientation(Orientation orientation) {
-                this.orientation = orientation;
+            public IAttackCallbackObj Input(params string[] inputStrings) {
+                //this.defaultGroup.Input(inputStrings);
+                this.input = new InputNotation(new List<string>(inputStrings));
                 return this;
             }
-            public IAttackCallbackObj GroundRelation(GroundRelation groundRelation) {
+            public IAttackCallbackObj StartGroup(string startGroup) {
+                this.startGroup = startGroup;
+                return this;
+            }
+            public IAttackCallbackObj Requires(Orientation orientation, GroundRelation groundRelation) {
+                this.orientation = orientation;
                 this.groundRelation = groundRelation;
                 return this;
             }
-            public IAttackCallbackObj Input(params InputNotation[] input) {
-                this.input = new List<InputNotation>(input);
-                return this;
-            }
             public IAttackCallbackObj Movement(Func<float, float> xMoveCb = null, Func<float, float> yMoveCb = null, Func<float, float> zMoveCb = null) {
-                if (xMoveCb != null) moveX = xMoveCb;
-                else moveX = return0Callback;
-
-                if (yMoveCb != null) moveY = yMoveCb;
-                else moveY = return0Callback;
-
-                if (zMoveCb != null) moveZ = zMoveCb;
-                else moveZ = return0Callback;
-
+                this.defaultGroup.Movement(xMoveCb, yMoveCb, zMoveCb);
                 return this;
             }
             public IAttackCallbackObj FramesContinuous(Action<float, Vector3> callback) {
-                this.framesCountinuous = callback;
+                this.defaultGroup.FramesContinuous(callback);
                 return this;
             }
             public IAttackCallbackObj AnimationState(string animStateName) {
-                this.animStateName = animStateName;
+                this.defaultGroup.AnimationState(animStateName);
                 return this;
             }
             public IAttackCallbackObj InitCharState(CharacterStates.Attack initAttackState) {
-                this.initAttackState = initAttackState;
+                this.defaultGroup.InitCharState(initAttackState);
                 return this;
             }
             public IAttackCallbackObj Frames((List<FrameStateBuilder> frameList, Dictionary<int, Action<IHitCallbackObject>> hitCallbackMap) framesInfo) {
-                this.frames.AddRange(framesInfo.frameList);
-                this.hitCallbackMap = framesInfo.hitCallbackMap;
+                this.defaultGroup.Frames(framesInfo);
                 return this;
             }
             public IAttackCallbackObj CleanUp(Action callback) {
-                this.cleanUpCallback = callback;
+                this.defaultGroup.CleanUp(callback);
                 return this;
             }
         }

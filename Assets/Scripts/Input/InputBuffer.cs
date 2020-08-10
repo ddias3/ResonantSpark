@@ -133,12 +133,12 @@ namespace ResonantSpark {
             }
 
             public void ForEach(Action<Combinations.Combination> callback) {
-                for (int n = 0; n < inUseInputCombinations.Count; ++n) {
-                    callback(inUseInputCombinations[n]);
+                for (int n = 0; n < foundInputCombinations.Count; ++n) {
+                    callback(foundInputCombinations[n]);
                 }
 
-                callback(currDirection);
-                callback(currButtons);
+                //callback(currDirection);
+                //callback(currButtons);
             }
 
             public void Use(Combinations.Combination combo) {

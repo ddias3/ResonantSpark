@@ -13,35 +13,32 @@ namespace ResonantSpark {
     namespace CharacterStates {
         public class Grabbed : CharacterBaseState {
 
+            private bool grabBreakable;
+
             public new void Awake() {
                 base.Awake();
                 states.Register(this, "grabbed");
 
+                grabBreakable = false;
+
                 RegisterInputCallbacks()
-                    .On<DirectionPress>(OnDirectionPress)
-                    .On<DoubleTap>(OnDoubleTap);
+                    .On<Button2Press>(OnButton2Press);
             }
 
             public override void Enter(int frameIndex, MultipassBaseState previousState) {
                 fgChar.__debugSetStateText("Grabbed", new Color(1.0f, 0.0f, 1.0f));
 
-                //if (messages.Count > 0) {
-                //    Combination combo = messages.Dequeue();
-                //    combo.inUse = false;
-                //}
-
-                fgChar.Play("idle");
+                fgChar.Play("grabbed");
             }
 
             public override void ExecutePass0(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
-                fgChar.CalculateFinalVelocity();
             }
 
             public override void ExecutePass1(int frameIndex) {
                 //fgChar.UpdateTarget();
                 //fgChar.UpdateCharacterMovement();
-                //fgChar.CalculateFinalVelocity();
+                fgChar.CalculateFinalVelocity();
                 //fgChar.AnimationWalkVelocity();
             }
 
@@ -55,7 +52,7 @@ namespace ResonantSpark {
             }
 
             public override GroundRelation GetGroundRelation() {
-                return GroundRelation.AMBIGUOUS;
+                return GroundRelation.GROUNDED;
             }
 
             public override ComboState GetComboState() {
@@ -70,37 +67,35 @@ namespace ResonantSpark {
             }
 
             public override void ReceiveHit(bool launch) {
-                // TODO: Make it clear that the attack is ignored by displaying a particle
+                fgChar.Play("hurt_stand_0");
             }
 
             public override void ReceiveBlocked(bool forceCrouch) {
-                // TODO: something...
+                throw new InvalidOperationException("Grabbed is somehow being told to block");
             }
 
             public override void ReceiveGrabbed() {
-                // TODO: something...
+                throw new InvalidOperationException("Grabbed is somehow being grabbed again");
             }
 
             public override bool CheckBlockSuccess(Hit hit) {
                 return false;
             }
 
-            private void OnDirectionPress(Action stop, Combination combo) {
-                var dirPress = (DirectionPress)combo;
-                if (!dirPress.Stale(frame.index)) {
-                    dirPress.inUse = true;
-                    stop.Invoke();
-                    changeState(states.Get("walk"));//.Message(dirPress));
-                }
+            public void SetGrabBreakable(bool grabBreakable) {
+                this.grabBreakable = grabBreakable;
             }
 
-            private void OnDoubleTap(Action stop, Combination combo) {
-                var doubleTap = (DoubleTap)combo;
-                if (!doubleTap.Stale(frame.index)) {
-                    doubleTap.inUse = true;
-                    stop.Invoke();
-                    changeState(states.Get("run"));//.Message(doubleTap));
+            private void OnButton2Press(Action stop, Combination combo) {
+                var but2Press = (Button2Press)combo;
+
+                if (grabBreakable) {
+                    if (but2Press.button0 == Input.FightingGameInputCodeBut.A && but2Press.button1 == Input.FightingGameInputCodeBut.D) {
+                        // TODO: Break the throw.
+                        Debug.Log("Break the throw");
+                    }
                 }
+                stop();
             }
         }
     }

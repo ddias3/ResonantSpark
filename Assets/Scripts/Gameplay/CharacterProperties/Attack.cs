@@ -19,20 +19,14 @@ namespace ResonantSpark {
             public string name { get; private set; }
             public Orientation orientation { get; private set; }
             public GroundRelation groundRelation { get; private set; }
-            public List<InputNotation> input { get; private set; }
-            public int priority { get; private set; }
-            public string animStateName { get; private set; }
-            public CharacterStates.Attack initCharState { get; private set; }
-            public bool counterHit { get; private set; }
-            public List<FrameState> frames { get; private set; }
-            public List<Hit> hits { get; private set; }
+            public InputNotation input { get; private set; }
+            public string startGroup { get; private set; }
 
-            public Func<float, float> xMoveCb { get; private set; }
-            public Func<float, float> yMoveCb { get; private set; }
-            public Func<float, float> zMoveCb { get; private set; }
+            public Dictionary<string, AttackInfoGroup> groups { get; private set; }
+            
+            private AttackInfoGroup currGroup;
 
-            public Action<float, Vector3> framesContinuous { get; private set; }
-            public Action cleanUpCallback { get; private set; }
+            private Dictionary<string, InGameEntity> savedEntities;
 
             private IFightingGameService fgService;
             private IProjectileService projectServ;
@@ -57,6 +51,9 @@ namespace ResonantSpark {
                     // TODO: Change this in the future to InGameEntity and allow attacks to be owned by InGameEntities
                 fgChar = services.GetService<IBuildService>().GetBuildingFGChar();
 
+                groups = new Dictionary<string, AttackInfoGroup>();
+                savedEntities = new Dictionary<string, InGameEntity>();
+
                 AttackBuilder attackBuilder = new AttackBuilder(services);
                 builderCallback(attackBuilder);
 
@@ -66,21 +63,43 @@ namespace ResonantSpark {
                 orientation = attackBuilder.orientation;
                 groundRelation = attackBuilder.groundRelation;
                 input = attackBuilder.input;
-                priority = 1;
-                animStateName = attackBuilder.animStateName;
-                initCharState = attackBuilder.initAttackState;
+                startGroup = attackBuilder.startGroup;
+                foreach (KeyValuePair<string, AttackBuilderGroup> kvp in attackBuilder.GetAttackBuilderGroups()) {
+                    AttackBuilderGroup builderGroup = kvp.Value;
+                    AttackInfoGroup group = new AttackInfoGroup {
+                        animStateName = builderGroup.animStateName,
+                        initAttackState = builderGroup.initAttackState,
+                        hits = builderGroup.GetHits(),
+                        frames = builderGroup.GetFrames(),
 
-                xMoveCb = attackBuilder.moveX;
-                yMoveCb = attackBuilder.moveY;
-                zMoveCb = attackBuilder.moveZ;
+                        xMoveCb = builderGroup.moveX,
+                        yMoveCb = builderGroup.moveY,
+                        zMoveCb = builderGroup.moveZ,
 
-                framesContinuous = attackBuilder.framesCountinuous;
-                cleanUpCallback = attackBuilder.cleanUpCallback;
+                        framesContinuous = builderGroup.framesContinuous,
+                        cleanUpCallback = builderGroup.cleanUpCallback,
+                    };
+                    groups.Add(kvp.Key, group);
+                }
 
-                hits = attackBuilder.GetHits();
-                frames = attackBuilder.GetFrames();
+                currGroup = groups[startGroup];
+                tracker = new AttackTracker();
+            }
 
-                tracker = new AttackTracker(frames.Count);
+            public void UseGroup(string groupId) {
+                currGroup = groups[groupId];
+            }
+
+            public void ResetTracker() {
+                tracker.Track();
+            }
+
+            public void SaveEntity(string id, InGameEntity saveEntity) {
+                savedEntities.Add(id, saveEntity);
+            }
+
+            public InGameEntity GetEntity(string id) {
+                return savedEntities[id];
             }
 
             public void FrameCountSanityCheck(int frameIndex) {
@@ -88,7 +107,7 @@ namespace ResonantSpark {
             }
 
             public bool IsCompleteRun() {
-                throw new NotImplementedException();
+                return tracker.frameCount == currGroup.frames.Count - 1;
             }
 
             public void SetOnCompleteCallback(Action onCompleteCallback) {
@@ -96,39 +115,51 @@ namespace ResonantSpark {
             }
 
             public void StartPerformable(int frameIndex) {
-                foreach (Hit hit in hits) {
-                    hit.ClearHitEntities();
+                foreach (KeyValuePair<string, AttackInfoGroup> kvp in groups) {
+                    AttackInfoGroup group = kvp.Value;
+                    foreach (Hit hit in group.hits) {
+                        hit.ClearHitEntities();
+                    }
                 }
+                currGroup = groups[startGroup];
                 tracker.Track(frameIndex);
-                Debug.Log("Start Performable Attack Animation State: " + animStateName + " from attack: " + ToString());
-                fgChar.Play(animStateName);
+                Debug.Log("Start Performable Attack Animation State: " + currGroup.animStateName + " from attack: " + ToString());
+                fgChar.Play(currGroup.animStateName);
             }
 
             public void RunFrame() {
-                int frameCount = tracker.frameCount;
                 //Debug.LogWarningFormat("    -- Atk: {0} | Frame#: = {1}/{2}", ToString(), frameCount, frames.Count);
-                framesContinuous?.Invoke((float)frameCount, fgChar.GetTarget().targetPos);
-                frames[frameCount].Perform(fgChar);
+                currGroup.framesContinuous?.Invoke((float)tracker.frameCount, fgChar.GetTarget().targetPos);
+                currGroup.frames[tracker.frameCount].Perform(fgChar);
 
                 fgChar.AddRelativeVelocity(VelocityPriority.AttackMovement,
                     new Vector3(
-                        FunctionCalculus.Differentiate(xMoveCb, tracker.frameCount) / fgChar.gameTime,
-                        FunctionCalculus.Differentiate(yMoveCb, tracker.frameCount) / fgChar.gameTime,
-                        FunctionCalculus.Differentiate(zMoveCb, tracker.frameCount) / fgChar.gameTime));
+                        FunctionCalculus.Differentiate(currGroup.xMoveCb, tracker.frameCount) / fgChar.gameTime,
+                        FunctionCalculus.Differentiate(currGroup.yMoveCb, tracker.frameCount) / fgChar.gameTime,
+                        FunctionCalculus.Differentiate(currGroup.zMoveCb, tracker.frameCount) / fgChar.gameTime));
 
-                if (frameCount == frames.Count - 1) {
-                    cleanUpCallback?.Invoke();
+                if (IsCompleteRun()) {
+                    currGroup.cleanUpCallback?.Invoke();
                     onCompleteCallback();
+                    Reset();
                 }
 
                 tracker.Increment();
             }
 
+            public void Reset() {
+                currGroup = groups[startGroup];
+            }
+
+            public CharacterStates.Attack GetInitAttackState() {
+                return currGroup.initAttackState;
+            }
+
             public List<Hit> GetNextHit() {
                 int n = tracker.frameCount;
-                while (n < frames.Count) {
-                    if (frames[n].hits.Count > 0) {
-                        return frames[n].hits;
+                while (n < currGroup.frames.Count) {
+                    if (currGroup.frames[n].hits.Count > 0) {
+                        return currGroup.frames[n].hits;
                     }
                     else {
                         ++n;
@@ -138,15 +169,19 @@ namespace ResonantSpark {
             }
 
             public bool CounterHit() {
-                return frames[tracker.frameCount].counterHit;
+                return currGroup.frames[tracker.frameCount].counterHit;
+            }
+
+            public bool CancellableOnWhiff() {
+                return currGroup.frames[tracker.frameCount].cancellableOnWhiff;
             }
 
             public bool ChainCancellable() {
-                return frames[tracker.frameCount].chainCancellable;
+                return currGroup.frames[tracker.frameCount].chainCancellable;
             }
 
             public bool SpecialCancellable() {
-                return frames[tracker.frameCount].specialCancellable;
+                return currGroup.frames[tracker.frameCount].specialCancellable;
             }
 
             public CharacterVulnerability GetCharacterVulnerability() {
@@ -155,6 +190,9 @@ namespace ResonantSpark {
                     strikable = true,
                     throwable = true,
                 };
+            }
+
+            public void PredeterminedActions(string actionName, params object[] objs) {
             }
 
             public bool Equals(Attack other) {
@@ -168,6 +206,21 @@ namespace ResonantSpark {
             public override string ToString() {
                 return string.Format("ATK: {0}.{1}", orientation, name);
             }
+        }
+
+        public struct AttackInfoGroup {
+            public int priority;
+            public string animStateName;
+            public CharacterStates.Attack initAttackState;
+            public List<Hit> hits;
+            public List<FrameState> frames;
+
+            public Func<float, float> xMoveCb;
+            public Func<float, float> yMoveCb;
+            public Func<float, float> zMoveCb;
+
+            public Action<float, Vector3> framesContinuous;
+            public Action cleanUpCallback;
         }
     }
 }

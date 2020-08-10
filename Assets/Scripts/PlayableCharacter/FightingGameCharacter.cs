@@ -151,8 +151,8 @@ namespace ResonantSpark {
                 uiService.SetValue<Attack>("attackInfo", field: "display", value0: attackRunner.GetCurrentAttack());
             }
 
-            public void ChooseAttack(CharacterStates.CharacterBaseState currState, CharacterProperties.Attack currAttack, FightingGameInputCodeBut button, FightingGameInputCodeDir direction = FightingGameInputCodeDir.None) {
-                attackRunner.ChooseAttack(charData, currState, currAttack, button, direction);
+            public void ChooseAttack(CharacterStates.CharacterBaseState currState, CharacterProperties.Attack currAttack, List<Combination> inputCombos) {
+                attackRunner.ChooseAttack(charData, currState, currAttack, inputCombos, MapAbsoluteToRelative);
             }
 
             public Attack GetCurrentAttack() {
@@ -513,6 +513,9 @@ namespace ResonantSpark {
             public void PredeterminedActions(string actionName) {
                 CharacterStates.Clash clash = (CharacterStates.Clash) states.Get("clash");
                 switch (actionName) {
+                    case "grabBreak":
+                        SetState((CharacterStates.CharacterBaseState)states.Get("grabBreak"));
+                        break;
                     case "verticalClash":
                         clash.SetClashAnimation("clash_vertical");
                         SetState(clash);
@@ -524,6 +527,18 @@ namespace ResonantSpark {
                     case "horizontalClashSwingFromRight":
                         clash.SetClashAnimation("clash_horizontalFromRight");
                         SetState(clash);
+                        break;
+                }
+            }
+
+            public void PredeterminedActions(string actionName, params object[] objs) {
+                CharacterStates.Clash clash = (CharacterStates.Clash)states.Get("clash");
+                switch (actionName) {
+                    case "grabbed":
+                        bool breakable = (bool) objs[0];
+                        CharacterStates.Grabbed grabbed = (CharacterStates.Grabbed) states.Get("grabbed");
+                        grabbed.SetGrabBreakable(breakable);
+                        SetState(grabbed);
                         break;
                 }
             }

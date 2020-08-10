@@ -7,6 +7,8 @@ namespace ResonantSpark {
         public enum AttackPriority : int {
             None = 0,
 
+            Throw,
+
             ContinuousLightAttack,
             ContinuousMediumAttack,
             ContinuousHeavyAttack,

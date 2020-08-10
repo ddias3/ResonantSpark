@@ -45,6 +45,10 @@ namespace ResonantSpark {
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(BuildService));
             }
 
+            public AllServices GetAllServices() {
+                return services;
+            }
+
             public FightingGameCharacter Build(ICharacterBuilder charBuilder) {
                 currFGChar = charBuilder.CreateCharacter(services);
                 charBuilder.Build(services);

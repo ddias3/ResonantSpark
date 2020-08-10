@@ -3,10 +3,11 @@ using System.Text;
 using System.Collections.Generic;
 using UnityEngine;
 
-using ResonantSpark.Input;
 using ResonantSpark.Character;
 using ResonantSpark.Utility;
 using ResonantSpark.Service;
+using ResonantSpark.Input;
+using ResonantSpark.Input.Combinations;
 
 namespace ResonantSpark {
     namespace Gameplay {
@@ -27,20 +28,18 @@ namespace ResonantSpark {
                 onCompleteAttackCallback = new Action(OnCompleteAttack);
             }
 
-            public void ChooseAttack(CharacterData charData, CharacterStates.CharacterBaseState currState, CharacterProperties.Attack currAttack, FightingGameInputCodeBut button, FightingGameInputCodeDir direction = FightingGameInputCodeDir.None) {
+            public void ChooseAttack(CharacterData charData, CharacterStates.CharacterBaseState currState, CharacterProperties.Attack currAttack, List<Combination> inputCombos, Func<FightingGameAbsInputCodeDir, FightingGameInputCodeDir> directionMapFunc) {
                 StringBuilder prevAttackStr = new StringBuilder();
                 prevAttackStr.Append("[");
                 prevAttacks.ForEach(atk => { prevAttackStr.Append(atk.ToString()).Append(","); });
                 prevAttackStr.Append("]");
                 Debug.LogFormat(prevAttackStr.ToString());
 
-                InputNotation notation = GameInputUtil.SelectInputNotation(button, direction);
-
-                List<CharacterProperties.Attack> attackCandidates = charData.SelectAttacks(fgChar.GetOrientation(), fgChar.GetGroundRelation(), notation);
+                List<CharacterProperties.Attack> attackCandidates = charData.SelectAttacks(fgChar.GetOrientation(), fgChar.GetGroundRelation(), inputCombos, directionMapFunc);
                 CharacterProperties.Attack attack = charData.ChooseAttackFromSelectability(attackCandidates, currState, currAttack, prevAttacks);
 
                 if (attack != null) {
-                    fgChar.SetState(attack.initCharState);
+                    fgChar.SetState(attack.GetInitAttackState());
 
                     if (currAttack != null) {
                         prevAttacks.Add(currAttack);

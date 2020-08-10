@@ -14,13 +14,15 @@ namespace ResonantSpark {
             IFrameListCallbackObj CancellableOnWhiff(bool cancellableOnWhiff);
             IFrameListCallbackObj CounterHit(bool counterHit);
             IFrameListCallbackObj Hit(Action<IHitCallbackObject> callback);
+            IFrameListCallbackObj Hit(Hit hit);
             IFrameListCallbackObj Track(Action<TargetFG> callback);
             IFrameListCallbackObj Armor(Action<Hit> callback);
             IFrameListCallbackObj Sound(AudioClip audioClip, Action<AudioResource> soundCallback);
             IFrameListCallbackObj Projectile(Projectile projectile, Action<Projectile> projectileCallback);
             IFrameListCallbackObj ChangeState(CharacterStates.CharacterBaseState charState);
-            IFrameListCallbackObj From(int startFrame);
-            IFrameListCallbackObj To(int endFrame);
+            IFrameListCallbackObj Execute(Action callback);
+            IFrameListCallbackObj From(int startFrame); // From indexes frames starting at 1.
+            IFrameListCallbackObj To(int endFrame); // To indexes frames starting at 1.
         }
     }
 
@@ -67,6 +69,14 @@ namespace ResonantSpark {
                 return this;
             }
 
+            public IFrameListCallbackObj Hit(Hit hit) {
+                //entries.Add(new FrameUtilMapObject {
+                //    option = "hit__",
+                //    content = hit
+                //});
+                return this;
+            }
+
             public IFrameListCallbackObj Track(Action<TargetFG> callback) {
                 entries.Add(new FrameUtilMapObject {
                     option = "track",
@@ -103,6 +113,14 @@ namespace ResonantSpark {
                 entries.Add(new FrameUtilMapObject {
                     option = "changeState",
                     content = charState
+                });
+                return this;
+            }
+
+            public IFrameListCallbackObj Execute(Action callback) {
+                entries.Add(new FrameUtilMapObject {
+                    option = "execute",
+                    content = callback
                 });
                 return this;
             }

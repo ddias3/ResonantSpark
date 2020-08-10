@@ -47,7 +47,7 @@ namespace ResonantSpark {
                 RegisterEnterCallbacks()
                     .On<DirectionPlusButton>(GivenDirectionPlusButton);
 
-                tracker = new Utility.AttackTracker(dodgeLength);
+                tracker = new Utility.AttackTracker();
             }
 
             public override void Enter(int frameIndex, MultipassBaseState previousState) {

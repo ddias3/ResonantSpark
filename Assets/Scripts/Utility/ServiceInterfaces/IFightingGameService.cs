@@ -18,9 +18,11 @@ namespace ResonantSpark {
             Transform GetCameraStart();
             List<Transform> GetLevelBoundaries();
             void Strike(InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority, int> onHit, Action<AttackPriority, int> onBlock);
-            void Throw(InGameEntity hitEntity, InGameEntity byEntity, Action<AttackPriority, int> onSuccess, Action<AttackPriority, int> onBreak);
+            void Throw(InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority> onGrabbed);
+            void MaintainsGrab(InGameEntity grabbedEntity, InGameEntity byEntity);
             void HitStunStart(FightingGameCharacter fgChar);
             void HitStunEnd(FightingGameCharacter fgChar);
+            int GetComboScaleDamage(InGameEntity hitEntity, float initComboScaling, int hitDamage);
             bool IsCurrentFGChar(InGameEntity entity);
             void DisableControl();
         }

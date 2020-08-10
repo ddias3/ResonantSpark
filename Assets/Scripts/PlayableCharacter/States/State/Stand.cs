@@ -31,6 +31,7 @@ namespace ResonantSpark {
             private float charRotation;
 
             private bool upJump = false;
+            private bool resetUpJumpControl = false;
 
             public new void Awake() {
                 base.Awake();
@@ -42,6 +43,7 @@ namespace ResonantSpark {
                     .On<Button2Press>(OnButton2Press)
                     .On<ButtonPress>(OnButtonPress)
                     .On<ButtonsCurrent>(OnButtonsCurrent)
+                    .On<DirectionPress>(OnDirectionPress)
                     .On<DirectionCurrent>(OnDirectionCurrent);
 
                 RegisterEnterCallbacks()
@@ -243,8 +245,7 @@ namespace ResonantSpark {
                 if (relDir == FightingGameInputCodeDir.Forward) {
                     fgChar.Use(doubleTap);
                     stop();
-                    Debug.Log("Would Use Forward Dash");
-                    //changeState(states.Get("forwardDash"));
+                    changeState(states.Get("forwardDash"));
                 }
                 else if (relDir == FightingGameInputCodeDir.Back) {
                     fgChar.Use(doubleTap);
@@ -254,10 +255,16 @@ namespace ResonantSpark {
             }
 
             private void OnDirectionCurrent(Action stop, Combination combo) {
-                //Debug.Log(((DirectionCurrent)combo).direction);
                 this.dirPress = fgChar.MapAbsoluteToRelative(((DirectionCurrent) combo).direction);
-                if (upJump) {
-                    StateSelectOnUpJump(stop, combo);
+                switch (this.dirPress) {
+                    case FightingGameInputCodeDir.Back:
+                    case FightingGameInputCodeDir.Forward:
+                    case FightingGameInputCodeDir.Neutral:
+                        resetUpJumpControl = true;
+                        break;
+                    default:
+                        resetUpJumpControl = false; 
+                        break;
                 }
             }
 
@@ -265,13 +272,33 @@ namespace ResonantSpark {
                 var buttonPress = (ButtonPress) combo;
 
                 if (buttonPress.button0 != FightingGameInputCodeBut.D) {
-                    FightingGameInputCodeDir direction = FightingGameInputCodeDir.Neutral;
-                    fgChar.Use(combo);
+                    List<Combination> inputs = new List<Combination>();
+
+                    //fgChar.UseCombination<DirectionPress>(currPress => {
+                    //    fgChar.Use(currPress);
+                    //    inputs.Add(currPress);
+                    //});
+                    //fgChar.UseCombination<QuarterCircle>(quarter => {
+                    //    fgChar.Use(quarter);
+                    //    inputs.Add(quarter);
+                    //});
+                    //fgChar.UseCombination<DoubleTap>(doubleTap => {
+                    //    fgChar.Use(doubleTap);
+                    //    inputs.Add(doubleTap);
+                    //});
                     fgChar.UseCombination<DirectionCurrent>(currDir => {
-                        direction = fgChar.MapAbsoluteToRelative(((DirectionCurrent)currDir).direction);
+                        fgChar.Use(currDir);
+                        inputs.Add(currDir);
                     });
 
-                    fgChar.ChooseAttack(this, null, buttonPress.button0, direction);
+                    fgChar.Use(combo);
+                    inputs.Add(buttonPress);
+
+                    inputs.Sort((Combination a, Combination b) => {
+                        return a.GetFrame() - b.GetFrame();
+                    });
+
+                    fgChar.ChooseAttack(this, null, inputs);
                     stop();
 
                     // TODO: Create a mechanism for a frame 0 action, i.e. run the rest of the stand frame, then run the fist frame of the next action while pausing everything else.
@@ -301,17 +328,46 @@ namespace ResonantSpark {
                         changeState(states.Get("backDashLong"));
                     }
                 }
+                else {
+                    List<Combination> inputs = new List<Combination>();
+
+                    fgChar.Use(combo);
+                    inputs.Add(combo);
+
+                    fgChar.ChooseAttack(this, null, inputs);
+                    stop();
+
+                    // TODO: Create a mechanism for a frame 0 action, i.e. run the rest of the stand frame, then run the fist frame of the next action while pausing everything else.
+                }
             }
 
             private void OnButtonsCurrent(Action stop, Combination combo) {
                 ButtonsCurrent curr = (ButtonsCurrent) combo;
 
-                this.upJump = !curr.butD;
+                if (resetUpJumpControl) {
+                    this.upJump = !curr.butD;
+                }
             }
 
             private void OnButton2Press(Action stop, Combination combo) {
                 var but2Press = (Button2Press)combo;
-                Debug.Log("Crouch received 2 button press");
+
+                List<Combination> inputs = new List<Combination>();
+
+                fgChar.UseCombination<DirectionCurrent>(currDir => {
+                    fgChar.Use(currDir);
+                    inputs.Add(currDir);
+                });
+
+                fgChar.Use(combo);
+                inputs.Add(but2Press);
+
+                inputs.Sort((Combination a, Combination b) => {
+                    return a.GetFrame() - b.GetFrame();
+                });
+
+                fgChar.ChooseAttack(this, null, inputs);
+                stop();
             }
 
             private void GivenDirectionPress(Action stop, Combination combo) {

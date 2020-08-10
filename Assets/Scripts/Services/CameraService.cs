@@ -2,22 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using ResonantSpark.Gameplay;
+
 namespace ResonantSpark {
     namespace Service {
-        public class CameraService : MonoBehaviour, ICameraService {
+        public class CameraService : MonoBehaviour, ICameraService, IPredeterminedActions {
             public void Start() {
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(CameraService));
             }
 
-            public void PredeterminedActions<T0>(string actionName, T0 t0) {
+            public void PredeterminedActions(string actionName) {
                 throw new System.NotImplementedException();
             }
 
-            public void PredeterminedActions<T0, T1>(string actionName, T0 t0, T1 t1) {
-                throw new System.NotImplementedException();
-            }
-
-            public void PredeterminedActions<T0, T1, T2>(string actionName, T0 t0, T1 t1, T2 t2) {
+            public void PredeterminedActions(string actionName, params object[] objs) {
                 throw new System.NotImplementedException();
             }
         }

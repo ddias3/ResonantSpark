@@ -30,7 +30,7 @@ namespace ResonantSpark {
                     .On<ButtonPress>(OnButtonPress)
                     .On<DirectionCurrent>(OnDirectionCurrent);
 
-                tracker = new Utility.AttackTracker(clashAnimationLength);
+                tracker = new Utility.AttackTracker();
             }
 
             public override void Enter(int frameIndex, MultipassBaseState previousState) {

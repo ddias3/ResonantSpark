@@ -11,7 +11,7 @@ using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace CharacterStates {
-        public class GrabSuccessful : CharacterBaseState {
+        public class GrabSuccessful_delete : CharacterBaseState {
 
             public new void Awake() {
                 base.Awake();

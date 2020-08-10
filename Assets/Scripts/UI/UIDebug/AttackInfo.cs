@@ -31,19 +31,19 @@ namespace ResonantSpark {
                 }
 
                 public void DisplayAttack(Attack attack) {
-                    List<Character.FrameState> frames = attack.frames;
+                    //List<Character.FrameState> frames = attack.frames;
 
-                    for (int n = 0; n < frames.Count && n < frameDisplays.Count; ++n) {
-                        frameDisplays[n].gameObject.SetActive(true);
+                    //for (int n = 0; n < frames.Count && n < frameDisplays.Count; ++n) {
+                    //    frameDisplays[n].gameObject.SetActive(true);
 
-                        frameDisplays[n].hit = frames[n].hits.Count > 0;
-                        frameDisplays[n].track = frames[n].trackCallback != null;
-                        frameDisplays[n].sound = frames[n].soundCallback != null || frames[n].soundClip != null;
-                        frameDisplays[n].projectile = frames[n].projectileCallback != null;
-                        frameDisplays[n].chainCancellable = frames[n].chainCancellable;
-                        frameDisplays[n].specialCancellable = frames[n].specialCancellable;
-                        frameDisplays[n].counterHit = frames[n].counterHit;
-                    }
+                    //    frameDisplays[n].hit = frames[n].hits.Count > 0;
+                    //    frameDisplays[n].track = frames[n].trackCallback != null;
+                    //    frameDisplays[n].sound = frames[n].soundCallback != null || frames[n].soundClip != null;
+                    //    frameDisplays[n].projectile = frames[n].projectileCallback != null;
+                    //    frameDisplays[n].chainCancellable = frames[n].chainCancellable;
+                    //    frameDisplays[n].specialCancellable = frames[n].specialCancellable;
+                    //    frameDisplays[n].counterHit = frames[n].counterHit;
+                    //}
                 }
 
                 public void ClearDisplay() {

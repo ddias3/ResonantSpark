@@ -46,8 +46,11 @@ namespace ResonantSpark {
 
             private Dictionary<InGameEntity, ComboState> prevComboState;
 
-            private List<(InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>, Action<AttackPriority, int>)> hitQueue;
+            private List<(InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority, int> onHit, Action<AttackPriority, int> onBlock)> strikeQueue;
+            private List<(InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority> onGrabbed)> throwQueue;
 
+            private Dictionary<InGameEntity, InGameEntity> entityGrabbingEntity;
+            private Dictionary<InGameEntity, InGameEntity> entityGrabbingEntityContinue;
             private FrameEnforcer frame;
 
             private IGamemode gamemode;
@@ -69,7 +72,10 @@ namespace ResonantSpark {
 
                 prevComboState = new Dictionary<InGameEntity, ComboState>();
 
-                hitQueue = new List<(InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>, Action<AttackPriority, int>)>();
+                strikeQueue = new List<(InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority, int> onHit, Action<AttackPriority, int> onBlock)>();
+                throwQueue = new List<(InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority> onGrabbed)>();
+                entityGrabbingEntity = new Dictionary<InGameEntity, InGameEntity>();
+                entityGrabbingEntityContinue = new Dictionary<InGameEntity, InGameEntity>();
                 mapCamera.SetActive(false);
 
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(FightingGameService));
@@ -114,12 +120,15 @@ namespace ResonantSpark {
             }
 
             public void Strike(InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority, int> onHit, Action<AttackPriority, int> onBlock) {
-                Debug.Log(hitEntity);
-                hitQueue.Add((hitEntity, byEntity, hit, onHit, onBlock));
+                strikeQueue.Add((hitEntity, byEntity, hit, onHit, onBlock));
             }
 
-            public void Throw(InGameEntity hitEntity, InGameEntity byEntity, Action<AttackPriority, int> onSuccess, Action<AttackPriority, int> onBreak) {
+            public void Throw(InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority> onGrabbed) {
+                throwQueue.Add((hitEntity, byEntity, hit, onGrabbed));
+            }
 
+            public void MaintainsGrab(InGameEntity grabbedEntity, InGameEntity byEntity) {
+                entityGrabbingEntityContinue[byEntity] = grabbedEntity;
             }
 
             public void HitStunStart(FightingGameCharacter fgChar) {
@@ -130,16 +139,16 @@ namespace ResonantSpark {
                 gamemode.OnHitStunEnd(fgChar);
             }
 
-            private void ResolveHits() {
-                if (hitQueue.Count == 0) {
+            private void ResolveStrikesAndThrows() {
+                if (strikeQueue.Count == 0) {
                     return;
                 }
 
                 Dictionary<InGameEntity, InGameEntity> hitBy = new Dictionary<InGameEntity, InGameEntity>();
 
-                for (int n = 0; n < hitQueue.Count; ++n) {
-                    InGameEntity hitEntity = hitQueue[n].Item1;
-                    InGameEntity byEntity = hitQueue[n].Item2;
+                for (int n = 0; n < strikeQueue.Count; ++n) {
+                    InGameEntity hitEntity = strikeQueue[n].hitEntity;
+                    InGameEntity byEntity = strikeQueue[n].byEntity;
 
                     hitBy[hitEntity] = byEntity;
                 }
@@ -152,19 +161,19 @@ namespace ResonantSpark {
                         InGameEntity ent0 = hitEntity;
                         InGameEntity ent1 = hitBy[hitEntity];
 
-                        (InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>, Action<AttackPriority, int>) info0 = hitQueue.Single(tuple => tuple.Item1 == ent0);
-                        (InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>, Action<AttackPriority, int>) info1 = hitQueue.Single(tuple => tuple.Item1 == ent1);
+                        (InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority, int> onHit, Action<AttackPriority, int> onBlock) info0 = strikeQueue.Single(tuple => tuple.hitEntity == ent0);
+                        (InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority, int> onHit, Action<AttackPriority, int> onBlock) info1 = strikeQueue.Single(tuple => tuple.hitEntity == ent1);
 
-                        if (IsCurrentFGChar(info0.Item1)) {
-                            InGameEntity fgChar = info0.Item1;
+                        if (IsCurrentFGChar(info0.hitEntity)) {
+                            InGameEntity fgChar = info0.hitEntity;
                             int prevNumHits = numComboHits[fgChar];
                             numComboHits[fgChar]++;
                             gamemode.OnGameEntityNumHitsChange(fgChar, numComboHits[fgChar], prevNumHits);
 
                             comboScalingIndex[fgChar]++;
                         }
-                        if (IsCurrentFGChar(info1.Item1)) {
-                            InGameEntity fgChar = info1.Item1;
+                        if (IsCurrentFGChar(info1.hitEntity)) {
+                            InGameEntity fgChar = info1.hitEntity;
                             int prevNumHits = numComboHits[fgChar];
                             numComboHits[fgChar]++;
                             gamemode.OnGameEntityNumHitsChange(fgChar, numComboHits[fgChar], prevNumHits);
@@ -172,8 +181,8 @@ namespace ResonantSpark {
                             comboScalingIndex[fgChar]++;
                         }
 
-                        info0.Item4?.Invoke(info1.Item3.priority, GetComboScale(info0.Item1, info0.Item3));
-                        info1.Item4?.Invoke(info0.Item3.priority, GetComboScale(info1.Item1, info1.Item3));
+                        info0.onHit?.Invoke(info1.hit.priority, GetComboScaleDamage(info0.hitEntity, info0.hit.comboScaling, info0.hit.hitDamage));
+                        info1.onHit?.Invoke(info0.hit.priority, GetComboScaleDamage(info1.hitEntity, info1.hit.comboScaling, info1.hit.hitDamage));
                     }
                     else {
                         InGameEntity ent0 = hitEntity;
@@ -181,37 +190,40 @@ namespace ResonantSpark {
                         if (IsCurrentFGChar(ent0)) {
                             FightingGameCharacter fgChar = (FightingGameCharacter)ent0;
                             if (fgChar.GetCharacterVulnerability().strikable) {
-                                IEnumerable<(InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>, Action<AttackPriority, int>)> relevantTuples = hitQueue.Where(tuple => tuple.Item1 == ent0);
-                                bool hitSuccessful = relevantTuples.Any(tuple => !fgChar.CheckBlockSuccess(tuple.Item3));
+                                IEnumerable<(InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority, int> onHit, Action<AttackPriority, int> onBlock)> relevantTuples = strikeQueue.Where(tuple => tuple.hitEntity == ent0);
+                                bool hitSuccessful = relevantTuples.Any(tuple => !fgChar.CheckBlockSuccess(tuple.hit));
 
                                 if (hitSuccessful) {
-                                    foreach ((InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>, Action<AttackPriority, int>) tuple in relevantTuples) {
+                                    foreach ((InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority, int> onHit, Action<AttackPriority, int> onBlock) tuple in relevantTuples) {
                                         numComboHits[fgChar]++;
                                         int prevNumHits = numComboHits[fgChar];
                                         comboScalingIndex[fgChar]++;
 
                                         gamemode.OnGameEntityNumHitsChange(fgChar, numComboHits[fgChar], prevNumHits);
 
-                                        tuple.Item4?.Invoke(AttackPriority.None, GetComboScale(tuple.Item1, tuple.Item3));
+                                        tuple.onHit?.Invoke(AttackPriority.None, GetComboScaleDamage(tuple.hitEntity, tuple.hit.comboScaling, tuple.hit.hitDamage));
                                     }
                                 }
                                 else {
-                                    foreach ((InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>, Action<AttackPriority, int>) tuple in relevantTuples) {
-                                        tuple.Item5?.Invoke(AttackPriority.None, tuple.Item3.blockDamage);
+                                    foreach ((InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority, int> onHit, Action<AttackPriority, int> onBlock) tuple in relevantTuples) {
+                                        tuple.onBlock?.Invoke(AttackPriority.None, tuple.hit.blockDamage);
                                     }
                                 }
                             }
                         }
                         else {
-                            IEnumerable<(InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>, Action<AttackPriority, int>)> relevantTuples = hitQueue.Where(tuple => tuple.Item1 == ent0);
-                            foreach ((InGameEntity, InGameEntity, Hit, Action<AttackPriority, int>, Action<AttackPriority, int>) tuple in relevantTuples) {
-                                tuple.Item4?.Invoke(AttackPriority.None, GetComboScale(tuple.Item1, tuple.Item3));
+                            IEnumerable<(InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority, int> onHit, Action<AttackPriority, int> onBlock)> relevantTuples = strikeQueue.Where(tuple => tuple.hitEntity == ent0);
+                            foreach ((InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority, int> onHit, Action<AttackPriority, int> onBlock) tuple in relevantTuples) {
+                                //tuple.onHit?.Invoke(AttackPriority.None, GetComboScale(tuple.hitEntity, tuple.hit.comboScaling, tuple.hit.hitDamage));
+                                    // I think I'll have strikes on other entities not have combo scaling.
+                                tuple.onHit?.Invoke(AttackPriority.None, GetComboScaleDamage(tuple.hitEntity, tuple.hit.comboScaling, tuple.hit.hitDamage));
                             }
                         }
                     }
                 }
 
-                hitQueue.Clear();
+                strikeQueue.Clear();
+                throwQueue.Clear();
             }
 
             private bool HitEachOther(InGameEntity hitEntity, Dictionary<InGameEntity, InGameEntity> hitBy) {
@@ -228,7 +240,7 @@ namespace ResonantSpark {
 
             private void FrameUpdate(int frameIndex) {
                 ResetComboCounter();
-                ResolveHits();
+                ResolveStrikesAndThrows();
             }
 
             private void LateFrameUpdate(int frameIndex) {
@@ -239,19 +251,19 @@ namespace ResonantSpark {
 
             private List<float> comboScaling = new List<float> { 1.0f, 0.8f, 0.65f, 0.5f, 0.45f, 0.4f, 0.35f, 0.3f, 0.25f };
 
-            private int GetComboScale(InGameEntity fgChar, Hit hit) {
-                if (numComboHits[fgChar] == 0) {
+            public int GetComboScaleDamage(InGameEntity hitEntity, float initComboScaling, int hitDamage) {
+                if (numComboHits[hitEntity] == 0) {
                     for (int n = 0; n < comboScaling.Count; ++n) {
-                        if (comboScaling[n] <= hit.comboScaling) {
-                            comboScalingIndex[fgChar] = n;
+                        if (comboScaling[n] <= initComboScaling) {
+                            comboScalingIndex[hitEntity] = n;
                         }
                     }
                 }
-                if (comboScalingIndex[fgChar] >= comboScaling.Count) {
-                    return (int)(hit.hitDamage * comboScaling[comboScaling.Count - 1]);
+                if (comboScalingIndex[hitEntity] >= comboScaling.Count) {
+                    return (int)(hitDamage * comboScaling[comboScaling.Count - 1]);
                 }
                 else {
-                    return (int)(hit.hitDamage * comboScaling[comboScalingIndex[fgChar]]);
+                    return (int)(hitDamage * comboScaling[comboScalingIndex[hitEntity]]);
                 }
             }
 
