@@ -13,6 +13,7 @@ namespace ResonantSpark {
                 public static bool chainCancellable = true;
                 public static bool cancellableOnWhiff = false;
                 public static bool counterHit = true;
+
                 public static int startFrame = 0;
 
                 public static int counter = 0;

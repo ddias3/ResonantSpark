@@ -50,6 +50,14 @@ namespace ResonantSpark {
                 public override ComboState GetComboState() {
                     throw new System.NotImplementedException();
                 }
+
+                public override void PredeterminedActions(string actionName) {
+                    // do nothing
+                }
+
+                public override void PredeterminedActions(string actionName, params object[] objs) {
+                    // do nothing
+                }
             }
         }
     }

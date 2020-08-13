@@ -19,9 +19,12 @@ namespace ResonantSpark {
             List<Transform> GetLevelBoundaries();
             void Strike(InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority, int> onHit, Action<AttackPriority, int> onBlock);
             void Throw(InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority> onGrabbed);
-            void MaintainsGrab(InGameEntity grabbedEntity, InGameEntity byEntity);
+            void Grabs(InGameEntity byEntity, InGameEntity grabbedEntity, bool breakable);
+            void MaintainsGrab(InGameEntity byEntity, InGameEntity grabbedEntity);
+            void SetGrabBreakability(InGameEntity byEntity, bool breakable);
             void HitStunStart(FightingGameCharacter fgChar);
             void HitStunEnd(FightingGameCharacter fgChar);
+            void IncrementComboCounter(FightingGameCharacter fgChar);
             int GetComboScaleDamage(InGameEntity hitEntity, float initComboScaling, int hitDamage);
             bool IsCurrentFGChar(InGameEntity entity);
             void DisableControl();

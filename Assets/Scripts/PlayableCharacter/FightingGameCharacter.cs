@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace ResonantSpark {
     namespace Gameplay {
-        public class FightingGameCharacter : InGameEntity, IPredeterminedActions, IEquatable<FightingGameCharacter> {
+        public class FightingGameCharacter : InGameEntity, IEquatable<FightingGameCharacter> {
             public static int fgCharCounter = 0;
 
             public AnimatorAdapter animator;
@@ -101,6 +101,14 @@ namespace ResonantSpark {
                 uiService = GameObject.FindGameObjectWithTag("rspService").GetComponent<UiService>();
 
                 parent = null;
+                isAttached = false;
+
+                UnityEngine.Events.UnityEvent onAttachFGChar = new UnityEngine.Events.UnityEvent();
+                UnityEngine.Events.UnityEvent onDetachFGChar = new UnityEngine.Events.UnityEvent();
+                onAttachFGChar.AddListener(new UnityEngine.Events.UnityAction(OnAttachingFGChar));
+                onDetachFGChar.AddListener(new UnityEngine.Events.UnityAction(OnDetachingFGChar));
+                onAttachCallbacks.Add(typeof(FightingGameCharacter), onAttachFGChar);
+                onDetachCallbacks.Add(typeof(FightingGameCharacter), onDetachFGChar);
 
                 attackRunner.Init(this);
                 comboRunner.Init(this);
@@ -475,6 +483,10 @@ namespace ResonantSpark {
                 fgService.HitStunEnd(this);
             }
 
+            public void BreakGrab() {
+                fgService.BreakGrab(this);
+            }
+
             public void KnockBack(AttackPriority attackPriority, bool launch, Vector3 knockback) {
 
                 //opponent.GetHit();
@@ -506,15 +518,19 @@ namespace ResonantSpark {
             }
 
             public Vector3 GetSpeakPosition() {
-                    // TODO: Return the position of the head;
-                return Vector3.zero;
+                return rigidFG.position + Vector3.up;
             }
 
-            public void PredeterminedActions(string actionName) {
+            public override void PredeterminedActions(string actionName) {
                 CharacterStates.Clash clash = (CharacterStates.Clash) states.Get("clash");
                 switch (actionName) {
+                    case "grabbed":
+                        CharacterStates.Grabbed grabbed = (CharacterStates.Grabbed)states.Get("grabbed");
+                        SetState(grabbed);
+                        break;
                     case "grabBreak":
                         SetState((CharacterStates.CharacterBaseState)states.Get("grabBreak"));
+                        AddVelocity(VelocityPriority.Movement, rigidFG.rotation * Vector3.back * 2.0f);
                         break;
                     case "verticalClash":
                         clash.SetClashAnimation("clash_vertical");
@@ -531,16 +547,17 @@ namespace ResonantSpark {
                 }
             }
 
-            public void PredeterminedActions(string actionName, params object[] objs) {
+            public override void PredeterminedActions(string actionName, params object[] objs) {
                 CharacterStates.Clash clash = (CharacterStates.Clash)states.Get("clash");
-                switch (actionName) {
-                    case "grabbed":
-                        bool breakable = (bool) objs[0];
-                        CharacterStates.Grabbed grabbed = (CharacterStates.Grabbed) states.Get("grabbed");
-                        grabbed.SetGrabBreakable(breakable);
-                        SetState(grabbed);
-                        break;
-                }
+                
+            }
+
+            public void OnAttachingFGChar() {
+                Debug.Log("Attaching FGChar");
+            }
+
+            public void OnDetachingFGChar() {
+                Debug.Log("Detaching FGChar");
             }
 
             public void UpdateCharacterMovement() {
@@ -579,6 +596,7 @@ namespace ResonantSpark {
 
             public override void AddSelf() {
                 fgService.RegisterInGameEntity(this);
+                fgService.ActiveInGameEntity(this, true);
             }
 
             public override void RemoveSelf() {

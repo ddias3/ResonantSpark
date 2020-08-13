@@ -24,6 +24,8 @@ namespace ResonantSpark {
             public Projectile projectile { get; private set; }
             public Action<Projectile> projectileCallback { get; private set; }
 
+            public Action executeCallback { get; private set; }
+
             public FrameState(
                     bool chainCancellable,
                     bool specialCancellable,
@@ -35,7 +37,8 @@ namespace ResonantSpark {
                     AudioClip soundClip,
                     Action<AudioResource> soundCallback,
                     Projectile projectile,
-                    Action<Projectile> projectileCallback) {
+                    Action<Projectile> projectileCallback,
+                    Action executeCallback) {
                 this.chainCancellable = chainCancellable;
                 this.specialCancellable = specialCancellable;
                 this.cancellableOnWhiff = cancellableOnWhiff;
@@ -49,16 +52,18 @@ namespace ResonantSpark {
                 this.soundCallback = soundCallback;
                 this.projectile = projectile;
                 this.projectileCallback = projectileCallback;
+                this.executeCallback = executeCallback;
             }
 
             public void Perform(FightingGameCharacter fgChar) {
                 foreach (Hit hit in hits) {
                     hit.Active();
                 }
-                armorCallback?.Invoke(default);
+                //armorCallback?.Invoke(default);
                 trackCallback?.Invoke(fgChar.GetTarget());
                 soundCallback?.Invoke(null);
                 projectileCallback?.Invoke(projectile);
+                executeCallback?.Invoke();
             }
         }
     }

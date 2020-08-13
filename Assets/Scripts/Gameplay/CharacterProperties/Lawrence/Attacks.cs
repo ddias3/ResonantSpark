@@ -91,23 +91,6 @@ namespace ResonantSpark {
                                         hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
                                             if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
                                                 FightingGameCharacter opponent = (FightingGameCharacter)entity;
-
-                                                // This exists to make characters hitting each other async
-                                                //fgService.Throw(entity, fgChar, onSuccess: (hitAtSameTimeByAttackPriority, damage) => {
-                                                //    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
-                                                //    opponent.ReceiveGrabbed();
-                                                //    opponent.KnockBack(
-                                                //        thisHit.priority,
-                                                //        launch: false,
-                                                //        knockback: fgChar.rigidFG.rotation * Vector3.forward * 2.0f);
-                                                //    opponent.ChangeHealth(damage); // damage includes combo scaling.
-                                                //}, onBreak: (hitAtSameTimeByAttackPriority, damage) => {
-                                                //    // I may put all of these functions into the same call.
-                                                //    opponent.KnockBack(
-                                                //        thisHit.priority,
-                                                //        launch: false,
-                                                //        knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
-                                                //});
                                                 fgService.Throw(opponent, fgChar, thisHit, onGrabbed: (hitAtSameTimeByAttackPriority) => {
                                                     if (hitAtSameTimeByAttackPriority == AttackPriority.Throw) {
                                                         fgChar.PredeterminedActions("grabBreak");
@@ -117,8 +100,9 @@ namespace ResonantSpark {
                                                         throwNormal.SaveEntity("opponent", opponent);
                                                         throwNormal.UseGroup("grabConnect");
                                                         throwNormal.ResetTracker();
+                                                        throwNormal.SetAnimation();
 
-                                                        opponent.PredeterminedActions("grabbed", true);
+                                                        fgService.Grabs(fgChar, opponent, true);
                                                     }
                                                     else {
                                                         // lose to strike
@@ -129,7 +113,7 @@ namespace ResonantSpark {
 
                                         hit.HitBox(defaultHitBox);
                                     });
-                                    fl.To(13);
+                                    fl.To(17);
                                     fl.From(13);
                                     fl.CounterHit(false);
                                     fl.To(22);
@@ -147,45 +131,55 @@ namespace ResonantSpark {
                             });
                             Hit grabStrike1 = hitService.Create(ht => {
                                 ht.HitDamage(800);
-                                ht.HitStun(32.0f);
+                                ht.HitStun(60.0f);
                                 ht.ComboScaling(1.0f);
                             });
                             atkBuilderGrouping.FramesContinuous((localFrame, target) => {
                                 if (localFrame >= 0.0f && localFrame <= 25.0f) {
-                                    fgService.MaintainsGrab(throwNormal.GetEntity("opponent"), fgChar);
+                                    fgService.MaintainsGrab(fgChar, (FightingGameCharacter) throwNormal.GetEntity("opponent"));
                                 }
                             });
                             atkBuilderGrouping.Frames(
                                 FrameUtil.CreateList(fl => {
                                     fl.From(1);
-                                    fl.SpecialCancellable(false);
-                                    fl.CancellableOnWhiff(false); // TODO: Change this to true when you fix the input buffer
-                                    fl.ChainCancellable(false);
-                                    fl.CounterHit(false);
+                                        fl.SpecialCancellable(false);
+                                        fl.CancellableOnWhiff(false); // TODO: Change this to true when you fix the input buffer
+                                        fl.ChainCancellable(false);
+                                        fl.CounterHit(false);
+                                    fl.To(16);
+                                    fl.From(15);
+                                        fl.Execute(() => {
+                                            fgService.SetGrabBreakability(fgChar, false);
+                                        });
                                     fl.To(16);
                                     fl.From(16);
-                                    //fl.Hit(grabStrike0);
-                                    fl.Execute(() => {
-                                        FightingGameCharacter opponent = (FightingGameCharacter) throwNormal.GetEntity("opponent");
-                                        audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["mediumHit"]);
-                                        opponent.ReceiveHit(grabStrike0.hitStun, false);
-                                        opponent.ChangeHealth(fgService.GetComboScaleDamage(opponent, grabStrike0.comboScaling, grabStrike0.hitDamage));
-                                    });
+                                        //fl.Hit(grabStrike0);
+                                        fl.Execute(() => {
+                                            FightingGameCharacter opponent = (FightingGameCharacter) throwNormal.GetEntity("opponent");
+                                            audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["mediumHit"]);
+
+                                            fgService.IncrementComboCounter(opponent);
+                                            opponent.ReceiveHit(grabStrike0.hitStun, false);
+                                            opponent.ChangeHealth(fgService.GetComboScaleDamage(opponent, grabStrike0.comboScaling, grabStrike0.hitDamage));
+                                        });
                                     fl.To(17);
                                     fl.From(24);
-                                    //fl.Hit(grabStrike1);
-                                    fl.Execute(() => {
-                                        FightingGameCharacter opponent = (FightingGameCharacter) throwNormal.GetEntity("opponent");
-                                        audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["mediumHit"]);
-                                        opponent.ReceiveHit(grabStrike1.hitStun, false);
-                                        opponent.KnockBack(
-                                            grabStrike1.priority,
-                                            launch: false,
-                                            knockback: fgChar.rigidFG.rotation * Vector3.forward * 2.0f);
-                                        opponent.ChangeHealth(fgService.GetComboScaleDamage(opponent, grabStrike1.comboScaling, grabStrike1.hitDamage));
-                                    });
+                                        //fl.Hit(grabStrike1);
+                                        fl.Execute(() => {
+                                            FightingGameCharacter opponent = (FightingGameCharacter) throwNormal.GetEntity("opponent");
+                                            audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["mediumHit"]);
+
+                                            fgService.IncrementComboCounter(opponent);
+                                            opponent.ReceiveHit(grabStrike1.hitStun, false);
+                                            opponent.KnockBack(
+                                                grabStrike1.priority,
+                                                launch: false,
+                                                knockback: fgChar.rigidFG.rotation * Vector3.forward * 3.0f);
+                                            opponent.ChangeHealth(fgService.GetComboScaleDamage(opponent, grabStrike1.comboScaling, grabStrike1.hitDamage));
+                                        });
                                     fl.To(25);
-                                    fl.To(30);
+                                        fl.CounterHit(false);
+                                    fl.To(45);
                                 }));
                             atkBuilderGrouping.CleanUp(() => {
                                 fgChar.SetState(fgChar.State("stand"));

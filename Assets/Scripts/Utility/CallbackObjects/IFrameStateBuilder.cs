@@ -20,7 +20,8 @@ namespace ResonantSpark {
                     AudioClip soundClip,
                     Action<AudioResource> soundCallback,
                     Projectile projectile,
-                    Action<Projectile> projectileCallback);
+                    Action<Projectile> projectileCallback,
+                    Action executeCallback);
         }
     }
 
@@ -43,6 +44,8 @@ namespace ResonantSpark {
             public Projectile projectile { get; private set; }
             public Action<Projectile> projectileCallback { get; private set; }
 
+            public Action executeCallback { get; private set; }
+
             public IFrameStateBuilder SupplyAllInfo(
                     bool chainCancellable,
                     bool specialCancellable,
@@ -54,13 +57,14 @@ namespace ResonantSpark {
                     AudioClip soundClip,
                     Action<AudioResource> soundCallback,
                     Projectile projectile,
-                    Action<Projectile> projectileCallback) {
+                    Action<Projectile> projectileCallback,
+                    Action executeCallback) {
                 this.chainCancellable = chainCancellable;
                 this.specialCancellable = specialCancellable;
                 this.cancellableOnWhiff = cancellableOnWhiff;
                 this.counterHit = counterHit;
 
-                this.hitCallbackIds = hitCallbackIds;
+                this.hitCallbackIds.AddRange(hitCallbackIds);
 
                 if (armorCallback != null) this.armorCallback = armorCallback;
                 if (trackCallback != null) this.trackCallback = trackCallback;
@@ -68,6 +72,7 @@ namespace ResonantSpark {
                 if (soundCallback != null) this.soundCallback = soundCallback;
                 if (projectile != null) this.projectile = projectile;
                 if (projectileCallback != null) this.projectileCallback = projectileCallback;
+                if (executeCallback != null) this.executeCallback = executeCallback;
                 return this;
             }
         }

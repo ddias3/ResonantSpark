@@ -13,13 +13,15 @@ namespace ResonantSpark {
     namespace CharacterStates {
         public class Grabbed : CharacterBaseState {
 
-            private bool grabBreakable;
+            public int grabbedLength;
+
+            private Utility.AttackTracker tracker;
 
             public new void Awake() {
                 base.Awake();
                 states.Register(this, "grabbed");
 
-                grabBreakable = false;
+                tracker = new Utility.AttackTracker();
 
                 RegisterInputCallbacks()
                     .On<Button2Press>(OnButton2Press);
@@ -29,6 +31,8 @@ namespace ResonantSpark {
                 fgChar.__debugSetStateText("Grabbed", new Color(1.0f, 0.0f, 1.0f));
 
                 fgChar.Play("grabbed");
+
+                tracker.Track(frameIndex);
             }
 
             public override void ExecutePass0(int frameIndex) {
@@ -36,15 +40,21 @@ namespace ResonantSpark {
             }
 
             public override void ExecutePass1(int frameIndex) {
-                //fgChar.UpdateTarget();
-                //fgChar.UpdateCharacterMovement();
                 fgChar.CalculateFinalVelocity();
-                //fgChar.AnimationWalkVelocity();
             }
 
             public override void LateExecute(int frameIndex) {
-                //fgChar.UpdateCharacterMovement();
-                //fgChar.AnimationWalkVelocity();
+                if (tracker.frameCount > grabbedLength) {
+                    if (fgChar.hitStun <= 0.0f) {
+                        changeState(states.Get("stand"));
+                    }
+                    else {
+                        changeState(states.Get("hitStunStand"));
+                    }
+                }
+
+                fgChar.IncrementHitStun();
+                tracker.Increment();
             }
 
             public override void Exit(int frameIndex) {
@@ -82,18 +92,11 @@ namespace ResonantSpark {
                 return false;
             }
 
-            public void SetGrabBreakable(bool grabBreakable) {
-                this.grabBreakable = grabBreakable;
-            }
-
             private void OnButton2Press(Action stop, Combination combo) {
                 var but2Press = (Button2Press)combo;
-
-                if (grabBreakable) {
-                    if (but2Press.button0 == Input.FightingGameInputCodeBut.A && but2Press.button1 == Input.FightingGameInputCodeBut.D) {
-                        // TODO: Break the throw.
-                        Debug.Log("Break the throw");
-                    }
+                if ((but2Press.button0 == Input.FightingGameInputCodeBut.A && but2Press.button1 == Input.FightingGameInputCodeBut.D) ||
+                    (but2Press.button1 == Input.FightingGameInputCodeBut.A && but2Press.button0 == Input.FightingGameInputCodeBut.D)) {
+                    fgChar.BreakGrab();
                 }
                 stop();
             }

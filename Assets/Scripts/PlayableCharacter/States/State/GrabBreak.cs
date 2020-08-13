@@ -13,42 +13,40 @@ namespace ResonantSpark {
     namespace CharacterStates {
         public class GrabBreak : CharacterBaseState {
 
+            public int grabBreakLength;
+
+            private Utility.AttackTracker tracker;
+
             public new void Awake() {
                 base.Awake();
 
-                // NOTE: this state might not be necessary.
                 states.Register(this, "grabBreak");
 
-                RegisterInputCallbacks()
-                    .On<DirectionPress>(OnDirectionPress)
-                    .On<DoubleTap>(OnDoubleTap);
+                tracker = new Utility.AttackTracker();
             }
 
             public override void Enter(int frameIndex, MultipassBaseState previousState) {
                 fgChar.__debugSetStateText("Grab Break", new Color(1.0f, 0.5f, 0.0f));
-                //if (messages.Count > 0) {
-                //    Combination combo = messages.Dequeue();
-                //    combo.inUse = false;
-                //}
 
-                fgChar.Play("idle");
+                fgChar.Play("grab_break");
+
+                tracker.Track(frameIndex);
             }
 
             public override void ExecutePass0(int frameIndex) {
-                FindInput(fgChar.GetFoundCombinations());
-                fgChar.CalculateFinalVelocity();
+                //FindInput(fgChar.GetFoundCombinations());
             }
 
             public override void ExecutePass1(int frameIndex) {
-                //fgChar.UpdateTarget();
-                //fgChar.UpdateCharacterMovement();
-                //fgChar.CalculateFinalVelocity();
-                //fgChar.AnimationWalkVelocity();
+                fgChar.CalculateFinalVelocity();
             }
 
             public override void LateExecute(int frameIndex) {
-                //fgChar.UpdateCharacterMovement();
-                //fgChar.AnimationWalkVelocity();
+                if (tracker.frameCount > grabBreakLength) {
+                    changeState(states.Get("stand"));
+                }
+
+                tracker.Increment();
             }
 
             public override void Exit(int frameIndex) {

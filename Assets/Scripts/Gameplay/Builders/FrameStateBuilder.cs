@@ -10,6 +10,10 @@ namespace ResonantSpark {
     namespace CharacterProperties {
         public partial class FrameStateBuilder : IFrameStateBuilder {
 
+            public FrameStateBuilder() {
+                hitCallbackIds = new List<int>();
+            }
+
             public FrameState Build(Dictionary<int, Hit> hitMap) {
                 List<Hit> hitList = new List<Hit>();
 
@@ -28,7 +32,8 @@ namespace ResonantSpark {
                     soundClip,
                     soundCallback,
                     projectile,
-                    projectileCallback);
+                    projectileCallback,
+                    executeCallback);
             }
         }
     }

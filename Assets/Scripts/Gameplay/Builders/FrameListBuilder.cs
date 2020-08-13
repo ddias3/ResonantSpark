@@ -28,6 +28,7 @@ namespace ResonantSpark {
                 public List<int> hitCallbackIds;
 
                 public Action<TargetFG> trackCallback = null;
+                public Action executeCallback = null;
 
                 public AudioClip soundClip = null;
                 public Action<AudioResource> soundCallback = null;
@@ -162,12 +163,13 @@ namespace ResonantSpark {
                             break;
                         case "hit":
                             topStackFrame.hitCallbackIds = new List<int>();
-                            if (entry.content != null) {
-                                hitCallbackMap.Add(hitCallbackCounter, (Action<IHitCallbackObject>)entry.content);
-                                topStackFrame.hitCallbackIds.Add(hitCallbackCounter);
+                            hitCallbackMap.Add(hitCallbackCounter, (Action<IHitCallbackObject>)entry.content);
+                            topStackFrame.hitCallbackIds.Add(hitCallbackCounter);
 
-                                hitCallbackCounter++;
-                            }
+                            hitCallbackCounter++;
+                            break;
+                        case "execute":
+                            topStackFrame.executeCallback = (Action)entry.content;
                             break;
                     }
                 }
@@ -232,7 +234,8 @@ namespace ResonantSpark {
                             stackFrame.soundClip,
                             stackFrame.soundCallback,
                             stackFrame.projectile,
-                            stackFrame.projectileCallback
+                            stackFrame.projectileCallback,
+                            stackFrame.executeCallback
                         );
                     }
                 }

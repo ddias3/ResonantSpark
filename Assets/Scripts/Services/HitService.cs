@@ -30,6 +30,7 @@ namespace ResonantSpark {
 
             public Hit Create(Action<IHitCallbackObject> buildCallback) {
                 HitBuilder hitBuilder = new HitBuilder(buildService.GetAllServices());
+                buildCallback(hitBuilder);
                 return hitBuilder.CreateHit();
             }
 

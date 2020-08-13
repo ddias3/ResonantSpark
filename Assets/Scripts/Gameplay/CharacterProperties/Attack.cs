@@ -94,8 +94,12 @@ namespace ResonantSpark {
                 tracker.Track();
             }
 
+            public void SetAnimation() {
+                fgChar.Play(currGroup.animStateName);
+            }
+
             public void SaveEntity(string id, InGameEntity saveEntity) {
-                savedEntities.Add(id, saveEntity);
+                savedEntities[id] = saveEntity;
             }
 
             public InGameEntity GetEntity(string id) {
@@ -149,6 +153,7 @@ namespace ResonantSpark {
 
             public void Reset() {
                 currGroup = groups[startGroup];
+                savedEntities.Clear();
             }
 
             public CharacterStates.Attack GetInitAttackState() {
