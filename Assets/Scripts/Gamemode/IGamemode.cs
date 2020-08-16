@@ -8,7 +8,7 @@ using ResonantSpark.Service;
 namespace ResonantSpark {
     namespace Gamemode {
         public interface IGamemode {
-            void CreateDependencies(PersistenceService persService, PlayerService playerService, FightingGameService fgService, UiService uiService, InputService inputService);
+            void CreateDependencies(AllServices services);
             void SetUp();
             bool IsCurrentFGChar(InGameEntity entity);
             int GetMaxPlayers();

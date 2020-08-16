@@ -22,8 +22,8 @@ namespace ResonantSpark {
 
             private LoadMainMenu onLoadMainMenuEvent;
 
-            public override void CreateDependencies(PersistenceService persService, PlayerService playerService, FightingGameService fgService, UiService uiService, InputService inputService) {
-                base.CreateDependencies(persService, playerService, fgService, uiService, inputService);
+            public override void CreateDependencies(AllServices services) {
+                base.CreateDependencies(services);
 
                 List<string> gamemodeDetailsPlayers = (List<string>)persService.GetGamemodeDetails()["players"];
                 if (gamemodeDetailsPlayers.Count != 2) {

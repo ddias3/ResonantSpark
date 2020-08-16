@@ -6,7 +6,7 @@ using ResonantSpark.Gameplay;
 
 namespace ResonantSpark {
     namespace SimplifiedPhysics {
-        public class OverlapResolve : GlobalConstraint {
+        public class SoftEnforce2d : GlobalConstraint {
             public float maxAngle = 60.0f;
             public float maxAngleRotation = 600.0f;
             public float maxWallStopAngle = 40.0f;
@@ -17,8 +17,12 @@ namespace ResonantSpark {
             private Vector3 directLine;
             private LayerMask levelBounds;
 
+            private Vector3 gameplay2dLine;
+
             public void Awake() {
                 levelBounds = LayerMask.GetMask("LevelBoundary");
+                char0 = null;
+                char1 = null;
             }
 
             public void SetRigidbodyFGs(RigidbodyFG char0, RigidbodyFG char1) {
@@ -28,15 +32,18 @@ namespace ResonantSpark {
                 this.directLine.y = 0;
             }
 
-            public override void Restrict() {
-                Vector3 newDirectLine = char1.position - char0.position;
-                newDirectLine.y = 0;
+            public override void Preprocess(float deltaTime) {
+                gameplay2dLine = char1.position - char0.position;
+                gameplay2dLine.y = 0;
+            }
 
-                if (Vector3.Angle(this.directLine, newDirectLine) > maxAngle) {
+            public override void Postprocess(float deltaTime) {
+                    // What was I thinking, this code doesn't make sense.
+                if (Vector3.Angle(this.directLine, gameplay2dLine) > maxAngle) {
 
                 }
                 else {
-                    this.directLine = newDirectLine;
+                    this.directLine = gameplay2dLine;
                 }
 
                 RaycastHit wallHit0;

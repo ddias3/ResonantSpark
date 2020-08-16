@@ -12,10 +12,15 @@ namespace ResonantSpark {
             private AudioService audioService;
             private HitBoxService hitBoxService;
             private HitService hitService;
-            private ProjectileService projectileService;
+            private InputService inputService;
             private ParticleService particleService;
+            private PersistenceService persistenceService;
+            private PhysicsService physicsService;
+            private PlayerService playerService;
+            private ProjectileService projectileService;
             private CameraService cameraService;
             private TimeService timeService;
+            private UiService uiService;
 
             private AllServices services;
 
@@ -24,23 +29,33 @@ namespace ResonantSpark {
             public void Start() {
                 fgService = GetComponent<FightingGameService>();
                 audioService = GetComponent<AudioService>();
+                cameraService = GetComponent<CameraService>();
                 hitBoxService = GetComponent<HitBoxService>();
                 hitService = GetComponent<HitService>();
-                projectileService = GetComponent<ProjectileService>();
+                inputService = GetComponent<InputService>();
                 particleService = GetComponent<ParticleService>();
-                cameraService = GetComponent<CameraService>();
+                persistenceService = GetComponent<PersistenceService>();
+                physicsService = GetComponent<PhysicsService>();
+                playerService = GetComponent<PlayerService>();
+                projectileService = GetComponent<ProjectileService>();
                 timeService = GetComponent<TimeService>();
+                uiService = GetComponent<UiService>();
 
                 services = new AllServices()
                     .AddServiceAs<IBuildService>(this)
+                    .AddServiceAs<ICameraService>(cameraService)
                     .AddServiceAs<IFightingGameService>(fgService)
                     .AddServiceAs<IAudioService>(audioService)
                     .AddServiceAs<IHitBoxService>(hitBoxService)
                     .AddServiceAs<IHitService>(hitService)
-                    .AddServiceAs<IProjectileService>(projectileService)
+                    .AddServiceAs<IInputService>(inputService)
                     .AddServiceAs<IParticleService>(particleService)
-                    .AddServiceAs<ICameraService>(cameraService)
-                    .AddServiceAs<ITimeService>(timeService);
+                    .AddServiceAs<IPersistenceService>(persistenceService)
+                    .AddServiceAs<IPlayerService>(playerService)
+                    .AddServiceAs<IProjectileService>(projectileService)
+                    .AddServiceAs<IPhysicsService>(physicsService)
+                    .AddServiceAs<ITimeService>(timeService)
+                    .AddServiceAs<IUiService>(uiService);
 
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(BuildService));
             }

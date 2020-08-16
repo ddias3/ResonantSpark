@@ -15,12 +15,15 @@ namespace ResonantSpark {
 
             public int grabbedLength;
 
+            private bool moveToPosition;
+            private Vector3 finalGrabbedPosition;
             private Utility.AttackTracker tracker;
 
             public new void Awake() {
                 base.Awake();
                 states.Register(this, "grabbed");
 
+                moveToPosition = false;
                 tracker = new Utility.AttackTracker();
 
                 RegisterInputCallbacks()
@@ -37,6 +40,13 @@ namespace ResonantSpark {
 
             public override void ExecutePass0(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
+
+                if (moveToPosition) {
+                    Debug.Log("Move grabbed char");
+                        // TODO: Move the character to the desired location
+                    //WalkCharacter(localVelocity, localInput);
+                    //TurnCharacter(localInput);
+                }
             }
 
             public override void ExecutePass1(int frameIndex) {
@@ -90,6 +100,14 @@ namespace ResonantSpark {
 
             public override bool CheckBlockSuccess(Hit hit) {
                 return false;
+            }
+
+            public void SetFinalGrabbedPosition(Vector3 position) {
+                this.finalGrabbedPosition = position;
+            }
+
+            public void SetMoveToPosition(bool moveToPosition) {
+                this.moveToPosition = moveToPosition;
             }
 
             private void OnButton2Press(Action stop, Combination combo) {

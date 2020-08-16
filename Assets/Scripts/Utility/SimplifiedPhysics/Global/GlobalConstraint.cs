@@ -7,7 +7,8 @@ namespace ResonantSpark {
         public abstract class GlobalConstraint : MonoBehaviour {
             public bool active { get; set; }
 
-            public abstract void Restrict();
+            public abstract void Preprocess(float deltaTime);
+            public abstract void Postprocess(float deltaTime);
         }
     }
 }

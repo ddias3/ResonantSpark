@@ -91,7 +91,7 @@ namespace ResonantSpark {
                 sphereOverlapMask = LayerMask.GetMask("InStageDebris", "StaticLevelGeometry");
             }
 
-            public void SetUpCamera(FightingGameService fgService) {
+            public void SetUpCamera(IFightingGameService fgService) {
                 this.startTransform = fgService.GetCameraStart();
                 this.levelBoundaries = fgService.GetLevelBoundaries();
 

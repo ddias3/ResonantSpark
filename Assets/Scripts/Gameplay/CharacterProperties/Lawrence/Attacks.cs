@@ -102,7 +102,7 @@ namespace ResonantSpark {
                                                         throwNormal.ResetTracker();
                                                         throwNormal.SetAnimation();
 
-                                                        fgService.Grabs(fgChar, opponent, true);
+                                                        fgService.Grabs(fgChar, opponent, true, fgChar.position + fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
                                                     }
                                                     else {
                                                         // lose to strike

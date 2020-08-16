@@ -21,7 +21,7 @@ namespace ResonantSpark {
 
             private Dictionary<string, GameUiElement> elements;
 
-            public void RegisterElements(UiService uiService) {
+            public void RegisterElements(IUiService uiService) {
                 uiService.RegisterElement("healthBarP1", healthBarP1);
                 uiService.RegisterElement("healthBarP2", healthBarP2);
                 uiService.RegisterElement("roundTimer", roundTimer);

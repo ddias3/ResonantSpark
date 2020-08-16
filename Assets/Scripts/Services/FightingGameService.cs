@@ -152,7 +152,7 @@ namespace ResonantSpark {
                 this.gamemode = newGameMode.GetComponent<IGamemode>();
                 this.gamemodeHooks = newGameMode.GetComponent<IHookExpose>();
 
-                this.gamemode.CreateDependencies(persistenceService, playerService, this, GetComponent<UiService>(), GetComponent<InputService>());
+                this.gamemode.CreateDependencies(GetComponent<BuildService>().GetAllServices());
             }
 
             public void SetUpGamemode() {
@@ -187,6 +187,15 @@ namespace ResonantSpark {
 
                 byEntity.Attach(grabbedEntity);
                 grabbedEntity.PredeterminedActions("grabbed");
+            }
+
+            public void Grabs(InGameEntity byEntity, InGameEntity grabbedEntity, bool breakable, Vector3 finalGrabbedPosition) {
+                entityGrabbingEntity[byEntity] = grabbedEntity;
+                entityGrabbingEntityContinue[byEntity] = grabbedEntity;
+                entityGrabbingEntityBreakable[byEntity] = breakable;
+
+                byEntity.Attach(grabbedEntity);
+                grabbedEntity.PredeterminedActions("grabbed", finalGrabbedPosition);
             }
 
             public void MaintainsGrab(InGameEntity byEntity, InGameEntity grabbedEntity) {

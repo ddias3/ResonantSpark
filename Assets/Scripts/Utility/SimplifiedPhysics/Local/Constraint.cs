@@ -7,7 +7,7 @@ namespace ResonantSpark {
         public abstract class Constraint : MonoBehaviour {
             public bool active { get; set; }
 
-            public abstract void Restrict(Rigidbody rigidbody);
+            public abstract Vector3 CollisionOffset(Vector3 offset);
         }
     }
 }

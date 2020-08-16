@@ -8,6 +8,7 @@ using ResonantSpark.Gameplay;
 using ResonantSpark.Service;
 using ResonantSpark.Utility;
 using ResonantSpark.Camera;
+using ResonantSpark.SimplifiedPhysics;
 
 namespace ResonantSpark {
     namespace Gamemode {
@@ -21,11 +22,12 @@ namespace ResonantSpark {
 
             public float roundTime = 60.0f;
             public float maxCharacterDistance = 8.0f;
-            protected PersistenceService persService;
-            protected PlayerService playerService;
-            protected UiService uiService;
-            protected FightingGameService fgService;
-            protected InputService inputService;
+            protected IPersistenceService persService;
+            protected IPlayerService playerService;
+            protected IUiService uiService;
+            protected IFightingGameService fgService;
+            protected IInputService inputService;
+            protected IPhysicsService physicsService;
 
             protected FightingGameCharacter player1;
             protected FightingGameCharacter player2;
@@ -67,12 +69,13 @@ namespace ResonantSpark {
                 EventManager.StopListening<Events.StartGame>(enablePlayersCallback);
             }
 
-            public virtual void CreateDependencies(PersistenceService persService, PlayerService playerService, FightingGameService fgService, UiService uiService, InputService inputService) {
-                this.persService = persService;
-                this.playerService = playerService;
-                this.fgService = fgService;
-                this.uiService = uiService;
-                this.inputService = inputService;
+            public virtual void CreateDependencies(AllServices services) {
+                this.persService = services.GetService<IPersistenceService>();
+                this.playerService = services.GetService<IPlayerService>();
+                this.fgService = services.GetService<IFightingGameService>();
+                this.uiService = services.GetService<IUiService>();
+                this.inputService = services.GetService<IInputService>();
+                this.physicsService = services.GetService<IPhysicsService>();
 
                 Debug.Log("Instantiating in game UI");
                 inGameUi = GameObject.Instantiate(inGameUiPrefab).GetComponent<UI.InGameUi>();
@@ -113,6 +116,16 @@ namespace ResonantSpark {
 
                 player1.RegisterOnEmptyHealthCallback(OnPlayerEmptyHealth);
                 player2.RegisterOnEmptyHealthCallback(OnPlayerEmptyHealth);
+
+                physicsService.Configure<SoftEnforce2d>((index, constraint) => {
+                    constraint.active = false;
+                    constraint.SetRigidbodyFGs(player1.rigidFG, player2.rigidFG);
+                });
+
+                physicsService.Configure<FGCharPhysicsFudge>((index, constraint) => {
+                    constraint.active = true;
+                    constraint.SetRigidbodyFGs(player1, player2);
+                });
             }
 
             public bool IsCurrentFGChar(InGameEntity entity) {

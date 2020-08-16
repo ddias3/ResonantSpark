@@ -526,6 +526,7 @@ namespace ResonantSpark {
                 switch (actionName) {
                     case "grabbed":
                         CharacterStates.Grabbed grabbed = (CharacterStates.Grabbed)states.Get("grabbed");
+                        grabbed.SetMoveToPosition(false);
                         SetState(grabbed);
                         break;
                     case "grabBreak":
@@ -549,7 +550,14 @@ namespace ResonantSpark {
 
             public override void PredeterminedActions(string actionName, params object[] objs) {
                 CharacterStates.Clash clash = (CharacterStates.Clash)states.Get("clash");
-                
+                switch (actionName) {
+                    case "grabbed":
+                        CharacterStates.Grabbed grabbed = (CharacterStates.Grabbed)states.Get("grabbed");
+                        grabbed.SetMoveToPosition(true);
+                        grabbed.SetFinalGrabbedPosition((Vector3)objs[0]);
+                        SetState(grabbed);
+                    break;
+                }
             }
 
             public void OnAttachingFGChar() {

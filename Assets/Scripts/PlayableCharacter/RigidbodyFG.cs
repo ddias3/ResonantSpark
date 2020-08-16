@@ -16,7 +16,6 @@ namespace ResonantSpark {
             private List<(Vector3, ForceMode)> forces;
 
             private new Rigidbody rigidbody;
-            private GameTimeManager gameTime;
 
             private SimplifiedPhysics.State currState;
 
@@ -36,8 +35,6 @@ namespace ResonantSpark {
                 };
 
                 SimplifiedPhysics.PhysicsTracker.Get().Add(this);
-
-                gameTime = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
             }
 
             public Quaternion rotation {
@@ -124,12 +121,12 @@ namespace ResonantSpark {
                 this.directControlCallback = callback;
             }
 
-            public void FrameUpdateMovement(int frameIndex) {
+            public void FrameUpdateMovement(int frameIndex, float deltaTime) {
                 if (directControlCallback != null) {
                     currState = directControlCallback(rigidbody);
                 }
                 else {
-                    currState = SimplifiedPhysics.NumericalIntegration.RK4(Acceleration, currState, 0.0f, gameTime.DeltaTime("frameDelta", "game"));
+                    currState = SimplifiedPhysics.NumericalIntegration.RK4(Acceleration, currState, 0.0f, deltaTime);
                 }
 
                 rigidbody.MovePosition(currState.x);
@@ -137,9 +134,6 @@ namespace ResonantSpark {
 
             public void FrameUpdateCollisions(int frameIndex) {
                 
-            }
-
-            public void FrameUpdateResolve(int frameIndex) {
             }
 
             private Vector3 Acceleration(SimplifiedPhysics.State state) {
