@@ -9,13 +9,13 @@ namespace ResonantSpark {
                 return SphereSphereIntersection(sph0, sph1, out Vector3 collisionPoint);
             }
 
-            public static bool SphereSphereIntersection(SphereCollider sph0, SphereCollider sph1, out Vector3 collisionPoint) {
+            public static bool SphereSphereIntersection(SphereCollider sph0, SphereCollider sph1, out Vector3 collisionPoint, float sphereExpansion = 1e-3f) {
                 Vector3 sph0Center = sph0.transform.position + sph0.transform.rotation * sph0.center;
                 Vector3 sph1Center = sph1.transform.position + sph1.transform.rotation * sph1.center;
                 Debug.Log(sph0Center.ToString("F2") + " -- " + sph1Center.ToString("F2"));
 
                 float distance = Vector3.Distance(sph0Center, sph1Center);
-                if (distance < sph0.radius + sph1.radius) {
+                if (distance < sph0.radius + sph1.radius + (sphereExpansion * 2.0f)) {
                     collisionPoint = (sph0Center - sph1Center) * 0.5f;
                     return true;
                 }

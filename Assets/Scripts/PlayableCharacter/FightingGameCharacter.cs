@@ -30,6 +30,7 @@ namespace ResonantSpark {
             public float landAnimationFrameTarget = 3f;
 
             public Transform standCollider;
+            public CapsuleCollider hitStunHurtBox;
 
             public TMPro.TextMeshPro __debugState;
 
@@ -476,10 +477,12 @@ namespace ResonantSpark {
             }
 
             public void HitStunStart() {
+                hitStunHurtBox.enabled = true;
                 fgService.HitStunStart(this);
             }
 
             public void HitStunEnd() {
+                hitStunHurtBox.enabled = false;
                 fgService.HitStunEnd(this);
             }
 
