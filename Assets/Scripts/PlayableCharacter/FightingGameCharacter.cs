@@ -157,7 +157,7 @@ namespace ResonantSpark {
             public void StartAttackIfRequired(int frameIndex) {
                 attackRunner.StartAttackIfRequired(frameIndex);
                 //attackInfoDisplay?.DisplayAttack(attackRunner.GetCurrentAttack());
-                uiService.SetValue<Attack>("attackInfo", field: "display", value0: attackRunner.GetCurrentAttack());
+                //uiService.SetValue<Attack>("attackInfo", field: "display", value0: attackRunner.GetCurrentAttack());
             }
 
             public void ChooseAttack(CharacterStates.CharacterBaseState currState, CharacterProperties.Attack currAttack, List<Combination> inputCombos) {

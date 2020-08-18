@@ -122,6 +122,8 @@ namespace ResonantSpark {
                     }
                 }
 
+                audioService.SetOptionsMenuHook(trainingMenu.optionsMenuHooks);
+
                 //dummy.Init((DummyInputController) inputService.GetInputController(dummyControllerIndex), fgService, player);
 
                 //DummyInputController dummyController = (DummyInputController)inputService.GetInputController(dummyControllerIndex);

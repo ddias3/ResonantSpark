@@ -36,6 +36,10 @@ namespace ResonantSpark {
                         if (char0Wins >= 3 || char1Wins >= 3) {
                             changeState(states.Get("gameEndMode"));
                         }
+                        else if (char0Wins >= 2 || char1Wins >= 2) {
+                            versus.PlayMusic("roundFinal");
+                            changeState(states.Get("roundStartMode"));
+                        }
                         else {
                             changeState(states.Get("roundStartMode"));
                         }

@@ -24,6 +24,8 @@ namespace ResonantSpark {
                     versus.ResetGame();
                     versus.ResetRound();
 
+                    versus.PlayMusic("roundNormal");
+
                     elapsedTime = 0;
                     inGameUi.SetMainScreenText("Versus");
                     //uiService.SetValue(element: "mainScreenText", field: "text", value0: "Versus");

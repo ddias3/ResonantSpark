@@ -101,6 +101,8 @@ namespace ResonantSpark {
                         }
                     }
                 }
+
+                audioService.SetOptionsMenuHook(versusMenu.optionsMenuHooks);
             }
 
             public Dictionary<string, UnityEventBase> GetHooks() {

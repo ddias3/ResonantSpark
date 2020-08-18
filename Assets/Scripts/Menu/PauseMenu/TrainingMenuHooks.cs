@@ -13,6 +13,8 @@ namespace ResonantSpark {
             public ScrollSelect dummyBlock;
             public PauseMenuRunner pauseMenuRunner;
 
+            public OptionsMenuHooks optionsMenuHooks;
+
             private MenuManager menuManager;
 
             private Dictionary<string, UnityEventBase> hooks;

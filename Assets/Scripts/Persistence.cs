@@ -55,16 +55,17 @@ namespace ResonantSpark {
             playerInfo[index] = data;
         }
 
-        public void SetOptionValue(string key, float value) {
-            optionValues[key] = value;
-        }
-
         public void SetGamemode(string gamemode) {
             this.gamemode = gamemode;
         }
 
         public void SetLevel(string levelPath) {
             this.levelPath = levelPath;
+        }
+
+        public void SetOptionValue(string key, float value) {
+            PlayerPrefs.SetFloat(key, value);
+            optionValues[key] = value;
         }
 
         public float GetOptionValue(string key) {
@@ -112,9 +113,9 @@ namespace ResonantSpark {
             };
             devices = new List<GameDeviceMapping> { null, null };
             optionValues = new Dictionary<string, float> {
-                { "masterVolume", 1.0f },
-                { "effectsVolume", 1.0f },
-                { "musicVolume", 1.0f },
+                { "masterVolume", PlayerPrefs.GetFloat("masterVolume", 1.0f) },
+                { "sfxVolume", PlayerPrefs.GetFloat("sfxVolume", 1.0f) },
+                { "musicVolume", PlayerPrefs.GetFloat("musicVolume", 1.0f) },
             };
             levelPath = "";
         }

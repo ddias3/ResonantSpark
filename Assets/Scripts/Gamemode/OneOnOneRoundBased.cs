@@ -28,6 +28,7 @@ namespace ResonantSpark {
             protected IFightingGameService fgService;
             protected IInputService inputService;
             protected IPhysicsService physicsService;
+            protected IAudioService audioService;
 
             protected FightingGameCharacter player1;
             protected FightingGameCharacter player2;
@@ -76,6 +77,8 @@ namespace ResonantSpark {
                 this.uiService = services.GetService<IUiService>();
                 this.inputService = services.GetService<IInputService>();
                 this.physicsService = services.GetService<IPhysicsService>();
+
+                this.audioService = services.GetService<IAudioService>();
 
                 Debug.Log("Instantiating in game UI");
                 inGameUi = GameObject.Instantiate(inGameUiPrefab).GetComponent<UI.InGameUi>();
@@ -294,6 +297,10 @@ namespace ResonantSpark {
             public void SetDisplayTime(float currRoundTime) {
                 inGameUi.SetTime(currRoundTime);
                 //uiService.SetValue(element: "roundTimer", field: "time", value0: currRoundTime);
+            }
+
+            public void PlayMusic(string id) {
+                audioService.PlayMusic(id);
             }
 
             public void OnGameEntityNumHitsChange(InGameEntity entity, int numHits, int prevNumHits) {

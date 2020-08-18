@@ -13,6 +13,8 @@ namespace ResonantSpark {
             public PauseMenuRunner pauseMenuRunner;
             public PostMatchMenu postMatchMenu;
 
+            public OptionsMenuHooks optionsMenuHooks;
+
             private MenuManager menuManager;
 
             private Dictionary<string, UnityEventBase> hooks;

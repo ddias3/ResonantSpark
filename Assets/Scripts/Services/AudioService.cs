@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ResonantSpark.Utility;
+using ResonantSpark.Menu;
 
 namespace ResonantSpark {
     namespace Service {
@@ -11,6 +12,8 @@ namespace ResonantSpark {
 
             public AudioResource prefab;
             public Transform audioEmpty;
+
+            public MusicPlayer musicPlayer;
 
             private ResourceRecycler<AudioResource> audioSources;
 
@@ -20,6 +23,8 @@ namespace ResonantSpark {
             private List<AudioResource> activeOneShots;
 
             private FrameEnforcer frame;
+
+            private float sfxVolume;
 
             public void Start() {
                 frame = GameObject.FindGameObjectWithTag("rspTime").GetComponent<FrameEnforcer>();
@@ -41,6 +46,9 @@ namespace ResonantSpark {
 
                 activeOneShots = new List<AudioResource>();
 
+                sfxVolume = Persistence.Get().GetOptionValue("sfxVolume");
+                musicPlayer.SetMusicVolume(Persistence.Get().GetOptionValue("musicVolume"));
+
                 EventManager.TriggerEvent<Events.ServiceReady, Type>(typeof(AudioService));
             }
 
@@ -54,6 +62,7 @@ namespace ResonantSpark {
             public void PlayOneShot(Vector3 position, AudioClip audioClip, float playbackPosition = 0.0f) {
                 AudioResource resource = audioSources.UseResource();
                 resource.SetUp(position, audioClip, playbackPosition);
+                resource.SetVolume(sfxVolume);
 
                 activeOneShots.Add(resource);
             }
@@ -95,12 +104,31 @@ namespace ResonantSpark {
                 activeSounds.Clear();
             }
 
+            private void OnVolumeMusicChange(float newVolume) {
+                musicPlayer.SetMusicVolume(newVolume);
+            }
+
+            private void OnVolumeSfxChange(float newVolume) {
+                sfxVolume = newVolume;
+            }
+
+            public void SetOptionsMenuHook(OptionsMenuHooks optionsMenuHooks) {
+                HookReceive hookReceive = new HookReceive(optionsMenuHooks.GetHooks());
+                hookReceive.HookIn<float>("volumeMusicChange", new UnityEngine.Events.UnityAction<float>(OnVolumeMusicChange));
+                hookReceive.HookIn<float>("volumeSfxChange", new UnityEngine.Events.UnityAction<float>(OnVolumeSfxChange));
+            }
+
             public void Play(AudioResource audioResource) {
                 activeSounds.Add(audioResource);
             }
 
             public Transform GetEmptyHoldTransform() {
                 return audioEmpty;
+            }
+
+            public void PlayMusic(string id) {
+                musicPlayer.SetMusic(id);
+                musicPlayer.Play();
             }
         }
     }

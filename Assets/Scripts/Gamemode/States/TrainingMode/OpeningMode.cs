@@ -24,6 +24,8 @@ namespace ResonantSpark {
                     training.ResetGame();
                     training.ResetRound();
 
+                    training.PlayMusic("roundNormal");
+
                     elapsedTime = 0;
                     inGameUi.SetMainScreenText("Training");
                     //uiService.SetValue(element: "mainScreenText", field: "text", value0: "Training");

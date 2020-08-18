@@ -35,6 +35,10 @@ namespace ResonantSpark {
             source.Play();
         }
 
+        public void SetVolume(float newVolume) {
+            source.volume = newVolume;
+        }
+
         public bool IsActive() {
             //return inUse;
             return source.isPlaying;

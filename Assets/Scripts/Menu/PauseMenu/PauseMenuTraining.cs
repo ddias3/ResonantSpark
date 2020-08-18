@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using ResonantSpark.Utility;
+
 namespace ResonantSpark {
     namespace Menu {
         public class PauseMenuTraining : Menu {
@@ -10,9 +12,12 @@ namespace ResonantSpark {
 
             public Selectable resume;
             public Selectable training;
+            public Selectable options;
             public Selectable exit;
 
             public Cursor2d cursor2d;
+
+            public OptionsMenuHooks optionsMenuHooks;
 
             private Selectable currSelected = null;
 
@@ -20,6 +25,9 @@ namespace ResonantSpark {
                 if (currSelected == null) {
                     currSelected = resume;
                 }
+
+                HookReceive hookReceive = new HookReceive(optionsMenuHooks.GetHooks());
+                hookReceive.HookIn("closeOptions", new UnityEngine.Events.UnityAction(CloseOptions));
 
                 cursor2d.Hide();
                 animator2d.Play("hidden");
@@ -63,6 +71,11 @@ namespace ResonantSpark {
                             LoadTrainingMenu();
                         });
                     }
+                    else if (currSelected == options) {
+                        cursor2d.Select(options, () => {
+                            LoadOptionsMenu();
+                        });
+                    }
                     else if (currSelected == exit) {
                         cursor2d.Select(exit, () => {
                             runner.LoadMainMenu();
@@ -80,16 +93,24 @@ namespace ResonantSpark {
                 });
 
                 training.On("down", () => {
-                    cursor2d.Highlight(exit);
-                    currSelected = exit;
+                    cursor2d.Highlight(options);
+                    currSelected = options;
                 }).On("up", () => {
                     cursor2d.Highlight(resume);
                     currSelected = resume;
                 });
 
-                exit.On("up", () => {
+                options.On("down", () => {
+                    cursor2d.Highlight(exit);
+                    currSelected = exit;
+                }).On("up", () => {
                     cursor2d.Highlight(training);
                     currSelected = training;
+                });
+
+                exit.On("up", () => {
+                    cursor2d.Highlight(options);
+                    currSelected = options;
                 });
             }
 
@@ -100,6 +121,14 @@ namespace ResonantSpark {
 
             private void LoadTrainingMenu() {
                 changeState("trainingMenu");
+            }
+
+            private void LoadOptionsMenu() {
+                changeState("optionsMenu");
+            }
+
+            private void CloseOptions() {
+                changeState("pauseMenuTraining");
             }
         }
     }

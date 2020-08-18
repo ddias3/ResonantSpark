@@ -18,14 +18,12 @@ namespace ResonantSpark {
 
             public ScrollEvent scrollEvent = new ScrollEvent();
 
-            private int currSelected;
+            private int currSelected = 0;
 
             private Transform wordLeft;
             private Transform wordRight;
 
             public void Start() {
-                currSelected = 0;
-
                 On("left", () => {
                     //if (persistence.player1 == devMap || persistence.player2 == devMap) {
                     currSelected -= 1;
@@ -47,6 +45,11 @@ namespace ResonantSpark {
                     scrollEvent.Invoke(options[currSelected].callbackData);
                     //}
                 });
+            }
+
+            public void SetInitSelected(int index) {
+                currSelected = index;
+                displayText.SetText(options[currSelected].name);
             }
 
             public void AddListener(UnityAction<string> callback) {

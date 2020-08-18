@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 
+using ResonantSpark.Utility;
+
 namespace ResonantSpark {
     namespace Menu {
         public class MainMenu : Menu {
@@ -23,12 +25,17 @@ namespace ResonantSpark {
             public Cursor3d cursor3d;
             public Cursor2d cursor2d;
 
+            public OptionsMenuHooks optionsMenuHooks;
+
             private Selectable currSelected = null;
 
             public override void Init() {
                 if (currSelected == null) {
                     currSelected = versus;
                 }
+
+                HookReceive hookReceive = new HookReceive(optionsMenuHooks.GetHooks());
+                hookReceive.HookIn("closeOptions", new UnityEngine.Events.UnityAction(CloseOptions));
 
                 cursor3d.Hide();
                 cursor2d.Hide();
@@ -143,7 +150,7 @@ namespace ResonantSpark {
                     currSelected = training;
                 }).On("submit", () => {
                     cursor3d.Select(options, () => {
-                        Debug.Log("Go To Options Menu");
+                        changeState("optionsMenu");
                     });
                 });
 
@@ -201,6 +208,10 @@ namespace ResonantSpark {
                 else {
                     cursor2d.Highlight(currSelected);
                 }
+            }
+
+            private void CloseOptions() {
+                changeState("mainMenu");
             }
         }
     }
