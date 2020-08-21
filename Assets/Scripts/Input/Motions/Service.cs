@@ -196,8 +196,24 @@ namespace ResonantSpark {
                             //FightingGameInputCodeDir prevDir = direction;
 
                             n = 0;
+                            while (continueSearch && reader.ReadyNextLookAhead()) {
+                                if (n < 4) {
+                                    int lookAheadFrameIndex = reader.LookAhead(out GameInputStruct la);
+
+                                    if (la.direction != direction) {
+                                        continueSearch = false;
+                                        break;
+                                    }
+                                    ++n;
+                                }
+                                else {
+                                    break;
+                                }
+                            }
+
+                            n = 0;
                             while (continueSearch && reader.ReadyNextLookBehind()) {
-                                if (n < 5) {
+                                if (n < 3) {
                                     int lookBehindFrameIndex = reader.LookBehind(out GameInputStruct lb);
 
                                     if (lb.direction == FightingGameAbsInputCodeDir.Neutral) break;
@@ -211,11 +227,10 @@ namespace ResonantSpark {
 
                             n = 0;
                             while (continueSearch && reader.ReadyNextLookBehind()) {
-                                //if (n < 8) {
-                                if (n < 5) {
+                                if (n < 8) {
                                     int lookBehindFrameIndex = reader.LookBehind(out GameInputStruct lb);
 
-                                    if (lb.direction != FightingGameAbsInputCodeDir.Neutral) break;
+                                    if (lb.direction == direction) break;
                                     ++n;
                                 }
                                 else {
@@ -226,13 +241,13 @@ namespace ResonantSpark {
 
                             n = 0;
                             while (continueSearch && reader.ReadyNextLookBehind()) {
-                                if (n < 4) {
+                                if (n < 5) {
                                     int lookBehindFrameIndex = reader.LookBehind(out GameInputStruct lb);
 
-                                    if (lb.direction == direction) {
+                                    if (lb.direction == FightingGameAbsInputCodeDir.Neutral) {
                                         DoubleTap input = AddToActiveInputs<DoubleTap>(servedInputs, foundInputs, inputFactory, reader.currentFrame, newInput => {
                                             numFound++;
-                                            newInput.Init(inputFrameIndex, lookBehindFrameIndex, direction);
+                                            newInput.Init(inputFrameIndex, direction);
                                         });
                                     }
                                     ++n;

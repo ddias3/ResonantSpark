@@ -513,7 +513,7 @@ namespace ResonantSpark {
                     finalVelocity.y = 0;
                 }
 
-                AddVelocity(velPriority, finalVelocity);
+                SetVelocity(velPriority, finalVelocity);
             }
 
             public void SetStandCollider(Vector3 standColliderOffset) {
@@ -534,7 +534,7 @@ namespace ResonantSpark {
                         break;
                     case "grabBreak":
                         SetState((CharacterStates.CharacterBaseState)states.Get("grabBreak"));
-                        AddVelocity(VelocityPriority.Movement, rigidFG.rotation * Vector3.back * 2.0f);
+                        SetVelocity(VelocityPriority.Movement, rigidFG.rotation * Vector3.back * 2.0f);
                         break;
                     case "verticalClash":
                         clash.SetClashAnimation("clash_vertical");
@@ -557,7 +557,7 @@ namespace ResonantSpark {
                     case "grabbed":
                         CharacterStates.Grabbed grabbed = (CharacterStates.Grabbed)states.Get("grabbed");
                         grabbed.SetMoveToPosition(true);
-                        grabbed.SetFinalGrabbedPosition((Vector3)objs[0]);
+                        grabbed.SetFinalGrabbedPosition((Vector3)objs[0], (int)objs[1]);
                         SetState(grabbed);
                     break;
                 }

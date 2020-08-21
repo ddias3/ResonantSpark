@@ -84,7 +84,7 @@ namespace ResonantSpark {
                     changeState(states.Get("stand"));
                 }
 
-                fgChar.AddRelativeVelocity(Gameplay.VelocityPriority.Dash,
+                fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Dash,
                     new Vector3(
                         localScaling.x * AnimationCurveCalculus.Differentiate(dodgePositionCurve, tracker.frameCount) / fgChar.gameTime,
                         0.0f,

@@ -12,6 +12,7 @@ namespace ResonantSpark {
         public interface IAttackCallbackGroupObj {
             //IAttackCallbackGroupObj Input(params string[] inputStrings);
             IAttackCallbackGroupObj Movement(Func<float, float> xMoveCb = null, Func<float, float> yMoveCb = null, Func<float, float> zMoveCb = null);
+            IAttackCallbackGroupObj MovementDetails(bool additive = true);
             IAttackCallbackGroupObj AnimationState(string animStateName);
             IAttackCallbackGroupObj InitCharState(CharacterStates.Attack attackState);
             IAttackCallbackGroupObj FramesContinuous(Action<float, Vector3> callback);
@@ -26,6 +27,7 @@ namespace ResonantSpark {
             public Func<float, float> moveX { get; private set; }
             public Func<float, float> moveY { get; private set; }
             public Func<float, float> moveZ { get; private set; }
+            public Dictionary<string, object> movementDetails { get; private set; }
             public Action<float, Vector3> framesContinuous { get; private set; }
             public Action cleanUpCallback { get; private set; }
             public string animStateName { get; private set; }
@@ -47,7 +49,12 @@ namespace ResonantSpark {
                 if (zMoveCb != null) moveZ = zMoveCb;
                 else moveZ = return0Callback;
 
-                valuesSet["move"] = true;
+                valuesSet["movement"] = true;
+                return this;
+            }
+            public IAttackCallbackGroupObj MovementDetails(bool additive = true) {
+                this.movementDetails["additive"] = additive;
+                valuesSet["movementDetails"] = true;
                 return this;
             }
             public IAttackCallbackGroupObj FramesContinuous(Action<float, Vector3> callback) {

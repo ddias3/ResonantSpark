@@ -189,13 +189,13 @@ namespace ResonantSpark {
                 grabbedEntity.PredeterminedActions("grabbed");
             }
 
-            public void Grabs(InGameEntity byEntity, InGameEntity grabbedEntity, bool breakable, Vector3 finalGrabbedPosition) {
+            public void Grabs(InGameEntity byEntity, InGameEntity grabbedEntity, bool breakable, Vector3 finalGrabbedPosition, int moveToFinalPositionFrames) {
                 entityGrabbingEntity[byEntity] = grabbedEntity;
                 entityGrabbingEntityContinue[byEntity] = grabbedEntity;
                 entityGrabbingEntityBreakable[byEntity] = breakable;
 
                 byEntity.Attach(grabbedEntity);
-                grabbedEntity.PredeterminedActions("grabbed", finalGrabbedPosition);
+                grabbedEntity.PredeterminedActions("grabbed", finalGrabbedPosition, moveToFinalPositionFrames);
             }
 
             public void MaintainsGrab(InGameEntity byEntity, InGameEntity grabbedEntity) {

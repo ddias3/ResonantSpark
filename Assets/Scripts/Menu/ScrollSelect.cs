@@ -45,11 +45,37 @@ namespace ResonantSpark {
                     scrollEvent.Invoke(options[currSelected].callbackData);
                     //}
                 });
+
+                On("left", (GameDeviceMapping devMap) => {
+                    //if (persistence.player1 == devMap || persistence.player2 == devMap) {
+                    currSelected -= 1;
+                    if (currSelected < 0) {
+                        currSelected = options.Count - 1;
+                    }
+                    displayText.SetText(options[currSelected].name);
+                    scrollEvent.Invoke(options[currSelected].callbackData);
+                    //}
+                });
+
+                On("right", (GameDeviceMapping devMap) => {
+                    //if (persistence.player1 == devMap || persistence.player2 == devMap) {
+                    currSelected += 1;
+                    if (currSelected >= options.Count) {
+                        currSelected = 0;
+                    }
+                    displayText.SetText(options[currSelected].name);
+                    scrollEvent.Invoke(options[currSelected].callbackData);
+                    //}
+                });
             }
 
             public void SetInitSelected(int index) {
                 currSelected = index;
                 displayText.SetText(options[currSelected].name);
+            }
+
+            public int GetCurrentSelected() {
+                return currSelected;
             }
 
             public void AddListener(UnityAction<string> callback) {

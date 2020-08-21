@@ -20,7 +20,7 @@ namespace ResonantSpark {
             void Strike(InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority, int> onHit, Action<AttackPriority, int> onBlock);
             void Throw(InGameEntity hitEntity, InGameEntity byEntity, Hit hit, Action<AttackPriority> onGrabbed);
             void Grabs(InGameEntity byEntity, InGameEntity grabbedEntity, bool breakable);
-            void Grabs(InGameEntity byEntity, InGameEntity grabbedEntity, bool breakable, Vector3 finalGrabbedPosition);
+            void Grabs(InGameEntity byEntity, InGameEntity grabbedEntity, bool breakable, Vector3 finalGrabbedPosition, int moveToFinalPositionFrames);
             void MaintainsGrab(InGameEntity byEntity, InGameEntity grabbedEntity);
             void SetGrabBreakability(InGameEntity byEntity, bool breakable);
             void HitStunStart(FightingGameCharacter fgChar);

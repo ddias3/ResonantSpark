@@ -81,7 +81,7 @@ namespace ResonantSpark {
                     //jumpVelocity.z = jumpVelocity.z * (1 - (localVelocity.z / maxSpeed));
                     jumpVelocity.z = Mathf.Lerp(jumpVelocity.z, localVelocity.z, Mathf.Abs(localVelocity.z) / maxSpeed);
 
-                    fgChar.AddRelativeVelocity(Gameplay.VelocityPriority.Jump, jumpVelocity);
+                    fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Jump, jumpVelocity);
                 }
                 else if (frameCount > 4) {
                     changeState(states.Get("airborne"));

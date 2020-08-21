@@ -7,7 +7,7 @@ namespace ResonantSpark {
         [Serializable]
         public class CharacterInfo {
             public string name;
-            public Material preview;
+            public List<Material> previews;
         }
     }
 }

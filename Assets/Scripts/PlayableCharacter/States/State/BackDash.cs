@@ -65,7 +65,7 @@ namespace ResonantSpark {
             public override void ExecutePass0(int frameIndex) {
                 FindInput(fgChar.GetFoundCombinations());
                 //fgChar.AddRelativeVelocity(Gameplay.VelocityPriority.Dash, new Vector3(0.0f, 0.0f, dashSpeedCurve.Evaluate(tracker.frameCount)));
-                fgChar.AddRelativeVelocity(Gameplay.VelocityPriority.Dash,
+                fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Dash,
                     new Vector3(
                         0.0f,
                         0.0f,

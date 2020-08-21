@@ -24,8 +24,13 @@ namespace ResonantSpark {
             public AttackBuilderGroup(AllServices services) {
                 this.services = services;
 
+                movementDetails = new Dictionary<string, object> {
+                    { "additive", false },
+                };
+
                 valuesSet = new Dictionary<string, bool> {
-                    { "move", false },
+                    { "movement", false },
+                    { "movementDetails", false },
                     { "framesContinuous", false },
                     { "cleanUpCallback", false },
                     { "animStateName", false },

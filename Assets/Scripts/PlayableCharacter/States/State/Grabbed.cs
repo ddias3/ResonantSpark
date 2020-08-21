@@ -17,6 +17,10 @@ namespace ResonantSpark {
 
             private bool moveToPosition;
             private Vector3 finalGrabbedPosition;
+            private int moveToPositionFrameTime;
+
+            private Vector3 startPosition;
+
             private Utility.AttackTracker tracker;
 
             public new void Awake() {
@@ -33,6 +37,8 @@ namespace ResonantSpark {
             public override void Enter(int frameIndex, MultipassBaseState previousState) {
                 fgChar.__debugSetStateText("Grabbed", new Color(1.0f, 0.0f, 1.0f));
 
+                startPosition = fgChar.position;
+
                 fgChar.Play("grabbed");
 
                 tracker.Track(frameIndex);
@@ -42,10 +48,12 @@ namespace ResonantSpark {
                 FindInput(fgChar.GetFoundCombinations());
 
                 if (moveToPosition) {
-                    Debug.Log("Move grabbed char");
-                        // TODO: Move the character to the desired location
-                    //WalkCharacter(localVelocity, localInput);
-                    //TurnCharacter(localInput);
+                    if (tracker.frameCount < moveToPositionFrameTime) {
+                        fgChar.position = Vector3.Lerp(startPosition, finalGrabbedPosition, ((float) tracker.frameCount) / moveToPositionFrameTime);
+                    }
+                    else {
+                        fgChar.position = finalGrabbedPosition;
+                    }
                 }
             }
 
@@ -102,8 +110,9 @@ namespace ResonantSpark {
                 return false;
             }
 
-            public void SetFinalGrabbedPosition(Vector3 position) {
+            public void SetFinalGrabbedPosition(Vector3 position, int moveToPositionFrameTime) {
                 this.finalGrabbedPosition = position;
+                this.moveToPositionFrameTime = moveToPositionFrameTime;
             }
 
             public void SetMoveToPosition(bool moveToPosition) {

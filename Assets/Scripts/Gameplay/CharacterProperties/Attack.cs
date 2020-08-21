@@ -76,6 +76,8 @@ namespace ResonantSpark {
                         yMoveCb = builderGroup.moveY,
                         zMoveCb = builderGroup.moveZ,
 
+                        movementAdditive = (bool)builderGroup.movementDetails["additive"],
+
                         framesContinuous = builderGroup.framesContinuous,
                         cleanUpCallback = builderGroup.cleanUpCallback,
                     };
@@ -136,11 +138,20 @@ namespace ResonantSpark {
                 currGroup.framesContinuous?.Invoke((float)tracker.frameCount, fgChar.GetTarget().targetPos);
                 currGroup.frames[tracker.frameCount].Perform(fgChar);
 
-                fgChar.AddRelativeVelocity(VelocityPriority.AttackMovement,
-                    new Vector3(
-                        FunctionCalculus.Differentiate(currGroup.xMoveCb, tracker.frameCount) / fgChar.gameTime,
-                        FunctionCalculus.Differentiate(currGroup.yMoveCb, tracker.frameCount) / fgChar.gameTime,
-                        FunctionCalculus.Differentiate(currGroup.zMoveCb, tracker.frameCount) / fgChar.gameTime));
+                if (currGroup.movementAdditive) {
+                    fgChar.AddRelativeVelocity(VelocityPriority.AttackMovement,
+                        new Vector3(
+                            FunctionCalculus.Differentiate(currGroup.xMoveCb, tracker.frameCount) / fgChar.gameTime,
+                            FunctionCalculus.Differentiate(currGroup.yMoveCb, tracker.frameCount) / fgChar.gameTime,
+                            FunctionCalculus.Differentiate(currGroup.zMoveCb, tracker.frameCount) / fgChar.gameTime));
+                }
+                else {
+                    fgChar.SetRelativeVelocity(VelocityPriority.AttackMovement,
+                        new Vector3(
+                            FunctionCalculus.Differentiate(currGroup.xMoveCb, tracker.frameCount) / fgChar.gameTime,
+                            FunctionCalculus.Differentiate(currGroup.yMoveCb, tracker.frameCount) / fgChar.gameTime,
+                            FunctionCalculus.Differentiate(currGroup.zMoveCb, tracker.frameCount) / fgChar.gameTime));
+                }
 
                 if (IsCompleteRun()) {
                     currGroup.cleanUpCallback?.Invoke();
@@ -223,6 +234,7 @@ namespace ResonantSpark {
             public Func<float, float> xMoveCb;
             public Func<float, float> yMoveCb;
             public Func<float, float> zMoveCb;
+            public bool movementAdditive;
 
             public Action<float, Vector3> framesContinuous;
             public Action cleanUpCallback;

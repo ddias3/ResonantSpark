@@ -39,7 +39,8 @@ namespace ResonantSpark {
                     groupCallback(groupBuilder);
                     groupBuilder.BuildAttack();
 
-                    if (!groupBuilder.ValueSet("move")) groupBuilder.Movement(defaultGroup.moveX, defaultGroup.moveY, defaultGroup.moveZ);
+                    if (!groupBuilder.ValueSet("movement")) groupBuilder.Movement(defaultGroup.moveX, defaultGroup.moveY, defaultGroup.moveZ);
+                    if (!groupBuilder.ValueSet("movementDetails")) groupBuilder.MovementDetails((bool)defaultGroup.movementDetails["additive"]);
                     if (!groupBuilder.ValueSet("framesContinuous")) groupBuilder.FramesContinuous(defaultGroup.framesContinuous);
                     if (!groupBuilder.ValueSet("cleanUpCallback")) groupBuilder.CleanUp(defaultGroup.cleanUpCallback);
                     if (!groupBuilder.ValueSet("animStateName")) groupBuilder.AnimationState(defaultGroup.animStateName);

@@ -57,7 +57,7 @@ namespace ResonantSpark {
                 else if (tracker.frameCount == 4) {
                     Vector3 localVelocity = fgChar.GetLocalVelocity();
 
-                    fgChar.AddRelativeVelocity(Gameplay.VelocityPriority.Dash, dashVelocity);
+                    fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Dash, dashVelocity);
                 }
                 else {
                     fgChar.AddForce(negativeGravity, ForceMode.Acceleration);

@@ -69,7 +69,7 @@ namespace ResonantSpark {
 
             private void StepAway() {
                 if (Mathf.Abs(fgChar.LookToMoveAngle()) > 90f) {
-                    fgChar.AddVelocity(Gameplay.VelocityPriority.Movement, fgChar.TargetDirection().normalized * stepAwaySpeed);
+                    fgChar.SetVelocity(Gameplay.VelocityPriority.Movement, fgChar.TargetDirection().normalized * stepAwaySpeed);
                 }
             }
 

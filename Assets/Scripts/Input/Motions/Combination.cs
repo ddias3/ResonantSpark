@@ -201,29 +201,21 @@ namespace ResonantSpark {
             }
 
             public class DoubleTap : Combination {
-                public int frameStart { get; private set; }
-                public int frameEnd { get; private set; }
                 public FightingGameAbsInputCodeDir direction { get; private set; }
 
                 public DoubleTap() {
                     SetInfo(staleTime: 12, priorityValue: 1000);
-                    this.frameStart = -1;
-                    this.frameEnd = -1;
                 }
 
-                public DoubleTap Init(int frameEnd, int frameStart, FightingGameAbsInputCodeDir direction) {
-                    base.Init(frameEnd);
+                public DoubleTap Init(int frameTrigger, FightingGameAbsInputCodeDir direction) {
+                    base.Init(frameTrigger);
                     this.direction = direction;
-                    this.frameStart = frameStart;
-                    this.frameEnd = frameEnd;
                     return this;
                 }
 
                 public override bool Equals(Combination other) {
                     return other.GetType() == typeof(DoubleTap)
-                        && other.GetFrame() == this.frameTrigger
-                        && ((DoubleTap) other).frameStart == this.frameStart
-                        && ((DoubleTap) other).direction == this.direction;
+                        && other.GetFrame() == this.frameTrigger;
                 }
 
                 public override string ToString(Func<FightingGameAbsInputCodeDir, FightingGameInputCodeDir> directionMapFunc) {

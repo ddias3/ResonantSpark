@@ -16,6 +16,7 @@ namespace ResonantSpark {
             IAttackCallbackObj Input(params string[] inputStrings);
             IAttackCallbackObj StartGroup(string startGroup);
             IAttackCallbackObj Movement(Func<float, float> xMoveCb = null, Func<float, float> yMoveCb = null, Func<float, float> zMoveCb = null);
+            IAttackCallbackObj MovementDetails(bool additive = true);
             IAttackCallbackObj AnimationState(string animStateName);
             IAttackCallbackObj InitCharState(CharacterStates.Attack attackState);
             IAttackCallbackObj FramesContinuous(Action<float, Vector3> callback);
@@ -57,6 +58,10 @@ namespace ResonantSpark {
             }
             public IAttackCallbackObj Movement(Func<float, float> xMoveCb = null, Func<float, float> yMoveCb = null, Func<float, float> zMoveCb = null) {
                 this.defaultGroup.Movement(xMoveCb, yMoveCb, zMoveCb);
+                return this;
+            }
+            public IAttackCallbackObj MovementDetails(bool additive = true) {
+                this.defaultGroup.MovementDetails(additive);
                 return this;
             }
             public IAttackCallbackObj FramesContinuous(Action<float, Vector3> callback) {

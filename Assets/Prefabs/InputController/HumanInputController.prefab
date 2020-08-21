@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5393400291318313908}
   - component: {fileID: 5393400291318313905}
   m_Layer: 0
-  m_Name: PlayerInput
+  m_Name: HumanInputController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -46,6 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deadZone: {x: 0.25, y: 0.25}
   cardinalOverlap: 0.4
+  buttonDeadZone: 0.5
 --- !u!114 &5393400291318313905
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60,6 +61,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   breakPoint: 0
   inputDelay: 5
-  inputBufferSize: 60
+  inputBufferSize: 30
   bufferLength: 256
-  inputCombinations: []
+  foundInputCombinations: []
+  servedInputCombinations: []
+  inUseInputCombinations: []

@@ -996,7 +996,7 @@ MonoBehaviour:
   - {fileID: 8323176205718928992}
   - {fileID: 6237913832488292008}
   - {fileID: 5903140537956442216}
-  offset: {x: 0, y: -10, z: 0}
+  offset: {x: 0, y: -20, z: 0}
 --- !u!1 &1461409555932636090
 GameObject:
   m_ObjectHideFlags: 0
@@ -3232,7 +3232,7 @@ MonoBehaviour:
   - {fileID: 5944111432659348915}
   - {fileID: 6988303305738487235}
   - {fileID: 484075763822788359}
-  offset: {x: 0, y: -10, z: 0}
+  offset: {x: 0, y: -20, z: 0}
 --- !u!1 &2798874980076212877
 GameObject:
   m_ObjectHideFlags: 0

@@ -120,13 +120,13 @@ namespace ResonantSpark {
                         }
                         else {
                             newVelocity = Vector3.Lerp(velocityTarget, localVelocity, velocityChangeDampTime * fgChar.gameTime);
-                            fgChar.AddRelativeVelocity(Gameplay.VelocityPriority.Movement, newVelocity);
+                            fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Movement, newVelocity);
                         }
                     }
                     else {
                         //Debug.Log("Smoothed Input: " + smoothedInput.ToString("F3") + ", velTarget=" + velocityTarget.ToString("F3"));
                         newVelocity = Vector3.Lerp(velocityTarget, localVelocity, movementChangeDampTime * fgChar.gameTime);
-                        fgChar.AddRelativeVelocity(Gameplay.VelocityPriority.Movement, newVelocity);
+                        fgChar.SetRelativeVelocity(Gameplay.VelocityPriority.Movement, newVelocity);
                     }
 
                     //Debug.Log("=====================================================");
