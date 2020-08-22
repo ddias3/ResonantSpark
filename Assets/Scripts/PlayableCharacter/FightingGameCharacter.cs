@@ -126,6 +126,15 @@ namespace ResonantSpark {
                 onEmptyHealthCallbacks = new List<Action<FightingGameCharacter>>();
 
                 gameTimeManager = GameObject.FindGameObjectWithTag("rspTime").GetComponent<GameTimeManager>();
+
+                if (Persistence.Get().gamemode == "versus") {
+                    targetFG.EnableVisuals(false);
+                    __debugState.enabled = false;
+                }
+                else if (Persistence.Get().gamemode == "training") {
+                    targetFG.EnableVisuals(true);
+                    __debugState.enabled = true;
+                }
             }
 
             public void OnDestroy() {

@@ -43,6 +43,11 @@ namespace ResonantSpark {
                 return targetChar.position;
             }
 
+            public void EnableVisuals(bool enable) {
+                plane.gameObject.SetActive(enable);
+                targetCylinder.gameObject.SetActive(enable);
+            }
+
             public void Update() {
                 // TODO: Get back to this code to make it work, but it's ultimately not useful.
                 //if (Physics.Raycast(transform.position + Vector3.up * 2.0f, Vector3.down, out RaycastHit hitInfo, Mathf.Infinity, levelBounds)) {

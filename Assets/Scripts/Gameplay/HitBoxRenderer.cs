@@ -9,6 +9,7 @@ namespace ResonantSpark {
             public Transform spherePivot;
             public Transform sphereFar;
 
+            private bool _enable = true;
             private float _radius = 0.25f;
             private float _height = 0.5f;
 
@@ -28,6 +29,19 @@ namespace ResonantSpark {
                     cylinder.localPosition = new Vector3(0, 0, value / 2);
                     cylinder.localScale = new Vector3(_radius * 2, value / 2, _radius * 2);
                     sphereFar.localPosition = new Vector3(0, 0, value);
+                }
+            }
+
+            public bool enable {
+                set {
+                    _enable = value;
+
+                    cylinder.gameObject.SetActive(_enable);
+                    spherePivot.gameObject.SetActive(_enable);
+                    sphereFar.gameObject.SetActive(_enable);
+                }
+                get {
+                    return _enable;
                 }
             }
         }

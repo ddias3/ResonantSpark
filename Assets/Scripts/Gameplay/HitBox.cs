@@ -74,6 +74,13 @@ namespace ResonantSpark {
                 colliderTransform = collider.transform;
                 rendererTransform = renderer.transform;
 
+                if (Persistence.Get().gamemode == "versus") {
+                    renderer.enable = false;
+                }
+                else {
+                    renderer.enable = true;
+                }
+
                 collider.enabled = true;
                 collider.isTrigger = true;
 
