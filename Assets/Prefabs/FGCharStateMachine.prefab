@@ -1160,6 +1160,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gravityExtra: {x: 0, y: -12, z: 0}
+  delayBeforeCanAttack: 8
 --- !u!1 &8022956662946550645
 GameObject:
   m_ObjectHideFlags: 0

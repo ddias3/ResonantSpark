@@ -44,7 +44,8 @@ namespace ResonantSpark {
                     .On<ButtonPress>(OnButtonPress)
                     .On<ButtonsCurrent>(OnButtonsCurrent)
                     .On<DirectionPress>(OnDirectionPress)
-                    .On<DirectionCurrent>(OnDirectionCurrent);
+                    .On<DirectionCurrent>(OnDirectionCurrent)
+                    .On<QuarterCircleButtonPress>(OnQuaterCircleButtonPress);
 
                 RegisterEnterCallbacks()
                     .On<DirectionPress>(GivenDirectionPress)
@@ -366,6 +367,16 @@ namespace ResonantSpark {
                     return a.GetFrame() - b.GetFrame();
                 });
 
+                fgChar.ChooseAttack(this, null, inputs);
+                stop();
+            }
+
+            private void OnQuaterCircleButtonPress(Action stop, Combination combo) {
+                var quarterBut = (QuarterCircleButtonPress)combo;
+
+                List<Combination> inputs = new List<Combination>();
+                fgChar.Use(combo);
+                inputs.Add(combo);
                 fgChar.ChooseAttack(this, null, inputs);
                 stop();
             }

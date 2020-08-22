@@ -187,7 +187,6 @@ namespace ResonantSpark {
 
                     if (buttonPress.button0 != FightingGameInputCodeBut.D) {
                         List<Combination> inputs = new List<Combination>();
-
                         fgChar.UseCombination<DirectionCurrent>(currDir => {
                             fgChar.Use(currDir);
                             inputs.Add(currDir);
@@ -202,6 +201,8 @@ namespace ResonantSpark {
 
                         fgChar.ChooseAttack(this, null, inputs);
                         stop();
+
+                        // TODO: Create a mechanism for a frame 0 action, i.e. run the rest of the stand frame, then run the fist frame of the next action while pausing everything else.
                     }
                     else {
                         // TODO: Figure out what happens when you press D here.

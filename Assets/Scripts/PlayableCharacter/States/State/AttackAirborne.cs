@@ -25,6 +25,7 @@ namespace ResonantSpark {
                     .On<ButtonPress>(OnButtonPress)
                     .On<DirectionPress>(OnDirectionPress)
                     .On<DirectionCurrent>(OnDirectionCurrent);
+                    //.On<QuarterCircleButtonPress>(OnQuaterCircleButtonPress);
             }
 
             public override void Enter(int frameIndex, MultipassBaseState previousState) {
@@ -37,6 +38,14 @@ namespace ResonantSpark {
                 FindInput(fgChar.GetFoundCombinations());
 
                 fgChar.RunAttackFrame();
+
+                if (fgChar.Grounded(out Vector3 landPoint)) {
+                    changeState(states.Get("land"));
+                }
+
+                if (fgChar.CheckAboutToLand()) {
+                    changeState(states.Get("land"));
+                }
             }
 
             public override void ExecutePass1(int frameIndex) {
@@ -48,7 +57,7 @@ namespace ResonantSpark {
             }
 
             public override void Exit(int frameIndex) {
-                // do nothing
+                fgChar.SetStandCollider(Vector3.zero);
             }
 
             public override GroundRelation GetGroundRelation() {
@@ -62,16 +71,6 @@ namespace ResonantSpark {
             public override CharacterVulnerability GetCharacterVulnerability() {
                 return fgChar.GetAttackCharacterVulnerability();
             }
-
-            //public override void BeHit(bool launch) {
-            //    CharacterProperties.Attack activeAttack = fgChar.GetCurrentAttack();
-            //    if (activeAttack.CounterHit()) {
-            //        changeState(states.Get("hitStunAirborne"));
-            //    }
-            //    else {
-            //        changeState(states.Get("hitStunAirborne"));
-            //    }
-            //}
 
             public override void ReceiveHit(bool launch) {
                 changeState(states.Get("hitStunAirborne"));
@@ -102,29 +101,39 @@ namespace ResonantSpark {
 
                 CharacterProperties.Attack activeAttack = fgChar.GetCurrentAttack();
 
-                if (activeAttack.ChainCancellable()) {
+                if (activeAttack.CancellableOnWhiff() && activeAttack.ChainCancellable()) {
                     if (button != FightingGameInputCodeBut.D) {
-                        fgChar.Use(combo);
-
                         List<Combination> inputs = new List<Combination>();
-                        inputs.Add(combo);
-                        fgChar.UseCombination<QuarterCircle>(currDir => {
-                            inputs.Add(currDir);
-                        });
-                        fgChar.UseCombination<DoubleTap>(doubleTap => {
-                            inputs.Add(doubleTap);
-                        });
-                        fgChar.UseCombination<DirectionPress>(currPress => {
-                            inputs.Add(currPress);
-                        });
-                        fgChar.UseCombination<DirectionCurrent>(currDir => {
-                            inputs.Add(currDir);
-                        });
-                        inputs.Sort();
 
-                        fgChar.ChooseAttack(this, null, inputs);
+                        fgChar.UseCombination<DirectionCurrent>(currDir => {
+                            fgChar.Use(currDir);
+                            inputs.Add(currDir);
+                        });
+
+                        fgChar.Use(combo);
+                        inputs.Add(combo);
+
+                        inputs.Sort((Combination a, Combination b) => {
+                            return a.GetFrame() - b.GetFrame();
+                        });
+
+                        fgChar.ChooseAttack(this, activeAttack, inputs);
                         stop();
                     }
+                }
+            }
+
+            private void OnQuaterCircleButtonPress(Action stop, Combination combo) {
+                var quarterBut = (QuarterCircleButtonPress)combo;
+
+                CharacterProperties.Attack activeAttack = fgChar.GetCurrentAttack();
+
+                if (activeAttack.CancellableOnWhiff() && activeAttack.ChainCancellable()) {
+                    List<Combination> inputs = new List<Combination>();
+                    fgChar.Use(combo);
+                    inputs.Add(combo);
+                    fgChar.ChooseAttack(this, null, inputs);
+                    stop();
                 }
             }
         }

@@ -85,7 +85,7 @@ namespace ResonantSpark {
                                             hb.Point1(new Vector3(0, 1.1f, 0.5f));
                                             hb.Radius(0.2f);
                                             hb.InGameEntity(fgChar);
-                                            hb.Validate((HitBox _, HitBox other) => true);
+                                            hb.Validate((HitBox _, HitBox other) => false);
                                             hb.Validate((HitBox _, HurtBox other) => true);
                                         });
 
@@ -188,7 +188,6 @@ namespace ResonantSpark {
                         });
                     });
 
-
                     Attack atkOrt5A = new Attack(atkBuilder => {
                         atkBuilder.Name("orthodox_5A");
                         atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
@@ -220,7 +219,7 @@ namespace ResonantSpark {
                                             hb.Point1(new Vector3(0, 1.1f, 1.3f));
                                             hb.Radius(0.25f);
                                             hb.InGameEntity(fgChar);
-                                            hb.Validate((HitBox _, HitBox other) => true);
+                                            hb.Validate((HitBox _, HitBox other) => false);
                                             hb.Validate((HitBox _, HurtBox other) => true);
                                         });
 
@@ -412,7 +411,7 @@ namespace ResonantSpark {
                                             hb.Radius(0.25f);
                                             hb.InGameEntity(fgChar);
                                             hb.Validate((HitBox _, HitBox other) => {
-                                                return true;
+                                                return false;
                                             });
                                             hb.Validate((HitBox _, HurtBox other) => {
                                                 return true;
@@ -491,18 +490,18 @@ namespace ResonantSpark {
                                     .Hit(hit => {
                                         hit.HitDamage(600)
                                             .BlockDamage(0)
-                                            .HitStun(10.0f)
-                                            .BlockStun(8.0f);
+                                            .HitStun(22.0f)
+                                            .BlockStun(20.0f);
 
                                         hit.ValidBlock(BlockType.LOW);
 
                                         HitBox defaultHitBox = hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
-                                            hb.Point0(new Vector3(0, 0, 1.0f));
-                                            hb.Point1(new Vector3(0, 0.8f, 1.3f));
+                                            hb.Point0(new Vector3(0, 0.1f, 0.0f));
+                                            hb.Point1(new Vector3(0, 0.1f, 1.3f));
                                             hb.Radius(0.25f);
                                             hb.InGameEntity(fgChar);
-                                            hb.Validate((HitBox _, HitBox other) => true);
+                                            hb.Validate((HitBox _, HitBox other) => false);
                                             hb.Validate((HitBox _, HurtBox other) => true);
                                         });
 
@@ -573,7 +572,7 @@ namespace ResonantSpark {
                                     .Hit(hit => {
                                         hit.HitDamage(800)
                                             .BlockDamage(0)
-                                            .HitStun(20.0f)
+                                            .HitStun(22.0f)
                                             .BlockStun(20.0f)
                                             .ComboScaling(0.5f);
 
@@ -585,7 +584,704 @@ namespace ResonantSpark {
                                             hb.Point1(new Vector3(0, 0.8f, 1.3f));
                                             hb.Radius(0.25f);
                                             hb.InGameEntity(fgChar);
-                                            hb.Validate((HitBox _, HitBox other) => true);
+                                            hb.Validate((HitBox _, HitBox other) => false);
+                                            hb.Validate((HitBox _, HurtBox other) => true);
+                                        });
+
+                                        hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
+                                            if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
+                                                FightingGameCharacter opponent = (FightingGameCharacter)entity;
+
+                                                // This exists to make characters hitting each other async
+                                                fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["weakHit"]);
+                                                    switch (opponent.GetGroundRelation()) {
+                                                        case GroundRelation.GROUNDED:
+                                                            opponent.ReceiveHit(thisHit.hitStun, false);
+                                                            opponent.KnockBack(
+                                                                thisHit.priority,
+                                                                launch: false,
+                                                                knockback: fgChar.rigidFG.rotation * Vector3.forward * 2.0f);
+                                                            break;
+                                                        case GroundRelation.AIRBORNE:
+                                                            opponent.ReceiveBlocked(thisHit.hitStun, true);
+                                                            opponent.KnockBack(
+                                                                thisHit.priority,
+                                                                launch: true,
+                                                                knockback: fgChar.rigidFG.rotation * new Vector3(0.0f, 1.0f, 1.0f) * 0.7071f);
+                                                            break;
+                                                    }
+                                                    opponent.ChangeHealth(damage); // damage includes combo scaling.
+
+                                                }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    // I may put all of these functions into the same call.
+                                                    opponent.ReceiveBlocked(thisHit.blockStun, false);
+                                                    opponent.KnockBack(
+                                                        thisHit.priority,
+                                                        launch: false,
+                                                        knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
+                                                    opponent.ChangeHealth(damage); // damage is hit.blockDamage
+                                                });
+                                            }
+                                        });
+
+                                        hit.HitBox(defaultHitBox);
+                                    })
+                                .To(14)
+                                .From(16)
+                                    .CancellableOnWhiff(true)
+                                    .ChainCancellable(true)
+                                    .CounterHit(true)
+                                .To(22);
+                            }));
+                        atkBuilder.CleanUp(ReturnToCrouch);
+                    });
+
+                    Attack atkOrt5B = new Attack(atkBuilder => {
+                        atkBuilder.Name("orthodox_5B");
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
+                        atkBuilder.Input("4|5", "B");
+                        atkBuilder.AnimationState("5B");
+                        atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
+                        atkBuilder.Movement(zMoveCb: animationCurveMap["orth_5B.z"].Evaluate);
+                        atkBuilder.MovementDetails(additive:false);
+                        atkBuilder.Frames(
+                            FrameUtil.CreateList(fl => {
+                                fl.SpecialCancellable(true);
+                                fl.CancellableOnWhiff(false);
+                                fl.CounterHit(true);
+                                fl.From(1);
+                                    fl.ChainCancellable(false);
+                                fl.From(13);
+                                    fl.Hit(hit => {
+                                        hit.HitDamage(1000);
+                                        hit.BlockDamage(0);
+                                        hit.HitStun(30.0f);
+                                        hit.BlockStun(12.0f);
+                                        hit.ComboScaling(1.0f);
+                                        hit.Priority(AttackPriority.LightAttack);
+
+                                        HitBox defaultHitBox = hitBoxService.Create(hb => {
+                                            hb.Relative(fgChar.transform);
+                                            hb.Point0(new Vector3(x: 0, y: 0, z: 0.2f));
+                                            hb.Point1(new Vector3(x: 0, y: 0.8f, z: 0.5f));
+                                            hb.Radius(0.4f);
+                                            hb.InGameEntity(fgChar);
+                                            hb.Validate((HitBox _, HurtBox other) => true);
+                                        });
+
+                                        hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
+                                            if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
+                                                FightingGameCharacter opponent = (FightingGameCharacter)entity;
+
+                                                // This exists to make characters hitting each other async
+                                                fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                    switch (opponent.GetGroundRelation()) {
+                                                        case GroundRelation.GROUNDED:
+                                                            opponent.ReceiveHit(thisHit.hitStun, false);
+                                                            opponent.KnockBack(
+                                                                thisHit.priority,
+                                                                launch: false,
+                                                                knockback: fgChar.rigidFG.rotation * Vector3.forward * 2.0f);
+                                                            break;
+                                                        case GroundRelation.AIRBORNE:
+                                                            opponent.ReceiveBlocked(thisHit.hitStun, true);
+                                                            opponent.KnockBack(
+                                                                thisHit.priority,
+                                                                launch: true,
+                                                                knockback: fgChar.rigidFG.rotation * new Vector3(0.0f, 1.0f, 1.0f) * 0.7071f);
+                                                            break;
+                                                    }
+                                                    opponent.ChangeHealth(damage); // damage includes combo scaling.
+
+                                                }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    // I may put all of these functions into the same call.
+                                                    opponent.ReceiveBlocked(thisHit.blockStun, false);
+                                                    opponent.KnockBack(
+                                                        thisHit.priority,
+                                                        launch: false,
+                                                        knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
+                                                    opponent.ChangeHealth(damage); // damage is hit.blockDamage
+                                                });
+                                            }
+                                        });
+
+                                        hit.HitBox(defaultHitBox);
+                                        hit.HitBox(hitBoxService.Create(hb => {
+                                            hb.Relative(fgChar.transform);
+                                            hb.Point0(new Vector3(x: 1.2f, y: 0.5f, z: 0.0f));
+                                            hb.Point1(new Vector3(x: 0.8f, y: 0.5f, z: 0.6f));
+                                            hb.Radius(0.2f);
+                                            hb.InGameEntity(fgChar);
+                                        }));
+                                        hit.HitBox(hitBoxService.Create(hb => {
+                                            hb.Relative(fgChar.transform);
+                                            hb.Point0(new Vector3(x: 0.8f, y: 0.5f, z: 0.6f));
+                                            hb.Point1(new Vector3(x: 0.0f, y: 0.5f, z: 1.2f));
+                                            hb.Radius(0.2f);
+                                            hb.InGameEntity(fgChar);
+                                        }));
+                                        hit.HitBox(hitBoxService.Create(hb => {
+                                            hb.Relative(fgChar.transform);
+                                            hb.Point0(new Vector3(x: 0.0f, y: 0.5f, z: 1.2f));
+                                            hb.Point1(new Vector3(x: -0.8f, y: 0.5f, z: 0.6f));
+                                            hb.Radius(0.2f);
+                                            hb.InGameEntity(fgChar);
+                                        }));
+                                        hit.HitBox(hitBoxService.Create(hb => {
+                                            hb.Relative(fgChar.transform);
+                                            hb.Point0(new Vector3(x: -0.8f, y: 0.5f, z: 0.6f));
+                                            hb.Point1(new Vector3(x: -1.2f, y: 0.5f, z: 0.0f));
+                                            hb.Radius(0.2f);
+                                            hb.InGameEntity(fgChar);
+                                        }));
+                                    });
+                                fl.To(17);
+                                fl.From(20);
+                                    fl.CounterHit(false);
+                                    fl.ChainCancellable(true);
+                                    fl.CancellableOnWhiff(true);
+                                fl.To(30);
+                            }));
+                        atkBuilder.CleanUp(ReturnToStand);
+                    });
+
+                    Attack atkOrt5BB = new Attack(atkBuilder => {
+                        atkBuilder.Name("orthodox_5B,B");
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
+                        atkBuilder.Input("4|5", "B");
+                        atkBuilder.AnimationState("5BB");
+                        atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
+                        atkBuilder.Movement(zMoveCb: animationCurveMap["orth_5BB.z"].Evaluate);
+                        atkBuilder.MovementDetails(additive:false);
+                        atkBuilder.Frames(
+                            FrameUtil.CreateList(fl => {
+                                fl.SpecialCancellable(true);
+                                fl.CancellableOnWhiff(false);
+                                fl.CounterHit(true);
+                                fl.From(4);
+                                    fl.Track((targetFG) => {
+                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, targetFG.targetPos, targetFG.ActualTargetPos(), 20.0f);
+                                            // for now, just let the setting of this value be instantaneous once per frame.
+                                        fgChar.SetTarget(newTargetPos);
+                                    });
+                                fl.To(8);
+                                fl.From(13);
+                                    fl.Hit(hit => {
+                                        hit.HitDamage(1000);
+                                        hit.BlockDamage(0);
+                                        hit.HitStun(30.0f);
+                                        hit.BlockStun(12.0f);
+                                        hit.ComboScaling(1.0f);
+                                        hit.Priority(AttackPriority.LightAttack);
+
+                                        HitBox defaultHitBox = hitBoxService.Create(hb => {
+                                            hb.Relative(fgChar.transform);
+                                            hb.Point0(new Vector3(0, 0, 1.0f));
+                                            hb.Point1(new Vector3(0, 0.8f, 0.7f));
+                                            hb.Radius(0.25f);
+                                            hb.InGameEntity(fgChar);
+                                            hb.Validate((HitBox _, HitBox other) => false);
+                                            hb.Validate((HitBox _, HurtBox other) => true);
+                                        });
+
+                                        hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
+                                            if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
+                                                FightingGameCharacter opponent = (FightingGameCharacter)entity;
+
+                                                // This exists to make characters hitting each other async
+                                                fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                    switch (opponent.GetGroundRelation()) {
+                                                        case GroundRelation.GROUNDED:
+                                                            opponent.ReceiveHit(thisHit.hitStun, false);
+                                                            opponent.KnockBack(
+                                                                thisHit.priority,
+                                                                launch: false,
+                                                                knockback: fgChar.rigidFG.rotation * Vector3.forward * 2.0f);
+                                                            break;
+                                                        case GroundRelation.AIRBORNE:
+                                                            opponent.ReceiveBlocked(thisHit.hitStun, true);
+                                                            opponent.KnockBack(
+                                                                thisHit.priority,
+                                                                launch: true,
+                                                                knockback: fgChar.rigidFG.rotation * new Vector3(0.0f, 1.0f, 1.0f) * 0.7071f);
+                                                            break;
+                                                    }
+                                                    opponent.ChangeHealth(damage); // damage includes combo scaling.
+
+                                                }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    // I may put all of these functions into the same call.
+                                                    opponent.ReceiveBlocked(thisHit.blockStun, false);
+                                                    opponent.KnockBack(
+                                                        thisHit.priority,
+                                                        launch: false,
+                                                        knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
+                                                    opponent.ChangeHealth(damage); // damage is hit.blockDamage
+                                                });
+                                            }
+                                        });
+
+                                        hit.HitBox(defaultHitBox);
+                                    });
+                                fl.To(16);
+                                fl.From(20);
+                                    fl.CounterHit(false);
+                                    fl.ChainCancellable(true);
+                                    fl.CancellableOnWhiff(true);
+                                fl.To(30);
+                            }));
+                        atkBuilder.CleanUp(ReturnToStand);
+                    });
+
+                    Attack atkOrt5BBB = new Attack(atkBuilder => {
+                        atkBuilder.Name("orthodox_5B,B,B");
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
+                        atkBuilder.Input("4|5", "B");
+                        atkBuilder.AnimationState("5BBB");
+                        atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
+                        atkBuilder.Movement(zMoveCb: animationCurveMap["orth_5BBB.z"].Evaluate);
+                        atkBuilder.MovementDetails(additive:false);
+                        atkBuilder.Frames(
+                            FrameUtil.CreateList(fl => {
+                                fl.SpecialCancellable(true);
+                                fl.CancellableOnWhiff(false);
+                                fl.CounterHit(true);
+                                fl.From(15);
+                                    fl.Hit(hit => {
+                                        hit.HitDamage(1000);
+                                        hit.BlockDamage(0);
+                                        hit.HitStun(30.0f);
+                                        hit.BlockStun(12.0f);
+                                        hit.ComboScaling(1.0f);
+                                        hit.Priority(AttackPriority.LightAttack);
+
+                                        HitBox defaultHitBox = hitBoxService.Create(hb => {
+                                            hb.Relative(fgChar.transform);
+                                            hb.Point0(new Vector3(-0.3f, 0.8f, 0.1f));
+                                            hb.Point1(new Vector3(-0.3f, 1.0f, 1.3f));
+                                            hb.Radius(0.25f);
+                                            hb.InGameEntity(fgChar);
+                                            hb.Validate((HitBox _, HitBox other) => false);
+                                            hb.Validate((HitBox _, HurtBox other) => true);
+                                        });
+
+                                        hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
+                                            if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
+                                                FightingGameCharacter opponent = (FightingGameCharacter)entity;
+
+                                                // This exists to make characters hitting each other async
+                                                fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                    switch (opponent.GetGroundRelation()) {
+                                                        case GroundRelation.GROUNDED:
+                                                            opponent.ReceiveHit(thisHit.hitStun, false);
+                                                            opponent.KnockBack(
+                                                                thisHit.priority,
+                                                                launch: false,
+                                                                knockback: fgChar.rigidFG.rotation * Vector3.forward * 2.0f);
+                                                            break;
+                                                        case GroundRelation.AIRBORNE:
+                                                            opponent.ReceiveBlocked(thisHit.hitStun, true);
+                                                            opponent.KnockBack(
+                                                                thisHit.priority,
+                                                                launch: true,
+                                                                knockback: fgChar.rigidFG.rotation * new Vector3(0.0f, 1.0f, 1.0f) * 0.7071f);
+                                                            break;
+                                                    }
+                                                    opponent.ChangeHealth(damage); // damage includes combo scaling.
+
+                                                }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    // I may put all of these functions into the same call.
+                                                    opponent.ReceiveBlocked(thisHit.blockStun, false);
+                                                    opponent.KnockBack(
+                                                        thisHit.priority,
+                                                        launch: false,
+                                                        knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
+                                                    opponent.ChangeHealth(damage); // damage is hit.blockDamage
+                                                });
+                                            }
+                                        });
+
+                                        hit.HitBox(defaultHitBox);
+                                    });
+                                fl.To(19);
+                                fl.From(35);
+                                    fl.CounterHit(false);
+                                    fl.ChainCancellable(true);
+                                    fl.CancellableOnWhiff(true);
+                                fl.To(47);
+                            }));
+                        atkBuilder.CleanUp(ReturnToStand);
+                    });
+
+                    Attack atkOrt5BBBB = new Attack(atkBuilder => {
+                        atkBuilder.Name("orthodox_5B,B,B,B");
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
+                        atkBuilder.Input("4|5", "B");
+                        atkBuilder.AnimationState("5BBBB");
+                        atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
+                        atkBuilder.Movement(zMoveCb: animationCurveMap["orth_5BBBB.z"].Evaluate);
+                        atkBuilder.MovementDetails(additive:false);
+                        atkBuilder.Frames(
+                            FrameUtil.CreateList(fl => {
+                                fl.SpecialCancellable(true);
+                                fl.CancellableOnWhiff(false);
+                                fl.CounterHit(true);
+                                fl.From(9);
+                                    fl.Hit(hit => {
+                                        hit.HitDamage(1000);
+                                        hit.BlockDamage(0);
+                                        hit.HitStun(30.0f);
+                                        hit.BlockStun(12.0f);
+                                        hit.ComboScaling(1.0f);
+                                        hit.Priority(AttackPriority.LightAttack);
+
+                                        HitBox defaultHitBox = hitBoxService.Create(hb => {
+                                            hb.Relative(fgChar.transform);
+                                            hb.Point0(new Vector3(0.3f, 0.8f, 0.1f));
+                                            hb.Point1(new Vector3(0.3f, 1.0f, 1.3f));
+                                            hb.Radius(0.25f);
+                                            hb.InGameEntity(fgChar);
+                                            hb.Validate((HitBox _, HitBox other) => false);
+                                            hb.Validate((HitBox _, HurtBox other) => true);
+                                        });
+
+                                        hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
+                                            if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
+                                                FightingGameCharacter opponent = (FightingGameCharacter)entity;
+
+                                                // This exists to make characters hitting each other async
+                                                fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                    switch (opponent.GetGroundRelation()) {
+                                                        case GroundRelation.GROUNDED:
+                                                            opponent.ReceiveHit(thisHit.hitStun, false);
+                                                            opponent.KnockBack(
+                                                                thisHit.priority,
+                                                                launch: false,
+                                                                knockback: fgChar.rigidFG.rotation * Vector3.forward * 2.0f);
+                                                            break;
+                                                        case GroundRelation.AIRBORNE:
+                                                            opponent.ReceiveBlocked(thisHit.hitStun, true);
+                                                            opponent.KnockBack(
+                                                                thisHit.priority,
+                                                                launch: true,
+                                                                knockback: fgChar.rigidFG.rotation * new Vector3(0.0f, 1.0f, 1.0f) * 0.7071f);
+                                                            break;
+                                                    }
+                                                    opponent.ChangeHealth(damage); // damage includes combo scaling.
+
+                                                }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    // I may put all of these functions into the same call.
+                                                    opponent.ReceiveBlocked(thisHit.blockStun, false);
+                                                    opponent.KnockBack(
+                                                        thisHit.priority,
+                                                        launch: false,
+                                                        knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
+                                                    opponent.ChangeHealth(damage); // damage is hit.blockDamage
+                                                });
+                                            }
+                                        });
+
+                                        hit.HitBox(defaultHitBox);
+                                    });
+                                fl.To(10);
+                                fl.From(20);
+                                    fl.CounterHit(false);
+                                    fl.ChainCancellable(true);
+                                    fl.CancellableOnWhiff(true);
+                                fl.To(35);
+                            }));
+                        atkBuilder.CleanUp(ReturnToStand);
+                    });
+
+                    Attack atkOrt2B = new Attack(atkBuilder => {
+                        atkBuilder.Name("orthodox_2B");
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
+                        atkBuilder.Input("1|2|3", "B");
+                        atkBuilder.AnimationState("2B");
+                        atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
+                        atkBuilder.Movement(zMoveCb: animationCurveMap["orth_2B.z"].Evaluate);
+                        atkBuilder.MovementDetails(additive: false);
+                        atkBuilder.Frames(
+                            FrameUtil.CreateList(fl => {
+                                fl.SpecialCancellable(true);
+                                fl.CancellableOnWhiff(false);
+                                fl.CounterHit(true);
+                                fl.From(1);
+                                fl.ChainCancellable(false);
+                                fl.From(13);
+                                fl.Hit(hit => {
+                                    hit.HitDamage(1000);
+                                    hit.BlockDamage(0);
+                                    hit.HitStun(30.0f);
+                                    hit.BlockStun(12.0f);
+                                    hit.ComboScaling(1.0f);
+                                    hit.Priority(AttackPriority.LightAttack);
+
+                                    HitBox defaultHitBox = hitBoxService.Create(hb => {
+                                        hb.Relative(fgChar.transform);
+                                        hb.Point0(new Vector3(x: 0, y: 0.1f, z: 0.0f));
+                                        hb.Point1(new Vector3(x: 0, y: 0.3f, z: 1.1f));
+                                        hb.Radius(0.2f);
+                                        hb.InGameEntity(fgChar);
+                                        hb.Validate((HitBox _, HurtBox other) => true);
+                                    });
+
+                                    hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
+                                        if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
+                                            FightingGameCharacter opponent = (FightingGameCharacter)entity;
+
+                                            // This exists to make characters hitting each other async
+                                            fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                switch (opponent.GetGroundRelation()) {
+                                                    case GroundRelation.GROUNDED:
+                                                        opponent.ReceiveHit(thisHit.hitStun, false);
+                                                        opponent.KnockBack(
+                                                            thisHit.priority,
+                                                            launch: false,
+                                                            knockback: fgChar.rigidFG.rotation * Vector3.forward * 2.0f);
+                                                        break;
+                                                    case GroundRelation.AIRBORNE:
+                                                        opponent.ReceiveBlocked(thisHit.hitStun, true);
+                                                        opponent.KnockBack(
+                                                            thisHit.priority,
+                                                            launch: true,
+                                                            knockback: fgChar.rigidFG.rotation * new Vector3(0.0f, 1.0f, 1.0f) * 0.7071f);
+                                                        break;
+                                                }
+                                                opponent.ChangeHealth(damage); // damage includes combo scaling.
+
+                                            }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                // I may put all of these functions into the same call.
+                                                opponent.ReceiveBlocked(thisHit.blockStun, false);
+                                                opponent.KnockBack(
+                                                    thisHit.priority,
+                                                    launch: false,
+                                                    knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
+                                                opponent.ChangeHealth(damage); // damage is hit.blockDamage
+                                            });
+                                        }
+                                    });
+
+                                    hit.HitBox(defaultHitBox);
+                                });
+                                fl.To(17);
+                                fl.From(20);
+                                fl.CounterHit(false);
+                                fl.ChainCancellable(true);
+                                fl.CancellableOnWhiff(true);
+                                fl.To(50);
+                            }));
+                        atkBuilder.CleanUp(ReturnToStand);
+                    });
+
+                    Attack atkOrt2BB = new Attack(atkBuilder => {
+                        atkBuilder.Name("orthodox_2B,B");
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
+                        atkBuilder.Input("1|2|3", "B");
+                        atkBuilder.AnimationState("2BB");
+                        atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
+                        atkBuilder.Movement(zMoveCb: animationCurveMap["orth_2BB.z"].Evaluate);
+                        atkBuilder.MovementDetails(additive: false);
+                        atkBuilder.Frames(
+                            FrameUtil.CreateList(fl => {
+                                fl.SpecialCancellable(true);
+                                fl.CancellableOnWhiff(false);
+                                fl.CounterHit(true);
+                                fl.From(1);
+                                fl.ChainCancellable(false);
+                                fl.From(13);
+                                fl.Hit(hit => {
+                                    hit.HitDamage(1000);
+                                    hit.BlockDamage(0);
+                                    hit.HitStun(32.0f);
+                                    hit.BlockStun(12.0f);
+                                    hit.ComboScaling(1.0f);
+                                    hit.Priority(AttackPriority.LightAttack);
+
+                                    HitBox defaultHitBox = hitBoxService.Create(hb => {
+                                        hb.Relative(fgChar.transform);
+                                        hb.Point0(new Vector3(x: -0.2f, y: 0, z: 0.2f));
+                                        hb.Point1(new Vector3(x: -0.15f, y: 0.8f, z: 0.5f));
+                                        hb.Radius(0.3f);
+                                        hb.InGameEntity(fgChar);
+                                        hb.Validate((HitBox _, HurtBox other) => true);
+                                    });
+
+                                    hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
+                                        if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
+                                            FightingGameCharacter opponent = (FightingGameCharacter)entity;
+
+                                            // This exists to make characters hitting each other async
+                                            fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                switch (opponent.GetGroundRelation()) {
+                                                    case GroundRelation.GROUNDED:
+                                                        opponent.ReceiveHit(thisHit.hitStun, false);
+                                                        opponent.KnockBack(
+                                                            thisHit.priority,
+                                                            launch: false,
+                                                            knockback: fgChar.rigidFG.rotation * Vector3.forward * 2.0f);
+                                                        break;
+                                                    case GroundRelation.AIRBORNE:
+                                                        opponent.ReceiveBlocked(thisHit.hitStun, true);
+                                                        opponent.KnockBack(
+                                                            thisHit.priority,
+                                                            launch: true,
+                                                            knockback: fgChar.rigidFG.rotation * new Vector3(0.0f, 1.0f, 1.0f) * 0.7071f);
+                                                        break;
+                                                }
+                                                opponent.ChangeHealth(damage); // damage includes combo scaling.
+
+                                            }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                // I may put all of these functions into the same call.
+                                                opponent.ReceiveBlocked(thisHit.blockStun, false);
+                                                opponent.KnockBack(
+                                                    thisHit.priority,
+                                                    launch: false,
+                                                    knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
+                                                opponent.ChangeHealth(damage); // damage is hit.blockDamage
+                                            });
+                                        }
+                                    });
+
+                                    hit.HitBox(defaultHitBox);
+                                });
+                                fl.To(17);
+                                fl.From(20);
+                                fl.CounterHit(false);
+                                fl.ChainCancellable(true);
+                                fl.CancellableOnWhiff(true);
+                                fl.To(40);
+                            }));
+                        atkBuilder.CleanUp(ReturnToStand);
+                    });
+
+                    Attack atkOrt2BBB = new Attack(atkBuilder => {
+                        atkBuilder.Name("orthodox_2B,B,B");
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
+                        atkBuilder.Input("1|2|3", "B");
+                        atkBuilder.AnimationState("2BBB");
+                        atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
+                        atkBuilder.Movement(zMoveCb: animationCurveMap["orth_2BBB.z"].Evaluate);
+                        atkBuilder.MovementDetails(additive: false);
+                        atkBuilder.Frames(
+                            FrameUtil.CreateList(fl => {
+                                fl.SpecialCancellable(true);
+                                fl.CancellableOnWhiff(false);
+                                fl.CounterHit(true);
+                                fl.From(1);
+                                fl.ChainCancellable(false);
+                                fl.From(18);
+                                fl.Hit(hit => {
+                                    hit.HitDamage(1000);
+                                    hit.BlockDamage(0);
+                                    hit.HitStun(20.0f);
+                                    hit.BlockStun(50.0f);
+                                    hit.ComboScaling(1.0f);
+                                    hit.Priority(AttackPriority.LightAttack);
+
+                                    HitBox defaultHitBox = hitBoxService.Create(hb => {
+                                        hb.Relative(fgChar.transform);
+                                        hb.Point0(new Vector3(x: 0.2f, y: 0, z: 0.5f));
+                                        hb.Point1(new Vector3(x: 0.2f, y: 0.8f, z: 1.0f));
+                                        hb.Radius(0.3f);
+                                        hb.InGameEntity(fgChar);
+                                        hb.Validate((HitBox _, HurtBox other) => true);
+                                    });
+
+                                    hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
+                                        if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
+                                            FightingGameCharacter opponent = (FightingGameCharacter)entity;
+
+                                            // This exists to make characters hitting each other async
+                                            fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                switch (opponent.GetGroundRelation()) {
+                                                    case GroundRelation.GROUNDED:
+                                                        opponent.ReceiveHit(thisHit.hitStun, false);
+                                                        opponent.KnockBack(
+                                                            thisHit.priority,
+                                                            launch: false,
+                                                            knockback: fgChar.rigidFG.rotation * Vector3.forward * 2.0f);
+                                                        break;
+                                                    case GroundRelation.AIRBORNE:
+                                                        opponent.ReceiveBlocked(thisHit.hitStun, true);
+                                                        opponent.KnockBack(
+                                                            thisHit.priority,
+                                                            launch: true,
+                                                            knockback: fgChar.rigidFG.rotation * new Vector3(0.0f, 1.0f, 1.0f) * 0.7071f);
+                                                        break;
+                                                }
+                                                opponent.ChangeHealth(damage); // damage includes combo scaling.
+
+                                            }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                // I may put all of these functions into the same call.
+                                                opponent.ReceiveBlocked(thisHit.blockStun, false);
+                                                opponent.KnockBack(
+                                                    thisHit.priority,
+                                                    launch: false,
+                                                    knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
+                                                opponent.ChangeHealth(damage); // damage is hit.blockDamage
+                                            });
+                                        }
+                                    });
+
+                                    hit.HitBox(defaultHitBox);
+                                });
+                                fl.To(20);
+                                fl.From(21);
+                                fl.CounterHit(false);
+                                fl.ChainCancellable(true);
+                                fl.CancellableOnWhiff(true);
+                                fl.To(50);
+                            }));
+                        atkBuilder.CleanUp(ReturnToStand);
+                    });
+
+                    Attack atkJump5A = new Attack(atkBuilder => {
+                        atkBuilder.Name("jump_5A");
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.AIRBORNE);
+                        atkBuilder.Input("A");
+                        atkBuilder.AnimationState("j_A");
+                        atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackAirborne"));
+                        atkBuilder.Movement();
+                        atkBuilder.MovementDetails(additive:true);
+                        atkBuilder.FramesContinuous((localFrame, target) => {
+                            if (localFrame >= 8.0f && localFrame <= 11.0f) {
+                                float p = Mathf.InverseLerp(8.0f, 11.0f, localFrame);
+                                fgChar.SetStandCollider(p * 0.5f * Vector3.up);
+                            }
+                            else if (localFrame > 11.0f) {
+                                fgChar.SetStandCollider(0.5f * Vector3.up);
+                            }
+                        });
+                        atkBuilder.Frames(
+                            FrameUtil.CreateList(f => { f
+                                .SpecialCancellable(true)
+                                .ChainCancellable(true)
+                                .CancellableOnWhiff(false)
+                                .CounterHit(true)
+                                .From(8)
+                                    .Hit(hit => {
+                                        hit.HitDamage(700)
+                                            .BlockDamage(0)
+                                            .HitStun(22.0f)
+                                            .BlockStun(30.0f);
+
+                                        hit.ValidBlock(BlockType.LOW, BlockType.HIGH);
+
+                                        HitBox defaultHitBox = hitBoxService.Create(hb => {
+                                            hb.Relative(fgChar.transform);
+                                            hb.Point0(new Vector3(0, 0.2f, 0.5f));
+                                            hb.Point1(new Vector3(0, 0.8f, 0.5f));
+                                            hb.Radius(0.25f);
+                                            hb.InGameEntity(fgChar);
+                                            hb.Validate((HitBox _, HitBox other) => false);
                                             hb.Validate((HitBox _, HurtBox other) => true);
                                         });
 
@@ -628,295 +1324,6 @@ namespace ResonantSpark {
 
                                         hit.HitBox(defaultHitBox);
                                     })
-                                .To(14)
-                                .From(16)
-                                    .CancellableOnWhiff(true)
-                                    .ChainCancellable(true)
-                                    .CounterHit(true)
-                                .To(28);
-                            }));
-                        atkBuilder.CleanUp(ReturnToCrouch);
-                    });
-
-                    Attack atkOrt5B = new Attack(atkBuilder => {
-                        atkBuilder.Name("orthodox_5B");
-                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
-                        atkBuilder.Input("4|5", "B");
-                        atkBuilder.AnimationState("5B");
-                        atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
-                        atkBuilder.Movement(zMoveCb: animationCurveMap["orth_5B.z"].Evaluate);
-                        atkBuilder.MovementDetails(additive:false);
-                        atkBuilder.Frames(
-                            FrameUtil.CreateList(fl => {
-                                fl.SpecialCancellable(true);
-                                fl.CancellableOnWhiff(false);
-                                fl.CounterHit(true);
-                                fl.From(1);
-                                    fl.ChainCancellable(false);
-                                fl.From(13);
-                                    fl.Hit(hit => {
-                                        hit.HitDamage(1000);
-                                        hit.BlockDamage(0);
-                                        hit.HitStun(30.0f);
-                                        hit.BlockStun(12.0f);
-                                        hit.ComboScaling(1.0f);
-                                        hit.Priority(AttackPriority.LightAttack);
-
-                                        hit.HitBox(hitBoxService.Create(hb => {
-                                            hb.Relative(fgChar.transform);
-                                            hb.Point0(new Vector3(0, 0, 0.8f));
-                                            hb.Point1(new Vector3(0, 1, 0.8f));
-                                            hb.Radius(0.25f);
-                                            hb.InGameEntity(fgChar);
-                                            hb.Validate((HitBox _, HitBox other) => {
-                                                return true;
-                                            });
-                                            hb.Validate((HitBox _, HurtBox other) => {
-                                                return true;
-                                            });
-                                            //hb.Event("onHitFGChar",
-                                            //    CommonGroundedOnHitFGChar(
-                                            //        hitSound: audioMap["mediumHit"],
-                                            //        groundedForceMagnitude: 0.5f,
-                                            //        airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
-                                            //        airborneForceMagnitude: 1.0f));
-
-                                            //hb.Event("onEqualPriorityHitBox", (hitInfo) => {
-                                            //    if (hitInfo.hitEntity != fgChar) {
-                                            //        fgChar.PredeterminedActions("horizontalClashSwingFromLeft");
-                                            //    }
-                                            //});
-                                        }));
-                                    });
-                                fl.To(16);
-                                fl.From(20);
-                                    fl.CounterHit(false);
-                                    fl.ChainCancellable(true);
-                                    fl.CancellableOnWhiff(true);
-                                fl.To(30);
-                            }));
-                        atkBuilder.CleanUp(ReturnToStand);
-                    });
-
-                    Attack atkOrt5BB = new Attack(atkBuilder => {
-                        atkBuilder.Name("orthodox_5B,B");
-                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
-                        atkBuilder.Input("4|5", "B");
-                        atkBuilder.AnimationState("5BB");
-                        atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
-                        atkBuilder.Movement(zMoveCb: animationCurveMap["orth_5BB.z"].Evaluate);
-                        atkBuilder.MovementDetails(additive:false);
-                        atkBuilder.Frames(
-                            FrameUtil.CreateList(fl => {
-                                fl.SpecialCancellable(true);
-                                fl.CancellableOnWhiff(false);
-                                fl.CounterHit(true);
-                                fl.From(4);
-                                    fl.Track((targetFG) => {
-                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, targetFG.targetPos, targetFG.ActualTargetPos(), 20.0f);
-                                            // for now, just let the setting of this value be instantaneous once per frame.
-                                        fgChar.SetTarget(newTargetPos);
-                                    });
-                                fl.To(8);
-                                fl.From(13);
-                                    fl.Hit(hit => {
-                                        hit.HitDamage(1000);
-                                        hit.BlockDamage(0);
-                                        hit.HitStun(30.0f);
-                                        hit.BlockStun(12.0f);
-                                        hit.ComboScaling(1.0f);
-                                        hit.Priority(AttackPriority.LightAttack);
-
-                                        hit.HitBox(hitBoxService.Create(hb => {
-                                            hb.Relative(fgChar.transform);
-                                            hb.Point0(new Vector3(0, 0, 0.8f));
-                                            hb.Point1(new Vector3(0, 1, 0.8f));
-                                            hb.Radius(0.25f);
-                                            hb.InGameEntity(fgChar);
-                                            hb.Validate((HitBox _, HitBox other) => {
-                                                return true;
-                                            });
-                                            hb.Validate((HitBox _, HurtBox other) => {
-                                                return true;
-                                            });
-                                            //hb.Event("onHitFGChar",
-                                            //    CommonGroundedOnHitFGChar(
-                                            //        hitSound: audioMap["mediumHit"],
-                                            //        groundedForceMagnitude: 0.5f,
-                                            //        airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
-                                            //        airborneForceMagnitude: 1.0f));
-
-                                            //hb.Event("onEqualPriorityHitBox", (hitInfo) => {
-                                            //    if (hitInfo.hitEntity != fgChar) {
-                                            //        fgChar.PredeterminedActions("horizontalClashSwingFromLeft");
-                                            //    }
-                                            //});
-                                        }));
-                                    });
-                                fl.To(16);
-                                fl.From(20);
-                                    fl.CounterHit(false);
-                                    fl.ChainCancellable(true);
-                                    fl.CancellableOnWhiff(true);
-                                fl.To(30);
-                            }));
-                        atkBuilder.CleanUp(ReturnToStand);
-                    });
-
-                    Attack atkOrt5BBB = new Attack(atkBuilder => {
-                        atkBuilder.Name("orthodox_5B,B,B");
-                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
-                        atkBuilder.Input("4|5", "B");
-                        atkBuilder.AnimationState("5BBB");
-                        atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
-                        atkBuilder.Movement(zMoveCb: animationCurveMap["orth_5BBB.z"].Evaluate);
-                        atkBuilder.MovementDetails(additive:false);
-                        atkBuilder.Frames(
-                            FrameUtil.CreateList(fl => {
-                                fl.SpecialCancellable(true);
-                                fl.CancellableOnWhiff(false);
-                                fl.CounterHit(true);
-                                fl.From(15);
-                                    fl.Hit(hit => {
-                                        hit.HitDamage(1000);
-                                        hit.BlockDamage(0);
-                                        hit.HitStun(30.0f);
-                                        hit.BlockStun(12.0f);
-                                        hit.ComboScaling(1.0f);
-                                        hit.Priority(AttackPriority.LightAttack);
-
-                                        hit.HitBox(hitBoxService.Create(hb => {
-                                            hb.Relative(fgChar.transform);
-                                            hb.Point0(new Vector3(0, 0, 0.8f));
-                                            hb.Point1(new Vector3(0, 1, 0.8f));
-                                            hb.Radius(0.25f);
-                                            hb.InGameEntity(fgChar);
-                                            hb.Validate((HitBox _, HitBox other) => {
-                                                return true;
-                                            });
-                                            hb.Validate((HitBox _, HurtBox other) => {
-                                                return true;
-                                            });
-                                            //hb.Event("onHitFGChar",
-                                            //    CommonGroundedOnHitFGChar(
-                                            //        hitSound: audioMap["mediumHit"],
-                                            //        groundedForceMagnitude: 0.5f,
-                                            //        airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
-                                            //        airborneForceMagnitude: 1.0f));
-
-                                            //hb.Event("onEqualPriorityHitBox", (hitInfo) => {
-                                            //    if (hitInfo.hitEntity != fgChar) {
-                                            //        fgChar.PredeterminedActions("horizontalClashSwingFromLeft");
-                                            //    }
-                                            //});
-                                        }));
-                                    });
-                                fl.To(19);
-                                fl.From(35);
-                                    fl.CounterHit(false);
-                                    fl.ChainCancellable(true);
-                                    fl.CancellableOnWhiff(true);
-                                fl.To(47);
-                            }));
-                        atkBuilder.CleanUp(ReturnToStand);
-                    });
-
-                    Attack atkOrt5BBBB = new Attack(atkBuilder => {
-                        atkBuilder.Name("orthodox_5B,B,B,B");
-                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
-                        atkBuilder.Input("4|5", "B");
-                        atkBuilder.AnimationState("5BBBB");
-                        atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
-                        atkBuilder.Movement(zMoveCb: animationCurveMap["orth_5BBBB.z"].Evaluate);
-                        atkBuilder.MovementDetails(additive:false);
-                        atkBuilder.Frames(
-                            FrameUtil.CreateList(fl => {
-                                fl.SpecialCancellable(true);
-                                fl.CancellableOnWhiff(false);
-                                fl.CounterHit(true);
-                                fl.From(9);
-                                    fl.Hit(hit => {
-                                        hit.HitDamage(1000);
-                                        hit.BlockDamage(0);
-                                        hit.HitStun(30.0f);
-                                        hit.BlockStun(12.0f);
-                                        hit.ComboScaling(1.0f);
-                                        hit.Priority(AttackPriority.LightAttack);
-
-                                        hit.HitBox(hitBoxService.Create(hb => {
-                                            hb.Relative(fgChar.transform);
-                                            hb.Point0(new Vector3(0, 0, 0.8f));
-                                            hb.Point1(new Vector3(0, 1, 0.8f));
-                                            hb.Radius(0.25f);
-                                            hb.InGameEntity(fgChar);
-                                            hb.Validate((HitBox _, HitBox other) => {
-                                                return true;
-                                            });
-                                            hb.Validate((HitBox _, HurtBox other) => {
-                                                return true;
-                                            });
-                                        }));
-                                    });
-                                fl.To(10);
-                                fl.From(20);
-                                    fl.CounterHit(false);
-                                    fl.ChainCancellable(true);
-                                    fl.CancellableOnWhiff(true);
-                                fl.To(35);
-                            }));
-                        atkBuilder.CleanUp(ReturnToStand);
-                    });
-
-                    Attack atkJump5A = new Attack(atkBuilder => {
-                        atkBuilder.Name("jump_5A");
-                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.AIRBORNE);
-                        atkBuilder.Input("A");
-                        atkBuilder.AnimationState("j_A");
-                        atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackAirborne"));
-                        atkBuilder.Movement();
-                        atkBuilder.MovementDetails(additive:true);
-                        atkBuilder.FramesContinuous((localFrame, target) => {
-                            if (localFrame >= 8.0f && localFrame <= 11.0f) {
-                                float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
-                                fgChar.SetStandCollider(p * 0.5f * Vector3.up);
-                            }
-                        });
-                        atkBuilder.Frames(
-                            FrameUtil.CreateList(f => { f
-                                .SpecialCancellable(true)
-                                .ChainCancellable(true)
-                                .CancellableOnWhiff(true)
-                                .CounterHit(true)
-                                .To(8)
-                                .From(6)
-                                    .CancellableOnWhiff(false)
-                                .From(8)
-                                    .Hit(hit => {
-                                        hit.HitDamage(700)
-                                            .BlockDamage(0)
-                                            .HitStun(12.0f)
-                                            .BlockStun(30.0f);
-
-                                        hit.HitBox(hitBoxService.Create(hb => {
-                                            hb.Relative(fgChar.transform);
-                                            hb.Point0(new Vector3(0, 0, 0.8f));
-                                            hb.Point1(new Vector3(0, 1, 0.8f));
-                                            hb.Radius(0.25f);
-                                            hb.InGameEntity(fgChar);
-                                            hb.Validate((HitBox _, HitBox other) => {
-                                                return true;
-                                            });
-                                            hb.Validate((HitBox _, HurtBox other) => {
-                                                return true;
-                                            });
-                                            //hb.Event("onHitFGChar",
-                                            //    CommonGroundedOnHitFGChar(
-                                            //        hitSound: audioMap["mediumHit"],
-                                            //        groundedForceMagnitude: 0.5f,
-                                            //        airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
-                                            //        airborneForceMagnitude: 1.0f));
-                                        }));
-                                    })
                                 .To(11)
                                 .From(13)
                                     .CounterHit(false)
@@ -937,8 +1344,11 @@ namespace ResonantSpark {
                         atkBuilder.MovementDetails(additive:true);
                         atkBuilder.FramesContinuous((localFrame, target) => {
                             if (localFrame >= 8.0f && localFrame <= 11.0f) {
-                                float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
+                                float p = Mathf.InverseLerp(8.0f, 11.0f, localFrame);
                                 fgChar.SetStandCollider(p * 0.5f * Vector3.up);
+                            }
+                            else if (localFrame > 11.0f) {
+                                fgChar.SetStandCollider(0.5f * Vector3.up);
                             }
                         });
                         atkBuilder.Frames(
@@ -958,28 +1368,57 @@ namespace ResonantSpark {
                                     .Hit(hit => {
                                         hit.HitDamage(700)
                                             .BlockDamage(0)
-                                            .HitStun(12.0f)
+                                            .HitStun(20.0f)
                                             .BlockStun(12.0f);
 
-                                        hit.HitBox(hitBoxService.Create(hb => {
+                                        HitBox defaultHitBox = hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
-                                            hb.Point0(new Vector3(0, 0, 0.8f));
-                                            hb.Point1(new Vector3(0, 1, 0.8f));
+                                            hb.Point0(new Vector3(0, 0, 1.0f));
+                                            hb.Point1(new Vector3(0, 0.8f, 1.3f));
                                             hb.Radius(0.25f);
                                             hb.InGameEntity(fgChar);
-                                            hb.Validate((HitBox _, HitBox other) => {
-                                                return true;
-                                            });
-                                            hb.Validate((HitBox _, HurtBox other) => {
-                                                return true;
-                                            });
-                                            //hb.Event("onHitFGChar",
-                                            //    CommonGroundedOnHitFGChar(
-                                            //        hitSound: audioMap["weakHit"],
-                                            //        groundedForceMagnitude: 0.5f,
-                                            //        airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
-                                            //        airborneForceMagnitude: 1.0f));
-                                        }));
+                                            hb.Validate((HitBox _, HitBox other) => false);
+                                            hb.Validate((HitBox _, HurtBox other) => true);
+                                        });
+
+                                        hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
+                                            if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
+                                                FightingGameCharacter opponent = (FightingGameCharacter)entity;
+
+                                                // This exists to make characters hitting each other async
+                                                fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                    switch (opponent.GetGroundRelation()) {
+                                                        case GroundRelation.GROUNDED:
+                                                            opponent.ReceiveHit(thisHit.hitStun, false);
+                                                            opponent.KnockBack(
+                                                                thisHit.priority,
+                                                                launch: false,
+                                                                knockback: fgChar.rigidFG.rotation * Vector3.forward * 2.0f);
+                                                            break;
+                                                        case GroundRelation.AIRBORNE:
+                                                            opponent.ReceiveBlocked(thisHit.hitStun, true);
+                                                            opponent.KnockBack(
+                                                                thisHit.priority,
+                                                                launch: true,
+                                                                knockback: fgChar.rigidFG.rotation * new Vector3(0.0f, 1.0f, 1.0f) * 0.7071f);
+                                                            break;
+                                                    }
+                                                    opponent.ChangeHealth(damage); // damage includes combo scaling.
+
+                                                }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    // I may put all of these functions into the same call.
+                                                    opponent.ReceiveBlocked(thisHit.blockStun, false);
+                                                    opponent.KnockBack(
+                                                        thisHit.priority,
+                                                        launch: false,
+                                                        knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
+                                                    opponent.ChangeHealth(damage); // damage is hit.blockDamage
+                                                });
+                                            }
+                                        });
+
+                                        hit.HitBox(defaultHitBox);
                                     })
                                 .To(13)
                                 .From(16)
@@ -998,11 +1437,14 @@ namespace ResonantSpark {
                         atkBuilder.AnimationState("j_AAA");
                         atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackAirborne"));
                         atkBuilder.Movement(yMoveCb: animationCurveMap["jump_5AAA.y"].Evaluate, zMoveCb: animationCurveMap["jump_5AAA.z"].Evaluate);
-                        atkBuilder.MovementDetails(additive:true);
+                        atkBuilder.MovementDetails(additive:false);
                         atkBuilder.FramesContinuous((localFrame, target) => {
                             if (localFrame >= 8.0f && localFrame <= 11.0f) {
-                                float p = Mathf.Lerp(8.0f, 11.0f, localFrame);
+                                float p = Mathf.InverseLerp(8.0f, 11.0f, localFrame);
                                 fgChar.SetStandCollider(p * 0.5f * Vector3.up);
+                            }
+                            else if (localFrame > 11.0f) {
+                                fgChar.SetStandCollider(0.5f * Vector3.up);
                             }
                         });
                         atkBuilder.Frames(
@@ -1027,66 +1469,448 @@ namespace ResonantSpark {
                                             .Priority(AttackPriority.HeavyAttack)
                                             .ComboScaling(1.0f);
 
-                                        hit.HitBox(hitBoxService.Create(hb => {
+                                        HitBox defaultHitBox = hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
-                                            hb.Point0(new Vector3(0, 0, 0.8f));
-                                            hb.Point1(new Vector3(0, 1, 0.8f));
+                                            hb.Point0(new Vector3(0, 0, 1.0f));
+                                            hb.Point1(new Vector3(0, 0.8f, 1.3f));
                                             hb.Radius(0.25f);
                                             hb.InGameEntity(fgChar);
-                                            hb.Validate((HitBox _, HitBox other) => {
-                                                return true;
-                                            });
-                                            hb.Validate((HitBox _, HurtBox other) => {
-                                                return true;
-                                            });
-                                            //hb.Event("onHitFGChar", (hitInfo) => {
-                                            //    FightingGameCharacter opponent = (FightingGameCharacter) hitInfo.hitEntity;
-                                            //    if (opponent != fgChar) {
-                                            //        audioService.PlayOneShot(hitInfo.position, audioMap["strongHit"]);
-                                            //            // This exists to make characters hitting each other async
-                                            //        fgService.Hit(hitInfo.hitEntity, fgChar, hitInfo.hitBox, (hitAtSameTimeByAttackPriority) => {
-                                            //            opponent.ChangeHealth(hitInfo.damage); // hitInfo.damage will include combo scaling.
+                                            hb.Validate((HitBox _, HitBox other) => true);
+                                            hb.Validate((HitBox _, HurtBox other) => true);
+                                        });
 
-                                            //            if (hitAtSameTimeByAttackPriority == AttackPriority.HeavyAttack) { // colloquially known as trading
-                                            //                cameraService.PredeterminedActions<float>("zoomIn", 0.5f);
-                                            //                timeService.PredeterminedActions<float>("timeSlow", 0.5f);
+                                        hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
+                                            if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
+                                                FightingGameCharacter opponent = (FightingGameCharacter)entity;
 
-                                            //                opponent.KnockBack(
-                                            //                    hitInfo.hitBox.hit.priority,
-                                            //                    launch: false,
-                                            //                    knockbackDirection: fgChar.transform.rotation * Vector3.forward,
-                                            //                    knockbackMagnitude: 0.5f);
-                                            //            }
-                                            //            else {
-                                            //                opponent.KnockBack(
-                                            //                    hitInfo.hitBox.hit.priority,
-                                            //                    launch: true,
-                                            //                    knockbackDirection: fgChar.transform.rotation * new Vector3(0.0f, 1.0f, 1.0f),
-                                            //                    knockbackMagnitude: 2.0f);
-                                            //            }
-                                            //        });
-                                            //    }
-                                            //});
-                                            //hb.Event("onHitProjectile", (hitInfo) => {
-                                            //    Projectile projectile = (Projectile) hitInfo.hitEntity;
-                                            //    if (projectile.health <= 2) {
-                                            //        fgService.Hit(projectile, fgChar, hitInfo.hitBox, (hitAtSameTimeByAttackPriority) => {
-                                            //            if (hitAtSameTimeByAttackPriority != AttackPriority.None) {
-                                            //                particleService.PlayOneShot(hitInfo.position, particleMap["destroyParticle"]);
-                                            //                    // these lines might be redundant
-                                            //                particleService.PlayOneShot(hitInfo.position, projectile.DestroyedParticle());
-                                            //                projectile.RemoveSelf();
-                                            //            }
-                                            //        });
-                                            //    }
-                                            //});
-                                        }));
+                                                // This exists to make characters hitting each other async
+                                                fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                    switch (opponent.GetGroundRelation()) {
+                                                        case GroundRelation.GROUNDED:
+                                                            opponent.ReceiveHit(thisHit.hitStun, false);
+                                                            opponent.KnockBack(
+                                                                thisHit.priority,
+                                                                launch: false,
+                                                                knockback: fgChar.rigidFG.rotation * Vector3.forward * 2.0f);
+                                                            break;
+                                                        case GroundRelation.AIRBORNE:
+                                                            opponent.ReceiveBlocked(thisHit.hitStun, true);
+                                                            opponent.KnockBack(
+                                                                thisHit.priority,
+                                                                launch: true,
+                                                                knockback: fgChar.rigidFG.rotation * new Vector3(0.0f, 1.0f, 1.0f) * 0.7071f);
+                                                            break;
+                                                    }
+                                                    opponent.ChangeHealth(damage); // damage includes combo scaling.
+
+                                                }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    // I may put all of these functions into the same call.
+                                                    opponent.ReceiveBlocked(thisHit.blockStun, false);
+                                                    opponent.KnockBack(
+                                                        thisHit.priority,
+                                                        launch: false,
+                                                        knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
+                                                    opponent.ChangeHealth(damage); // damage is hit.blockDamage
+                                                });
+                                            }
+                                        });
+
+                                        hit.HitBox(defaultHitBox);
                                     })
                                 .To(21)
                                     .CounterHit(false)
                                 .To(40);
                             }));
                         atkBuilder.CleanUp(ReturnToAirborne);
+                    });
+
+                    Attack atkJump5B = new Attack(atkBuilder => {
+                        atkBuilder.Name("jump_5B");
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.AIRBORNE);
+                        atkBuilder.Input("B");
+                        atkBuilder.AnimationState("j_B");
+                        atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackAirborne"));
+                        atkBuilder.Movement();
+                        atkBuilder.MovementDetails(additive:true);
+                        atkBuilder.FramesContinuous((localFrame, target) => {
+                            if (localFrame >= 8.0f && localFrame <= 25.0f) {
+                                float p = Mathf.InverseLerp(8.0f, 25.0f, localFrame);
+                                fgChar.SetStandCollider(p * 0.2f * Vector3.up);
+                            }
+                            else if (localFrame > 25.0f) {
+                                fgChar.SetStandCollider(0.2f * Vector3.up);
+                            }
+                        });
+                        atkBuilder.Frames(
+                            FrameUtil.CreateList(f => { f
+                                .SpecialCancellable(true)
+                                .ChainCancellable(true)
+                                .CancellableOnWhiff(false)
+                                .CounterHit(true)
+                                .From(15)
+                                    .Hit(hit => {
+                                        hit.HitDamage(700)
+                                            .BlockDamage(0)
+                                            .HitStun(22.0f)
+                                            .BlockStun(30.0f);
+
+                                        hit.ValidBlock(BlockType.LOW, BlockType.HIGH);
+
+                                        HitBox defaultHitBox = hitBoxService.Create(hb => {
+                                            hb.Relative(fgChar.transform);
+                                            hb.Point0(new Vector3(0, 0.2f, 0.5f));
+                                            hb.Point1(new Vector3(0, 0.8f, 0.5f));
+                                            hb.Radius(0.25f);
+                                            hb.InGameEntity(fgChar);
+                                            hb.Validate((HitBox _, HitBox other) => false);
+                                            hb.Validate((HitBox _, HurtBox other) => true);
+                                        });
+
+                                        hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
+                                            if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
+                                                FightingGameCharacter opponent = (FightingGameCharacter)entity;
+
+                                                // This exists to make characters hitting each other async
+                                                fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                    switch (opponent.GetGroundRelation()) {
+                                                        case GroundRelation.GROUNDED:
+                                                            opponent.ReceiveHit(thisHit.hitStun, false);
+                                                            opponent.KnockBack(
+                                                                thisHit.priority,
+                                                                launch: false,
+                                                                knockback: fgChar.rigidFG.rotation * Vector3.forward * 2.0f);
+                                                            break;
+                                                        case GroundRelation.AIRBORNE:
+                                                            opponent.ReceiveHit(thisHit.hitStun, true);
+                                                            opponent.KnockBack(
+                                                                thisHit.priority,
+                                                                launch: true,
+                                                                knockback: fgChar.rigidFG.rotation * new Vector3(0.0f, 1.0f, 1.0f) * 0.7071f);
+                                                            break;
+                                                    }
+                                                    opponent.ChangeHealth(damage); // damage includes combo scaling.
+
+                                                }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    // I may put all of these functions into the same call.
+                                                    opponent.ReceiveBlocked(thisHit.blockStun, false);
+                                                    opponent.KnockBack(
+                                                        thisHit.priority,
+                                                        launch: false,
+                                                        knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
+                                                    opponent.ChangeHealth(damage); // damage is hit.blockDamage
+                                                });
+                                            }
+                                        });
+
+                                        hit.HitBox(defaultHitBox);
+                                        hit.HitBox(hitBoxService.Create(hb => {
+                                            hb.Relative(fgChar.transform);
+                                            hb.Point0(new Vector3(x: 1.0f, y: 0.5f, z: 0.2f));
+                                            hb.Point1(new Vector3(x: 0.8f, y: 0.5f, z: 0.6f));
+                                            hb.Radius(0.3f);
+                                            hb.InGameEntity(fgChar);
+                                        }));
+                                        hit.HitBox(hitBoxService.Create(hb => {
+                                            hb.Relative(fgChar.transform);
+                                            hb.Point0(new Vector3(x: 0.8f, y: 0.5f, z: 0.6f));
+                                            hb.Point1(new Vector3(x: 0.0f, y: 0.5f, z: 1.0f));
+                                            hb.Radius(0.3f);
+                                            hb.InGameEntity(fgChar);
+                                        }));
+                                        hit.HitBox(hitBoxService.Create(hb => {
+                                            hb.Relative(fgChar.transform);
+                                            hb.Point0(new Vector3(x: 0.0f, y: 0.5f, z: 1.0f));
+                                            hb.Point1(new Vector3(x: -0.8f, y: 0.5f, z: 0.6f));
+                                            hb.Radius(0.3f);
+                                            hb.InGameEntity(fgChar);
+                                        }));
+                                        hit.HitBox(hitBoxService.Create(hb => {
+                                            hb.Relative(fgChar.transform);
+                                            hb.Point0(new Vector3(x: -0.8f, y: 0.5f, z: 0.6f));
+                                            hb.Point1(new Vector3(x: -1.0f, y: 0.5f, z: 0.2f));
+                                            hb.Radius(0.3f);
+                                            hb.InGameEntity(fgChar);
+                                        }));
+                                    })
+                                .To(19)
+                                .From(20)
+                                    .CounterHit(false)
+                                    .ChainCancellable(true)
+                                    .CancellableOnWhiff(true)
+                                .To(40);
+                            }));
+                        atkBuilder.CleanUp(ReturnToAirborne);
+                    });
+
+                    Attack atkJump5BB = new Attack(atkBuilder => {
+                        atkBuilder.Name("jump_5B,B");
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.AIRBORNE);
+                        atkBuilder.Input("B");
+                        atkBuilder.AnimationState("j_BB");
+                        atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackAirborne"));
+                        atkBuilder.Movement(yMoveCb: animationCurveMap["jump_5BB.y"].Evaluate);
+                        atkBuilder.MovementDetails(additive:true);
+                        atkBuilder.FramesContinuous((localFrame, target) => {
+                            if (localFrame >= 12.0f && localFrame <= 19.0f) {
+                                float p = Mathf.InverseLerp(12.0f, 19.0f, localFrame);
+                                fgChar.SetStandCollider(p * 0.2f * Vector3.up);
+                            }
+                            else if (localFrame > 19.0f) {
+                                fgChar.SetStandCollider(0.2f * Vector3.up);
+                            }
+                        });
+                        atkBuilder.Frames(
+                            FrameUtil.CreateList(f => { f
+                                .SpecialCancellable(true)
+                                .ChainCancellable(false)
+                                .CancellableOnWhiff(false)
+                                .CounterHit(true)
+                                .From(4)
+                                    .Track((targetFG) => {
+                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, targetFG.targetPos, targetFG.ActualTargetPos(), 20.0f);
+                                            // for now, just let the setting of this value be instantaneous once per frame.
+                                        fgChar.SetTarget(newTargetPos);
+                                    })
+                                .To(12)
+                                .From(17)
+                                    .Hit(hit => {
+                                        hit.HitDamage(700)
+                                            .BlockDamage(0)
+                                            .HitStun(35.0f)
+                                            .BlockStun(35.0f);
+
+                                        HitBox defaultHitBox = hitBoxService.Create(hb => {
+                                            hb.Relative(fgChar.transform);
+                                            hb.Point0(new Vector3(0, -0.5f, 1.0f));
+                                            hb.Point1(new Vector3(0, 0.8f, 0.0f));
+                                            hb.Radius(0.25f);
+                                            hb.InGameEntity(fgChar);
+                                        });
+
+                                        hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
+                                            if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
+                                                FightingGameCharacter opponent = (FightingGameCharacter)entity;
+
+                                                // This exists to make characters hitting each other async
+                                                fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                    switch (opponent.GetGroundRelation()) {
+                                                        case GroundRelation.GROUNDED:
+                                                            opponent.ReceiveHit(thisHit.hitStun, false);
+                                                            opponent.KnockBack(
+                                                                thisHit.priority,
+                                                                launch: false,
+                                                                knockback: fgChar.rigidFG.rotation * Vector3.forward * 2.0f);
+                                                            break;
+                                                        case GroundRelation.AIRBORNE:
+                                                            opponent.ReceiveBlocked(thisHit.hitStun, true);
+                                                            opponent.KnockBack(
+                                                                thisHit.priority,
+                                                                launch: true,
+                                                                knockback: fgChar.rigidFG.rotation * new Vector3(0.0f, 1.0f, 1.0f) * 0.7071f);
+                                                            break;
+                                                    }
+                                                    opponent.ChangeHealth(damage); // damage includes combo scaling.
+
+                                                }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    // I may put all of these functions into the same call.
+                                                    opponent.ReceiveBlocked(thisHit.blockStun, false);
+                                                    opponent.KnockBack(
+                                                        thisHit.priority,
+                                                        launch: false,
+                                                        knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
+                                                    opponent.ChangeHealth(damage); // damage is hit.blockDamage
+                                                });
+                                            }
+                                        });
+
+                                        hit.HitBox(defaultHitBox);
+                                    })
+                                .To(19)
+                                .From(19)
+                                    .CounterHit(false)
+                                    .ChainCancellable(true)
+                                    .CancellableOnWhiff(true)
+                                .To(40);
+                            }));
+                        atkBuilder.CleanUp(ReturnToAirborne);
+                    });
+
+                    Attack atkJump5C = new Attack(atkBuilder => {
+                        atkBuilder.Name("jump_5C");
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.AIRBORNE);
+                        atkBuilder.Input("C");
+                        atkBuilder.AnimationState("j_C");
+                        atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackAirborne"));
+                        atkBuilder.Movement();
+                        atkBuilder.MovementDetails(additive:true);
+                        atkBuilder.FramesContinuous((localFrame, target) => {
+                            if (localFrame >= 15.0f && localFrame <= 20.0f) {
+                                float p = Mathf.InverseLerp(15.0f, 20.0f, localFrame);
+                                fgChar.SetStandCollider(p * 0.2f * Vector3.up);
+                            }
+                            else if (localFrame > 20.0f) {
+                                fgChar.SetStandCollider(0.2f * Vector3.up);
+                            }
+                        });
+                        atkBuilder.Frames(
+                            FrameUtil.CreateList(f => { f
+                                .SpecialCancellable(true)
+                                .ChainCancellable(false)
+                                .CancellableOnWhiff(false)
+                                .CounterHit(true)
+                                .From(4)
+                                    .Track((targetFG) => {
+                                        Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, targetFG.targetPos, targetFG.ActualTargetPos(), 20.0f);
+                                            // for now, just let the setting of this value be instantaneous once per frame.
+                                        fgChar.SetTarget(newTargetPos);
+                                    })
+                                .To(12)
+                                .From(15)
+                                    .Hit(hit => {
+                                        hit.HitDamage(2000)
+                                            .BlockDamage(0)
+                                            .HitStun(40.0f)
+                                            .BlockStun(30.0f)
+                                            .Priority(AttackPriority.HeavyAttack)
+                                            .ComboScaling(1.0f);
+
+                                        HitBox defaultHitBox = hitBoxService.Create(hb => {
+                                            hb.Relative(fgChar.transform);
+                                            hb.Point0(new Vector3(0, -0.2f, 0.4f));
+                                            hb.Point1(new Vector3(0, 0.8f, 0.4f));
+                                            hb.Radius(0.25f);
+                                            hb.InGameEntity(fgChar);
+                                            hb.Validate((HitBox _, HitBox other) => true);
+                                            hb.Validate((HitBox _, HurtBox other) => true);
+                                        });
+
+                                        hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
+                                            if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
+                                                FightingGameCharacter opponent = (FightingGameCharacter)entity;
+
+                                                // This exists to make characters hitting each other async
+                                                fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                    switch (opponent.GetGroundRelation()) {
+                                                        case GroundRelation.GROUNDED:
+                                                            opponent.ReceiveHit(thisHit.hitStun, false);
+                                                            opponent.KnockBack(
+                                                                thisHit.priority,
+                                                                launch: false,
+                                                                knockback: fgChar.rigidFG.rotation * Vector3.forward * 2.0f);
+                                                            break;
+                                                        case GroundRelation.AIRBORNE:
+                                                            opponent.ReceiveBlocked(thisHit.hitStun, true);
+                                                            opponent.KnockBack(
+                                                                thisHit.priority,
+                                                                launch: true,
+                                                                knockback: fgChar.rigidFG.rotation * new Vector3(0.0f, 1.0f, 1.0f) * 0.7071f);
+                                                            break;
+                                                    }
+                                                    opponent.ChangeHealth(damage); // damage includes combo scaling.
+
+                                                }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    // I may put all of these functions into the same call.
+                                                    opponent.ReceiveBlocked(thisHit.blockStun, false);
+                                                    opponent.KnockBack(
+                                                        thisHit.priority,
+                                                        launch: false,
+                                                        knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
+                                                    opponent.ChangeHealth(damage); // damage is hit.blockDamage
+                                                });
+                                            }
+                                        });
+
+                                        hit.HitBox(defaultHitBox);
+                                    })
+                                .To(21)
+                                    .CounterHit(false)
+                                .To(56);
+                            }));
+                        atkBuilder.CleanUp(ReturnToAirborne);
+                    });
+
+                    Attack atkOrt5C = new Attack(atkBuilder => {
+                        atkBuilder.Name("orthodox_5C");
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
+                        atkBuilder.Input("4|5|6", "C");
+                        atkBuilder.AnimationState("5C");
+                        atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
+                        atkBuilder.Movement();
+                        atkBuilder.MovementDetails(additive: false);
+                        atkBuilder.Frames(
+                            FrameUtil.CreateList(fl => {
+                                fl.SpecialCancellable(true);
+                                fl.CancellableOnWhiff(false);
+                                fl.CounterHit(true);
+                                fl.From(18);
+                                fl.Hit(hit => {
+                                    hit.HitDamage(1200);
+                                    hit.BlockDamage(0);
+                                    hit.HitStun(32.0f);
+                                    hit.BlockStun(20.0f);
+                                    hit.ComboScaling(1.0f);
+                                    hit.Priority(AttackPriority.HeavyAttack);
+
+                                    HitBox defaultHitBox = hitBoxService.Create(hb => {
+                                        hb.Relative(fgChar.transform);
+                                        hb.Point0(new Vector3(-0.35f, 0.5f, 0.7f));
+                                        hb.Point1(new Vector3(0.35f, 0.5f, 0.7f));
+                                        hb.Radius(0.25f);
+                                        hb.InGameEntity(fgChar);
+                                        hb.Validate((HitBox _, HitBox other) => false);
+                                        hb.Validate((HitBox _, HurtBox other) => true);
+                                    });
+
+                                    hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
+                                        if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
+                                            FightingGameCharacter opponent = (FightingGameCharacter)entity;
+
+                                            // This exists to make characters hitting each other async
+                                            fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                switch (opponent.GetGroundRelation()) {
+                                                    case GroundRelation.GROUNDED:
+                                                        opponent.ReceiveHit(thisHit.hitStun, false);
+                                                        opponent.KnockBack(
+                                                            thisHit.priority,
+                                                            launch: false,
+                                                            knockback: fgChar.rigidFG.rotation * Vector3.forward * 2.0f);
+                                                        break;
+                                                    case GroundRelation.AIRBORNE:
+                                                        opponent.ReceiveBlocked(thisHit.hitStun, true);
+                                                        opponent.KnockBack(
+                                                            thisHit.priority,
+                                                            launch: true,
+                                                            knockback: fgChar.rigidFG.rotation * new Vector3(0.0f, 1.0f, 1.0f) * 0.7071f);
+                                                        break;
+                                                }
+                                                opponent.ChangeHealth(damage); // damage includes combo scaling.
+
+                                            }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                // I may put all of these functions into the same call.
+                                                opponent.ReceiveBlocked(thisHit.blockStun, false);
+                                                opponent.KnockBack(
+                                                    thisHit.priority,
+                                                    launch: false,
+                                                    knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
+                                                opponent.ChangeHealth(damage); // damage is hit.blockDamage
+                                            });
+                                        }
+                                    });
+
+                                    hit.HitBox(defaultHitBox);
+                                });
+                                fl.To(20);
+                                fl.From(20);
+                                fl.CounterHit(false);
+                                fl.ChainCancellable(true);
+                                fl.To(50);
+                            }));
+                        atkBuilder.CleanUp(ReturnToStand);
                     });
 
                     Attack atkOrt1C = new Attack(atkBuilder => {
@@ -1102,7 +1926,7 @@ namespace ResonantSpark {
                                 fl.SpecialCancellable(true);
                                 fl.CancellableOnWhiff(false);
                                 fl.CounterHit(true);
-                                fl.From(9);
+                                fl.From(18);
                                     fl.Hit(hit => {
                                         hit.HitDamage(1000);
                                         hit.BlockDamage(0);
@@ -1111,37 +1935,88 @@ namespace ResonantSpark {
                                         hit.ComboScaling(1.0f);
                                         hit.Priority(AttackPriority.LightAttack);
 
-                                        hit.HitBox(hitBoxService.Create(hb => {
+                                        HitBox defaultHitBox = hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
                                             hb.Point0(new Vector3(0, 0, 0.8f));
-                                            hb.Point1(new Vector3(0, 1, 0.8f));
+                                            hb.Point1(new Vector3(0, 0.2f, 1.0f));
                                             hb.Radius(0.25f);
                                             hb.InGameEntity(fgChar);
-                                            hb.Validate((HitBox _, HitBox other) => {
-                                                return true;
-                                            });
-                                            hb.Validate((HitBox _, HurtBox other) => {
-                                                return true;
-                                            });
-                                            //hb.Event("onHitFGChar",
-                                            //    CommonGroundedOnHitFGChar(
-                                            //        hitSound: audioMap["mediumHit"],
-                                            //        groundedForceMagnitude: 0.5f,
-                                            //        airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
-                                            //        airborneForceMagnitude: 1.0f));
+                                            hb.Validate((HitBox _, HitBox other) => false);
+                                            hb.Validate((HitBox _, HurtBox other) => true);
+                                        });
 
-                                            //hb.Event("onEqualPriorityHitBox", (hitInfo) => {
-                                            //    if (hitInfo.hitEntity != fgChar) {
-                                            //        fgChar.PredeterminedActions("horizontalClashSwingFromLeft");
-                                            //    }
-                                            //});
+                                        hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
+                                            if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
+                                                FightingGameCharacter opponent = (FightingGameCharacter)entity;
+
+                                                // This exists to make characters hitting each other async
+                                                fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                    switch (opponent.GetGroundRelation()) {
+                                                        case GroundRelation.GROUNDED:
+                                                            opponent.ReceiveHit(thisHit.hitStun, false);
+                                                            opponent.KnockBack(
+                                                                thisHit.priority,
+                                                                launch: false,
+                                                                knockback: fgChar.rigidFG.rotation * Vector3.forward * 2.0f);
+                                                            break;
+                                                        case GroundRelation.AIRBORNE:
+                                                            opponent.ReceiveBlocked(thisHit.hitStun, true);
+                                                            opponent.KnockBack(
+                                                                thisHit.priority,
+                                                                launch: true,
+                                                                knockback: fgChar.rigidFG.rotation * new Vector3(0.0f, 1.0f, 1.0f) * 0.7071f);
+                                                            break;
+                                                    }
+                                                    opponent.ChangeHealth(damage); // damage includes combo scaling.
+
+                                                }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    // I may put all of these functions into the same call.
+                                                    opponent.ReceiveBlocked(thisHit.blockStun, false);
+                                                    opponent.KnockBack(
+                                                        thisHit.priority,
+                                                        launch: false,
+                                                        knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
+                                                    opponent.ChangeHealth(damage); // damage is hit.blockDamage
+                                                });
+                                            }
+                                        });
+
+                                        hit.HitBox(defaultHitBox);
+                                        hit.HitBox(hitBoxService.Create(hb => {
+                                            hb.Relative(fgChar.transform);
+                                            hb.Point0(new Vector3(x: 1.0f, y: 0.1f, z: 0.2f));
+                                            hb.Point1(new Vector3(x: 0.8f, y: 0.1f, z: 0.6f));
+                                            hb.Radius(0.3f);
+                                            hb.InGameEntity(fgChar);
+                                        }));
+                                        hit.HitBox(hitBoxService.Create(hb => {
+                                            hb.Relative(fgChar.transform);
+                                            hb.Point0(new Vector3(x: 0.8f, y: 0.1f, z: 0.6f));
+                                            hb.Point1(new Vector3(x: 0.0f, y: 0.1f, z: 1.0f));
+                                            hb.Radius(0.3f);
+                                            hb.InGameEntity(fgChar);
+                                        }));
+                                        hit.HitBox(hitBoxService.Create(hb => {
+                                            hb.Relative(fgChar.transform);
+                                            hb.Point0(new Vector3(x: 0.0f, y: 0.1f, z: 1.0f));
+                                            hb.Point1(new Vector3(x: -0.8f, y: 0.1f, z: 0.6f));
+                                            hb.Radius(0.3f);
+                                            hb.InGameEntity(fgChar);
+                                        }));
+                                        hit.HitBox(hitBoxService.Create(hb => {
+                                            hb.Relative(fgChar.transform);
+                                            hb.Point0(new Vector3(x: -0.8f, y: 0.1f, z: 0.6f));
+                                            hb.Point1(new Vector3(x: -1.0f, y: 0.1f, z: 0.2f));
+                                            hb.Radius(0.3f);
+                                            hb.InGameEntity(fgChar);
                                         }));
                                     });
-                                fl.To(10);
-                                fl.From(20);
+                                fl.To(25);
+                                fl.From(25);
                                     fl.CounterHit(false);
                                     fl.ChainCancellable(true);
-                                fl.To(35);
+                                fl.To(50);
                             }));
                         atkBuilder.CleanUp(ReturnToStand);
                     });
@@ -1159,7 +2034,7 @@ namespace ResonantSpark {
                                 fl.SpecialCancellable(true);
                                 fl.CancellableOnWhiff(false);
                                 fl.CounterHit(true);
-                                fl.From(9);
+                                fl.From(18);
                                     fl.Hit(hit => {
                                         hit.HitDamage(1000);
                                         hit.BlockDamage(0);
@@ -1168,37 +2043,60 @@ namespace ResonantSpark {
                                         hit.ComboScaling(1.0f);
                                         hit.Priority(AttackPriority.LightAttack);
 
-                                        hit.HitBox(hitBoxService.Create(hb => {
+                                        HitBox defaultHitBox = hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
-                                            hb.Point0(new Vector3(0, 0, 0.8f));
-                                            hb.Point1(new Vector3(0, 1, 0.8f));
+                                            hb.Point0(new Vector3(-0.35f, 0.5f, 0.7f));
+                                            hb.Point1(new Vector3(0.35f, 0.5f, 0.7f));
                                             hb.Radius(0.25f);
                                             hb.InGameEntity(fgChar);
-                                            hb.Validate((HitBox _, HitBox other) => {
-                                                return true;
-                                            });
-                                            hb.Validate((HitBox _, HurtBox other) => {
-                                                return true;
-                                            });
-                                            //hb.Event("onHitFGChar",
-                                            //    CommonGroundedOnHitFGChar(
-                                            //        hitSound: audioMap["mediumHit"],
-                                            //        groundedForceMagnitude: 0.5f,
-                                            //        airborneForceDirection: new Vector3(0.0f, 1.0f, 1.0f),
-                                            //        airborneForceMagnitude: 1.0f));
+                                            hb.Validate((HitBox _, HitBox other) => false);
+                                            hb.Validate((HitBox _, HurtBox other) => true);
+                                        });
 
-                                            //hb.Event("onEqualPriorityHitBox", (hitInfo) => {
-                                            //    if (hitInfo.hitEntity != fgChar) {
-                                            //        fgChar.PredeterminedActions("horizontalClashSwingFromLeft");
-                                            //    }
-                                            //});
-                                        }));
+                                        hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
+                                            if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
+                                                FightingGameCharacter opponent = (FightingGameCharacter)entity;
+
+                                                // This exists to make characters hitting each other async
+                                                fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                    switch (opponent.GetGroundRelation()) {
+                                                        case GroundRelation.GROUNDED:
+                                                            opponent.ReceiveHit(thisHit.hitStun, false);
+                                                            opponent.KnockBack(
+                                                                thisHit.priority,
+                                                                launch: false,
+                                                                knockback: fgChar.rigidFG.rotation * Vector3.forward * 2.0f);
+                                                            break;
+                                                        case GroundRelation.AIRBORNE:
+                                                            opponent.ReceiveBlocked(thisHit.hitStun, true);
+                                                            opponent.KnockBack(
+                                                                thisHit.priority,
+                                                                launch: true,
+                                                                knockback: fgChar.rigidFG.rotation * new Vector3(0.0f, 1.0f, 1.0f) * 0.7071f);
+                                                            break;
+                                                    }
+                                                    opponent.ChangeHealth(damage); // damage includes combo scaling.
+
+                                                }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    // I may put all of these functions into the same call.
+                                                    opponent.ReceiveBlocked(thisHit.blockStun, false);
+                                                    opponent.KnockBack(
+                                                        thisHit.priority,
+                                                        launch: false,
+                                                        knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
+                                                    opponent.ChangeHealth(damage); // damage is hit.blockDamage
+                                                });
+                                            }
+                                        });
+
+                                        hit.HitBox(defaultHitBox);
                                     });
-                                fl.To(10);
+                                fl.To(20);
                                 fl.From(20);
                                     fl.CounterHit(false);
                                     fl.ChainCancellable(true);
-                                fl.To(35);
+                                fl.To(50);
                             }));
                         atkBuilder.CleanUp(ReturnToStand);
                     });
@@ -1231,10 +2129,10 @@ namespace ResonantSpark {
                                     HitBox defaultHitBox = hitBoxService.Create(hb => {
                                         hb.Relative(fgChar.transform);
                                         hb.Point0(new Vector3(0, 0, 1.0f));
-                                        hb.Point1(new Vector3(0, 0.8f, 1.3f));
-                                        hb.Radius(0.25f);
+                                        hb.Point1(new Vector3(0, 0.8f, 1.0f));
+                                        hb.Radius(0.3f);
                                         hb.InGameEntity(fgChar);
-                                        hb.Validate((HitBox _, HitBox other) => true);
+                                        hb.Validate((HitBox _, HitBox other) => false);
                                         hb.Validate((HitBox _, HurtBox other) => true);
                                     });
 
@@ -1286,6 +2184,338 @@ namespace ResonantSpark {
                         atkBuilder.CleanUp(ReturnToStand);
                     });
 
+                    Attack atkOrt6A = new Attack(atkBuilder => {
+                        atkBuilder.Name("orthodox_6A");
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
+                        atkBuilder.Input("6", "A");
+                        atkBuilder.AnimationState("6A");
+                        atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
+                        atkBuilder.Movement(zMoveCb: animationCurveMap["orth_6A.z"].Evaluate);
+                        atkBuilder.MovementDetails(additive: false);
+                        atkBuilder.Frames(
+                            FrameUtil.CreateList(fl => {
+                                fl.SpecialCancellable(true);
+                                fl.CancellableOnWhiff(false); // TODO: Change this to true when you fix the input buffer
+                                fl.ChainCancellable(false);
+                                fl.CounterHit(true);
+                                fl.From(15);
+                                fl.Hit(hit => {
+                                    hit.HitDamage(800);
+                                    hit.BlockDamage(0);
+                                    hit.HitStun(24.0f);
+                                    hit.BlockStun(16.0f);
+                                    hit.ComboScaling(1.0f);
+                                    hit.Priority(AttackPriority.LightAttack);
+
+                                    hit.ValidBlock(BlockType.HIGH);
+
+                                    HitBox defaultHitBox = hitBoxService.Create(hb => {
+                                        hb.Relative(fgChar.transform);
+                                        hb.Point0(new Vector3(0, 0, 0.3f));
+                                        hb.Point1(new Vector3(0, 0.8f, 1.0f));
+                                        hb.Radius(0.3f);
+                                        hb.InGameEntity(fgChar);
+                                        hb.Validate((HitBox _, HitBox other) => false);
+                                        hb.Validate((HitBox _, HurtBox other) => true);
+                                    });
+
+                                    hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
+                                        if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
+                                            FightingGameCharacter opponent = (FightingGameCharacter)entity;
+
+                                            // This exists to make characters hitting each other async
+                                            fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                switch (opponent.GetGroundRelation()) {
+                                                    case GroundRelation.GROUNDED:
+                                                        opponent.ReceiveHit(thisHit.hitStun, false);
+                                                        opponent.KnockBack(
+                                                            thisHit.priority,
+                                                            launch: false,
+                                                            knockback: fgChar.rigidFG.rotation * Vector3.forward * 2.0f);
+                                                        break;
+                                                    case GroundRelation.AIRBORNE:
+                                                        opponent.ReceiveHit(thisHit.hitStun, true);
+                                                        opponent.KnockBack(
+                                                            thisHit.priority,
+                                                            launch: true,
+                                                            knockback: fgChar.rigidFG.rotation * new Vector3(0.0f, 1.0f, 1.0f) * 0.7071f);
+                                                        break;
+                                                }
+                                                opponent.ChangeHealth(damage); // damage includes combo scaling.
+
+                                            }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                // I may put all of these functions into the same call.
+                                                opponent.ReceiveBlocked(thisHit.blockStun, false);
+                                                opponent.KnockBack(
+                                                    thisHit.priority,
+                                                    launch: false,
+                                                    knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
+                                                opponent.ChangeHealth(damage); // damage is hit.blockDamage
+                                            });
+                                        }
+                                    });
+
+                                    hit.HitBox(defaultHitBox);
+                                });
+                                fl.To(18);
+                                fl.From(17);
+                                fl.CounterHit(false);
+                                fl.ChainCancellable(false);
+                                fl.To(36);
+                            }));
+                        atkBuilder.CleanUp(ReturnToStand);
+                    });
+
+                    Attack atkOrt214A = new Attack(atkBuilder => {
+                        atkBuilder.Name("orthodox_214A");
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
+                        atkBuilder.Input("214", "A");
+                        atkBuilder.AnimationState("214L");
+                        atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
+                        atkBuilder.Movement(zMoveCb: animationCurveMap["orth_214A.z"].Evaluate);
+                        atkBuilder.MovementDetails(additive: false);
+                        atkBuilder.Frames(
+                            FrameUtil.CreateList(fl => {
+                                fl.SpecialCancellable(true);
+                                fl.CancellableOnWhiff(false); // TODO: Change this to true when you fix the input buffer
+                                fl.ChainCancellable(false);
+                                fl.CounterHit(true);
+                                fl.From(16);
+                                fl.Hit(hit => {
+                                    hit.HitDamage(800);
+                                    hit.BlockDamage(0);
+                                    hit.HitStun(24.0f);
+                                    hit.BlockStun(16.0f);
+                                    hit.ComboScaling(1.0f);
+                                    hit.Priority(AttackPriority.HeavyAttack);
+
+                                    HitBox defaultHitBox = hitBoxService.Create(hb => {
+                                        hb.Relative(fgChar.transform);
+                                        hb.Point0(new Vector3(0.2f, 0.7f, 0.2f));
+                                        hb.Point1(new Vector3(0.2f, 1.2f, 0.3f));
+                                        hb.Radius(0.2f);
+                                        hb.InGameEntity(fgChar);
+                                    });
+
+                                    hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
+                                        if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
+                                            FightingGameCharacter opponent = (FightingGameCharacter)entity;
+
+                                            // This exists to make characters hitting each other async
+                                            fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                opponent.ReceiveHit(thisHit.hitStun, true);
+                                                opponent.KnockBack(
+                                                    thisHit.priority,
+                                                    launch: true,
+                                                    knockback: fgChar.rigidFG.rotation * new Vector3(0.0f, 0.6f, 0.2f) * 0.7071f);
+                                                opponent.ChangeHealth(damage); // damage includes combo scaling.
+
+                                            }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                // I may put all of these functions into the same call.
+                                                opponent.ReceiveBlocked(thisHit.blockStun, false);
+                                                opponent.KnockBack(
+                                                    thisHit.priority,
+                                                    launch: false,
+                                                    knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
+                                                opponent.ChangeHealth(damage); // damage is hit.blockDamage
+                                            });
+                                        }
+                                    });
+
+                                    hit.HitBox(defaultHitBox);
+                                });
+                                fl.To(18);
+                                fl.From(17);
+                                fl.CounterHit(false);
+                                fl.ChainCancellable(false);
+                                fl.From(28);
+                                fl.Hit(hit => {
+                                    hit.HitDamage(800);
+                                    hit.BlockDamage(0);
+                                    hit.HitStun(40.0f);
+                                    hit.BlockStun(20.0f);
+                                    hit.ComboScaling(1.0f);
+                                    hit.Priority(AttackPriority.HeavyAttack);
+
+                                    HitBox defaultHitBox = hitBoxService.Create(hb => {
+                                        hb.Relative(fgChar.transform);
+                                        hb.Point0(new Vector3(-0.2f, 0.1f, 0.4f));
+                                        hb.Point1(new Vector3(-0.2f, 0.6f, 0.5f));
+                                        hb.Radius(0.3f);
+                                        hb.InGameEntity(fgChar);
+                                    });
+
+                                    hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
+                                        if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
+                                            FightingGameCharacter opponent = (FightingGameCharacter)entity;
+
+                                            // This exists to make characters hitting each other async
+                                            fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                opponent.ReceiveHit(thisHit.hitStun, true);
+                                                opponent.KnockBack(
+                                                    thisHit.priority,
+                                                    launch: true,
+                                                    knockback: fgChar.rigidFG.rotation * new Vector3(0.0f, 4.5f, 1.0f));
+                                                opponent.ChangeHealth(damage); // damage includes combo scaling.
+
+                                            }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                // I may put all of these functions into the same call.
+                                                opponent.ReceiveBlocked(thisHit.blockStun, false);
+                                                opponent.KnockBack(
+                                                    thisHit.priority,
+                                                    launch: false,
+                                                    knockback: fgChar.rigidFG.rotation * Vector3.forward * 2.0f);
+                                                opponent.ChangeHealth(damage); // damage is hit.blockDamage
+                                            });
+                                        }
+                                    });
+
+                                    hit.HitBox(defaultHitBox);
+                                });
+                                fl.To(30);
+                                fl.ChainCancellable(false);
+                                fl.To(50);
+                            }));
+                        atkBuilder.CleanUp(ReturnToStand);
+                    });
+
+                    Attack atkOrt214B = new Attack(atkBuilder => {
+                        atkBuilder.Name("orthodox_214B");
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
+                        atkBuilder.Input("214", "B");
+                        atkBuilder.AnimationState("214M");
+                        atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
+                        atkBuilder.Movement(zMoveCb: animationCurveMap["orth_214B.z"].Evaluate);
+                        atkBuilder.MovementDetails(additive: false);
+                        atkBuilder.Frames(
+                            FrameUtil.CreateList(fl => {
+                                fl.SpecialCancellable(true);
+                                fl.CancellableOnWhiff(false); // TODO: Change this to true when you fix the input buffer
+                                fl.ChainCancellable(false);
+                                fl.CounterHit(true);
+                                fl.From(26);
+                                fl.Hit(hit => {
+                                    hit.HitDamage(800);
+                                    hit.BlockDamage(0);
+                                    hit.HitStun(30.0f);
+                                    hit.BlockStun(32.0f);
+                                    hit.ComboScaling(1.0f);
+                                    hit.Priority(AttackPriority.HeavyAttack);
+
+                                    HitBox defaultHitBox = hitBoxService.Create(hb => {
+                                        hb.Relative(fgChar.transform);
+                                        hb.Point0(new Vector3(0.2f, 0.7f, 0.2f));
+                                        hb.Point1(new Vector3(0.2f, 1.2f, 0.3f));
+                                        hb.Radius(0.2f);
+                                        hb.InGameEntity(fgChar);
+                                    });
+
+                                    hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
+                                        if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
+                                            FightingGameCharacter opponent = (FightingGameCharacter)entity;
+
+                                            // This exists to make characters hitting each other async
+                                            fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                opponent.ReceiveHit(thisHit.hitStun, true);
+                                                opponent.KnockBack(
+                                                    thisHit.priority,
+                                                    launch: true,
+                                                    knockback: fgChar.rigidFG.rotation * new Vector3(0.0f, 0.6f, 0.2f) * 0.7071f);
+                                                opponent.ChangeHealth(damage); // damage includes combo scaling.
+
+                                            }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                // I may put all of these functions into the same call.
+                                                opponent.ReceiveBlocked(thisHit.blockStun, false);
+                                                opponent.KnockBack(
+                                                    thisHit.priority,
+                                                    launch: false,
+                                                    knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
+                                                opponent.ChangeHealth(damage); // damage is hit.blockDamage
+                                            });
+                                        }
+                                    });
+
+                                    hit.HitBox(defaultHitBox);
+                                });
+                                fl.To(40);
+                                fl.ChainCancellable(false);
+                                fl.To(50);
+                            }));
+                        atkBuilder.CleanUp(ReturnToStand);
+                    });
+
+                    Attack atkOrt214C = new Attack(atkBuilder => {
+                        atkBuilder.Name("orthodox_214C");
+                        atkBuilder.Requires(Orientation.ORTHODOX, GroundRelation.GROUNDED);
+                        atkBuilder.Input("214", "C");
+                        atkBuilder.AnimationState("214H");
+                        atkBuilder.InitCharState((CharacterStates.Attack)fgChar.State("attackGrounded"));
+                        atkBuilder.Movement(zMoveCb: animationCurveMap["orth_214C.z"].Evaluate);
+                        atkBuilder.MovementDetails(additive: false);
+                        atkBuilder.Frames(
+                            FrameUtil.CreateList(fl => {
+                                fl.SpecialCancellable(true);
+                                fl.CancellableOnWhiff(false); // TODO: Change this to true when you fix the input buffer
+                                fl.ChainCancellable(false);
+                                fl.CounterHit(true);
+                                fl.From(37);
+                                fl.Hit(hit => {
+                                    hit.HitDamage(800);
+                                    hit.BlockDamage(0);
+                                    hit.HitStun(30.0f);
+                                    hit.BlockStun(32.0f);
+                                    hit.ComboScaling(1.0f);
+                                    hit.Priority(AttackPriority.HeavyAttack);
+
+                                    hit.ValidBlock(BlockType.HIGH);
+
+                                    HitBox defaultHitBox = hitBoxService.Create(hb => {
+                                        hb.Relative(fgChar.transform);
+                                        hb.Point0(new Vector3(-0.2f, 0.2f, 1.0f));
+                                        hb.Point1(new Vector3(-0.2f, 0.2f, 1.0f));
+                                        hb.Radius(0.2f);
+                                        hb.InGameEntity(fgChar);
+                                    });
+
+                                    hit.OnHit((thisHit, hitLocations, entity, hurtBoxes, hitBoxes) => {
+                                        if (fgService.IsCurrentFGChar(entity) && entity != fgChar) {
+                                            FightingGameCharacter opponent = (FightingGameCharacter)entity;
+
+                                            // This exists to make characters hitting each other async
+                                            fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                opponent.ReceiveHit(thisHit.hitStun, true);
+                                                opponent.KnockBack(
+                                                    thisHit.priority,
+                                                    launch: true,
+                                                    knockback: fgChar.rigidFG.rotation * new Vector3(0.0f, 0.6f, 0.2f) * 0.7071f);
+                                                opponent.ChangeHealth(damage); // damage includes combo scaling.
+
+                                            }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                // I may put all of these functions into the same call.
+                                                opponent.ReceiveBlocked(thisHit.blockStun, false);
+                                                opponent.KnockBack(
+                                                    thisHit.priority,
+                                                    launch: false,
+                                                    knockback: fgChar.rigidFG.rotation * Vector3.forward * 0.5f);
+                                                opponent.ChangeHealth(damage); // damage is hit.blockDamage
+                                            });
+                                        }
+                                    });
+
+                                    hit.HitBox(defaultHitBox);
+                                });
+                                fl.To(39);
+                                fl.ChainCancellable(false);
+                                fl.To(55);
+                            }));
+                        atkBuilder.CleanUp(ReturnToStand);
+                    });
+
                     List<CharacterStates.CharacterBaseState> validGroundedAttackStates = new List<CharacterStates.CharacterBaseState> {
                         fgChar.State("stand"),
                         fgChar.State("crouch"),
@@ -1316,7 +2546,6 @@ namespace ResonantSpark {
                             return false;
                         }
                         if (currAttack == null ||
-                            currAttack == atkOrt2A ||
                             currAttack == atkOrt2AA) {
                             return true;
                         }
@@ -1363,6 +2592,18 @@ namespace ResonantSpark {
                         }
                         return false;
                     });
+                    charBuilder.Attack(atkOrt6A, (charState, currAttack, prevAttacks) => {
+                        if (!validGroundedAttackStates.Contains(charState)) {
+                            return false;
+                        }
+                        if (currAttack == null ||
+                            currAttack == atkOrt2A ||
+                            currAttack == atkOrt2AA ||
+                            currAttack == atkOrt5A) {
+                            return true;
+                        }
+                        return false;
+                    });
                     charBuilder.Attack(atkOrt5B, (charState, currAttack, prevAttacks) => {
                         if (!validGroundedAttackStates.Contains(charState)) {
                             return false;
@@ -1372,7 +2613,10 @@ namespace ResonantSpark {
                             currAttack == atkOrt2AA ||
                             currAttack == atkOrt5A ||
                             currAttack == atkOrt5AA ||
-                            currAttack == atkOrt5AAA) {
+                            currAttack == atkOrt5AAA ||
+                            currAttack == atkOrt2B ||
+                            currAttack == atkOrt2BB ||
+                            currAttack == atkOrt2BBB) {
                             return true;
                         }
                         return false;
@@ -1413,7 +2657,42 @@ namespace ResonantSpark {
                         }
                         return false;
                     });
-                    charBuilder.Attack(atkOrt1C, (charState, currAttack, prevAttacks) => {
+                    charBuilder.Attack(atkOrt2B, (charState, currAttack, prevAttacks) => {
+                        if (!validGroundedAttackStates.Contains(charState)) {
+                            return false;
+                        }
+                        if (currAttack == null ||
+                            currAttack == atkOrt2A ||
+                            currAttack == atkOrt2AA ||
+                            currAttack == atkOrt5A ||
+                            currAttack == atkOrt5AA ||
+                            currAttack == atkOrt5AAA ||
+                            currAttack == atkOrt5B ||
+                            currAttack == atkOrt5BB ||
+                            currAttack == atkOrt5BBB) {
+                            return true;
+                        }
+                        return false;
+                    });
+                    charBuilder.Attack(atkOrt2BB, (charState, currAttack, prevAttacks) => {
+                        if (!validGroundedAttackStates.Contains(charState)) {
+                            return false;
+                        }
+                        if (currAttack == atkOrt2B) {
+                            return true;
+                        }
+                        return false;
+                    });
+                    charBuilder.Attack(atkOrt2BBB, (charState, currAttack, prevAttacks) => {
+                        if (!validGroundedAttackStates.Contains(charState)) {
+                            return false;
+                        }
+                        if (currAttack == atkOrt2BB) {
+                            return true;
+                        }
+                        return false;
+                    });
+                    charBuilder.Attack(atkOrt5C, (charState, currAttack, prevAttacks) => {
                         if (!validGroundedAttackStates.Contains(charState)) {
                             return false;
                         }
@@ -1426,8 +2705,18 @@ namespace ResonantSpark {
                             currAttack == atkOrt5B ||
                             currAttack == atkOrt5BB ||
                             currAttack == atkOrt5BBB ||
-                            currAttack == atkOrt5BBBB ||
-                            currAttack == atkOrt2C) {
+                            currAttack == atkOrt2B ||
+                            currAttack == atkOrt2BB ||
+                            currAttack == atkOrt2BBB) {
+                            return true;
+                        }
+                        return false;
+                    });
+                    charBuilder.Attack(atkOrt1C, (charState, currAttack, prevAttacks) => {
+                        if (!validGroundedAttackStates.Contains(charState)) {
+                            return false;
+                        }
+                        if (currAttack == null) {
                             return true;
                         }
                         return false;
@@ -1445,8 +2734,7 @@ namespace ResonantSpark {
                             currAttack == atkOrt5B ||
                             currAttack == atkOrt5BB ||
                             currAttack == atkOrt5BBB ||
-                            currAttack == atkOrt5BBBB ||
-                            currAttack == atkOrt1C) {
+                            currAttack == atkOrt5C) {
                             return true;
                         }
                         return false;
@@ -1474,6 +2762,108 @@ namespace ResonantSpark {
                             return false;
                         }
                         if (currAttack == atkJump5AA) {
+                            return true;
+                        }
+                        return false;
+                    });
+                    charBuilder.Attack(atkJump5B, (charState, currAttack, prevAttacks) => {
+                        if (!validAirborneAttackStates.Contains(charState)) {
+                            return false;
+                        }
+                        if (currAttack == null ||
+                            currAttack == atkJump5A ||
+                            currAttack == atkJump5AA) {
+                            return true;
+                        }
+                        return false;
+                    });
+                    charBuilder.Attack(atkJump5BB, (charState, currAttack, prevAttacks) => {
+                        if (!validAirborneAttackStates.Contains(charState)) {
+                            return false;
+                        }
+                        if (currAttack == atkJump5B) {
+                            return true;
+                        }
+                        return false;
+                    });
+                    charBuilder.Attack(atkJump5C, (charState, currAttack, prevAttacks) => {
+                        if (!validAirborneAttackStates.Contains(charState)) {
+                            return false;
+                        }
+                        if (currAttack == null ||
+                            currAttack == atkJump5A ||
+                            currAttack == atkJump5AA ||
+                            currAttack == atkJump5B ||
+                            currAttack == atkJump5BB) {
+                            return true;
+                        }
+                        return false;
+                    });
+                    charBuilder.Attack(atkOrt214A, (charState, currAttack, prevAttacks) => {
+                        if (!validGroundedAttackStates.Contains(charState)) {
+                            return false;
+                        }
+                        if (currAttack == null ||
+                            currAttack == atkOrt2A ||
+                            currAttack == atkOrt2AA ||
+                            currAttack == atkOrt5A ||
+                            currAttack == atkOrt5AA ||
+                            currAttack == atkOrt5AAA ||
+                            currAttack == atkOrt5B ||
+                            currAttack == atkOrt5BB ||
+                            currAttack == atkOrt5BBB ||
+                            currAttack == atkOrt6B ||
+                            currAttack == atkOrt2B ||
+                            currAttack == atkOrt2BB ||
+                            currAttack == atkOrt2BBB ||
+                            currAttack == atkOrt5C ||
+                            currAttack == atkOrt2C) {
+                            return true;
+                        }
+                        return false;
+                    });
+                    charBuilder.Attack(atkOrt214B, (charState, currAttack, prevAttacks) => {
+                        if (!validGroundedAttackStates.Contains(charState)) {
+                            return false;
+                        }
+                        if (currAttack == null ||
+                            currAttack == atkOrt2A ||
+                            currAttack == atkOrt2AA ||
+                            currAttack == atkOrt5A ||
+                            currAttack == atkOrt5AA ||
+                            currAttack == atkOrt5AAA ||
+                            currAttack == atkOrt5B ||
+                            currAttack == atkOrt5BB ||
+                            currAttack == atkOrt5BBB ||
+                            currAttack == atkOrt6B ||
+                            currAttack == atkOrt2B ||
+                            currAttack == atkOrt2BB ||
+                            currAttack == atkOrt2BBB ||
+                            currAttack == atkOrt5C ||
+                            currAttack == atkOrt2C) {
+                            return true;
+                        }
+                        return false;
+                    });
+                    charBuilder.Attack(atkOrt214C, (charState, currAttack, prevAttacks) => {
+                        if (!validGroundedAttackStates.Contains(charState)) {
+                            return false;
+                        }
+                        if (currAttack == null ||
+                            currAttack == atkOrt2A ||
+                            currAttack == atkOrt2AA ||
+                            currAttack == atkOrt5A ||
+                            currAttack == atkOrt5AA ||
+                            currAttack == atkOrt5AAA ||
+                            currAttack == atkOrt5B ||
+                            currAttack == atkOrt5BB ||
+                            currAttack == atkOrt5BBB ||
+                            currAttack == atkOrt6B ||
+                            currAttack == atkOrt2B ||
+                            currAttack == atkOrt2BB ||
+                            currAttack == atkOrt2BBB ||
+                            currAttack == atkOrt5C ||
+                            currAttack == atkOrt2C) {
                             return true;
                         }
                         return false;

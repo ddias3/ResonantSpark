@@ -15,8 +15,11 @@ namespace ResonantSpark {
         public class Airborne : CharacterBaseState {
 
             public Vector3 gravityExtra;
+            public int delayBeforeCanAttack;
 
             private string currAnimation;
+
+            private Utility.AttackTracker tracker;
 
             public new void Awake() {
                 base.Awake();
@@ -25,6 +28,8 @@ namespace ResonantSpark {
                 RegisterInputCallbacks()
                     .On<ButtonPress>(OnButtonPress)
                     .On<DoubleTap>(OnDoubleTap);
+
+                tracker = new Utility.AttackTracker();
             }
 
             public override void Enter(int frameIndex, MultipassBaseState previousState) {
@@ -32,10 +37,14 @@ namespace ResonantSpark {
 
                 currAnimation = ChooseAirborneAnimation(fgChar.GetLocalVelocity());
                 fgChar.Play(currAnimation);
+
+                tracker.Track(frameIndex);
             }
 
             public override void ExecutePass0(int frameIndex) {
-                FindInput(fgChar.GetFoundCombinations());
+                if (tracker.frameCount > delayBeforeCanAttack) {
+                    FindInput(fgChar.GetFoundCombinations());
+                }
 
                 if (currAnimation != ChooseAirborneAnimation(fgChar.GetLocalVelocity())) {
                     currAnimation = ChooseAirborneAnimation(fgChar.GetLocalVelocity());
@@ -59,6 +68,7 @@ namespace ResonantSpark {
 
             public override void LateExecute(int frameIndex) {
                 fgChar.RealignTarget();
+                tracker.Increment();
             }
 
             public override void Exit(int frameIndex) {
@@ -112,23 +122,18 @@ namespace ResonantSpark {
                 var buttonPress = (ButtonPress)combo;
 
                 if (buttonPress.button0 != FightingGameInputCodeBut.D) {
-                    fgChar.Use(combo);
-
                     List<Combination> inputs = new List<Combination>();
-                    inputs.Add(buttonPress);
-                    fgChar.UseCombination<QuarterCircle>(currDir => {
-                        inputs.Add(currDir);
-                    });
-                    fgChar.UseCombination<DoubleTap>(doubleTap => {
-                        inputs.Add(doubleTap);
-                    });
-                    fgChar.UseCombination<DirectionPress>(currPress => {
-                        inputs.Add(currPress);
-                    });
                     fgChar.UseCombination<DirectionCurrent>(currDir => {
+                        fgChar.Use(currDir);
                         inputs.Add(currDir);
                     });
-                    inputs.Sort();
+
+                    fgChar.Use(combo);
+                    inputs.Add(buttonPress);
+
+                    inputs.Sort((Combination a, Combination b) => {
+                        return a.GetFrame() - b.GetFrame();
+                    });
 
                     fgChar.ChooseAttack(this, null, inputs);
                     stop();

@@ -242,9 +242,9 @@ namespace ResonantSpark {
             public bool Grounded(out Vector3 groundPoint) {
                 RaycastHit hitInfo;
 
-                Debug.DrawLine(rigidFG.position + (Vector3.up * 0.1f), rigidFG.position + (Vector3.up * 0.1f) + (Vector3.down * groundCheckDistance), Color.yellow);
+                Debug.DrawLine(rigidFG.position + standCollider.localPosition + (Vector3.up * 0.1f), rigidFG.position + standCollider.localPosition + (Vector3.up * 0.1f) + (Vector3.down * groundCheckDistance), Color.yellow);
 
-                if (Physics.Raycast(rigidFG.position + (Vector3.up * 0.1f), Vector3.down, out hitInfo, groundCheckDistance, groundRaycastMask, QueryTriggerInteraction.Ignore)) {
+                if (Physics.Raycast(rigidFG.position + standCollider.localPosition + (Vector3.up * 0.1f), Vector3.down, out hitInfo, groundCheckDistance, groundRaycastMask, QueryTriggerInteraction.Ignore)) {
                     groundPoint = hitInfo.point;
                     return true;
                 }

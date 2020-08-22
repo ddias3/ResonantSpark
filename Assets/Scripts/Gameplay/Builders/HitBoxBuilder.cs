@@ -48,7 +48,7 @@ namespace ResonantSpark {
             }
 
             private bool DefaultValidateOnHitCallback(HitBox checkingHitBox, HitBox otherHitBox) {
-                return true;
+                return false;
             }
 
             private bool DefaultValidateOnHurtCallback(HitBox checkingHitBox, HurtBox otherHurtBox) {
