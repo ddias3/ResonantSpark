@@ -75,6 +75,11 @@ namespace ResonantSpark {
                                     fl.CancellableOnWhiff(false); // TODO: Change this to true when you fix the input buffer
                                     fl.ChainCancellable(false);
                                     fl.CounterHit(true);
+                                    fl.From(2);
+                                    fl.Execute(() => {
+                                        audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["attacksound_04"]);
+                                    });
+                                    fl.To(3);
                                     fl.From(12);
                                     fl.Hit(hit => {
                                         hit.Priority(AttackPriority.Throw);
@@ -157,7 +162,10 @@ namespace ResonantSpark {
                                         //fl.Hit(grabStrike0);
                                         fl.Execute(() => {
                                             FightingGameCharacter opponent = (FightingGameCharacter) throwNormal.GetEntity("opponent");
-                                            audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["mediumHit"]);
+                                            audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["hit"]);
+                                            PlayRandomGrunt(fgChar.GetSpeakPosition());
+
+                                            particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
 
                                             fgService.IncrementComboCounter(opponent);
                                             opponent.ReceiveHit(grabStrike0.hitStun, false);
@@ -168,7 +176,10 @@ namespace ResonantSpark {
                                         //fl.Hit(grabStrike1);
                                         fl.Execute(() => {
                                             FightingGameCharacter opponent = (FightingGameCharacter) throwNormal.GetEntity("opponent");
-                                            audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["mediumHit"]);
+                                            audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["hit"]);
+                                            PlayRandomGrunt(fgChar.GetSpeakPosition());
+
+                                            particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
 
                                             fgService.IncrementComboCounter(opponent);
                                             opponent.ReceiveHit(grabStrike1.hitStun, false);
@@ -229,7 +240,11 @@ namespace ResonantSpark {
 
                                                 // This exists to make characters hitting each other async
                                                 fgService.Strike(entity, fgChar, thisHit, onHit:(hitAtSameTimeByAttackPriority, damage) => {
-                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["weakHit"]);
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["hit"]);
+                                                    PlayRandomGrunt(hitLocations[defaultHitBox]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
+
                                                     switch (opponent.GetGroundRelation()) {
                                                         case GroundRelation.GROUNDED:
                                                             opponent.ReceiveHit(thisHit.hitStun, false);
@@ -249,7 +264,11 @@ namespace ResonantSpark {
                                                     opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                                 }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
-                                                        // I may put all of these functions into the same call.
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["block"]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "block");
+
+                                                    // I may put all of these functions into the same call.
                                                     opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                     opponent.KnockBack(
                                                         thisHit.priority,
@@ -288,6 +307,11 @@ namespace ResonantSpark {
                                 fl.CounterHit(true);
                                 fl.From(1);
                                     fl.ChainCancellable(false);
+                                fl.From(2);
+                                fl.Execute(() => {
+                                    audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["attacksound_05"]);
+                                });
+                                fl.To(3);
                                 fl.From(4);
                                     fl.Track((targetFG) => {
                                         Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, targetFG.targetPos, targetFG.ActualTargetPos(), 20.0f);
@@ -328,7 +352,10 @@ namespace ResonantSpark {
 
                                                 // This exists to make characters hitting each other async
                                                 fgService.Strike(entity, fgChar, thisHit, (hitAtSameTimeByAttackPriority, damage) => {
-                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["hit"]);
+                                                    PlayRandomGrunt(hitLocations[defaultHitBox]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
 
                                                     switch (opponent.GetGroundRelation()) {
                                                         case GroundRelation.GROUNDED:
@@ -349,6 +376,10 @@ namespace ResonantSpark {
                                                     opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                                 }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["block"]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "block");
+
                                                     opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                     opponent.KnockBack(
                                                         thisHit.priority,
@@ -394,6 +425,11 @@ namespace ResonantSpark {
                                 .CounterHit(true)
                                 .From(1)
                                     .ChainCancellable(false)
+                                .From(2)
+                                    .Execute(() => {
+                                        audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["attacksound_03"]);
+                                    })
+                                .To(3)
                                 .To(20)
                                 .From(14)
                                     .Hit(hit => {
@@ -441,8 +477,10 @@ namespace ResonantSpark {
 
                                                 // This exists to make characters hitting each other async
                                                 fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
-                                                    audioService.PlayOneShot(hitLocations[closeHitBox], audioMap["mediumHit"]);
-                                                    audioService.PlayOneShot(hitLocations[closeHitBox], audioMap["weakHit"]);
+                                                    audioService.PlayOneShot(hitLocations[closeHitBox], audioMap["hit"]);
+                                                    PlayRandomGrunt(hitLocations[closeHitBox]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
 
                                                     opponent.ReceiveHit(thisHit.hitStun, true);
                                                     opponent.KnockBack(
@@ -452,6 +490,10 @@ namespace ResonantSpark {
                                                     opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                                 }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[closeHitBox], audioMap["block"]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "block");
+
                                                     opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                     opponent.KnockBack(
                                                         thisHit.priority,
@@ -511,7 +553,11 @@ namespace ResonantSpark {
 
                                                 // This exists to make characters hitting each other async
                                                 fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
-                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["weakHit"]);
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["hit"]);
+                                                    PlayRandomGrunt(hitLocations[defaultHitBox]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
+
                                                     switch (opponent.GetGroundRelation()) {
                                                         case GroundRelation.GROUNDED:
                                                             opponent.ReceiveHit(thisHit.hitStun, false);
@@ -531,6 +577,10 @@ namespace ResonantSpark {
                                                     opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                                 }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["block"]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "block");
+
                                                     // I may put all of these functions into the same call.
                                                     opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                     opponent.KnockBack(
@@ -568,6 +618,11 @@ namespace ResonantSpark {
                                 .ChainCancellable(false)
                                 .CancellableOnWhiff(false)
                                 .CounterHit(true)
+                                .From(2)
+                                    .Execute(() => {
+                                        audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["attacksound_05"]);
+                                    })
+                                .To(3)
                                 .From(10)
                                     .Hit(hit => {
                                         hit.HitDamage(800)
@@ -594,7 +649,11 @@ namespace ResonantSpark {
 
                                                 // This exists to make characters hitting each other async
                                                 fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
-                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["weakHit"]);
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["hit"]);
+                                                    PlayRandomGrunt(hitLocations[defaultHitBox]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
+
                                                     switch (opponent.GetGroundRelation()) {
                                                         case GroundRelation.GROUNDED:
                                                             opponent.ReceiveHit(thisHit.hitStun, false);
@@ -614,6 +673,10 @@ namespace ResonantSpark {
                                                     opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                                 }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["block"]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "block");
+
                                                     // I may put all of these functions into the same call.
                                                     opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                     opponent.KnockBack(
@@ -650,6 +713,11 @@ namespace ResonantSpark {
                                 fl.SpecialCancellable(true);
                                 fl.CancellableOnWhiff(false);
                                 fl.CounterHit(true);
+                                fl.From(2);
+                                    fl.Execute(() => {
+                                        audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["attacksound_02"]);
+                                    });
+                                fl.To(3);
                                 fl.From(1);
                                     fl.ChainCancellable(false);
                                 fl.From(13);
@@ -676,7 +744,11 @@ namespace ResonantSpark {
 
                                                 // This exists to make characters hitting each other async
                                                 fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
-                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["hit"]);
+                                                    PlayRandomGrunt(hitLocations[defaultHitBox]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
+
                                                     switch (opponent.GetGroundRelation()) {
                                                         case GroundRelation.GROUNDED:
                                                             opponent.ReceiveHit(thisHit.hitStun, false);
@@ -696,6 +768,10 @@ namespace ResonantSpark {
                                                     opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                                 }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["block"]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "block");
+
                                                     // I may put all of these functions into the same call.
                                                     opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                     opponent.KnockBack(
@@ -760,6 +836,11 @@ namespace ResonantSpark {
                                 fl.SpecialCancellable(true);
                                 fl.CancellableOnWhiff(false);
                                 fl.CounterHit(true);
+                                fl.From(2);
+                                    fl.Execute(() => {
+                                        audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["attacksound_03"]);
+                                    });
+                                fl.To(3);
                                 fl.From(4);
                                     fl.Track((targetFG) => {
                                         Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, targetFG.targetPos, targetFG.ActualTargetPos(), 20.0f);
@@ -792,7 +873,11 @@ namespace ResonantSpark {
 
                                                 // This exists to make characters hitting each other async
                                                 fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
-                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["hit"]);
+                                                    PlayRandomGrunt(hitLocations[defaultHitBox]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
+
                                                     switch (opponent.GetGroundRelation()) {
                                                         case GroundRelation.GROUNDED:
                                                             opponent.ReceiveHit(thisHit.hitStun, false);
@@ -812,6 +897,10 @@ namespace ResonantSpark {
                                                     opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                                 }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["block"]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "block");
+
                                                     // I may put all of these functions into the same call.
                                                     opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                     opponent.KnockBack(
@@ -848,6 +937,11 @@ namespace ResonantSpark {
                                 fl.SpecialCancellable(true);
                                 fl.CancellableOnWhiff(false);
                                 fl.CounterHit(true);
+                                fl.From(2);
+                                    fl.Execute(() => {
+                                        audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["attacksound_01"]);
+                                    });
+                                fl.To(3);
                                 fl.From(15);
                                     fl.Hit(hit => {
                                         hit.HitDamage(1000);
@@ -873,7 +967,11 @@ namespace ResonantSpark {
 
                                                 // This exists to make characters hitting each other async
                                                 fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
-                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["hit"]);
+                                                    PlayRandomGrunt(hitLocations[defaultHitBox]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
+
                                                     switch (opponent.GetGroundRelation()) {
                                                         case GroundRelation.GROUNDED:
                                                             opponent.ReceiveHit(thisHit.hitStun, false);
@@ -893,6 +991,10 @@ namespace ResonantSpark {
                                                     opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                                 }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["block"]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "block");
+
                                                     // I may put all of these functions into the same call.
                                                     opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                     opponent.KnockBack(
@@ -929,6 +1031,11 @@ namespace ResonantSpark {
                                 fl.SpecialCancellable(true);
                                 fl.CancellableOnWhiff(false);
                                 fl.CounterHit(true);
+                                fl.From(2);
+                                    fl.Execute(() => {
+                                        audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["attacksound_02"]);
+                                    });
+                                fl.To(3);
                                 fl.From(9);
                                     fl.Hit(hit => {
                                         hit.HitDamage(1000);
@@ -954,7 +1061,11 @@ namespace ResonantSpark {
 
                                                 // This exists to make characters hitting each other async
                                                 fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
-                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["hit"]);
+                                                    PlayRandomGrunt(hitLocations[defaultHitBox]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
+
                                                     switch (opponent.GetGroundRelation()) {
                                                         case GroundRelation.GROUNDED:
                                                             opponent.ReceiveHit(thisHit.hitStun, false);
@@ -974,6 +1085,10 @@ namespace ResonantSpark {
                                                     opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                                 }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["block"]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "block");
+
                                                     // I may put all of these functions into the same call.
                                                     opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                     opponent.KnockBack(
@@ -1021,11 +1136,13 @@ namespace ResonantSpark {
                                     hit.ComboScaling(1.0f);
                                     hit.Priority(AttackPriority.LightAttack);
 
+                                    hit.ValidBlock(BlockType.LOW);
+
                                     HitBox defaultHitBox = hitBoxService.Create(hb => {
                                         hb.Relative(fgChar.transform);
-                                        hb.Point0(new Vector3(x: 0, y: 0.1f, z: 0.0f));
-                                        hb.Point1(new Vector3(x: 0, y: 0.3f, z: 1.1f));
-                                        hb.Radius(0.2f);
+                                        hb.Point0(new Vector3(x: 0, y: 0.2f, z: 0.0f));
+                                        hb.Point1(new Vector3(x: 0, y: 0.4f, z: 1.1f));
+                                        hb.Radius(0.4f);
                                         hb.InGameEntity(fgChar);
                                         hb.Validate((HitBox _, HurtBox other) => true);
                                     });
@@ -1036,7 +1153,11 @@ namespace ResonantSpark {
 
                                             // This exists to make characters hitting each other async
                                             fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
-                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["hit"]);
+                                                PlayRandomGrunt(hitLocations[defaultHitBox]);
+
+                                                particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
+
                                                 switch (opponent.GetGroundRelation()) {
                                                     case GroundRelation.GROUNDED:
                                                         opponent.ReceiveHit(thisHit.hitStun, false);
@@ -1056,6 +1177,10 @@ namespace ResonantSpark {
                                                 opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                             }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["block"]);
+
+                                                particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "block");
+
                                                 // I may put all of these functions into the same call.
                                                 opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                 opponent.KnockBack(
@@ -1094,6 +1219,11 @@ namespace ResonantSpark {
                                 fl.CounterHit(true);
                                 fl.From(1);
                                 fl.ChainCancellable(false);
+                                fl.From(2);
+                                fl.Execute(() => {
+                                    audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["attacksound_01"]);
+                                });
+                                fl.To(3);
                                 fl.From(13);
                                 fl.Hit(hit => {
                                     hit.HitDamage(1000);
@@ -1118,7 +1248,11 @@ namespace ResonantSpark {
 
                                             // This exists to make characters hitting each other async
                                             fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
-                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["hit"]);
+                                                PlayRandomGrunt(hitLocations[defaultHitBox]);
+
+                                                particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
+
                                                 switch (opponent.GetGroundRelation()) {
                                                     case GroundRelation.GROUNDED:
                                                         opponent.ReceiveHit(thisHit.hitStun, false);
@@ -1138,6 +1272,10 @@ namespace ResonantSpark {
                                                 opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                             }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["block"]);
+
+                                                particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "block");
+
                                                 // I may put all of these functions into the same call.
                                                 opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                 opponent.KnockBack(
@@ -1176,6 +1314,11 @@ namespace ResonantSpark {
                                 fl.CounterHit(true);
                                 fl.From(1);
                                 fl.ChainCancellable(false);
+                                fl.From(2);
+                                fl.Execute(() => {
+                                    audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["attacksound_03"]);
+                                });
+                                fl.To(3);
                                 fl.From(18);
                                 fl.Hit(hit => {
                                     hit.HitDamage(1000);
@@ -1184,6 +1327,8 @@ namespace ResonantSpark {
                                     hit.BlockStun(50.0f);
                                     hit.ComboScaling(1.0f);
                                     hit.Priority(AttackPriority.LightAttack);
+
+                                    hit.ValidBlock(BlockType.HIGH);
 
                                     HitBox defaultHitBox = hitBoxService.Create(hb => {
                                         hb.Relative(fgChar.transform);
@@ -1200,7 +1345,11 @@ namespace ResonantSpark {
 
                                             // This exists to make characters hitting each other async
                                             fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
-                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["hit"]);
+                                                PlayRandomGrunt(hitLocations[defaultHitBox]);
+
+                                                particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
+
                                                 switch (opponent.GetGroundRelation()) {
                                                     case GroundRelation.GROUNDED:
                                                         opponent.ReceiveHit(thisHit.hitStun, false);
@@ -1220,6 +1369,10 @@ namespace ResonantSpark {
                                                 opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                             }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["block"]);
+
+                                                particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "block");
+
                                                 // I may put all of these functions into the same call.
                                                 opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                 opponent.KnockBack(
@@ -1291,7 +1444,11 @@ namespace ResonantSpark {
 
                                                 // This exists to make characters hitting each other async
                                                 fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
-                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["weakHit"]);
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["hit"]);
+                                                    PlayRandomGrunt(hitLocations[defaultHitBox]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
+
                                                     switch (opponent.GetGroundRelation()) {
                                                         case GroundRelation.GROUNDED:
                                                             opponent.ReceiveHit(thisHit.hitStun, false);
@@ -1311,6 +1468,10 @@ namespace ResonantSpark {
                                                     opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                                 }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["block"]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "block");
+
                                                     // I may put all of these functions into the same call.
                                                     opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                     opponent.KnockBack(
@@ -1357,6 +1518,11 @@ namespace ResonantSpark {
                                 .ChainCancellable(false)
                                 .CancellableOnWhiff(false)
                                 .CounterHit(true)
+                                .From(2)
+                                .Execute(() => {
+                                    audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["attacksound_02"]);
+                                })
+                                .To(3)
                                 .From(4)
                                     .Track((targetFG) => {
                                         Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, targetFG.targetPos, targetFG.ActualTargetPos(), 20.0f);
@@ -1370,6 +1536,8 @@ namespace ResonantSpark {
                                             .BlockDamage(0)
                                             .HitStun(20.0f)
                                             .BlockStun(12.0f);
+
+                                        hit.ValidBlock(BlockType.HIGH);
 
                                         HitBox defaultHitBox = hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
@@ -1387,7 +1555,11 @@ namespace ResonantSpark {
 
                                                 // This exists to make characters hitting each other async
                                                 fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
-                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["hit"]);
+                                                    PlayRandomGrunt(hitLocations[defaultHitBox]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
+
                                                     switch (opponent.GetGroundRelation()) {
                                                         case GroundRelation.GROUNDED:
                                                             opponent.ReceiveHit(thisHit.hitStun, false);
@@ -1407,6 +1579,10 @@ namespace ResonantSpark {
                                                     opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                                 }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["block"]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "block");
+
                                                     // I may put all of these functions into the same call.
                                                     opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                     opponent.KnockBack(
@@ -1453,6 +1629,11 @@ namespace ResonantSpark {
                                 .ChainCancellable(false)
                                 .CancellableOnWhiff(false)
                                 .CounterHit(true)
+                                .From(2)
+                                .Execute(() => {
+                                    audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["attacksound_04"]);
+                                })
+                                .To(3)
                                 .From(4)
                                     .Track((targetFG) => {
                                         Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, targetFG.targetPos, targetFG.ActualTargetPos(), 20.0f);
@@ -1468,6 +1649,8 @@ namespace ResonantSpark {
                                             .BlockStun(30.0f)
                                             .Priority(AttackPriority.HeavyAttack)
                                             .ComboScaling(1.0f);
+
+                                        hit.ValidBlock(BlockType.HIGH);
 
                                         HitBox defaultHitBox = hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
@@ -1485,7 +1668,11 @@ namespace ResonantSpark {
 
                                                 // This exists to make characters hitting each other async
                                                 fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
-                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["hit"]);
+                                                    PlayRandomGrunt(hitLocations[defaultHitBox]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
+
                                                     switch (opponent.GetGroundRelation()) {
                                                         case GroundRelation.GROUNDED:
                                                             opponent.ReceiveHit(thisHit.hitStun, false);
@@ -1505,6 +1692,10 @@ namespace ResonantSpark {
                                                     opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                                 }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["block"]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "block");
+
                                                     // I may put all of these functions into the same call.
                                                     opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                     opponent.KnockBack(
@@ -1548,6 +1739,11 @@ namespace ResonantSpark {
                                 .ChainCancellable(true)
                                 .CancellableOnWhiff(false)
                                 .CounterHit(true)
+                                .From(2)
+                                .Execute(() => {
+                                    audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["attacksound_02"]);
+                                })
+                                .To(3)
                                 .From(15)
                                     .Hit(hit => {
                                         hit.HitDamage(700)
@@ -1555,7 +1751,7 @@ namespace ResonantSpark {
                                             .HitStun(22.0f)
                                             .BlockStun(30.0f);
 
-                                        hit.ValidBlock(BlockType.LOW, BlockType.HIGH);
+                                        hit.ValidBlock(BlockType.HIGH);
 
                                         HitBox defaultHitBox = hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
@@ -1573,7 +1769,11 @@ namespace ResonantSpark {
 
                                                 // This exists to make characters hitting each other async
                                                 fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
-                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["hit"]);
+                                                    PlayRandomGrunt(hitLocations[defaultHitBox]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
+
                                                     switch (opponent.GetGroundRelation()) {
                                                         case GroundRelation.GROUNDED:
                                                             opponent.ReceiveHit(thisHit.hitStun, false);
@@ -1593,6 +1793,10 @@ namespace ResonantSpark {
                                                     opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                                 }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["block"]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "block");
+
                                                     // I may put all of these functions into the same call.
                                                     opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                     opponent.KnockBack(
@@ -1667,6 +1871,11 @@ namespace ResonantSpark {
                                 .ChainCancellable(false)
                                 .CancellableOnWhiff(false)
                                 .CounterHit(true)
+                                .From(2)
+                                .Execute(() => {
+                                    audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["attacksound_05"]);
+                                })
+                                .To(3)
                                 .From(4)
                                     .Track((targetFG) => {
                                         Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, targetFG.targetPos, targetFG.ActualTargetPos(), 20.0f);
@@ -1680,6 +1889,8 @@ namespace ResonantSpark {
                                             .BlockDamage(0)
                                             .HitStun(35.0f)
                                             .BlockStun(35.0f);
+
+                                        hit.ValidBlock(BlockType.HIGH);
 
                                         HitBox defaultHitBox = hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
@@ -1695,7 +1906,11 @@ namespace ResonantSpark {
 
                                                 // This exists to make characters hitting each other async
                                                 fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
-                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["hit"]);
+                                                    PlayRandomGrunt(hitLocations[defaultHitBox]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
+
                                                     switch (opponent.GetGroundRelation()) {
                                                         case GroundRelation.GROUNDED:
                                                             opponent.ReceiveHit(thisHit.hitStun, false);
@@ -1715,6 +1930,10 @@ namespace ResonantSpark {
                                                     opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                                 }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["block"]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "block");
+
                                                     // I may put all of these functions into the same call.
                                                     opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                     opponent.KnockBack(
@@ -1761,6 +1980,11 @@ namespace ResonantSpark {
                                 .ChainCancellable(false)
                                 .CancellableOnWhiff(false)
                                 .CounterHit(true)
+                                .From(2)
+                                .Execute(() => {
+                                    audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["attacksound_02"]);
+                                })
+                                .To(3)
                                 .From(4)
                                     .Track((targetFG) => {
                                         Vector3 newTargetPos = TargetUtil.MoveTargetLimited(fgChar.position, targetFG.targetPos, targetFG.ActualTargetPos(), 20.0f);
@@ -1776,6 +2000,8 @@ namespace ResonantSpark {
                                             .BlockStun(30.0f)
                                             .Priority(AttackPriority.HeavyAttack)
                                             .ComboScaling(1.0f);
+
+                                        hit.ValidBlock(BlockType.HIGH);
 
                                         HitBox defaultHitBox = hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
@@ -1793,7 +2019,11 @@ namespace ResonantSpark {
 
                                                 // This exists to make characters hitting each other async
                                                 fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
-                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["hit"]);
+                                                    PlayRandomGrunt(hitLocations[defaultHitBox]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
+
                                                     switch (opponent.GetGroundRelation()) {
                                                         case GroundRelation.GROUNDED:
                                                             opponent.ReceiveHit(thisHit.hitStun, false);
@@ -1813,6 +2043,10 @@ namespace ResonantSpark {
                                                     opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                                 }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["block"]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "block");
+
                                                     // I may put all of these functions into the same call.
                                                     opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                     opponent.KnockBack(
@@ -1846,6 +2080,11 @@ namespace ResonantSpark {
                                 fl.SpecialCancellable(true);
                                 fl.CancellableOnWhiff(false);
                                 fl.CounterHit(true);
+                                fl.From(2);
+                                fl.Execute(() => {
+                                    audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["attacksound_01"]);
+                                });
+                                fl.To(3);
                                 fl.From(18);
                                 fl.Hit(hit => {
                                     hit.HitDamage(1200);
@@ -1871,7 +2110,11 @@ namespace ResonantSpark {
 
                                             // This exists to make characters hitting each other async
                                             fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
-                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["hit"]);
+                                                PlayRandomGrunt(hitLocations[defaultHitBox]);
+
+                                                particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
+
                                                 switch (opponent.GetGroundRelation()) {
                                                     case GroundRelation.GROUNDED:
                                                         opponent.ReceiveHit(thisHit.hitStun, false);
@@ -1891,6 +2134,10 @@ namespace ResonantSpark {
                                                 opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                             }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["block"]);
+
+                                                particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "block");
+
                                                 // I may put all of these functions into the same call.
                                                 opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                 opponent.KnockBack(
@@ -1926,6 +2173,11 @@ namespace ResonantSpark {
                                 fl.SpecialCancellable(true);
                                 fl.CancellableOnWhiff(false);
                                 fl.CounterHit(true);
+                                fl.From(2);
+                                fl.Execute(() => {
+                                    audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["attacksound_03"]);
+                                });
+                                fl.To(3);
                                 fl.From(18);
                                     fl.Hit(hit => {
                                         hit.HitDamage(1000);
@@ -1934,6 +2186,8 @@ namespace ResonantSpark {
                                         hit.BlockStun(12.0f);
                                         hit.ComboScaling(1.0f);
                                         hit.Priority(AttackPriority.LightAttack);
+
+                                        hit.ValidBlock(BlockType.LOW);
 
                                         HitBox defaultHitBox = hitBoxService.Create(hb => {
                                             hb.Relative(fgChar.transform);
@@ -1951,7 +2205,11 @@ namespace ResonantSpark {
 
                                                 // This exists to make characters hitting each other async
                                                 fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
-                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["hit"]);
+                                                    PlayRandomGrunt(hitLocations[defaultHitBox]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
+
                                                     switch (opponent.GetGroundRelation()) {
                                                         case GroundRelation.GROUNDED:
                                                             opponent.ReceiveHit(thisHit.hitStun, false);
@@ -1971,6 +2229,10 @@ namespace ResonantSpark {
                                                     opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                                 }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["block"]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "block");
+
                                                     // I may put all of these functions into the same call.
                                                     opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                     opponent.KnockBack(
@@ -2034,6 +2296,11 @@ namespace ResonantSpark {
                                 fl.SpecialCancellable(true);
                                 fl.CancellableOnWhiff(false);
                                 fl.CounterHit(true);
+                                fl.From(2);
+                                fl.Execute(() => {
+                                    audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["attacksound_01"]);
+                                });
+                                fl.To(3);
                                 fl.From(18);
                                     fl.Hit(hit => {
                                         hit.HitDamage(1000);
@@ -2059,7 +2326,11 @@ namespace ResonantSpark {
 
                                                 // This exists to make characters hitting each other async
                                                 fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
-                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["hit"]);
+                                                    PlayRandomGrunt(hitLocations[defaultHitBox]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
+
                                                     switch (opponent.GetGroundRelation()) {
                                                         case GroundRelation.GROUNDED:
                                                             opponent.ReceiveHit(thisHit.hitStun, false);
@@ -2079,6 +2350,10 @@ namespace ResonantSpark {
                                                     opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                                 }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                    audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["block"]);
+
+                                                    particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "block");
+
                                                     // I may put all of these functions into the same call.
                                                     opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                     opponent.KnockBack(
@@ -2115,6 +2390,11 @@ namespace ResonantSpark {
                                 fl.CancellableOnWhiff(false); // TODO: Change this to true when you fix the input buffer
                                 fl.ChainCancellable(false);
                                 fl.CounterHit(true);
+                                fl.From(2);
+                                fl.Execute(() => {
+                                    audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["attacksound_01"]);
+                                });
+                                fl.To(3);
                                 fl.From(30);
                                 fl.Hit(hit => {
                                     hit.HitDamage(1600);
@@ -2142,7 +2422,11 @@ namespace ResonantSpark {
 
                                             // This exists to make characters hitting each other async
                                             fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
-                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["hit"]);
+                                                PlayRandomGrunt(hitLocations[defaultHitBox]);
+
+                                                particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
+
                                                 switch (opponent.GetGroundRelation()) {
                                                     case GroundRelation.GROUNDED:
                                                         opponent.ReceiveHit(thisHit.hitStun, false);
@@ -2162,6 +2446,10 @@ namespace ResonantSpark {
                                                 opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                             }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["block"]);
+
+                                                particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "block");
+
                                                 // I may put all of these functions into the same call.
                                                 opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                 opponent.KnockBack(
@@ -2225,7 +2513,11 @@ namespace ResonantSpark {
 
                                             // This exists to make characters hitting each other async
                                             fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
-                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["hit"]);
+                                                PlayRandomGrunt(hitLocations[defaultHitBox]);
+
+                                                particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
+
                                                 switch (opponent.GetGroundRelation()) {
                                                     case GroundRelation.GROUNDED:
                                                         opponent.ReceiveHit(thisHit.hitStun, false);
@@ -2245,6 +2537,10 @@ namespace ResonantSpark {
                                                 opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                             }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["block"]);
+
+                                                particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "block");
+
                                                 // I may put all of these functions into the same call.
                                                 opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                 opponent.KnockBack(
@@ -2281,6 +2577,11 @@ namespace ResonantSpark {
                                 fl.CancellableOnWhiff(false); // TODO: Change this to true when you fix the input buffer
                                 fl.ChainCancellable(false);
                                 fl.CounterHit(true);
+                                fl.From(2);
+                                fl.Execute(() => {
+                                    audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["attacksound_05"]);
+                                });
+                                fl.To(3);
                                 fl.From(16);
                                 fl.Hit(hit => {
                                     hit.HitDamage(800);
@@ -2304,7 +2605,11 @@ namespace ResonantSpark {
 
                                             // This exists to make characters hitting each other async
                                             fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
-                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["hit"]);
+                                                PlayRandomGrunt(hitLocations[defaultHitBox]);
+
+                                                particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
+
                                                 opponent.ReceiveHit(thisHit.hitStun, true);
                                                 opponent.KnockBack(
                                                     thisHit.priority,
@@ -2313,6 +2618,10 @@ namespace ResonantSpark {
                                                 opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                             }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["block"]);
+
+                                                particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "block");
+
                                                 // I may put all of these functions into the same call.
                                                 opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                 opponent.KnockBack(
@@ -2353,7 +2662,11 @@ namespace ResonantSpark {
 
                                             // This exists to make characters hitting each other async
                                             fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
-                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["hit"]);
+                                                PlayRandomGrunt(hitLocations[defaultHitBox]);
+
+                                                particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
+
                                                 opponent.ReceiveHit(thisHit.hitStun, true);
                                                 opponent.KnockBack(
                                                     thisHit.priority,
@@ -2362,6 +2675,10 @@ namespace ResonantSpark {
                                                 opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                             }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["block"]);
+
+                                                particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "block");
+
                                                 // I may put all of these functions into the same call.
                                                 opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                 opponent.KnockBack(
@@ -2396,6 +2713,11 @@ namespace ResonantSpark {
                                 fl.CancellableOnWhiff(false); // TODO: Change this to true when you fix the input buffer
                                 fl.ChainCancellable(false);
                                 fl.CounterHit(true);
+                                fl.From(2);
+                                fl.Execute(() => {
+                                    audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["attacksound_05"]);
+                                });
+                                fl.To(3);
                                 fl.From(26);
                                 fl.Hit(hit => {
                                     hit.HitDamage(800);
@@ -2419,7 +2741,11 @@ namespace ResonantSpark {
 
                                             // This exists to make characters hitting each other async
                                             fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
-                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["hit"]);
+                                                PlayRandomGrunt(hitLocations[defaultHitBox]);
+
+                                                particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
+
                                                 opponent.ReceiveHit(thisHit.hitStun, true);
                                                 opponent.KnockBack(
                                                     thisHit.priority,
@@ -2428,6 +2754,10 @@ namespace ResonantSpark {
                                                 opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                             }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["block"]);
+
+                                                particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "block");
+
                                                 // I may put all of these functions into the same call.
                                                 opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                 opponent.KnockBack(
@@ -2462,6 +2792,11 @@ namespace ResonantSpark {
                                 fl.CancellableOnWhiff(false); // TODO: Change this to true when you fix the input buffer
                                 fl.ChainCancellable(false);
                                 fl.CounterHit(true);
+                                fl.From(2);
+                                fl.Execute(() => {
+                                    audioService.PlayOneShot(fgChar.GetSpeakPosition(), audioMap["attacksound_04"]);
+                                });
+                                fl.To(3);
                                 fl.From(37);
                                 fl.Hit(hit => {
                                     hit.HitDamage(800);
@@ -2487,7 +2822,11 @@ namespace ResonantSpark {
 
                                             // This exists to make characters hitting each other async
                                             fgService.Strike(entity, fgChar, thisHit, onHit: (hitAtSameTimeByAttackPriority, damage) => {
-                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["mediumHit"]);
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["hit"]);
+                                                PlayRandomGrunt(hitLocations[defaultHitBox]);
+
+                                                particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "hit");
+
                                                 opponent.ReceiveHit(thisHit.hitStun, true);
                                                 opponent.KnockBack(
                                                     thisHit.priority,
@@ -2496,6 +2835,10 @@ namespace ResonantSpark {
                                                 opponent.ChangeHealth(damage); // damage includes combo scaling.
 
                                             }, onBlock: (hitAtSameTimeByAttackPriority, damage) => {
+                                                audioService.PlayOneShot(hitLocations[defaultHitBox], audioMap["block"]);
+
+                                                particleService.PlayOneShot(fgChar.position + fgChar.rigidFG.rotation * new Vector3(0, 1.0f, 1.0f) * 1.0f, "block");
+
                                                 // I may put all of these functions into the same call.
                                                 opponent.ReceiveBlocked(thisHit.blockStun, false);
                                                 opponent.KnockBack(
@@ -2881,6 +3224,11 @@ namespace ResonantSpark {
                 private void ReturnToAirborne() {
                     fgChar.SetStandCollider(Vector3.zero);
                     fgChar.SetState(fgChar.State("airborne"));
+                }
+
+                private void PlayRandomGrunt(Vector3 location) {
+                    int index = (int)(UnityEngine.Random.value * 5.0f) + 1;
+                    audioService.PlayOneShot(location, audioMap["grunt_0" + index]);
                 }
             }
         }

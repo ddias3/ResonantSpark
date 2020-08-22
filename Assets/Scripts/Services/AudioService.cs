@@ -31,7 +31,7 @@ namespace ResonantSpark {
                 frame.AddUpdate((int)FramePriority.Service, new System.Action<int>(FrameUpdate));
                 frame.AddUpdate((int)FramePriority.ActivePollingReset, new System.Action<int>(ResetActivePolling));
 
-                audioSources = new ResourceRecycler<AudioResource>(prefab, Vector3.zero, 4, audioEmpty, resource => {
+                audioSources = new ResourceRecycler<AudioResource>(prefab, Vector3.zero, 16, audioEmpty, resource => {
                     Debug.Log("callback called");
                     resource.SetService(this);
                     resource.Deactivate();

@@ -737,10 +737,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bdd247590d669f4a8acb121677cb794, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dashLength: 10
-  redashDisallowed: 10
-  attackDisallowed: 8
-  blockDisallowed: 15
+  dashLength: 30
+  redashDisallowed: 30
+  attackDisallowed: 20
+  blockDisallowed: 25
   dashPositionCurve:
     serializedVersion: 2
     m_Curve:
@@ -860,7 +860,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13ee30f2335b5db4aa17b18aa7f18982, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dashLength: 12
+  dashLength: 18
   redashDisallowed: 10
   attackDisallowed: 12
   blockDisallowed: 15

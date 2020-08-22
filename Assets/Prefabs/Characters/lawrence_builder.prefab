@@ -62,13 +62,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   keys:
-  - weakHit
-  - mediumHit
-  - hadouken
+  - block
+  - hit
+  - grunt_01
+  - grunt_02
+  - grunt_03
+  - grunt_04
+  - grunt_05
+  - attacksound_01
+  - attacksound_02
+  - attacksound_03
+  - attacksound_04
+  - attacksound_05
   values:
-  - {fileID: 8300000, guid: fc879980a72b572498007248658a8612, type: 3}
   - {fileID: 8300000, guid: e171867bfbdd11443a2d6f956964e690, type: 3}
-  - {fileID: 8300000, guid: c553288bd81ae74409ff1ce5d2e692a7, type: 3}
+  - {fileID: 8300000, guid: fdad57706f11ee542b13ee82e3c2362e, type: 3}
+  - {fileID: 8300000, guid: 7bdb7ec241b51344f92dbf22c9b9b6ed, type: 3}
+  - {fileID: 8300000, guid: ae9d5683ef56fa6489ff40b5e700c6c0, type: 3}
+  - {fileID: 8300000, guid: 2f2dcfddffc78294b91fc7c40445fbeb, type: 3}
+  - {fileID: 8300000, guid: f9d33cba58c97264abab37f045481102, type: 3}
+  - {fileID: 8300000, guid: b1578c8fe98aa844eac1d6827a3cff33, type: 3}
+  - {fileID: 8300000, guid: 5d17d0af69970654cbf125241bdd5a7f, type: 3}
+  - {fileID: 8300000, guid: f15fa2764142e0b45b590000563691c3, type: 3}
+  - {fileID: 8300000, guid: 865a7a1cacde82c45be5e32f7e4b6f35, type: 3}
+  - {fileID: 8300000, guid: 88981075521fc2340aada22edd6d6d60, type: 3}
+  - {fileID: 8300000, guid: b351f0983dff78c41818273ddf5cb556, type: 3}
 --- !u!114 &534259130289147125
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -82,9 +100,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   keys:
-  - destroyParticle
+  - block
+  - hit
   values:
-  - {fileID: -5779690316748016101, guid: 75fc6913d401aad4ba04000ee3533e0b, type: 3}
+  - {fileID: 8172156290401448056, guid: 8c50835c4436df94b9b2bd91b2aae09c, type: 3}
+  - {fileID: 657483507657259403, guid: 110f64472d9c3774385910ac913ae167, type: 3}
 --- !u!114 &1518595847234667903
 MonoBehaviour:
   m_ObjectHideFlags: 0
