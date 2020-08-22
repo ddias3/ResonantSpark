@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8063210776759888454}
   - component: {fileID: 5260250796367830021}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: BlockStunCrouch
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -53,7 +53,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6095904966797098311}
   - component: {fileID: 90189820735477452}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: AttackGrounded
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -96,7 +96,7 @@ GameObject:
   m_Component:
   - component: {fileID: 324119715757984629}
   - component: {fileID: 3351885502504657444}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: Grabbed
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -140,7 +140,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1152466234250319575}
   - component: {fileID: 4373170356618715551}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ForwardDashLong
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -220,7 +220,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3861368042240806334}
   - component: {fileID: 1258987366380237548}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: HitStunStand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -263,7 +263,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2152161314199937203}
   - component: {fileID: 2152161314199937202}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: Run
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -307,7 +307,7 @@ GameObject:
   - component: {fileID: 2152161314391702300}
   - component: {fileID: 756968569776240932}
   - component: {fileID: 5694928085653781693}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: FGCharStateMachine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -388,7 +388,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2152161315336285449}
   - component: {fileID: 2152161315336285450}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: Stand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -438,7 +438,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2630261498285926132}
   - component: {fileID: 7266715412287999670}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: AirDash
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -482,7 +482,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8067122287443546856}
   - component: {fileID: 9159975323115269696}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: Clash
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -527,7 +527,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8147897146673362570}
   - component: {fileID: 8434313463453899074}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: FaceOpponent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -572,7 +572,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7980217656289988952}
   - component: {fileID: 2464636746230534647}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: HitStunAirborne
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -616,7 +616,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1468726516969812308}
   - component: {fileID: 2406293870191471}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: RecoverAirborne
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -661,7 +661,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4782791132262503715}
   - component: {fileID: 1646096027436425487}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: Crouch
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -704,7 +704,7 @@ GameObject:
   m_Component:
   - component: {fileID: 509432962483443225}
   - component: {fileID: 2234126834210819505}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: BackDash
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -784,7 +784,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1095020692871649084}
   - component: {fileID: 6854511208756239109}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: AttackAirborne
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -827,7 +827,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5768635892262005417}
   - component: {fileID: 4250623025054531813}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: ForwardDash
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -907,7 +907,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1650032296414266424}
   - component: {fileID: 7319179156229603197}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: GrabBreak
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -951,7 +951,7 @@ GameObject:
   m_Component:
   - component: {fileID: 579190755108935037}
   - component: {fileID: 4804664466903712248}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: BackDashLong
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1040,7 +1040,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3461658537920425781}
   - component: {fileID: 4889489600929017633}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: BlockStunStand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1083,7 +1083,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6943985151925006682}
   - component: {fileID: 1197655313273082256}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: Land
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1126,7 +1126,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3803540947022718453}
   - component: {fileID: 40311366637626}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: Airborne
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1171,7 +1171,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5903116188426537500}
   - component: {fileID: 4661401421426239462}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: HitStunCrouch
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1214,7 +1214,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3270292444927376871}
   - component: {fileID: 6833407958746618999}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: Jump
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1262,7 +1262,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6881872515104862483}
   - component: {fileID: 7583293459505047293}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: Dodge
   m_TagString: Untagged
   m_Icon: {fileID: 0}
