@@ -64,8 +64,8 @@ namespace ResonantSpark {
                 return services;
             }
 
-            public FightingGameCharacter Build(ICharacterBuilder charBuilder) {
-                currFGChar = charBuilder.CreateCharacter(services);
+            public FightingGameCharacter Build(ICharacterBuilder charBuilder, int characterColor) {
+                currFGChar = charBuilder.CreateCharacter(services, characterColor);
                 charBuilder.Build(services);
                 return currFGChar;
             }

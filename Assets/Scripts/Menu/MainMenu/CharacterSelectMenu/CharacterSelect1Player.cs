@@ -50,7 +50,7 @@ namespace ResonantSpark {
                 for (int n = 0; n < charInfos.Count; ++n) {
                     var colorsP1 = new List<ScrollSelectOption<string>>();
                     var colorsP2 = new List<ScrollSelectOption<string>>();
-                    for (int m = 0; m < charInfos[n].previews.Count; ++m) {
+                    for (int m = 0; m < charInfos[n].previews.Count - 1; ++m) {
                         colorsP1.Add(new ScrollSelectOption<string> {
                             name = "Color " + (m + 1),
                             callbackData = m.ToString(),

@@ -60,7 +60,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   breakPoint: 0
-  inputDelay: 5
+  inputDelay: 1
   inputBufferSize: 30
   bufferLength: 256
   foundInputCombinations: []

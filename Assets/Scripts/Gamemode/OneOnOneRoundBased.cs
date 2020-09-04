@@ -92,10 +92,10 @@ namespace ResonantSpark {
                 List<string> charSelection = (List<string>)characters["selection"];
                 List<int> charColor = (List<int>)characters["color"];
 
-                playerService.CreateCharacter(charSelection[0], charColor[0], (fgChar) => {
+                playerService.CreateCharacter(charSelection[0], charColor[Persistence.Get().colorSelection[0]], (fgChar) => {
                     playerService.SetTag("player1", fgChar);
                 });
-                playerService.CreateCharacter(charSelection[1], charColor[1], (fgChar) => {
+                playerService.CreateCharacter(charSelection[1], charColor[Persistence.Get().colorSelection[1]], (fgChar) => {
                     playerService.SetTag("player2", fgChar);
                 });
             }

@@ -15,6 +15,9 @@ namespace ResonantSpark {
 
                 public GameObject lawrencePrefab;
 
+                public List<MaterialMapper> charColors;
+                private int characterColor;
+
                 private AudioClipMap audioMap;
                 private ParticleEffectMap particleMap;
                 private AnimationCurveMap attackMovementMap;
@@ -22,7 +25,8 @@ namespace ResonantSpark {
 
                 private FightingGameCharacter fgChar;
 
-                public FightingGameCharacter CreateCharacter(AllServices services) {
+                public FightingGameCharacter CreateCharacter(AllServices services, int characterColor) {
+                    this.characterColor = characterColor;
                     GameObject character = Instantiate<GameObject>(lawrencePrefab, transform.position, transform.rotation);
                     character.name = lawrencePrefab.name;
                     fgChar = character.GetComponent<FightingGameCharacter>();
@@ -49,7 +53,7 @@ namespace ResonantSpark {
                     attacks.Init(charBuilder, fgChar);
                     movement.Init(charBuilder, fgChar);
 
-                    charBuilder.SetUpCharacter(fgChar);
+                    charBuilder.SetUpCharacter(charColors[characterColor], fgChar);
 
                     Destroy(gameObject);
                 }
@@ -60,7 +64,7 @@ namespace ResonantSpark {
                         // do nothing
                     }
 
-                    public void SetUpCharacter(FightingGameCharacter fgChar) {
+                    public void SetUpCharacter(MaterialMapper charColor, FightingGameCharacter fgChar) {
                         CharacterData charData = ScriptableObject.CreateInstance<CharacterData>();
                         charData.Init(this.maxHealth);
 
@@ -68,6 +72,8 @@ namespace ResonantSpark {
                         //BuildMovement(charData);
 
                         fgChar.Init(charData);
+
+                        fgChar.SetColorMapper(charColor);
                     }
                 }
             }

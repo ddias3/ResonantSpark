@@ -36,7 +36,7 @@ namespace ResonantSpark {
                 GameObject charBuilderPrefab = persistenceService.GetSelectedCharacter(charSelection);
                 GameObject newChar = GameObject.Instantiate(charBuilderPrefab);
 
-                FightingGameCharacter builtFGChar = buildService.Build(newChar.GetComponent<ICharacterBuilder>());
+                FightingGameCharacter builtFGChar = buildService.Build(newChar.GetComponent<ICharacterBuilder>(), charColor);
 
                 fgChars.Add(builtFGChar);
 

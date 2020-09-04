@@ -7,7 +7,7 @@ namespace ResonantSpark {
     namespace Service {
         public interface IBuildService {
             AllServices GetAllServices();
-            FightingGameCharacter Build(ICharacterBuilder charBuilder);
+            FightingGameCharacter Build(ICharacterBuilder charBuilder, int characterColor);
             FightingGameCharacter GetBuildingFGChar();
         }
     }

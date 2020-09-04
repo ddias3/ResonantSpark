@@ -6,6 +6,7 @@ namespace ResonantSpark {
     namespace Menu {
         public class MainMenu : Menu {
             public Menu exitGameDialogue;
+            public Menu creditsDialogue;
             public Menu controllerSelect;
 
             public Animator animator3d;
@@ -165,7 +166,8 @@ namespace ResonantSpark {
                     currSelected = options;
                 }).On("submit", () => {
                     cursor3d.Select(credits, () => {
-                        Debug.Log("Go To Credits Menu");
+                        menuStack.AddMenu(creditsDialogue);
+                        changeState("creditsDialogue");
                     });
                 });
 

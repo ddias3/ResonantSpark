@@ -6,7 +6,7 @@ using ResonantSpark.Gameplay;
 namespace ResonantSpark {
     namespace Builder {
         public interface ICharacterBuilder {
-            FightingGameCharacter CreateCharacter(AllServices services);
+            FightingGameCharacter CreateCharacter(AllServices services, int characterColor);
             void Build(AllServices services);
         }
     }

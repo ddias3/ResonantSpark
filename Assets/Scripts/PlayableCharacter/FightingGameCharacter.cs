@@ -32,6 +32,8 @@ namespace ResonantSpark {
             public Transform standCollider;
             public CapsuleCollider hitStunHurtBox;
 
+            public CharacterColor charColor;
+
             public TMPro.TextMeshPro __debugState;
 
             public int fgCharId { get; private set; }
@@ -612,6 +614,10 @@ namespace ResonantSpark {
 
             public bool GetControlEnable() {
                 return this.controlEnable;
+            }
+
+            public void SetColorMapper(MaterialMapper mapper) {
+                charColor.SetMapper(mapper);
             }
 
             public override void AddSelf() {
